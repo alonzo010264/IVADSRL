@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desechables - IVAD Home & Goods</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <span class="est">Est. 1996</span>
+            <div class="top-right">
+                <span>Envíos a todo el país</span>
+                <a href="contacto.html">Contáctanos</a>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="container header-inner">
+            <div class="logo" onclick="window.location.href='desechables.html'" style="cursor: pointer;">
+                <h1>IVAD.</h1>
+                <span>Home & Goods</span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="desechables.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li class="dropdown">
+                        <a href="#">Categorías <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="desechables.html">Todos</a></li>
+                            <li><a href="desechables.html?category=platos">Platos</a></li>
+                            <li><a href="desechables.html?category=vasos">Vasos</a></li>
+                            <li><a href="desechables.html?category=cubiertos">Cubiertos</a></li>
+                            <li><a href="desechables.html?category=bandejas">Bandejas</a></li>
+                            <li><a href="desechables.html?category=contenedores">Contenedores</a></li>
+                            <li><a href="desechables.html?category=servilletas">Servilletas</a></li>
+                            <li><a href="desechables.html?category=bolsas">Bolsas</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="desechables.html" class="active">Desechables</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <a href="#"><i class="fas fa-search"></i></a>
+                <a href="login.html"><i class="far fa-user"></i></a>
+                <a href="#" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero hero-desechables" style="background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('images/desechables_1782182109098.png'); height: 320px; background-size: cover; background-position: center; display: flex; align-items: center; color: var(--text-light);">
+        <div class="container">
+            <div class="hero-content">
+                <h1 style="font-size: 3rem; font-weight: 600; margin-bottom: 10px; letter-spacing: 1px;">DESECHABLES</h1>
+                <p style="font-size: 1.1rem; max-width: 500px; font-weight: 400; line-height: 1.5; color: #f5f5f5;">Prácticos, resistentes y perfectos para cada ocasión.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs-container">
+        <div class="container">
+            <ul class="breadcrumbs">
+                <li><a href="index.html">Inicio</a></li>
+                <li><i class="fas fa-chevron-right"></i></li>
+                <li class="active">Desechables</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="container store-layout">
+        <!-- Sidebar Filters -->
+        <aside class="filters-sidebar">
+            <div class="filter-section">
+                <h3>CATEGORÍAS</h3>
+                <ul class="category-links">
+                    <!-- Categories will be dynamically populated here by JS -->
+                </ul>
+            </div>
+
+            <div class="filter-section">
+                <h3>MATERIAL</h3>
+                <div class="checkbox-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="material" value="plastico">
+                        <span class="checkmark"></span>
+                        Plástico
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="material" value="foam">
+                        <span class="checkmark"></span>
+                        Foam
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="material" value="carton">
+                        <span class="checkmark"></span>
+                        Cartón
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="material" value="biodegradable">
+                        <span class="checkmark"></span>
+                        Biodegradable
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="material" value="papel">
+                        <span class="checkmark"></span>
+                        Papel
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>USO</h3>
+                <div class="checkbox-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="uso" value="fiestas">
+                        <span class="checkmark"></span>
+                        Fiestas
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="uso" value="eventos">
+                        <span class="checkmark"></span>
+                        Eventos
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="uso" value="restaurantes">
+                        <span class="checkmark"></span>
+                        Restaurantes
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="uso" value="para llevar">
+                        <span class="checkmark"></span>
+                        Para llevar
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="uso" value="diario">
+                        <span class="checkmark"></span>
+                        Diario
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn btn-outline-dark btn-clear-filters" id="btn-clear-filters">
+                <i class="fas fa-trash-alt"></i> Limpiar filtros
+            </button>
+        </aside>
+
+        <!-- Product Grid Area -->
+        <main class="store-main">
+            <!-- Search & Sort Header -->
+            <div class="store-header">
+                <div class="search-box-store">
+                    <i class="fas fa-search search-icon-store"></i>
+                    <input type="text" id="search-input" placeholder="Buscar productos desechables...">
+                </div>
+                <div class="sort-selector">
+                    <label for="sort-select">Ordenar por:</label>
+                    <select id="sort-select">
+                        <option value="recent">Más recientes</option>
+                        <option value="price-asc">Precio: de menor a mayor</option>
+                        <option value="price-desc">Precio: de mayor a menor</option>
+                    </select>
+                </div>
+            </div>
+
+
+
+            <!-- Product Count -->
+            <div class="products-count-bar">
+                <span id="results-count">Mostrando 1-8 de 8 productos</span>
+            </div>
+
+            <!-- Main Product Grid -->
+            <div class="store-grid" id="store-grid">
+                <!-- Products will be dynamically populated here via JavaScript -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-wrapper">
+                <ul class="pagination">
+                    <li class="page-item active"><a href="#" class="page-link">1</a></li>
+                    <li class="page-item"><a href="#" class="page-link">2</a></li>
+                    <li class="page-item"><a href="#" class="page-link">3</a></li>
+                    <li class="page-item"><a href="#" class="page-link">4</a></li>
+                    <li class="page-item"><a href="#" class="page-link"><i class="fas fa-chevron-right"></i></a></li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <!-- Central Banner Section -->
+    <section class="banner-central" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/comedor_1782182137437.png'); background-size: cover; background-position: center; padding: 60px 0; color: #fff; text-align: center; margin-top: 50px;">
+        <div class="container">
+            <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 20px; letter-spacing: 2px;">IDEAL PARA CADA OCASIÓN</h2>
+            <a href="#" class="btn btn-primary" id="btn-show-all-promo">Ver todos los productos</a>
+        </div>
+    </section>
+
+    <!-- Info Section (Misión, Visión, Valores) -->
+    <section class="info-section">
+        <div class="container info-grid">
+            <div class="info-intro">
+                <h2>¿QUÉ ES IVAD?</h2>
+                <p>IVAD es una empresa dedicada a ofrecer productos de alta calidad para el hogar y para negocios. Contamos con más de 25 años de experiencia brindando soluciones prácticas, modernas y confiables para cada necesidad.</p>
+                <a href="#" class="btn btn-primary">Conoce más</a>
+            </div>
+            <div class="info-items">
+                <div class="info-item">
+                    <h3>MISIÓN</h3>
+                    <p>Ofrecer productos de calidad que mejoren la vida de nuestros clientes, con un servicio honesto y eficiente.</p>
+                </div>
+                <div class="info-item">
+                    <h3>VISIÓN</h3>
+                    <p>Ser la empresa líder en productos para el hogar y negocios, reconocida por nuestra innovación y compromiso.</p>
+                </div>
+                <div class="info-item">
+                    <h3>VALORES</h3>
+                    <ul>
+                        <li>Integridad</li>
+                        <li>Calidad</li>
+                        <li>Compromiso</li>
+                        <li>Innovación</li>
+                        <li>Respeto</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom Banner Section -->
+    <section class="banner-section" id="banner" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/desechables_1782182109098.png'); background-size: cover; background-position: center;">
+        <div class="container banner-content">
+            <button class="slider-arrow prev banner-arrow"><i class="fas fa-chevron-left"></i></button>
+            <div class="banner-text">
+                <h2>CALIDAD QUE SE VE,<br>EXPERIENCIA QUE SE SIENTE.</h2>
+                <a href="#" class="btn btn-dark">Descubre más</a>
+            </div>
+            <button class="slider-arrow next banner-arrow"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <h2>IVAD.</h2>
+                    <span>Home & Goods</span>
+                </div>
+                <p>Hogar y negocio en un solo lugar. Productos de calidad, servicio confiable y la mejor experiencia de compra.</p>
+                <span class="est-footer">Est. 1996</span>
+            </div>
+            <div class="footer-links">
+                <h3>ENLACES</h3>
+                <ul>
+                    <li><a href="desechables.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li><a href="desechables.html">Desechables</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>DEPARTAMENTOS</h3>
+                <ul>
+                    <li><a href="index.html#dep-decoracion">Decoración y Muebles</a></li>
+                    <li><a href="desechables.html">Desechables para Negocios</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>ATENCIÓN AL CLIENTE</h3>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Políticas de envío</a></li>
+                    <li><a href="#">Políticas de devolución</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>SÍGUENOS</h3>
+                <div class="social-icons-footer">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <h3>CONTÁCTANOS</h3>
+                <ul class="contact-info">
+                    <li><i class="fas fa-phone-alt"></i> (809) 123-4567</li>
+                    <li><i class="fas fa-envelope"></i> info@ivad.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Santo Domingo, RD</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2024 IVAD Home & Goods. Todos los derechos reservados.</p>
+            <div class="payment-icons">
+                <i class="fab fa-cc-visa"></i>
+                <i class="fab fa-cc-mastercard"></i>
+                <i class="fab fa-cc-paypal"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+            <div class="modal-grid">
+                <div class="modal-img-container">
+                    <img id="modal-img" src="" alt="Product Image">
+                </div>
+                <div class="modal-info">
+                    <span id="modal-category" class="modal-category">CATEGORÍA</span>
+                    <h2 id="modal-title">Nombre del Producto</h2>
+                    <div class="modal-price" id="modal-price">$0.00</div>
+                    <div class="modal-reviews">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span id="modal-reviews-count">(0 reseñas)</span>
+                    </div>
+                    <p id="modal-desc" class="modal-desc">Descripción breve del producto.</p>
+                    
+                    <ul class="modal-features" id="modal-features">
+                        <!-- Features will be injected here -->
+                    </ul>
+                    
+                    <div class="modal-actions">
+                        <div class="quantity-selector">
+                            <button class="qty-btn minus"><i class="fas fa-minus"></i></button>
+                            <input type="text" value="1" class="qty-input" readonly>
+                            <button class="qty-btn plus"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <button class="btn btn-primary add-to-cart"><i class="fas fa-shopping-cart"></i> Agregar al carrito</button>
+                        <button class="btn btn-outline fav-btn"><i class="far fa-heart"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase CDN y Configuración -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
