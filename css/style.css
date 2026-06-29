@@ -631,6 +631,7 @@ h1, h2, h3, h4 {
     .header-inner {
         flex-direction: row;
         justify-content: space-between;
+        align-items: center;
         padding: 15px 20px;
     }
     
@@ -641,9 +642,10 @@ h1, h2, h3, h4 {
         left: 0;
         width: 100%;
         background: #fff;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         z-index: 1000;
-        padding: 20px 0;
+        padding: 0;
+        border-top: 1px solid var(--border-color);
     }
 
     .main-nav.nav-open {
@@ -652,8 +654,45 @@ h1, h2, h3, h4 {
     
     .main-nav > ul {
         flex-direction: column;
-        align-items: center;
-        gap: 15px;
+        align-items: stretch;
+        gap: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .main-nav > ul > li {
+        width: 100%;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .main-nav > ul > li > a {
+        display: block;
+        padding: 16px 24px;
+        text-align: left;
+        font-size: 1rem;
+        color: var(--primary-color);
+        width: 100%;
+    }
+
+    /* Submenú en móvil */
+    .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        border: none;
+        background-color: #f9f9f9;
+        width: 100%;
+        padding: 0;
+        display: none;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-menu li a {
+        padding: 12px 24px 12px 40px;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #eee;
     }
     
     /* Mostrar el boton de menu movil */
@@ -661,9 +700,10 @@ h1, h2, h3, h4 {
         display: block;
         background: none;
         border: none;
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         color: var(--primary-color);
         cursor: pointer;
+        padding: 5px 10px;
     }
 
     .header-icons {
@@ -671,7 +711,7 @@ h1, h2, h3, h4 {
     }
     
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
     
     .info-items {
