@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colecciones - IVAD Home & Goods</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <span class="est">Est. 1996</span>
+            <div class="top-right">
+                <span>EnvÃ­os a todo el paÃ­s</span>
+                <a href="contacto_decoracion.html">ContÃ¡ctanos</a>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="container header-inner">
+            <div class="logo">
+                <h1>IVAD.</h1>
+                <span>Home & Goods</span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_decoracion.html">Nosotros</a></li>
+                    <li class="dropdown">
+                        <a href="colecciones.html" class="active">Colecciones <i class="fas fa-chevron-down"></i></a>
+                    </li>
+                    <li><a href="index.html">Decoración</a></li>
+                    <li><a href="ambientes.html">Ambientes</a></li>
+                    <li><a href="rastreo.html">Rastreo</a></li>
+                    <li><a href="contacto_decoracion.html">Contacto</a></li>
+                </ul>
+            </nav>
+            <button class="mobile-menu-btn" onclick="document.querySelector('.main-nav').classList.toggle('nav-open')"><i class="fas fa-bars"></i></button><div class="header-icons">
+                <a href="#"><i class="fas fa-search"></i></a>
+                <a href="login.html"><i class="far fa-user"></i></a>
+                <a href="#" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+            </div>
+        </div>
+    </header>    <!-- Hero Colecciones -->
+    <section class="hero" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/cat_jarrones.jpg'); height: 350px;">
+        <div class="container hero-content">
+            <h3 class="hero-subtitle">CATÁLOGO</h3>
+            <h1 class="hero-title">NUESTRAS<br>COLECCIONES</h1>
+        </div>
+    </section>
+
+    <!-- Tienda Section -->
+    <section class="section">
+        <div class="container">
+            <div class="store-layout" style="display: grid; grid-template-columns: 250px 1fr; gap: 40px;">
+                <!-- Sidebar -->
+                <aside class="store-sidebar">
+                    <div class="filter-group">
+                        <h3>Categorías</h3>
+                        <ul class="filter-list" style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 10px;"><label><input type="checkbox" checked> Jarrones</label></li>
+                            <li style="margin-bottom: 10px;"><label><input type="checkbox" checked> Espejos</label></li>
+                            <li style="margin-bottom: 10px;"><label><input type="checkbox" checked> Cuadros</label></li>
+                            <li style="margin-bottom: 10px;"><label><input type="checkbox" checked> Velas</label></li>
+                            <li style="margin-bottom: 10px;"><label><input type="checkbox" checked> Figuras</label></li>
+                            <li style="margin-bottom: 10px;"><label><input type="checkbox" checked> Relojes</label></li>
+                        </ul>
+                    </div>
+                    <div class="filter-group" style="margin-top: 30px;">
+                        <h3>Colecciones</h3>
+                        <ul class="filter-list" style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 10px;"><label><input type="checkbox"> Minimalista</label></li>
+                            <li style="margin-bottom: 10px;"><label><input type="checkbox"> Natural</label></li>
+                            <li style="margin-bottom: 10px;"><label><input type="checkbox"> Elegance</label></li>
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- Grid -->
+                <div class="store-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px;">
+                    <!-- Producto 1 -->
+                    <div class="product-card" onclick="openProductModal('Jarrón Cerámica Blanca', 'cat_jarrones.jpg', '.00', 'Jarrones', 'Un hermoso jarrón de cerámica con diseño moderno y líneas limpias.', ['Cerámica premium', 'Acabado mate', 'Altura: 25cm'])">
+                        <div class="product-img">
+                            <img src="images/cat_jarrones.jpg" alt="Jarrón Blanca">
+                            <span class="product-badge badge-new">Nuevo</span>
+                        </div>
+                        <div class="product-info">
+                            <span class="product-cat">Jarrones</span>
+                            <h3>Jarrón Cerámica Blanca</h3>
+                            <div class="product-price">.00</div>
+                        </div>
+                    </div>
+                    <!-- Producto 2 -->
+                    <div class="product-card" onclick="openProductModal('Espejo Redondo Minimal', 'cat_espejos.jpg', '.00', 'Espejos', 'Espejo redondo con marco metálico delgado, ideal para ampliar espacios.', ['Marco metálico', 'Diámetro: 80cm', 'Fácil instalación'])">
+                        <div class="product-img">
+                            <img src="images/cat_espejos.jpg" alt="Espejo Redondo">
+                        </div>
+                        <div class="product-info">
+                            <span class="product-cat">Espejos</span>
+                            <h3>Espejo Redondo Minimal</h3>
+                            <div class="product-price">.00</div>
+                        </div>
+                    </div>
+                    <!-- Producto 3 -->
+                    <div class="product-card" onclick="openProductModal('Set de Velas Aromáticas', 'cat_velas.jpg', '.00', 'Velas', 'Set de 3 velas de cera de soja con aromas relajantes de lavanda y sándalo.', ['Cera de soja', 'Aroma duradero', '3 tamaños'])">
+                        <div class="product-img">
+                            <img src="images/cat_velas.jpg" alt="Velas Aromáticas">
+                        </div>
+                        <div class="product-info">
+                            <span class="product-cat">Velas</span>
+                            <h3>Set de Velas Aromáticas</h3>
+                            <div class="product-price">.00</div>
+                        </div>
+                    </div>
+                    <!-- Producto 4 -->
+                    <div class="product-card" onclick="openProductModal('Cuadro Abstracto Trazos', 'cat_cuadros.jpg', '.00', 'Cuadros', 'Lienzo enmarcado con arte abstracto en tonos neutros.', ['Lienzo impreso', 'Marco de madera', 'Medidas: 60x90cm'])">
+                        <div class="product-img">
+                            <img src="images/cat_cuadros.jpg" alt="Cuadro Abstracto">
+                            <span class="product-badge badge-sale">-15%</span>
+                        </div>
+                        <div class="product-info">
+                            <span class="product-cat">Cuadros</span>
+                            <h3>Cuadro Abstracto Trazos</h3>
+                            <div class="product-price"><span class="old-price">.00</span> .00</div>
+                        </div>
+                    </div>
+                    <!-- Producto 5 -->
+                    <div class="product-card" onclick="openProductModal('Jarrón con Pampas', 'prod_decor_5.jpg', '.00', 'Jarrones', 'Arreglo decorativo natural con hojas secas estilo pampas.', ['Incluye jarrón', 'Flores secas naturales', 'Estilo bohemio'])">
+                        <div class="product-img">
+                            <img src="images/prod_decor_5.jpg" alt="Jarrón con Pampas">
+                        </div>
+                        <div class="product-info">
+                            <span class="product-cat">Jarrones</span>
+                            <h3>Jarrón con Pampas</h3>
+                            <div class="product-price">.00</div>
+                        </div>
+                    </div>
+                    <!-- Producto 6 -->
+                    <div class="product-card" onclick="openProductModal('Reloj de Pared Vintage', 'cat_relojes.jpg', '.00', 'Relojes', 'Reloj de pared metálico con diseño vintage e industrial.', ['Mecanismo silencioso', 'Acabado rústico', 'Batería AA'])">
+                        <div class="product-img">
+                            <img src="images/cat_relojes.jpg" alt="Reloj Vintage">
+                        </div>
+                        <div class="product-info">
+                            <span class="product-cat">Relojes</span>
+                            <h3>Reloj de Pared Vintage</h3>
+                            <div class="product-price">.00</div>
+                        </div>
+                    </div>
+                    <!-- Producto 7 -->
+                    <div class="product-card" onclick="openProductModal('Figura Geométrica Oro', 'cat_figuras.jpg', '.00', 'Figuras', 'Figura de acento geométrico en acabado dorado.', ['Metálico', 'Acabado brillante', 'Pieza de acento'])">
+                        <div class="product-img">
+                            <img src="images/cat_figuras.jpg" alt="Figura Geométrica">
+                        </div>
+                        <div class="product-info">
+                            <span class="product-cat">Figuras</span>
+                            <h3>Figura Geométrica Oro</h3>
+                            <div class="product-price">.00</div>
+                        </div>
+                    </div>
+                    <!-- Producto 8 -->
+                    <div class="product-card" onclick="openProductModal('Jarrón Negro Mate', 'prod_decor_8.jpg', '.00', 'Jarrones', 'Jarrón escultural en cerámica negra con acabado mate.', ['Cerámica texturizada', 'Diseño escultural', 'Altura: 30cm'])">
+                        <div class="product-img">
+                            <img src="images/prod_decor_8.jpg" alt="Jarrón Negro">
+                            <span class="product-badge badge-new">Nuevo</span>
+                        </div>
+                        <div class="product-info">
+                            <span class="product-cat">Jarrones</span>
+                            <h3>Jarrón Negro Mate</h3>
+                            <div class="product-price">.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <h2>IVAD.</h2>
+                    <span>Home & Goods</span>
+                </div>
+                <p>Hogar y negocio en un solo lugar. Productos de calidad, servicio confiable y la mejor experiencia de compra.</p>
+                <span class="est-footer">Est. 1996</span>
+            </div>
+            <div class="footer-links">
+                <h3>ENLACES</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_decoracion.html">Nosotros</a></li>
+                    <li><a href="colecciones.html">Colecciones</a></li>
+                    <li><a href="index.html">Decoración</a></li>
+                    <li><a href="ambientes.html">Ambientes</a></li>
+                    <li><a href="rastreo.html">Rastreo</a></li>
+                    <li><a href="contacto_decoracion.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>COLECCIONES</h3>
+                <ul>
+                    <li><a href="#">Colección Minimalista</a></li>
+                    <li><a href="#">Colección Natural</a></li>
+                    <li><a href="#">Colección Elegance</a></li>
+                    <li><a href="#">Nuevos Productos</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>ATENCIÃN AL CLIENTE</h3>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Políticas de envío</a></li>
+                    <li><a href="#">Políticas de devoluciÃ³n</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>SÃGUENOS</h3>
+                <div class="social-icons-footer">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <h3>CONTÃCTANOS</h3>
+                <ul class="contact-info">
+                    <li><i class="fas fa-phone-alt"></i> (809) 123-4567</li>
+                    <li><i class="fas fa-envelope"></i> info@ivad.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Santo Domingo, RD</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2024 IVAD Home & Goods. Todos los derechos reservados.</p>
+            <div class="payment-icons">
+                <i class="fab fa-cc-visa"></i>
+                <i class="fab fa-cc-mastercard"></i>
+                <i class="fab fa-cc-paypal"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Supabase CDN y Configuración -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
+
+

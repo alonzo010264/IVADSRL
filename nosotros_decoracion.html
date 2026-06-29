@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nosotros (Desechables) - IVAD Home & Goods</title>
-    <meta name="description" content="Conoce la historia, valores y misión de la división de Desechables de IVAD Home & Goods. Proveedores líderes en República Dominicana.">
+    <title>Nosotros - IVAD Home & Goods</title>
+    <meta name="description" content="Conoce la historia, valores y misión de IVAD Home & Goods. Más de 25 años diseñando espacios que inspiran tu vida.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,9 +19,9 @@
         .nosotros-hero {
             position: relative;
             min-height: 520px;
-            background-image: url('images/desechables_1782182109098.png');
+            background-image: url('images/nosotros_hero.png');
             background-size: cover;
-            background-position: center;
+            background-position: center top;
             display: flex;
             align-items: center;
         }
@@ -33,9 +33,9 @@
             inset: 0;
             background: linear-gradient(
                 to right,
-                rgba(20, 18, 15, 0.82) 0%,
-                rgba(20, 18, 15, 0.55) 55%,
-                rgba(20, 18, 15, 0.20) 100%
+                rgba(20, 18, 15, 0.78) 0%,
+                rgba(20, 18, 15, 0.50) 55%,
+                rgba(20, 18, 15, 0.15) 100%
             );
         }
 
@@ -119,8 +119,6 @@
             overflow: hidden;
             box-shadow: 0 2px 12px rgba(0,0,0,0.06);
             transition: transform 0.3s, box-shadow 0.3s;
-            display: flex;
-            flex-direction: column;
         }
 
         .valor-card:hover {
@@ -131,17 +129,12 @@
         .valor-card-img {
             height: 200px;
             overflow: hidden;
-            background-color: #fafafa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
         }
 
         .valor-card-img img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
             transition: transform 0.4s ease;
         }
@@ -153,10 +146,6 @@
         .valor-card-body {
             padding: 26px 24px;
             text-align: center;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
 
         .valor-card-body h3 {
@@ -291,7 +280,7 @@
         .nosotros-bottom-banner {
             position: relative;
             height: 340px;
-            background-image: url('images/desechables_1782182109098.png');
+            background-image: url('images/nosotros_banner.png');
             background-size: cover;
             background-position: center;
             display: flex;
@@ -305,7 +294,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: rgba(245, 242, 238, 0.78);
+            background: rgba(245, 242, 238, 0.72);
         }
 
         .nosotros-bottom-banner .banner-text-inner {
@@ -382,7 +371,7 @@
             <span class="est">Est. 1996</span>
             <div class="top-right">
                 <span>Envíos a todo el país</span>
-                <a href="contacto.html">Contáctanos</a>
+                <a href="contacto_decoracion.html">Contáctanos</a>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -394,29 +383,21 @@
     <!-- Header / Navigation -->
     <header class="header">
         <div class="container header-inner">
-            <div class="logo" onclick="window.location.href='desechables.html'" style="cursor: pointer;">
+            <div class="logo">
                 <h1>IVAD.</h1>
                 <span>Home &amp; Goods</span>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="desechables.html">Inicio</a></li>
-                    <li><a href="nosotros_desechables.html" class="active">Nosotros</a></li>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_decoracion.html" class="active">Nosotros</a></li>
                     <li class="dropdown">
-                        <a href="#">Categorías <i class="fas fa-chevron-down"></i></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="desechables.html">Todos</a></li>
-                            <li><a href="desechables.html?category=platos">Platos</a></li>
-                            <li><a href="desechables.html?category=vasos">Vasos</a></li>
-                            <li><a href="desechables.html?category=cubiertos">Cubiertos</a></li>
-                            <li><a href="desechables.html?category=bandejas">Bandejas</a></li>
-                            <li><a href="desechables.html?category=contenedores">Contenedores</a></li>
-                            <li><a href="desechables.html?category=servilletas">Servilletas</a></li>
-                            <li><a href="desechables.html?category=bolsas">Bolsas</a></li>
-                        </ul>
+                        <a href="colecciones.html">Colecciones <i class="fas fa-chevron-down"></i></a>
                     </li>
-                    <li><a href="desechables.html">Desechables</a></li>
-                    <li><a href="contacto.html">Contacto</a></li>
+                    <li><a href="index.html">Decoración</a></li>
+                    <li><a href="ambientes.html">Ambientes</a></li>
+                    <li><a href="rastreo.html">Rastreo</a></li>
+                    <li><a href="contacto_decoracion.html">Contacto</a></li>
                 </ul>
             </nav>
             <button class="mobile-menu-btn" onclick="document.querySelector('.main-nav').classList.toggle('nav-open')"><i class="fas fa-bars"></i></button><div class="header-icons">
@@ -431,10 +412,10 @@
     <section class="nosotros-hero">
         <div class="container">
             <span class="pre-label">Sobre Nosotros</span>
-            <h1>Calidad y resistencia<br>para cada ocasión.</h1>
-            <p>En IVAD Desechables seleccionamos y ofrecemos la mejor<br>
-            variedad de productos desechables, garantizando la calidad<br>
-            y la presentación ideal que tu negocio y eventos merecen.</p>
+            <h1>Diseñamos espacios<br>que inspiran tu vida.</h1>
+            <p>En IVAD Home &amp; Goods seleccionamos y diseñamos<br>
+            cada pieza para transformar tu hogar y tu negocio<br>
+            en lugares únicos, funcionales y llenos de estilo.</p>
             <a href="#historia" class="btn btn-primary">Conoce nuestra historia</a>
         </div>
     </section>
@@ -450,33 +431,33 @@
                 <!-- Calidad Premium -->
                 <div class="valor-card">
                     <div class="valor-card-img">
-                        <img src="images/platos.png" alt="Resistencia Superior">
+                        <img src="images/nosotros_valor1.png" alt="Calidad Premium">
                     </div>
                     <div class="valor-card-body">
-                        <h3>Resistencia Superior</h3>
-                        <p>Materiales de alta durabilidad y resistencia,<br>ideales para todo tipo de alimentos y bebidas.</p>
+                        <h3>Calidad Premium</h3>
+                        <p>Materiales nobles y acabados perfectos<br>en cada pieza que ofrecemos.</p>
                     </div>
                 </div>
 
                 <!-- Sostenibilidad -->
                 <div class="valor-card">
                     <div class="valor-card-img">
-                        <img src="images/contenedor.png" alt="Sostenibilidad">
+                        <img src="images/nosotros_valor2.png" alt="Sostenibilidad">
                     </div>
                     <div class="valor-card-body">
                         <h3>Sostenibilidad</h3>
-                        <p>Comprometidos con el medio ambiente,<br>ofreciendo una gama ecológica y biodegradable.</p>
+                        <p>Comprometidos con el medio ambiente<br>a través de procesos responsables.</p>
                     </div>
                 </div>
 
-                <!-- Variedad y Stock -->
+                <!-- Confort -->
                 <div class="valor-card">
                     <div class="valor-card-img">
-                        <img src="images/vasos.png" alt="Variedad y Stock">
+                        <img src="images/nosotros_valor3.png" alt="Confort">
                     </div>
                     <div class="valor-card-body">
-                        <h3>Variedad y Stock</h3>
-                        <p>Un catálogo amplio y suministro constante<br>adaptado a las demandas de tu negocio.</p>
+                        <h3>Confort</h3>
+                        <p>Diseños pensados no solo para admirar,<br>sino para vivir y disfrutar.</p>
                     </div>
                 </div>
             </div>
@@ -490,14 +471,14 @@
                 <!-- Texto izquierda -->
                 <div class="historia-text">
                     <span class="pre-label">Nuestra Historia</span>
-                    <h2>Apoyando al sector gastronómico<br><strong>y de eventos desde 1996.</strong></h2>
+                    <h2>Pasión por el diseño,<br><strong>compromiso con la calidad.</strong></h2>
                     <span class="title-line"></span>
-                    <p>IVAD nace en 1996 con la visión de ofrecer productos de alta calidad para el hogar y para negocios. Nuestra división de Desechables se creó para responder a la creciente demanda de empaques y envases prácticos, elegantes y sostenibles en el sector gastronómico y de eventos en la República Dominicana.</p>
-                    <p>Hoy, nos enorgullece ser el socio confiable de cientos de restaurantes, cafeterías y organizadores de eventos, brindando siempre productos que cumplen con los más altos estándares de higiene y resistencia.</p>
+                    <p>IVAD nace en 1996 con la visión de ofrecer productos de alta calidad que combinen diseño, funcionalidad y durabilidad. A lo largo de los años, hemos crecido junto a nuestros clientes, adaptándonos a sus necesidades y marcando tendencia en decoración y mobiliario.</p>
+                    <p>Hoy, seguimos comprometidos con lo que nos inspira desde el primer día: ayudarte a crear espacios que reflejen tu esencia.</p>
                 </div>
                 <!-- Imagen derecha -->
                 <div class="historia-img">
-                    <img src="images/comedor_1782182137437.png" alt="Historia IVAD Desechables">
+                    <img src="images/nosotros_historia.png" alt="Historia IVAD">
                 </div>
             </div>
         </div>
@@ -510,22 +491,22 @@
                 <div class="stat-item">
                     <div class="stat-icon"><i class="far fa-star"></i></div>
                     <span class="stat-label">+25 Años de Experiencia</span>
-                    <p class="stat-desc">Más de dos décadas ofreciendo soluciones prácticas y confiables a nivel nacional.</p>
+                    <p class="stat-desc">Más de dos décadas ofreciendo las mejores soluciones para tu hogar y tu negocio.</p>
                 </div>
                 <div class="stat-item">
                     <div class="stat-icon"><i class="fas fa-box-open"></i></div>
-                    <span class="stat-label">Stock Garantizado</span>
-                    <p class="stat-desc">Contamos con almacenes abastecidos para responder a las necesidades de tu negocio.</p>
+                    <span class="stat-label">Productos Seleccionados</span>
+                    <p class="stat-desc">Cada pieza es elegida bajo altos estándares de calidad y diseño.</p>
                 </div>
                 <div class="stat-item">
                     <div class="stat-icon"><i class="far fa-comment-dots"></i></div>
-                    <span class="stat-label">Atención Corporativa</span>
-                    <p class="stat-desc">Asesoría personalizada y cotizaciones a la medida para compras al por mayor.</p>
+                    <span class="stat-label">Atención Personalizada</span>
+                    <p class="stat-desc">Estamos contigo en cada paso para asesorarte y brindarte lo mejor.</p>
                 </div>
                 <div class="stat-item">
                     <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
-                    <span class="stat-label">Calidad Certificada</span>
-                    <p class="stat-desc">Productos fabricados bajo altos estándares de seguridad alimentaria e higiene.</p>
+                    <span class="stat-label">Confianza Garantizada</span>
+                    <p class="stat-desc">Miles de clientes satisfechos respaldan nuestro trabajo.</p>
                 </div>
             </div>
         </div>
@@ -534,7 +515,7 @@
     <!-- ===================== BOTTOM BANNER ===================== -->
     <section class="nosotros-bottom-banner">
         <div class="banner-text-inner">
-            <h2>Más que empaques y vajillas, ofrecemos<br>las soluciones prácticas que impulsan tu negocio.</h2>
+            <h2>Más que muebles y decoración,<br>creamos experiencias para tu día a día.</h2>
             <span class="title-line"></span>
         </div>
     </section>
@@ -553,17 +534,21 @@
             <div class="footer-links">
                 <h3>ENLACES</h3>
                 <ul>
-                    <li><a href="desechables.html">Inicio</a></li>
-                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
-                    <li><a href="desechables.html">Desechables</a></li>
-                    <li><a href="contacto.html">Contacto</a></li>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_decoracion.html">Nosotros</a></li>
+                    <li><a href="colecciones.html">Colecciones</a></li>
+                    <li><a href="index.html">Decoración</a></li>
+                    <li><a href="ambientes.html">Ambientes</a></li>
+                    <li><a href="contacto_decoracion.html">Contacto</a></li>
                 </ul>
             </div>
             <div class="footer-links">
-                <h3>DEPARTAMENTOS</h3>
+                <h3>COLECCIONES</h3>
                 <ul>
-                    <li><a href="index.html#dep-decoracion">Decoración y Muebles</a></li>
-                    <li><a href="desechables.html">Desechables para Negocios</a></li>
+                    <li><a href="#">Colección Minimalista</a></li>
+                    <li><a href="#">Colección Natural</a></li>
+                    <li><a href="#">Colección Elegance</a></li>
+                    <li><a href="#">Nuevos Productos</a></li>
                 </ul>
             </div>
             <div class="footer-links">

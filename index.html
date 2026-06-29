@@ -116,7 +116,38 @@
         }
 
         /* ===== RESPONSIVE INDEX ===== */
+        .mobile-quick-links { display: none; }
+
         @media (max-width: 768px) {
+            .mobile-quick-links {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 20px;
+                background: var(--bg-light);
+                justify-content: center;
+                border-bottom: 1px solid #ddd;
+            }
+            .mobile-quick-link-card {
+                flex: 1 1 calc(50% - 10px);
+                background: #fff;
+                padding: 15px 10px;
+                text-align: center;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                color: var(--primary-color);
+                text-decoration: none;
+                font-weight: 600;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+            .mobile-quick-link-card i {
+                font-size: 1.5rem;
+                color: var(--secondary-color);
+            }
+
             .home-hero { height: 450px; }
             .home-slide-content h1 { font-size: 2.2rem; }
             .home-slide-content p { font-size: 1rem; margin-bottom: 20px; }
@@ -150,6 +181,7 @@
                 <h1>IVAD.</h1>
                 <span>Home & Goods</span>
             </div>
+            <button class="mobile-menu-btn" onclick="document.querySelector('.main-nav').classList.toggle('nav-open')"><i class="fas fa-bars"></i></button>
             <nav class="main-nav">
                 <ul>
                     <li><a href="index.html" class="active">Inicio</a></li>
@@ -178,6 +210,22 @@
             </div>
         </div>
     </header>
+
+    <!-- Accesos Rápidos Móvil -->
+    <div class="mobile-quick-links">
+        <a href="desechables.html" class="mobile-quick-link-card">
+            <i class="fas fa-store"></i> Tienda
+        </a>
+        <a href="desechables.html?category=platos" class="mobile-quick-link-card">
+            <i class="fas fa-utensils"></i> Platos
+        </a>
+        <a href="nosotros_desechables.html" class="mobile-quick-link-card">
+            <i class="fas fa-users"></i> Nosotros
+        </a>
+        <a href="contacto.html" class="mobile-quick-link-card">
+            <i class="fas fa-headset"></i> Contacto
+        </a>
+    </div>
 
     <!-- Hero Slider Automático -->
     <section class="home-hero">
@@ -402,3 +450,4 @@
     </script>
 </body>
 </html>
+
