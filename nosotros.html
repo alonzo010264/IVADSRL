@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosotros (Desechables) - IVAD Home & Goods</title>
+    <meta name="description" content="Conoce la historia, valores y misión de la división de Desechables de IVAD Home & Goods. Proveedores líderes en República Dominicana.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* =====================================================
+           NOSOTROS PAGE — INLINE STYLES
+        ===================================================== */
+
+        /* ---------- HERO ---------- */
+        .nosotros-hero {
+            position: relative;
+            min-height: 520px;
+            background-image: url('images/desechables_1782182109098.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+        }
+
+        /* dark overlay — left half darker */
+        .nosotros-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to right,
+                rgba(20, 18, 15, 0.82) 0%,
+                rgba(20, 18, 15, 0.55) 55%,
+                rgba(20, 18, 15, 0.20) 100%
+            );
+        }
+
+        .nosotros-hero .container {
+            position: relative;
+            z-index: 2;
+            max-width: 620px;
+            padding-top: 60px;
+            padding-bottom: 60px;
+        }
+
+        .nosotros-hero .pre-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 18px;
+        }
+
+        .nosotros-hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            margin-bottom: 22px;
+        }
+
+        .nosotros-hero p {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.82);
+            line-height: 1.75;
+            max-width: 420px;
+            margin-bottom: 32px;
+        }
+
+        /* ---------- VALORES ---------- */
+        .nosotros-valores {
+            background-color: #f8f7f5;
+            padding: 80px 0;
+        }
+
+        .nosotros-valores .pre-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .nosotros-valores h2 {
+            text-align: center;
+            font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+            font-weight: 400;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .nosotros-valores .title-line {
+            display: block;
+            width: 40px;
+            height: 2px;
+            background-color: var(--secondary-color);
+            margin: 14px auto 55px;
+        }
+
+        .valores-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .valor-card {
+            background-color: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .valor-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+        }
+
+        .valor-card-img {
+            height: 200px;
+            overflow: hidden;
+            background-color: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .valor-card-img img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .valor-card:hover .valor-card-img img {
+            transform: scale(1.05);
+        }
+
+        .valor-card-body {
+            padding: 26px 24px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .valor-card-body h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .valor-card-body p {
+            font-size: 0.87rem;
+            color: var(--gray-text);
+            line-height: 1.7;
+        }
+
+        /* ---------- HISTORIA ---------- */
+        .nosotros-historia {
+            padding: 90px 0;
+            background-color: #fff;
+        }
+
+        .historia-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            align-items: stretch;
+            min-height: 480px;
+        }
+
+        .historia-text {
+            padding: 60px 65px 60px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .historia-text .pre-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .historia-text h2 {
+            font-size: clamp(1.6rem, 3vw, 2.3rem);
+            font-weight: 400;
+            color: var(--text-dark);
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+
+        .historia-text h2 strong {
+            font-weight: 700;
+        }
+
+        .historia-text .title-line {
+            display: block;
+            width: 40px;
+            height: 2px;
+            background-color: var(--secondary-color);
+            margin: 18px 0 28px;
+        }
+
+        .historia-text p {
+            font-size: 0.9rem;
+            color: var(--gray-text);
+            line-height: 1.85;
+            margin-bottom: 16px;
+        }
+
+        .historia-img {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .historia-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ---------- STATS BAR ---------- */
+        .nosotros-stats {
+            background-color: var(--primary-color);
+            padding: 50px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 20px 15px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+        .stat-icon {
+            font-size: 1.6rem;
+            color: var(--secondary-color);
+            margin-bottom: 14px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #fff;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-desc {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.62);
+            line-height: 1.5;
+        }
+
+        /* ---------- BOTTOM BANNER ---------- */
+        .nosotros-bottom-banner {
+            position: relative;
+            height: 340px;
+            background-image: url('images/desechables_1782182109098.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .nosotros-bottom-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(245, 242, 238, 0.78);
+        }
+
+        .nosotros-bottom-banner .banner-text-inner {
+            position: relative;
+            z-index: 2;
+            padding: 0 20px;
+        }
+
+        .nosotros-bottom-banner h2 {
+            font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+            font-weight: 400;
+            color: var(--text-dark);
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
+
+        .nosotros-bottom-banner .title-line {
+            display: block;
+            width: 40px;
+            height: 2px;
+            background-color: var(--secondary-color);
+            margin: 0 auto;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 992px) {
+            .valores-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .historia-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .historia-text {
+                padding: 50px 0 40px 0;
+                order: 2;
+            }
+
+            .historia-img {
+                order: 1;
+                height: 360px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-item:nth-child(2) {
+                border-right: none;
+            }
+
+            .stat-item:nth-child(3) {
+                border-right: 1px solid rgba(255,255,255,0.1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .valores-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <span class="est">Est. 1996</span>
+            <div class="top-right">
+                <span>Envíos a todo el país</span>
+                <a href="contacto.html">Contáctanos</a>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="container header-inner">
+            <div class="logo" onclick="window.location.href='desechables.html'" style="cursor: pointer;">
+                <h1>IVAD.</h1>
+                <span>Home &amp; Goods</span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="desechables.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html" class="active">Nosotros</a></li>
+                    <li class="dropdown">
+                        <a href="#">Categorías <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="desechables.html">Todos</a></li>
+                            <li><a href="desechables.html?category=platos">Platos</a></li>
+                            <li><a href="desechables.html?category=vasos">Vasos</a></li>
+                            <li><a href="desechables.html?category=cubiertos">Cubiertos</a></li>
+                            <li><a href="desechables.html?category=bandejas">Bandejas</a></li>
+                            <li><a href="desechables.html?category=contenedores">Contenedores</a></li>
+                            <li><a href="desechables.html?category=servilletas">Servilletas</a></li>
+                            <li><a href="desechables.html?category=bolsas">Bolsas</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="desechables.html">Desechables</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <a href="#"><i class="fas fa-search"></i></a>
+                <a href="login.html"><i class="far fa-user"></i></a>
+                <a href="#" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="nosotros-hero">
+        <div class="container">
+            <span class="pre-label">Sobre Nosotros</span>
+            <h1>Calidad y resistencia<br>para cada ocasión.</h1>
+            <p>En IVAD Desechables seleccionamos y ofrecemos la mejor<br>
+            variedad de productos desechables, garantizando la calidad<br>
+            y la presentación ideal que tu negocio y eventos merecen.</p>
+            <a href="#historia" class="btn btn-primary">Conoce nuestra historia</a>
+        </div>
+    </section>
+
+    <!-- ===================== VALORES ===================== -->
+    <section class="nosotros-valores">
+        <div class="container">
+            <span class="pre-label">Nuestra Esencia</span>
+            <h2>Valores que nos Definen</h2>
+            <span class="title-line"></span>
+
+            <div class="valores-grid">
+                <!-- Calidad Premium -->
+                <div class="valor-card">
+                    <div class="valor-card-img">
+                        <img src="images/platos.png" alt="Resistencia Superior">
+                    </div>
+                    <div class="valor-card-body">
+                        <h3>Resistencia Superior</h3>
+                        <p>Materiales de alta durabilidad y resistencia,<br>ideales para todo tipo de alimentos y bebidas.</p>
+                    </div>
+                </div>
+
+                <!-- Sostenibilidad -->
+                <div class="valor-card">
+                    <div class="valor-card-img">
+                        <img src="images/contenedor.png" alt="Sostenibilidad">
+                    </div>
+                    <div class="valor-card-body">
+                        <h3>Sostenibilidad</h3>
+                        <p>Comprometidos con el medio ambiente,<br>ofreciendo una gama ecológica y biodegradable.</p>
+                    </div>
+                </div>
+
+                <!-- Variedad y Stock -->
+                <div class="valor-card">
+                    <div class="valor-card-img">
+                        <img src="images/vasos.png" alt="Variedad y Stock">
+                    </div>
+                    <div class="valor-card-body">
+                        <h3>Variedad y Stock</h3>
+                        <p>Un catálogo amplio y suministro constante<br>adaptado a las demandas de tu negocio.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== HISTORIA ===================== -->
+    <section class="nosotros-historia" id="historia">
+        <div class="container">
+            <div class="historia-grid">
+                <!-- Texto izquierda -->
+                <div class="historia-text">
+                    <span class="pre-label">Nuestra Historia</span>
+                    <h2>Apoyando al sector gastronómico<br><strong>y de eventos desde 1996.</strong></h2>
+                    <span class="title-line"></span>
+                    <p>IVAD nace en 1996 con la visión de ofrecer productos de alta calidad para el hogar y para negocios. Nuestra división de Desechables se creó para responder a la creciente demanda de empaques y envases prácticos, elegantes y sostenibles en el sector gastronómico y de eventos en la República Dominicana.</p>
+                    <p>Hoy, nos enorgullece ser el socio confiable de cientos de restaurantes, cafeterías y organizadores de eventos, brindando siempre productos que cumplen con los más altos estándares de higiene y resistencia.</p>
+                </div>
+                <!-- Imagen derecha -->
+                <div class="historia-img">
+                    <img src="images/comedor_1782182137437.png" alt="Historia IVAD Desechables">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== STATS BAR ===================== -->
+    <section class="nosotros-stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="far fa-star"></i></div>
+                    <span class="stat-label">+25 Años de Experiencia</span>
+                    <p class="stat-desc">Más de dos décadas ofreciendo soluciones prácticas y confiables a nivel nacional.</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="fas fa-box-open"></i></div>
+                    <span class="stat-label">Stock Garantizado</span>
+                    <p class="stat-desc">Contamos con almacenes abastecidos para responder a las necesidades de tu negocio.</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="far fa-comment-dots"></i></div>
+                    <span class="stat-label">Atención Corporativa</span>
+                    <p class="stat-desc">Asesoría personalizada y cotizaciones a la medida para compras al por mayor.</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
+                    <span class="stat-label">Calidad Certificada</span>
+                    <p class="stat-desc">Productos fabricados bajo altos estándares de seguridad alimentaria e higiene.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== BOTTOM BANNER ===================== -->
+    <section class="nosotros-bottom-banner">
+        <div class="banner-text-inner">
+            <h2>Más que empaques y vajillas, ofrecemos<br>las soluciones prácticas que impulsan tu negocio.</h2>
+            <span class="title-line"></span>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <h2>IVAD.</h2>
+                    <span>Home &amp; Goods</span>
+                </div>
+                <p>Hogar y negocio en un solo lugar. Productos de calidad, servicio confiable y la mejor experiencia de compra.</p>
+                <span class="est-footer">Est. 1996</span>
+            </div>
+            <div class="footer-links">
+                <h3>ENLACES</h3>
+                <ul>
+                    <li><a href="desechables.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li><a href="desechables.html">Desechables</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>DEPARTAMENTOS</h3>
+                <ul>
+                    <li><a href="index.html#dep-decoracion">Decoración y Muebles</a></li>
+                    <li><a href="desechables.html">Desechables para Negocios</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>ATENCIÓN AL CLIENTE</h3>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Políticas de envío</a></li>
+                    <li><a href="#">Políticas de devolución</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>SÍGUENOS</h3>
+                <div class="social-icons-footer">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <h3>CONTÁCTANOS</h3>
+                <ul class="contact-info">
+                    <li><i class="fas fa-phone-alt"></i> (809) 123-4567</li>
+                    <li><i class="fas fa-envelope"></i> info@ivad.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Santo Domingo, RD</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2024 IVAD Home &amp; Goods. Todos los derechos reservados.</p>
+            <div class="payment-icons">
+                <i class="fab fa-cc-visa"></i>
+                <i class="fab fa-cc-mastercard"></i>
+                <i class="fab fa-cc-paypal"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Supabase CDN y Configuración -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

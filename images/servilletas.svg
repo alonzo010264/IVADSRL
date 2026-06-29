@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.1" />
+    </filter>
+    <linearGradient id="paperGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="85%" stop-color="#fdfdfd" />
+      <stop offset="100%" stop-color="#eeeeee" />
+    </linearGradient>
+    <linearGradient id="paperShadowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#e8e8e8" />
+      <stop offset="100%" stop-color="#d0d0d0" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="200" height="200" fill="#fcfcfc" rx="12"/>
+  
+  <g filter="url(#shadow)">
+    <!-- Base / Bottom Napkin -->
+    <path d="M45,85 L145,55 C148,54 152,56 153,60 L165,115 C166,119 164,123 160,124 L60,154 C57,155 53,153 52,149 L40,94 C39,90 41,86 45,85 Z" fill="url(#paperShadowGrad)" opacity="0.7" />
+    
+    <!-- Middle Napkin -->
+    <path d="M40,75 L140,45 C143,44 147,46 148,50 L160,105 C161,109 159,113 155,114 L55,144 C52,145 48,143 47,139 L35,84 C34,80 36,76 40,75 Z" fill="url(#paperShadowGrad)" opacity="0.9" />
+    
+    <!-- Top/Front Napkin -->
+    <path d="M35,65 L135,35 C138,34 142,36 143,40 L155,95 C156,99 154,103 150,104 L50,134 C47,135 43,133 42,129 L30,74 C29,70 31,66 35,65 Z" fill="url(#paperGrad)" stroke="#e5e5e5" stroke-width="0.5" />
+    
+    <!-- Fold Line on Top Napkin -->
+    <path d="M88,49 L98,104" stroke="#dcdcdc" stroke-width="1.5" stroke-dasharray="1 1" />
+    
+    <!-- Embossed Border Pattern (Punteado decorativo del borde) -->
+    <path d="M38,69 L132,41 L142,91 L50,119 Z" fill="none" stroke="#d5d5d5" stroke-width="1.5" stroke-dasharray="2 4" />
+  </g>
+</svg>

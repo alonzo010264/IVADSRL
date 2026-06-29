@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.12" />
+    </filter>
+    <linearGradient id="pulpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d6ceb5" />
+      <stop offset="50%" stop-color="#c5bca1" />
+      <stop offset="100%" stop-color="#b4ab90" />
+    </linearGradient>
+    <linearGradient id="cavityGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#9d957b" />
+      <stop offset="100%" stop-color="#c5bca1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="200" height="200" fill="#fcfcfc" rx="12"/>
+  
+  <g filter="url(#shadow)">
+    <!-- Base Pulp Tray -->
+    <rect x="35" y="35" width="130" height="130" rx="20" fill="url(#pulpGrad)" stroke="#a2987d" stroke-width="0.5" />
+    
+    <!-- Outer rim indent details (Relieves estructurales) -->
+    <rect x="42" y="42" width="116" height="116" rx="15" fill="none" stroke="#a2987d" stroke-width="1.5" opacity="0.3" />
+    
+    <!-- 4 Cavities for cups -->
+    <!-- Top-Left Cavity -->
+    <g transform="translate(0, 0)">
+      <circle cx="68" cy="68" r="23" fill="url(#cavityGrad)" stroke="#8e866e" stroke-width="0.5" />
+      <circle cx="68" cy="68" r="17" fill="#a89f84" opacity="0.9" />
+      <!-- Grips inside cavity -->
+      <path d="M68,47 L68,52 M68,89 L68,84 M47,68 L52,68 M89,68 L84,68" stroke="#827b65" stroke-width="2" stroke-linecap="round" />
+    </g>
+    
+    <!-- Top-Right Cavity -->
+    <g transform="translate(0, 0)">
+      <circle cx="132" cy="68" r="23" fill="url(#cavityGrad)" stroke="#8e866e" stroke-width="0.5" />
+      <circle cx="132" cy="68" r="17" fill="#a89f84" opacity="0.9" />
+      <!-- Grips inside cavity -->
+      <path d="M132,47 L132,52 M132,89 L132,84 M111,68 L116,68 M153,68 L148,68" stroke="#827b65" stroke-width="2" stroke-linecap="round" />
+    </g>
+    
+    <!-- Bottom-Left Cavity -->
+    <g transform="translate(0, 0)">
+      <circle cx="68" cy="132" r="23" fill="url(#cavityGrad)" stroke="#8e866e" stroke-width="0.5" />
+      <circle cx="68" cy="132" r="17" fill="#a89f84" opacity="0.9" />
+      <!-- Grips inside cavity -->
+      <path d="M68,111 L68,116 M68,153 L68,148 M47,132 L52,132 M89,132 L84,132" stroke="#827b65" stroke-width="2" stroke-linecap="round" />
+    </g>
+    
+    <!-- Bottom-Right Cavity -->
+    <g transform="translate(0, 0)">
+      <circle cx="132" cy="132" r="23" fill="url(#cavityGrad)" stroke="#8e866e" stroke-width="0.5" />
+      <circle cx="132" cy="132" r="17" fill="#a89f84" opacity="0.9" />
+      <!-- Grips inside cavity -->
+      <path d="M132,111 L132,116 M132,153 L132,148 M111,132 L116,132 M153,132 L148,132" stroke="#827b65" stroke-width="2" stroke-linecap="round" />
+    </g>
+    
+    <!-- Center Ridge (Divisor central) -->
+    <rect x="91" y="91" width="18" height="18" rx="3" fill="#b0a78c" stroke="#8e866e" stroke-width="0.5" />
+    <path d="M91,91 L109,109 M109,91 L91,109" stroke="#8e866e" stroke-width="1" opacity="0.5" />
+  </g>
+</svg>

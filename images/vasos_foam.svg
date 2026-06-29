@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="6" stdDeviation="4" flood-color="#000000" flood-opacity="0.12" />
+    </filter>
+    <linearGradient id="foamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e0e0e0" />
+      <stop offset="25%" stop-color="#ffffff" />
+      <stop offset="75%" stop-color="#fdfdfd" />
+      <stop offset="100%" stop-color="#cccccc" />
+    </linearGradient>
+    <linearGradient id="foamRimGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d5d5d5" />
+      <stop offset="30%" stop-color="#ffffff" />
+      <stop offset="70%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#b0b0b0" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="200" height="200" fill="#fcfcfc" rx="12"/>
+  
+  <g filter="url(#shadow)">
+    <!-- Stacked Cup Behind (Vaso de atrás) -->
+    <g transform="translate(0, -25) scale(0.95 0.95) transform(translate(5, 5))">
+      <path d="M72,60 L128,60 L116,140 L84,140 Z" fill="url(#foamGrad)" />
+      <ellipse cx="100" cy="60" rx="28" ry="7" fill="url(#foamRimGrad)" stroke="#c5c5c5" stroke-width="0.5" />
+    </g>
+    
+    <!-- Main Cup Front (Vaso principal adelante) -->
+    <g>
+      <!-- Base shape -->
+      <path d="M70,65 L130,65 L116,155 L84,155 Z" fill="url(#foamGrad)" />
+      <!-- Rim (Borde grueso del vaso de foam) -->
+      <ellipse cx="100" cy="65" rx="30" ry="8" fill="url(#foamRimGrad)" stroke="#b8b8b8" stroke-width="0.5" />
+      <!-- Inner dark hole -->
+      <ellipse cx="100" cy="65" rx="28" ry="6" fill="#eaeaea" />
+      
+      <!-- Cylindrical contour outline shadow -->
+      <path d="M70,65 L84,155 C84,158 116,158 116,155 L130,65" fill="none" stroke="#cccccc" stroke-width="0.5" />
+      
+      <!-- Texture ridges (Líneas horizontales en el vaso de foam) -->
+      <path d="M75,100 C75,102 125,102 125,100" fill="none" stroke="#cccccc" stroke-width="1" opacity="0.4" />
+      <path d="M78,125 C78,127 122,127 122,125" fill="none" stroke="#cccccc" stroke-width="1" opacity="0.4" />
+    </g>
+  </g>
+</svg>

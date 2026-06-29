@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.15" />
+    </filter>
+    <linearGradient id="cupGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#eeeeee" />
+      <stop offset="30%" stop-color="#ffffff" />
+      <stop offset="70%" stop-color="#fdfdfd" />
+      <stop offset="100%" stop-color="#dddddd" />
+    </linearGradient>
+    <linearGradient id="sleeveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b09577" />
+      <stop offset="30%" stop-color="#dfc09f" />
+      <stop offset="70%" stop-color="#cca781" />
+      <stop offset="100%" stop-color="#9a8163" />
+    </linearGradient>
+    <linearGradient id="lidGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1f2933" />
+      <stop offset="50%" stop-color="#3e4c59" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="200" height="200" fill="#fcfcfc" rx="12"/>
+  
+  <g filter="url(#shadow)" transform="translate(0, 5)">
+    <!-- Cup Body (Vaso) -->
+    <path d="M72,55 L128,55 L116,155 L84,155 Z" fill="url(#cupGrad)" stroke="#e2e2e2" stroke-width="0.5" />
+    
+    <!-- Corrugated Kraft Sleeve (Manga protectora) -->
+    <path d="M76,85 L124,85 L119,125 L81,125 Z" fill="url(#sleeveGrad)" />
+    <!-- Sleeve grooves (Relieve corrugado) -->
+    <line x1="84" y1="85" x2="88" y2="125" stroke="#876f53" stroke-width="1.5" />
+    <line x1="91" y1="85" x2="94" y2="125" stroke="#876f53" stroke-width="1.5" />
+    <line x1="98" y1="85" x2="100" y2="125" stroke="#876f53" stroke-width="1.5" />
+    <line x1="105" y1="85" x2="106" y2="125" stroke="#876f53" stroke-width="1.5" />
+    <line x1="112" y1="85" x2="112" y2="125" stroke="#876f53" stroke-width="1.5" />
+    <line x1="119" y1="85" x2="118" y2="125" stroke="#876f53" stroke-width="1.5" />
+    
+    <!-- Lid (Tapa 3D de plástico negro) -->
+    <!-- Lower rim of lid -->
+    <path d="M68,55 L132,55 C132,55 135,53 133,48 C131,43 125,43 125,43 L75,43 C75,43 69,43 67,48 C65,53 68,55 68,55 Z" fill="url(#lidGrad)" />
+    <!-- Upper cap part -->
+    <path d="M74,43 L126,43 C126,43 128,37 122,37 L78,37 C72,37 74,43 74,43 Z" fill="#1f2933" />
+    <!-- Drinking spout highlight -->
+    <rect x="76" y="34" width="8" height="4" rx="1" fill="#111827" />
+  </g>
+</svg>

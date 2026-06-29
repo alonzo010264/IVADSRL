@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - IVAD Home & Goods</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <h2>IVAD.</h2>
+            <p>Home & Goods</p>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active" data-section="dashboard"><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li data-section="productos"><a href="#"><i class="fas fa-box-open"></i> Productos</a></li>
+                <li data-section="categorias"><a href="#"><i class="fas fa-tags"></i> Categorías</a></li>
+                <li data-section="pedidos"><a href="#"><i class="fas fa-shopping-bag"></i> Pedidos</a></li>
+                <li data-section="clientes" style="display:none;"><a href="#"><i class="fas fa-users"></i> Clientes</a></li>
+                <li data-section="inventario" style="display:none;"><a href="#"><i class="fas fa-clipboard-list"></i> Inventario</a></li>
+                <li data-section="cupones" style="display:none;"><a href="#"><i class="fas fa-ticket-alt"></i> Cupones</a></li>
+                <li data-section="envios"><a href="#"><i class="fas fa-truck"></i> Envíos</a></li>
+                <li data-section="opiniones" style="display:none;"><a href="#"><i class="far fa-comment-dots"></i> Opiniones</a></li>
+                <li data-section="reportes" style="display:none;"><a href="#"><i class="fas fa-chart-bar"></i> Reportes</a></li>
+                <li data-section="configuracion"><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="avatar">AD</div>
+                <div class="user-info">
+                    <strong>Administrador</strong>
+                    <span>admin@ivad.com</span>
+                </div>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <div class="header-titles">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageSubtitle">Bienvenido al panel de administración</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="notifications">
+                    <i class="far fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="user-dropdown">
+                    Hola, Administrador <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-wrapper">
+
+            <!-- ============================================================
+                 DASHBOARD
+            ============================================================ -->
+            <section class="page-section active" id="sec-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-box-open"></i></div>
+                        <div class="stat-info"><h3>156</h3><span>Productos activos</span></div>
+                        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> 12%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                        <div class="stat-info"><h3>84</h3><span>Pedidos este mes</span></div>
+                        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> 8%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info"><h3>342</h3><span>Clientes registrados</span></div>
+                        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> 5%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="stat-info"><h3>$12,450</h3><span>Ingresos del mes</span></div>
+                        <div class="stat-trend down"><i class="fas fa-arrow-down"></i> 3%</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-bottom">
+                    <div class="card">
+                        <div class="card-header"><h2>Pedidos recientes</h2></div>
+                        <div class="table-responsive">
+                            <table class="product-table">
+                                <thead><tr><th>PEDIDO</th><th>CLIENTE</th><th>PRODUCTOS</th><th>TOTAL</th><th>ESTADO</th></tr></thead>
+                                <tbody>
+                                    <tr><td><strong>#PED-001</strong></td><td>María López</td><td>Sofá Moderno, Florero</td><td><strong>$485.00</strong></td><td><span class="status-badge active">Enviado</span></td></tr>
+                                    <tr><td><strong>#PED-002</strong></td><td>Carlos Pérez</td><td>Vasos x50, Platos x30</td><td><strong>$161.00</strong></td><td><span class="status-badge pending">Pendiente</span></td></tr>
+                                    <tr><td><strong>#PED-003</strong></td><td>Ana Rodríguez</td><td>Juego de Comedor</td><td><strong>$650.00</strong></td><td><span class="status-badge active">Completado</span></td></tr>
+                                    <tr><td><strong>#PED-004</strong></td><td>Pedro Martínez</td><td>Bolsas Kraft x200</td><td><strong>$70.00</strong></td><td><span class="status-badge processing">En proceso</span></td></tr>
+                                    <tr><td><strong>#PED-005</strong></td><td>Lucía Sánchez</td><td>Florero Decorativo x3</td><td><strong>$105.00</strong></td><td><span class="status-badge active">Enviado</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2>Alertas de inventario</h2></div>
+                        <div class="alerts-list">
+                            <div class="alert-item alert-low"><i class="fas fa-exclamation-circle"></i><div><strong>Sofá Moderno</strong><span>Solo 2 unidades restantes</span></div><span class="stock-badge low">Bajo</span></div>
+                            <div class="alert-item alert-warn"><i class="fas fa-exclamation-triangle"></i><div><strong>Florero Decorativo</strong><span>5 unidades restantes</span></div><span class="stock-badge warning">Alerta</span></div>
+                            <div class="alert-item alert-warn"><i class="fas fa-exclamation-triangle"></i><div><strong>Juego de Comedor</strong><span>8 unidades restantes</span></div><span class="stock-badge warning">Alerta</span></div>
+                            <div class="alert-item alert-ok"><i class="fas fa-check-circle"></i><div><strong>Vasos Plásticos</strong><span>100 unidades disponibles</span></div><span class="stock-badge ok">OK</span></div>
+                            <div class="alert-item alert-ok"><i class="fas fa-check-circle"></i><div><strong>Bolsas Kraft</strong><span>200 unidades disponibles</span></div><span class="stock-badge ok">OK</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 PRODUCTOS
+            ============================================================ -->
+            <section class="page-section" id="sec-productos">
+                <div class="dashboard-grid">
+                    <div class="card card-list">
+                        <div class="card-header"><h2>Lista de productos</h2></div>
+                        <div class="table-controls">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="searchInput" placeholder="Buscar productos...">
+                            </div>
+                            <div class="filters">
+                                <select class="filter-select" id="catFilter">
+                                    <option value="">Todas las subcategorías</option>
+                                    <option value="platos">Platos</option>
+                                    <option value="vasos">Vasos</option>
+                                    <option value="cubiertos">Cubiertos</option>
+                                    <option value="bandejas">Bandejas</option>
+                                    <option value="contenedores">Contenedores</option>
+                                    <option value="servilletas">Servilletas</option>
+                                    <option value="bolsas">Bolsas</option>
+                                </select>
+                                <select class="filter-select" id="statusFilter">
+                                    <option value="">Estado</option>
+                                    <option value="Activo">Activo</option>
+                                    <option value="Borrador">Borrador</option>
+                                </select>
+                                <button class="btn btn-primary" id="btnAgregar"><i class="fas fa-plus"></i> Agregar</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="product-table">
+                                <thead><tr><th>PRODUCTO</th><th>SUBCATEGORÍA</th><th>PRECIO</th><th>INVENTARIO</th><th>ESTADO</th><th>ACCIONES</th></tr></thead>
+                                <tbody id="productTableBody">
+                                    <tr><td colspan="6" style="text-align:center;padding:30px;color:#888;"><i class="fas fa-spinner fa-spin"></i> Cargando catálogo de productos...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer">
+                            <span id="productCount">Mostrando 6 de 6 productos</span>
+                            <div class="pagination"><button class="page-btn"><i class="fas fa-chevron-left"></i></button><button class="page-btn active">1</button><button class="page-btn"><i class="fas fa-chevron-right"></i></button></div>
+                        </div>
+                    </div>
+
+                    <div class="card card-form">
+                        <div class="card-header"><h2 id="formTitle">Agregar nuevo producto</h2></div>
+                        <div class="product-form">
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <strong>Subir imágenes</strong>
+                                <span>Arrastra y suelta o haz clic para seleccionar</span>
+                                <span class="upload-hint">Formato: JPG, PNG. Máx: 5MB</span>
+                                <input type="file" id="imgUpload" accept="image/*" style="display:none">
+                            </div>
+                            <div class="form-section">
+                                <h3>Información básica</h3>
+                                <div class="form-group"><label>Nombre del producto</label><input type="text" id="prodName" placeholder="Ej. Vasos Plásticos 16 oz"></div>
+                                <div class="form-group">
+                                    <label>Subcategoría</label>
+                                    <select id="prodCat" required>
+                                        <option value="">Cargando categorías...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group"><label>Descripción</label><textarea id="prodDesc" placeholder="Describe tu producto..."></textarea></div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Precio e inventario</h3>
+                                <div class="form-row">
+                                    <div class="form-group"><label>Precio (RD$)</label><input type="number" id="prodPrice" placeholder="0.00" min="0" step="0.01"></div>
+                                    <div class="form-group"><label>Inventario</label><input type="number" id="prodInv" placeholder="0" min="0"></div>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Filtros de Tienda</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Material</label>
+                                        <select id="prodMaterial">
+                                            <option value="">Selecciona material</option>
+                                            <option value="carton">Cartón</option>
+                                            <option value="plastico">Plástico</option>
+                                            <option value="papel">Papel</option>
+                                            <option value="foam">Foam</option>
+                                            <option value="biodegradable">Biodegradable</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Uso principal (separado por comas)</label>
+                                        <input type="text" id="prodUso" placeholder="Ej. diario, para llevar, eventos">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Envío y disponibilidad</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Tiempo de envío</label>
+                                        <select id="prodShipping">
+                                            <option value="1-2 días">1-2 días</option>
+                                            <option value="3-5 días">3-5 días</option>
+                                            <option value="5-7 días">5-7 días</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>¿Envío disponible?</label>
+                                        <select id="prodAvailable">
+                                            <option value="Sí">Sí</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Estado</h3>
+                                <div class="form-group"><label>Estado del producto</label><select id="prodStatus"><option value="Activo">Activo</option><option value="Borrador">Borrador</option></select></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline" id="btnCancelar">Cancelar</button>
+                            <button type="button" class="btn btn-primary" id="btnGuardar"><i class="fas fa-save"></i> Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CATEGORÍAS
+            ============================================================ -->
+            <section class="page-section" id="sec-categorias">
+                <div class="dashboard-grid" style="grid-template-columns: 1fr; max-width: 800px; margin: 0 auto;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Gestión de Categorías</h2>
+                        </div>
+                        <div style="padding: 20px; border-bottom: 1px solid #eee;">
+                            <form id="categoryForm" style="display:flex; gap:10px; align-items:center;">
+                                <input type="text" id="catName" placeholder="Nombre de la categoría (ej. Platos)" required style="padding: 10px; flex:1; border: 1px solid #ddd; border-radius: 4px;">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Agregar</button>
+                            </form>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="product-table">
+                                <thead><tr><th>ID</th><th>NOMBRE</th><th>ACCIONES</th></tr></thead>
+                                <tbody id="categories-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 PEDIDOS
+            ============================================================ -->
+            <section class="page-section" id="sec-pedidos">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Gestión de pedidos</h2>
+                        <div class="header-controls">
+                            <select class="filter-select"><option>Todos los estados</option><option>Pendiente</option><option>En proceso</option><option>Enviado</option><option>Completado</option><option>Cancelado</option></select>
+                            <div class="search-box"><i class="fas fa-search search-icon"></i><input type="text" placeholder="Buscar pedido..."></div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>PEDIDO</th><th>CLIENTE</th><th>FECHA</th><th>PRODUCTOS</th><th>TOTAL</th><th>ESTADO</th><th>ACCIONES</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>#PED-001</strong></td><td><div class="client-cell"><div class="client-avatar">ML</div>María López</div></td><td>22 Jun 2026</td><td>Sofá Moderno, Florero</td><td><strong>$485.00</strong></td><td><span class="status-badge active">Enviado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-002</strong></td><td><div class="client-cell"><div class="client-avatar">CP</div>Carlos Pérez</div></td><td>21 Jun 2026</td><td>Vasos x50, Platos x30</td><td><strong>$161.00</strong></td><td><span class="status-badge pending">Pendiente</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-003</strong></td><td><div class="client-cell"><div class="client-avatar">AR</div>Ana Rodríguez</div></td><td>20 Jun 2026</td><td>Juego de Comedor</td><td><strong>$650.00</strong></td><td><span class="status-badge active">Completado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-004</strong></td><td><div class="client-cell"><div class="client-avatar">PM</div>Pedro Martínez</div></td><td>20 Jun 2026</td><td>Bolsas Kraft x200</td><td><strong>$70.00</strong></td><td><span class="status-badge processing">En proceso</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-005</strong></td><td><div class="client-cell"><div class="client-avatar">LS</div>Lucía Sánchez</div></td><td>19 Jun 2026</td><td>Florero Decorativo x3</td><td><strong>$105.00</strong></td><td><span class="status-badge active">Enviado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-006</strong></td><td><div class="client-cell"><div class="client-avatar">JG</div>Jorge García</div></td><td>18 Jun 2026</td><td>Platos x100, Vasos x100</td><td><strong>$370.00</strong></td><td><span class="status-badge cancelled">Cancelado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-007</strong></td><td><div class="client-cell"><div class="client-avatar">RD</div>Rosa Díaz</div></td><td>17 Jun 2026</td><td>Sofá Moderno</td><td><strong>$450.00</strong></td><td><span class="status-badge active">Completado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-footer">
+                        <span>Mostrando 7 de 84 pedidos</span>
+                        <div class="pagination"><button class="page-btn"><i class="fas fa-chevron-left"></i></button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn"><i class="fas fa-chevron-right"></i></button></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CLIENTES
+            ============================================================ -->
+            <section class="page-section" id="sec-clientes">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Clientes registrados</h2>
+                        <div class="header-controls">
+                            <div class="search-box"><i class="fas fa-search search-icon"></i><input type="text" placeholder="Buscar cliente..."></div>
+                            <button class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo cliente</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>CLIENTE</th><th>EMAIL</th><th>TELÉFONO</th><th>PEDIDOS</th><th>GASTO TOTAL</th><th>REGISTRADO</th><th>ACCIONES</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="client-cell"><div class="client-avatar">ML</div><div><strong>María López</strong><span class="product-id">Cliente frecuente</span></div></div></td><td>maria@email.com</td><td>(809) 555-0101</td><td>8</td><td><strong>$1,240.00</strong></td><td>Ene 2026</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">CP</div><div><strong>Carlos Pérez</strong><span class="product-id">Nuevo cliente</span></div></div></td><td>carlos@email.com</td><td>(809) 555-0202</td><td>2</td><td><strong>$231.00</strong></td><td>May 2026</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">AR</div><div><strong>Ana Rodríguez</strong><span class="product-id">Cliente VIP</span></div></div></td><td>ana@email.com</td><td>(809) 555-0303</td><td>15</td><td><strong>$4,850.00</strong></td><td>Feb 2025</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">PM</div><div><strong>Pedro Martínez</strong><span class="product-id">Cliente frecuente</span></div></div></td><td>pedro@email.com</td><td>(809) 555-0404</td><td>5</td><td><strong>$680.00</strong></td><td>Mar 2026</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">LS</div><div><strong>Lucía Sánchez</strong><span class="product-id">Nuevo cliente</span></div></div></td><td>lucia@email.com</td><td>(809) 555-0505</td><td>1</td><td><strong>$105.00</strong></td><td>Jun 2026</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-footer">
+                        <span>Mostrando 5 de 342 clientes</span>
+                        <div class="pagination"><button class="page-btn"><i class="fas fa-chevron-left"></i></button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn"><i class="fas fa-chevron-right"></i></button></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 INVENTARIO
+            ============================================================ -->
+            <section class="page-section" id="sec-inventario">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Control de inventario</h2>
+                        <div class="header-controls">
+                            <select class="filter-select"><option>Todos</option><option>Stock bajo</option><option>Stock normal</option><option>Sin stock</option></select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>PRODUCTO</th><th>CATEGORÍA</th><th>STOCK ACTUAL</th><th>STOCK MÍNIMO</th><th>ESTADO</th><th>ACTUALIZACIÓN</th><th>ACCIONES</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/sofa_1782182122883.png" alt="Sofá"></div><strong>Sofá Moderno</strong></div></td><td>Muebles</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar low-bar" style="width:10%"></div></div><span>2</span></div></td><td>10</td><td><span class="stock-badge low">Bajo</span></td><td>Hoy</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/comedor_1782182137437.png" alt="Comedor"></div><strong>Juego de Comedor</strong></div></td><td>Muebles</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar warn-bar" style="width:40%"></div></div><span>8</span></div></td><td>10</td><td><span class="stock-badge warning">Alerta</span></td><td>Ayer</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/florero_1782182149891.png" alt="Florero"></div><strong>Florero Decorativo</strong></div></td><td>Decoración</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar warn-bar" style="width:50%"></div></div><span>25</span></div></td><td>20</td><td><span class="stock-badge warning">Alerta</span></td><td>22 Jun</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/vasos.png" alt="Vasos"></div><strong>Vasos Plásticos</strong></div></td><td>Desechables</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar ok-bar" style="width:100%"></div></div><span>100</span></div></td><td>30</td><td><span class="stock-badge ok">OK</span></td><td>21 Jun</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/platos.png" alt="Platos"></div><strong>Platos Desechables</strong></div></td><td>Desechables</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar ok-bar" style="width:100%"></div></div><span>150</span></div></td><td>50</td><td><span class="stock-badge ok">OK</span></td><td>20 Jun</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/bolsas.png" alt="Bolsas"></div><strong>Bolsas Kraft</strong></div></td><td>Desechables</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar ok-bar" style="width:100%"></div></div><span>200</span></div></td><td>50</td><td><span class="stock-badge ok">OK</span></td><td>19 Jun</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CUPONES
+            ============================================================ -->
+            <section class="page-section" id="sec-cupones">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header"><h2>Cupones de descuento</h2></div>
+                        <div class="table-responsive">
+                            <table class="product-table">
+                                <thead><tr><th>CÓDIGO</th><th>DESCUENTO</th><th>USOS</th><th>VENCE</th><th>ESTADO</th><th>ACCIONES</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="coupon-code">IVAD10</span></td><td>10% off</td><td>24 / 100</td><td>31 Dic 2026</td><td><span class="status-badge active">Activo</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                    <tr><td><span class="coupon-code">DECO20</span></td><td>20% off</td><td>8 / 50</td><td>30 Jun 2026</td><td><span class="status-badge active">Activo</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                    <tr><td><span class="coupon-code">BIENVENIDO</span></td><td>$15 off</td><td>50 / 50</td><td>01 Jun 2026</td><td><span class="status-badge inactive">Expirado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                    <tr><td><span class="coupon-code">DESE15</span></td><td>15% off desechables</td><td>0 / 30</td><td>31 Jul 2026</td><td><span class="status-badge active">Activo</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card card-form">
+                        <div class="card-header"><h2>Nuevo cupón</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Configuración</h3>
+                                <div class="form-group"><label>Código del cupón</label><input type="text" placeholder="Ej. DECO20"></div>
+                                <div class="form-group"><label>Tipo de descuento</label><select><option>Porcentaje (%)</option><option>Monto fijo ($)</option></select></div>
+                                <div class="form-group"><label>Valor del descuento</label><input type="number" placeholder="Ej. 10" min="0"></div>
+                                <div class="form-group"><label>Límite de usos</label><input type="number" placeholder="Ej. 100" min="1"></div>
+                                <div class="form-group"><label>Fecha de vencimiento</label><input type="date"></div>
+                                <div class="form-group"><label>Aplica a categoría</label><select><option value="">Todas las categorías</option><option>Muebles</option><option>Decoración</option><option>Desechables</option></select></div>
+                                <div class="form-group"><label>Estado</label><select><option>Activo</option><option>Inactivo</option></select></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-outline">Cancelar</button>
+                            <button class="btn btn-primary"><i class="fas fa-save"></i> Crear cupón</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 ENVÍOS
+            ============================================================ -->
+            <section class="page-section" id="sec-envios">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Gestión de envíos</h2>
+                        <div class="header-controls">
+                            <select class="filter-select"><option>Todos</option><option>En tránsito</option><option>Entregado</option><option>Por despachar</option></select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>TRACKING</th><th>PEDIDO</th><th>CLIENTE</th><th>DESTINO</th><th>TRANSPORTISTA</th><th>ESTADO</th><th>ENTREGA EST.</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="coupon-code">TRK-4829</span></td><td>#PED-001</td><td>María López</td><td>Santo Domingo, RD</td><td>DHL Express</td><td><span class="status-badge processing">En tránsito</span></td><td>24 Jun 2026</td></tr>
+                                <tr><td><span class="coupon-code">TRK-4830</span></td><td>#PED-002</td><td>Carlos Pérez</td><td>Santiago, RD</td><td>FedEx</td><td><span class="status-badge pending">Por despachar</span></td><td>25 Jun 2026</td></tr>
+                                <tr><td><span class="coupon-code">TRK-4825</span></td><td>#PED-003</td><td>Ana Rodríguez</td><td>La Romana, RD</td><td>DHL Express</td><td><span class="status-badge active">Entregado</span></td><td>20 Jun 2026</td></tr>
+                                <tr><td><span class="coupon-code">TRK-4826</span></td><td>#PED-004</td><td>Pedro Martínez</td><td>Puerto Plata, RD</td><td>EPS</td><td><span class="status-badge processing">En tránsito</span></td><td>23 Jun 2026</td></tr>
+                                <tr><td><span class="coupon-code">TRK-4827</span></td><td>#PED-005</td><td>Lucía Sánchez</td><td>Santo Domingo, RD</td><td>FedEx</td><td><span class="status-badge active">Entregado</span></td><td>21 Jun 2026</td></tr>
+                                <tr><td><span class="coupon-code">TRK-4821</span></td><td>#PED-007</td><td>Rosa Díaz</td><td>Barahona, RD</td><td>EPS</td><td><span class="status-badge active">Entregado</span></td><td>19 Jun 2026</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-footer">
+                        <span>Mostrando 6 envíos activos</span>
+                        <div class="pagination"><button class="page-btn"><i class="fas fa-chevron-left"></i></button><button class="page-btn active">1</button><button class="page-btn"><i class="fas fa-chevron-right"></i></button></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 OPINIONES
+            ============================================================ -->
+            <section class="page-section" id="sec-opiniones">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Opiniones de clientes</h2>
+                        <div class="header-controls">
+                            <select class="filter-select"><option>Todas</option><option>5 estrellas</option><option>4 estrellas</option><option>3 o menos</option><option>Pendientes</option></select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>CLIENTE</th><th>PRODUCTO</th><th>CALIFICACIÓN</th><th>COMENTARIO</th><th>FECHA</th><th>ESTADO</th><th>ACCIONES</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="client-cell"><div class="client-avatar">ML</div>María López</div></td><td>Sofá Moderno</td><td><div class="stars-display">★★★★★ <span>5.0</span></div></td><td><span class="review-text">Excelente calidad, llegó perfecto.</span></td><td>22 Jun 2026</td><td><span class="status-badge active">Aprobado</span></td><td><div class="actions"><button class="action-btn delete" onclick="deleteProduct(this)"><i class="fas fa-eye-slash"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">CP</div>Carlos Pérez</div></td><td>Vasos Plásticos</td><td><div class="stars-display">★★★★☆ <span>4.0</span></div></td><td><span class="review-text">Buenos, pero la entrega tardó un poco.</span></td><td>21 Jun 2026</td><td><span class="status-badge pending">Pendiente</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-check"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="fas fa-times"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">AR</div>Ana Rodríguez</div></td><td>Juego de Comedor</td><td><div class="stars-display">★★★★★ <span>5.0</span></div></td><td><span class="review-text">Precioso, exactamente como en las fotos.</span></td><td>20 Jun 2026</td><td><span class="status-badge active">Aprobado</span></td><td><div class="actions"><button class="action-btn delete" onclick="deleteProduct(this)"><i class="fas fa-eye-slash"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">PM</div>Pedro Martínez</div></td><td>Bolsas Kraft</td><td><div class="stars-display">★★★☆☆ <span>3.0</span></div></td><td><span class="review-text">Son buenas pero podrían ser más resistentes.</span></td><td>19 Jun 2026</td><td><span class="status-badge pending">Pendiente</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-check"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="fas fa-times"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 REPORTES
+            ============================================================ -->
+            <section class="page-section" id="sec-reportes">
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-dollar-sign"></i></div><div class="stat-info"><h3>$12,450</h3><span>Ingresos del mes</span></div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> 8%</div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-shopping-bag"></i></div><div class="stat-info"><h3>84</h3><span>Pedidos del mes</span></div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> 12%</div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-percent"></i></div><div class="stat-info"><h3>68%</h3><span>Tasa de conversión</span></div><div class="stat-trend down"><i class="fas fa-arrow-down"></i> 2%</div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-undo"></i></div><div class="stat-info"><h3>3</h3><span>Devoluciones</span></div><div class="stat-trend down"><i class="fas fa-arrow-down"></i> 1%</div></div>
+                </div>
+                <div class="dashboard-bottom">
+                    <div class="card">
+                        <div class="card-header"><h2>Ventas por categoría</h2></div>
+                        <div class="report-chart-area">
+                            <div class="bar-chart">
+                                <div class="bar-item"><div class="bar-label">Muebles</div><div class="bar-track"><div class="bar-fill primary-bar" style="width:70%"></div></div><div class="bar-value">$8,715</div></div>
+                                <div class="bar-item"><div class="bar-label">Decoración</div><div class="bar-track"><div class="bar-fill primary-bar" style="width:45%;opacity:0.7"></div></div><div class="bar-value">$2,800</div></div>
+                                <div class="bar-item"><div class="bar-label">Desechables</div><div class="bar-track"><div class="bar-fill primary-bar" style="width:25%;opacity:0.45"></div></div><div class="bar-value">$935</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2>Productos más vendidos</h2></div>
+                        <div class="top-products">
+                            <div class="top-item"><span class="rank">1</span><div class="product-cell"><div class="img-wrapper"><img src="images/comedor_1782182137437.png" alt="Comedor"></div><div><strong>Juego de Comedor</strong><span class="product-id">38 vendidos</span></div></div><strong>$24,700</strong></div>
+                            <div class="top-item"><span class="rank">2</span><div class="product-cell"><div class="img-wrapper"><img src="images/sofa_1782182122883.png" alt="Sofá"></div><div><strong>Sofá Moderno</strong><span class="product-id">22 vendidos</span></div></div><strong>$9,900</strong></div>
+                            <div class="top-item"><span class="rank">3</span><div class="product-cell"><div class="img-wrapper"><img src="images/vasos.png" alt="Vasos"></div><div><strong>Vasos Plásticos</strong><span class="product-id">400 vendidos</span></div></div><strong>$1,000</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CONFIGURACIÓN
+            ============================================================ -->
+            <section class="page-section" id="sec-configuracion">
+                <div class="config-grid">
+                    <div class="card">
+                        <div class="card-header"><h2>Datos de la tienda</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Información general</h3>
+                                <div class="form-group"><label>Nombre de la tienda</label><input type="text" value="IVAD Home & Goods"></div>
+                                <div class="form-group"><label>Email de contacto</label><input type="email" value="info@ivad.com"></div>
+                                <div class="form-group"><label>Teléfono</label><input type="text" value="+1 (809) 555-0100"></div>
+                                <div class="form-group"><label>Dirección</label><input type="text" value="Av. 27 de Febrero, Santo Domingo, RD"></div>
+                                <div class="form-group"><label>Moneda</label><select><option>USD ($)</option><option>DOP (RD$)</option><option>EUR (€)</option></select></div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Redes sociales</h3>
+                                <div class="form-group"><label>Instagram</label><input type="text" placeholder="@ivad_homegoods"></div>
+                                <div class="form-group"><label>Facebook</label><input type="text" placeholder="facebook.com/ivad"></div>
+                                <div class="form-group"><label>WhatsApp</label><input type="text" placeholder="+1 809 000 0000"></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-outline">Descartar</button>
+                            <button class="btn btn-primary"><i class="fas fa-save"></i> Guardar cambios</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h2>Cuenta de administrador</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Perfil</h3>
+                                <div class="form-group"><label>Nombre completo</label><input type="text" value="Administrador IVAD"></div>
+                                <div class="form-group"><label>Correo electrónico</label><input type="email" value="admin@ivad.com"></div>
+                                <div class="form-group"><label>Rol</label><select><option>Administrador</option><option>Editor</option><option>Visualizador</option></select></div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Cambiar contraseña</h3>
+                                <div class="form-group"><label>Contraseña actual</label><input type="password" placeholder="••••••••"></div>
+                                <div class="form-group"><label>Nueva contraseña</label><input type="password" placeholder="••••••••"></div>
+                                <div class="form-group"><label>Confirmar contraseña</label><input type="password" placeholder="••••••••"></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-outline">Cancelar</button>
+                            <button class="btn btn-primary"><i class="fas fa-save"></i> Actualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h2>Configuración de envíos</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Tarifas</h3>
+                                <div class="form-group"><label>Envío estándar (RD)</label><input type="number" value="150"></div>
+                                <div class="form-group"><label>Envío express (RD)</label><input type="number" value="350"></div>
+                                <div class="form-group"><label>Envío gratis a partir de (USD)</label><input type="number" value="100"></div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Cobertura</h3>
+                                <div class="form-group"><label>Cobertura nacional</label><select><option>Habilitado</option><option>Deshabilitado</option></select></div>
+                                <div class="form-group"><label>Envíos internacionales</label><select><option>Deshabilitado</option><option>Habilitado</option></select></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-outline">Cancelar</button>
+                            <button class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+<!-- Supabase CDN y Configuración -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+
+<script>
+// Navegación
+const sectionMeta = {
+    dashboard:     { title: 'Dashboard',       sub: 'Bienvenido al panel de administración' },
+    productos:     { title: 'Productos',        sub: 'Gestiona tu catálogo de productos de desechables' },
+    categorias:    { title: 'Categorías',       sub: 'Administra las categorías de tus productos' },
+    envios:        { title: 'Envíos',           sub: 'Configura las tarifas de envío' },
+    pedidos:       { title: 'Pedidos',          sub: 'Revisa y gestiona los pedidos recibidos' },
+    configuracion: { title: 'Configuración',    sub: 'Ajustes generales de la tienda' },
+};
+
+document.querySelectorAll('.sidebar-nav li').forEach(li => {
+    li.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = li.dataset.section;
+        if (!section || sectionMeta[section] === undefined) return;
+        document.querySelectorAll('.sidebar-nav li').forEach(l => l.classList.remove('active'));
+        li.classList.add('active');
+        document.getElementById('pageTitle').textContent = sectionMeta[section].title;
+        document.getElementById('pageSubtitle').textContent = sectionMeta[section].sub;
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('sec-' + section).classList.add('active');
+        document.getElementById('sidebar').classList.remove('open');
+    });
+});
+
+// Mobile toggle
+document.getElementById('mobileToggle').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+});
+
+// Default Desechables Products to seed database if empty
+const defaultProducts = [
+    {
+        id: 'platos',
+        title: 'Platos Desechables',
+        price: 'RD$ 70.00',
+        price_num: 70.00,
+        img: 'images/platos.png',
+        sub_category: 'platos',
+        material: 'carton',
+        uso: ['diario', 'para llevar', 'eventos'],
+        recent_score: 10,
+        description: 'Platos redondos desechables súper resistentes, aptos para comidas calientes y frías. Perfectos para catering y eventos.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón grueso biodegradable',
+            '<i class="fas fa-box"></i> Cantidad: 20 unidades por paquete',
+            '<i class="fas fa-ruler-combined"></i> Diámetro: 22cm'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'vasos',
+        title: 'Vasos Plásticos 16 oz',
+        price: 'RD$ 150.00',
+        price_num: 150.00,
+        img: 'images/vasos.png',
+        sub_category: 'vasos',
+        material: 'plastico',
+        uso: ['fiestas', 'eventos'],
+        recent_score: 8,
+        description: 'Paquete de vasos transparentes desechables, ideales para bebidas frías en fiestas, negocios o eventos al aire libre.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Plástico PET reciclable',
+            '<i class="fas fa-box"></i> Cantidad: 50 unidades por paquete',
+            '<i class="fas fa-glass-whiskey"></i> Capacidad: 16 onzas'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'cubiertos',
+        title: 'Cubiertos Plásticos',
+        price: 'RD$ 110.00',
+        price_num: 110.00,
+        img: 'images/cubiertos.svg',
+        sub_category: 'cubiertos',
+        material: 'plastico',
+        uso: ['fiestas', 'diario'],
+        recent_score: 9,
+        description: 'Juego de cubiertos desechables de plástico resistente. Incluye cucharas, tenedores y cuchillos. Ideal para picnics y celebraciones.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Plástico poliestireno',
+            '<i class="fas fa-box"></i> Cantidad: 24 piezas por paquete',
+            '<i class="fas fa-truck"></i> Envío: 1-2 días hábiles'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'contenedores',
+        title: 'Contenedores con Tapa',
+        price: 'RD$ 200.00',
+        price_num: 200.00,
+        img: 'images/contenedor.svg',
+        sub_category: 'contenedores',
+        material: 'biodegradable',
+        uso: ['para llevar', 'restaurantes'],
+        recent_score: 7,
+        description: 'Contenedor biodegradable para alimentos con tapa integrada. Mantiene el calor y previene derrames. Excelente opción para delivery y restaurantes.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Bagazo de caña de azúcar',
+            '<i class="fas fa-box"></i> Cantidad: 10 unidades por paquete',
+            '<i class="fas fa-leaf"></i> 100% Compostable y apto para microondas'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'vasos_foam',
+        title: 'Vasos Foam',
+        price: 'RD$ 130.00',
+        price_num: 130.00,
+        img: 'images/vasos_foam.svg',
+        sub_category: 'vasos',
+        material: 'foam',
+        uso: ['diario', 'para llevar'],
+        recent_score: 6,
+        description: 'Vasos térmicos de foam para café, té y bebidas calientes. Conservan la temperatura y evitan quemaduras.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Poliestireno expandido (Foam)',
+            '<i class="fas fa-box"></i> Cantidad: 25 unidades por paquete',
+            '<i class="fas fa-glass-whiskey"></i> Capacidad: 8 onzas'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'platos_divisiones',
+        title: 'Platos con Divisiones',
+        price: 'RD$ 170.00',
+        price_num: 170.00,
+        img: 'images/platos_divisiones.svg',
+        sub_category: 'platos',
+        material: 'carton',
+        uso: ['eventos', 'restaurantes'],
+        recent_score: 5,
+        description: 'Platos con tres divisiones para separar alimentos cómodamente. Ideales para picnics y buffets.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón grueso impermeable',
+            '<i class="fas fa-box"></i> Cantidad: 15 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'bolsas',
+        title: 'Bolsas Kraft',
+        price: 'RD$ 25.00',
+        price_num: 25.00,
+        img: 'images/bolsas.png',
+        sub_category: 'bolsas',
+        material: 'papel',
+        uso: ['para llevar', 'restaurantes'],
+        recent_score: 11,
+        description: 'Bolsas de papel Kraft con asas reforzadas, ecológicas y resistentes. Ideales para tiendas de ropa, regalos o entregas de comida.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Papel Kraft 120g',
+            '<i class="fas fa-box"></i> Venta: Por unidad (descuento al mayor)',
+            '<i class="fas fa-leaf"></i> 100% Reciclables y Biodegradables'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'servilletas',
+        title: 'Servilletas',
+        price: 'RD$ 55.00',
+        price_num: 55.00,
+        img: 'images/servilletas.svg',
+        sub_category: 'servilletas',
+        material: 'papel',
+        uso: ['diario', 'fiestas'],
+        recent_score: 4,
+        description: 'Servilletas de papel absorbente de doble hoja, muy suaves y resistentes para eventos o el día a día.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Celulosa de alta calidad',
+            '<i class="fas fa-box"></i> Cantidad: 100 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'bandeja_kraft',
+        title: 'Bandejas para Alimentos',
+        price: 'RD$ 250.00',
+        price_num: 250.00,
+        img: 'images/bandeja_kraft.svg',
+        sub_category: 'bandejas',
+        material: 'carton',
+        uso: ['eventos', 'restaurantes'],
+        recent_score: 12,
+        description: 'Bandejas de cartón kraft para picaderas y postres, perfectas para eventos y repostería.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón kraft resistente a grasas',
+            '<i class="fas fa-box"></i> Cantidad: 10 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'vaso_cafe',
+        title: 'Vasos de Papel para Café',
+        price: 'RD$ 180.00',
+        price_num: 180.00,
+        img: 'images/vaso_cafe.svg',
+        sub_category: 'vasos',
+        material: 'papel',
+        uso: ['diario', 'para llevar'],
+        recent_score: 13,
+        description: 'Vasos de cartón térmicos para café expreso y capuchino. No queman las manos.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón con recubrimiento de PLA',
+            '<i class="fas fa-box"></i> Cantidad: 50 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'bandeja_aluminio',
+        title: 'Bandejas de Aluminio',
+        price: 'RD$ 320.00',
+        price_num: 320.00,
+        img: 'images/bandeja_aluminio.svg',
+        sub_category: 'bandejas',
+        material: 'biodegradable',
+        uso: ['eventos', 'restaurantes'],
+        recent_score: 14,
+        description: 'Bandejas desechables de aluminio grueso, ideales para hornear y transportar comidas calientes.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Aluminio de grado alimenticio',
+            '<i class="fas fa-box"></i> Cantidad: 5 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'portavasos',
+        title: 'Portavasos de Cartón',
+        price: 'RD$ 90.00',
+        price_num: 90.00,
+        img: 'images/portavasos.svg',
+        sub_category: 'bandejas',
+        material: 'carton',
+        uso: ['para llevar'],
+        recent_score: 15,
+        description: 'Portavasos rígidos de cartón prensado para transportar hasta 4 bebidas frías o calientes simultáneamente.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón prensado reciclado',
+            '<i class="fas fa-box"></i> Capacidad: 4 vasos de 8 a 32 oz'
+        ],
+        status: 'Activo'
+    }
+];
+
+let productsList = [];
+let editProductId = null;
+let uploadedImgUrl = '';
+
+// Load products from Supabase or fallback to memory
+
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        supabaseClient
+            .channel('admin-updates')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => {
+                loadProducts();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, payload => {
+                loadCategories();
+            })
+            .subscribe();
+    }
+
+async function loadProducts() {
+    if (supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient.from('products').select('*');
+            if (error) throw error;
+            
+            if (!data || data.length === 0) {
+                productsList = [];
+            } else {
+                productsList = data;
+            }
+        } catch (err) {
+            console.error("Error cargando productos de Supabase:", err);
+            productsList = [];
+        }
+    } else {
+        const stored = localStorage.getItem('ivad_custom_products');
+        if (stored) {
+            productsList = JSON.parse(stored);
+        } else {
+            productsList = [];
+            localStorage.setItem('ivad_custom_products', JSON.stringify(productsList));
+        }
+    }
+    renderProductsTable();
+    updateDashboardStats();
+    loadRecentOrders();
+}
+
+function renderProductsTable() {
+    const tbody = document.getElementById('productTableBody');
+    if (!tbody) return;
+
+    const sEl = document.getElementById('searchInput');
+    const cEl = document.getElementById('catFilter');
+    const stEl = document.getElementById('statusFilter');
+    const s = sEl ? sEl.value.toLowerCase() : '';
+    const c = cEl ? cEl.value : '';
+    const st = stEl ? stEl.value : '';
+
+    let filtered = productsList.filter(p => {
+        const matchSearch = !s || p.title.toLowerCase().includes(s);
+        const matchCat = !c || p.sub_category === c;
+        const matchStatus = !st || p.status === st;
+        return matchSearch && matchCat && matchStatus;
+    });
+
+    tbody.innerHTML = filtered.map(p => `
+        <tr data-cat="${p.sub_category}" data-status="${p.status}">
+            <td>
+                <div class="product-cell">
+                    <div class="img-wrapper">
+                        <img src="${p.img}" alt="${p.title}">
+                    </div>
+                    <div>
+                        <strong>${p.title}</strong>
+                        <span class="product-id">ID: #${p.id}</span>
+                    </div>
+                </div>
+            </td>
+            <td>${p.sub_category.toUpperCase()}</td>
+            <td><strong>${p.price}</strong></td>
+            <td>${p.recent_score * 8}</td>
+            <td><span class="status-badge ${p.status === 'Activo' ? 'active' : 'inactive'}">${p.status}</span></td>
+            <td>
+                <div class="actions">
+                    <button class="action-btn" onclick="editProduct('${p.id}')" title="Editar"><i class="fas fa-pen"></i></button>
+                    <button class="action-btn delete" onclick="deleteProduct('${p.id}')" title="Eliminar"><i class="far fa-trash-alt"></i></button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+
+    document.getElementById('productCount').textContent = `Mostrando ${filtered.length} de ${productsList.length} productos`;
+}
+
+// Stats for dashboard
+function updateDashboardStats() {
+    const activeProds = productsList.filter(p => p.status === 'Activo').length;
+    const firstStat = document.querySelectorAll('.stat-card')[0];
+    if (firstStat) firstStat.querySelector('h3').textContent = activeProds;
+}
+
+// Load recent orders from Supabase
+async function loadRecentOrders() {
+    let orders = [];
+    if (supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(5);
+            if (error) throw error;
+            orders = data || [];
+        } catch (err) {
+            console.error("Error al cargar órdenes de Supabase:", err);
+        }
+    }
+    
+    const tbody = document.querySelector('#sec-dashboard tbody');
+    if (!tbody) return;
+    
+    if (orders.length > 0) {
+        tbody.innerHTML = orders.map(o => {
+            // Format items list
+            const itemsStr = Array.isArray(o.items) ? o.items.map(i => `${i.title} (x${i.qty || 1})`).join(', ') : 'Productos';
+            return `
+                <tr>
+                    <td><strong>#PED-${o.id.toString().substring(0, 5).toUpperCase()}</strong></td>
+                    <td>${o.client_name}<br><small style="color:#888">${o.client_email}</small></td>
+                    <td>${itemsStr}</td>
+                    <td><strong>$${parseFloat(o.total_amount).toFixed(2)}</strong></td>
+                    <td><span class="status-badge active">${o.status}</span></td>
+                </tr>
+            `;
+        }).join('');
+        
+        // Update stats card for orders and income
+        const totalIncome = orders.reduce((sum, o) => sum + parseFloat(o.total_amount), 0);
+        
+        const secondStat = document.querySelectorAll('.stat-card')[1];
+        if (secondStat) secondStat.querySelector('h3').textContent = orders.length;
+        
+        const fourthStat = document.querySelectorAll('.stat-card')[3];
+        if (fourthStat) fourthStat.querySelector('h3').textContent = `$${totalIncome.toFixed(2)}`;
+    }
+}
+
+// Filters logic
+const searchInput = document.getElementById('searchInput');
+const catFilter = document.getElementById('catFilter');
+const statusFilter = document.getElementById('statusFilter');
+
+if (searchInput) {
+    searchInput.addEventListener('input', renderProductsTable);
+    catFilter.addEventListener('change', renderProductsTable);
+    statusFilter.addEventListener('change', renderProductsTable);
+}
+
+// Handle Image Upload to Storage or Fallback
+const uploadArea = document.getElementById('uploadArea');
+const imgUpload = document.getElementById('imgUpload');
+if (uploadArea) {
+    uploadArea.addEventListener('click', () => imgUpload.click());
+    imgUpload.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (supabaseClient) {
+            uploadArea.innerHTML = `<i class="fas fa-spinner fa-spin" style="color:var(--secondary-color);font-size:1.4rem"></i><strong>Subiendo imagen...</strong><span style="color:#888">Guardando en Supabase Storage</span>`;
+            
+            // Unique file name
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+            const filePath = `products/${fileName}`;
+
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('product-images')
+                    .upload(filePath, file);
+
+                if (error) throw error;
+
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('product-images')
+                    .getPublicUrl(filePath);
+
+                uploadedImgUrl = publicUrl;
+                uploadArea.innerHTML = `<i class="fas fa-check-circle" style="color:#48bb78;font-size:1.4rem"></i><strong>${file.name}</strong><span style="color:#48bb78">¡Subida con éxito!</span>`;
+            } catch (err) {
+                console.error("Error al subir archivo a Supabase Storage:", err);
+                alert("Error al subir imagen a Supabase Storage. Asegúrate de haber ejecutado las políticas del bucket.");
+                uploadArea.innerHTML = `<i class="fas fa-cloud-upload-alt" style="color:#e53e3e"></i><strong>Error</strong><span>Reintentar subida</span>`;
+                uploadedImgUrl = '';
+            }
+        } else {
+            // Local mockup fallback
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                uploadedImgUrl = event.target.result;
+                uploadArea.innerHTML = `<i class="fas fa-check-circle" style="color:#48bb78;font-size:1.4rem"></i><strong>${file.name}</strong><span style="color:#48bb78">Listo (simulado)</span>`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// Edit Product helper
+function editProduct(id) {
+    const prod = productsList.find(p => p.id === id);
+    if (!prod) return;
+
+    editProductId = prod.id;
+    document.getElementById('formTitle').textContent = 'Editar producto';
+    document.getElementById('prodName').value = prod.title;
+    document.getElementById('prodCat').value = prod.sub_category;
+    document.getElementById('prodDesc').value = prod.description || '';
+    document.getElementById('prodPrice').value = prod.price_num;
+    document.getElementById('prodInv').value = prod.recent_score * 8;
+    document.getElementById('prodMaterial').value = prod.material || '';
+    document.getElementById('prodUso').value = Array.isArray(prod.uso) ? prod.uso.join(', ') : (prod.uso || '');
+    document.getElementById('prodStatus').value = prod.status;
+    
+    uploadedImgUrl = prod.img;
+    uploadArea.innerHTML = `<img src="${prod.img}" style="max-height:80px;border-radius:6px;margin-bottom:5px;"><strong>Imagen actual</strong><span style="color:#888">Haz clic para cambiar</span>`;
+    
+    // Switch to products section and scroll to form
+    const prodTab = document.querySelector('.sidebar-nav li[data-section="productos"]');
+    if (prodTab) prodTab.click();
+    
+    const cardForm = document.querySelector('.card-form');
+    if (cardForm) cardForm.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Save or Update Product
+const btnGuardar = document.getElementById('btnGuardar');
+if (btnGuardar) {
+    btnGuardar.addEventListener('click', async () => {
+        const name = document.getElementById('prodName').value.trim();
+        const cat = document.getElementById('prodCat').value;
+        const desc = document.getElementById('prodDesc').value.trim();
+        const priceNum = parseFloat(document.getElementById('prodPrice').value) || 0;
+        const inv = parseInt(document.getElementById('prodInv').value) || 0;
+        const material = document.getElementById('prodMaterial').value;
+        const usoInput = document.getElementById('prodUso').value;
+        const status = document.getElementById('prodStatus').value;
+
+        if (!name) { alert('Ingresa el nombre del producto.'); return; }
+        if (!cat)  { alert('Selecciona una subcategoría.'); return; }
+        if (priceNum <= 0) { alert('Ingresa un precio válido.'); return; }
+        if (!uploadedImgUrl) { alert('Sube una imagen para el producto.'); return; }
+
+        const usoArray = usoInput.split(',').map(u => u.trim().toLowerCase()).filter(u => u !== '');
+        
+        btnGuardar.disabled = true;
+        btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+        const id = editProductId || name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+        const productData = {
+            id: id,
+            title: name,
+            price: `RD$ ${priceNum.toFixed(2)}`,
+            price_num: priceNum,
+            img: uploadedImgUrl,
+            sub_category: cat,
+            material: material,
+            uso: usoArray,
+            recent_score: Math.max(1, Math.min(15, Math.ceil(inv / 8))),
+            description: desc,
+            features: [
+                `<i class="fas fa-tag"></i> Material: ${material.charAt(0).toUpperCase() + material.slice(1)}`,
+                `<i class="fas fa-box"></i> Inventario: ${inv} unidades`
+            ],
+            status: status
+        };
+
+        if (supabaseClient) {
+            try {
+                let error;
+                if (editProductId) {
+                    // Update
+                    const { error: err } = await supabaseClient
+                        .from('products')
+                        .update(productData)
+                        .eq('id', editProductId);
+                    error = err;
+                } else {
+                    // Insert
+                    const { error: err } = await supabaseClient
+                        .from('products')
+                        .insert([productData]);
+                    error = err;
+                }
+
+                if (error) throw error;
+                alert(editProductId ? 'Producto actualizado correctamente.' : 'Producto creado correctamente.');
+            } catch (err) {
+                console.error("Error al guardar en Supabase:", err);
+                alert("Error al guardar en Supabase: " + err.message);
+                btnGuardar.disabled = false;
+                btnGuardar.innerHTML = '<i class="fas fa-save"></i> Guardar';
+                return;
+            }
+        } else {
+            // Local storage fallback
+            if (editProductId) {
+                productsList = productsList.map(p => p.id === editProductId ? productData : p);
+            } else {
+                productsList.push(productData);
+            }
+            localStorage.setItem('ivad_custom_products', JSON.stringify(productsList));
+            alert('¡Producto guardado localmente!');
+        }
+
+        btnGuardar.disabled = false;
+        btnGuardar.innerHTML = '<i class="fas fa-save"></i> Guardar';
+        resetForm();
+        loadProducts();
+    });
+}
+
+function resetForm() {
+    editProductId = null;
+    uploadedImgUrl = '';
+    document.getElementById('formTitle').textContent = 'Agregar nuevo producto';
+    ['prodName','prodDesc','prodPrice','prodInv','prodUso'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('prodCat').value = '';
+    document.getElementById('prodMaterial').value = '';
+    document.getElementById('prodStatus').value = 'Activo';
+    uploadArea.innerHTML = `<i class="fas fa-cloud-upload-alt"></i><strong>Subir imágenes</strong><span>Arrastra y suelta o haz clic para seleccionar</span><span class="upload-hint">Formato: JPG, PNG. Máx: 5MB</span>`;
+}
+
+const btnCancelar = document.getElementById('btnCancelar');
+if (btnCancelar) btnCancelar.addEventListener('click', resetForm);
+
+async function deleteProduct(id) {
+    if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
+
+    if (supabaseClient) {
+        try {
+            const { error } = await supabaseClient
+                .from('products')
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            alert('Producto eliminado correctamente.');
+        } catch (err) {
+            console.error("Error al eliminar de Supabase:", err);
+            alert("Error al eliminar de Supabase: " + err.message);
+            return;
+        }
+    } else {
+        productsList = productsList.filter(p => p.id !== id);
+        localStorage.setItem('ivad_custom_products', JSON.stringify(productsList));
+    }
+    loadProducts();
+}
+
+// Initial load on page ready
+
+let categoriesList = [];
+
+async function loadCategories() {
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient.from('categories').select('*');
+            if (error) throw error;
+            categoriesList = data || [];
+        } catch (err) {
+            console.error("Error loading categories:", err);
+            categoriesList = [];
+        }
+    }
+    renderCategories();
+    populateCategoryDropdown();
+}
+
+function renderCategories() {
+    const tbody = document.getElementById('categories-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    categoriesList.forEach(c => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${c.id}</td>
+                <td><strong>${c.name}</strong></td>
+                <td><button class="action-btn delete" onclick="deleteCategory('${c.id}')"><i class="far fa-trash-alt"></i></button></td>
+            </tr>
+        `;
+    });
+}
+
+function populateCategoryDropdown() {
+    const prodCat = document.getElementById('prodCat');
+    if (!prodCat) return;
+    prodCat.innerHTML = '<option value="">Selecciona una subcategoría</option>';
+    categoriesList.forEach(c => {
+        prodCat.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const categoryForm = document.getElementById('categoryForm');
+    if (categoryForm) {
+        categoryForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('catName').value;
+            const id = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/^-|-$/g, '');
+            
+            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+                const { error } = await supabaseClient.from('categories').insert([{ id, name }]);
+                if (error) {
+                    alert("Error al guardar categoría: " + error.message);
+                    return;
+                }
+                document.getElementById('catName').value = '';
+                loadCategories();
+            }
+        });
+    }
+});
+
+async function deleteCategory(id) {
+    if (!confirm("¿Seguro que deseas eliminar esta categoría?")) return;
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        const { error } = await supabaseClient.from('categories').delete().eq('id', id);
+        if (error) alert("Error: " + error.message);
+        loadCategories();
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadProducts();
+  loadCategories();
+});
+</script>
+</body>
+</html>

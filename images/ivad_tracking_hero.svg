@@ -1,0 +1,84 @@
+<svg width="1440" height="620" viewBox="0 0 1440 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="1440" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f7f7f5"/>
+      <stop offset="0.46" stop-color="#eee8df"/>
+      <stop offset="1" stop-color="#bda47f"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="343" x2="1440" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f4f1ec" stop-opacity="0"/>
+      <stop offset="0.45" stop-color="#e7dfd3"/>
+      <stop offset="1" stop-color="#c4a985"/>
+    </linearGradient>
+    <linearGradient id="boxTop" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d8b891"/>
+      <stop offset="1" stop-color="#a8784c"/>
+    </linearGradient>
+    <linearGradient id="boxFace" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d7b488"/>
+      <stop offset="1" stop-color="#8d5e37"/>
+    </linearGradient>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#2a1c10" flood-opacity="0.24"/>
+    </filter>
+    <filter id="blurPlant" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.3"/>
+    </filter>
+  </defs>
+
+  <rect width="1440" height="620" fill="url(#wall)"/>
+  <rect y="338" width="1440" height="282" fill="url(#floor)"/>
+  <path d="M0 463C194 410 331 407 486 443C635 478 754 522 942 492C1107 466 1248 386 1440 420V620H0V463Z" fill="#fbfbfa" fill-opacity="0.32"/>
+
+  <g opacity="0.18" stroke="#4c4033" stroke-width="8" stroke-linecap="round">
+    <path d="M875 31V308"/>
+    <path d="M1041 31V308"/>
+    <path d="M853 92H1070"/>
+    <path d="M853 187H1070"/>
+  </g>
+  <g opacity="0.22" fill="#705f49">
+    <rect x="895" y="112" width="82" height="20" rx="5"/>
+    <rect x="1002" y="206" width="38" height="45" rx="5"/>
+    <rect x="917" y="231" width="77" height="18" rx="5"/>
+  </g>
+
+  <g filter="url(#blurPlant)" opacity="0.42" stroke="#6d7d61" stroke-width="5" stroke-linecap="round">
+    <path d="M755 320C747 250 735 192 709 130"/>
+    <path d="M756 302C793 246 813 203 824 151"/>
+    <path d="M755 304C713 265 684 222 660 166"/>
+    <path d="M756 291C779 251 782 207 776 157"/>
+    <path d="M755 315C733 268 732 222 741 171"/>
+  </g>
+
+  <g opacity="0.56">
+    <rect x="626" y="260" width="98" height="106" rx="4" fill="#c7a87f"/>
+    <rect x="586" y="290" width="126" height="76" rx="4" fill="#e3d5bf"/>
+    <rect x="713" y="235" width="80" height="132" rx="4" fill="#d2b58e"/>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <g transform="translate(999 88)">
+      <path d="M0 42L312 0L427 43L118 88L0 42Z" fill="url(#boxTop)"/>
+      <path d="M0 42L118 88V258L0 199V42Z" fill="#bd9160"/>
+      <path d="M118 88L427 43V210L118 258V88Z" fill="url(#boxFace)"/>
+      <path d="M51 88L93 105V122L51 105V88Z" fill="#172838" opacity="0.95"/>
+      <text x="102" y="115" font-family="Montserrat, Arial, sans-serif" font-size="52" font-weight="300" letter-spacing="8" fill="#172838">IVAD.</text>
+      <text x="163" y="143" font-family="Montserrat, Arial, sans-serif" font-size="15" font-weight="500" fill="#172838">Home &amp; Goods</text>
+      <rect x="345" y="116" width="57" height="20" rx="4" fill="#22180f"/>
+      <path d="M0 42L118 88" stroke="#e7caa3" stroke-opacity="0.5"/>
+      <path d="M118 88L427 43" stroke="#704827" stroke-opacity="0.32"/>
+    </g>
+    <g transform="translate(923 334)">
+      <path d="M0 31L268 0L378 37L108 74L0 31Z" fill="#d8b48a"/>
+      <path d="M0 31L108 74V205L0 156V31Z" fill="#c59662"/>
+      <path d="M108 74L378 37V168L108 205V74Z" fill="#a97143"/>
+      <rect x="154" y="84" width="50" height="41" rx="5" fill="#172838"/>
+      <path d="M164 105C175 115 187 116 197 103" stroke="#d5b88f" stroke-width="4" stroke-linecap="round"/>
+      <path d="M178 91L194 99L183 107Z" fill="#d5b88f"/>
+      <rect x="332" y="113" width="48" height="18" rx="4" fill="#22180f"/>
+    </g>
+  </g>
+
+  <rect width="780" height="620" fill="url(#wall)" opacity="0.78"/>
+  <rect width="780" height="620" fill="white" opacity="0.18"/>
+</svg>

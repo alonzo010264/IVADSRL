@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastrear Pedido - IVAD Home & Goods</title>
+    <meta name="description" content="Consulta el estado de tu pedido en tiempo real con nuestro sistema de rastreo.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* =====================================================
+           RASTREO PAGE — SPECIAL STYLES
+        ===================================================== */
+        body {
+            background-color: #f7f8fa;
+        }
+
+        /* ---------- HERO ---------- */
+        .rastreo-hero {
+            position: relative;
+            padding: 80px 0;
+            background: linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url('images/nosotros_banner.png');
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .rastreo-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .rastreo-hero p {
+            font-size: 1rem;
+            color: var(--gray-text);
+            margin-bottom: 30px;
+        }
+
+        .search-container-rastreo {
+            max-width: 550px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-text);
+            font-size: 1.1rem;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 16px 20px 16px 55px;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: transparent;
+            border-radius: 4px;
+        }
+
+        .btn-rastrear {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            background-color: var(--secondary-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(191, 166, 135, 0.3);
+        }
+
+        .btn-rastrear:hover {
+            background-color: #a89175;
+        }
+
+        /* ---------- ORDER DETAILS AREA ---------- */
+        .rastreo-details-area {
+            padding: 50px 0 80px;
+        }
+
+        /* Card: Order Brief */
+        .card-order-brief {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .order-brief-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .order-brief-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            flex-grow: 1;
+            gap: 20px;
+        }
+
+        .brief-item {
+            border-right: 1px solid var(--border-color);
+            padding-right: 15px;
+        }
+
+        .brief-item:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .brief-item span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--gray-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .brief-item h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Card: Progress Bar */
+        .card-progress-bar {
+            background: #fff;
+            border-radius: 8px;
+            padding: 40px 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            margin-bottom: 40px;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .progress-steps {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 1;
+        }
+
+        /* Connecting line */
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 40px;
+            right: 40px;
+            height: 3px;
+            background-color: #e5e8ed;
+            z-index: -1;
+        }
+
+        /* Completed line part */
+        .progress-line-fill {
+            position: absolute;
+            top: 25px;
+            left: 40px;
+            height: 3px;
+            background-color: var(--primary-color);
+            z-index: -1;
+            width: 60%; /* Represents current progress */
+            transition: width 0.5s ease;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 120px;
+        }
+
+        .step-icon-circle {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background-color: #f0f2f5;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 2px #e5e8ed;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.completed .step-icon-circle {
+            background-color: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .progress-step.active .step-icon-circle {
+            background-color: var(--secondary-color);
+            color: #fff;
+            box-shadow: 0 0 0 2px var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        .step-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .step-date {
+            font-size: 0.75rem;
+            color: var(--gray-text);
+            line-height: 1.3;
+        }
+
+        /* Grid section: Split details */
+        .split-details-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 35px;
+            margin-bottom: 40px;
+        }
+
+        .details-card-block {
+            background: #fff;
+            border-radius: 8px;
+            padding: 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .block-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        /* Pedido Info List */
+        .order-info-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 35px;
+        }
+
+        .order-info-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px dotted var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .order-info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .order-info-list li span:first-child {
+            color: var(--gray-text);
+            font-weight: 500;
+        }
+
+        .order-info-list li span:last-child {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .badge-status {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Products Table */
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .products-table th {
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-text);
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .products-table td {
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f2f5;
+            vertical-align: middle;
+        }
+
+        .products-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .prod-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .prod-thumb {
+            width: 50px;
+            height: 50px;
+            background-color: #fafafa;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        .prod-thumb img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .prod-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .qty-cell {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: right;
+            padding-right: 15px;
+        }
+
+        .th-qty {
+            text-align: right !important;
+            padding-right: 15px;
+        }
+
+        /* Timeline vertical */
+        .timeline-vertical {
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .timeline-vertical::before {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 10px;
+            bottom: 10px;
+            width: 2px;
+            background-color: #e5e8ed;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -35px;
+            top: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 2px solid #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item.completed .timeline-marker {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+            font-size: 0.65rem;
+        }
+
+        .timeline-item.active .timeline-marker {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            left: -38px;
+            top: -1px;
+            font-size: 0.8rem;
+        }
+
+        .timeline-content {
+            padding-left: 5px;
+        }
+
+        .timeline-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .timeline-time {
+            font-size: 0.78rem;
+            color: var(--gray-text);
+        }
+
+        /* Card Help */
+        .card-help-bar {
+            background: #f5f2ee;
+            border-radius: 8px;
+            padding: 25px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(191, 166, 135, 0.15);
+        }
+
+        .help-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .help-icon-circle {
+            width: 50px;
+            height: 50px;
+            background-color: #bfa687;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .help-text h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .help-text p {
+            font-size: 0.88rem;
+            color: var(--gray-text);
+        }
+
+        .help-right {
+            display: flex;
+            gap: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .help-link-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s;
+        }
+
+        .help-link-item:hover {
+            color: var(--secondary-color);
+        }
+
+        .help-link-item i {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 992px) {
+            .order-brief-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .brief-item {
+                border-right: none;
+            }
+            .split-details-grid {
+                grid-template-columns: 1fr;
+            }
+            .card-help-bar {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            .help-left {
+                flex-direction: column;
+            }
+            .help-right {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .progress-steps {
+                flex-direction: column;
+                gap: 25px;
+                align-items: center;
+                padding-left: 40px;
+            }
+            .progress-steps::before {
+                left: 65px;
+                top: 0;
+                bottom: 0;
+                width: 3px;
+                height: auto;
+            }
+            .progress-line-fill {
+                left: 65px;
+                top: 0;
+                width: 3px;
+                height: 60%;
+            }
+            .progress-step {
+                flex-direction: row;
+                text-align: left;
+                width: 100%;
+                gap: 20px;
+            }
+            .step-icon-circle {
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <span class="est">Est. 1996</span>
+            <div class="top-right">
+                <span>Envíos a todo el país</span>
+                <a href="contacto_decoracion.html">Contáctanos</a>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="container header-inner">
+            <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <h1>IVAD.</h1>
+                <span>Home &amp; Goods</span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_decoracion.html">Nosotros</a></li>
+                    <li class="dropdown">
+                        <a href="colecciones.html">Colecciones <i class="fas fa-chevron-down"></i></a>
+                    </li>
+                    <li><a href="index.html">Decoración</a></li>
+                    <li><a href="ambientes.html">Ambientes</a></li>
+                    <li><a href="rastreo.html" class="active">Rastreo</a></li>
+                    <li><a href="contacto_decoracion.html">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <a href="#"><i class="fas fa-search"></i></a>
+                <a href="login.html"><i class="far fa-user"></i></a>
+                <a href="#" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== HERO RASTREO ===================== -->
+    <section class="rastreo-hero">
+        <div class="container">
+            <h1>Rastrea tu Pedido</h1>
+            <p>Consulta el estado de tus compras en tiempo real.</p>
+            <div class="search-container-rastreo">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-box"></i>
+                    <input type="text" id="tracking-number-input" placeholder="Número de Pedido o Tracking" value="IVD-2026-1254">
+                </div>
+                <button class="btn-rastrear" onclick="document.getElementById('rastreo-results').style.display='block';">Rastrear Pedido</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== DETAILS AREA ===================== -->
+    <section class="rastreo-details-area container" id="rastreo-results">
+        
+        <!-- Card: Order Brief -->
+        <div class="card-order-brief">
+            <div class="order-brief-icon">
+                <i class="far fa-file-alt"></i>
+            </div>
+            <div class="order-brief-grid">
+                <div class="brief-item">
+                    <span>Pedido:</span>
+                    <h4>#IVD-2026-1254</h4>
+                </div>
+                <div class="brief-item">
+                    <span>Cliente:</span>
+                    <h4>Juan Pérez</h4>
+                </div>
+                <div class="brief-item">
+                    <span>Fecha:</span>
+                    <h4>23/06/2026</h4>
+                </div>
+                <div class="brief-item">
+                    <span>Total:</span>
+                    <h4>RD$ 25,680.00</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Progress Steps -->
+        <div class="card-progress-bar">
+            <div class="progress-steps">
+                <div class="progress-line-fill"></div>
+                
+                <!-- Step 1: Recibido -->
+                <div class="progress-step completed">
+                    <div class="step-icon-circle"><i class="fas fa-box"></i></div>
+                    <span class="step-title">Recibido</span>
+                    <span class="step-date">23/06/2026<br>08:00 AM</span>
+                </div>
+
+                <!-- Step 2: Preparando -->
+                <div class="progress-step completed">
+                    <div class="step-icon-circle"><i class="fas fa-clipboard-list"></i></div>
+                    <span class="step-title">Preparando</span>
+                    <span class="step-date">23/06/2026<br>09:20 AM</span>
+                </div>
+
+                <!-- Step 3: Empacado -->
+                <div class="progress-step completed">
+                    <div class="step-icon-circle"><i class="fas fa-archive"></i></div>
+                    <span class="step-title">Empacado</span>
+                    <span class="step-date">23/06/2026<br>09:50 AM</span>
+                </div>
+
+                <!-- Step 4: En Ruta -->
+                <div class="progress-step active">
+                    <div class="step-icon-circle"><i class="fas fa-shipping-fast"></i></div>
+                    <span class="step-title">En Ruta</span>
+                    <span class="step-date">En proceso</span>
+                </div>
+
+                <!-- Step 5: Entregado -->
+                <div class="progress-step">
+                    <div class="step-icon-circle"><i class="fas fa-check"></i></div>
+                    <span class="step-title">Entregado</span>
+                    <span class="step-date">Pendiente</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Split Grid Area -->
+        <div class="split-details-grid">
+            
+            <!-- Left Card Block: Info & Products -->
+            <div class="details-card-block">
+                <h3 class="block-title">Información del pedido</h3>
+                <ul class="order-info-list">
+                    <li>
+                        <span>Estado Actual:</span>
+                        <span>
+                            <span class="badge-status">
+                                EN RUTA <i class="fas fa-shipping-fast"></i>
+                            </span>
+                        </span>
+                    </li>
+                    <li>
+                        <span>Sucursal:</span>
+                        <span>Santo Domingo</span>
+                    </li>
+                    <li>
+                        <span>Última actualización:</span>
+                        <span>23/06/2026 - 10:45 AM</span>
+                    </li>
+                    <li>
+                        <span>Transportista:</span>
+                        <span>IVAD Logistics</span>
+                    </li>
+                </ul>
+
+                <h3 class="block-title">Productos del pedido</h3>
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th class="th-qty">Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="prod-cell">
+                                    <div class="prod-thumb">
+                                        <img src="images/sofa_1782182122883.png" alt="Sofá Moderno">
+                                    </div>
+                                    <span class="prod-name">Sofá Moderno</span>
+                                </div>
+                            </td>
+                            <td class="qty-cell">1</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="prod-cell">
+                                    <div class="prod-thumb">
+                                        <img src="images/comedor_1782182137437.png" alt="Mesa de Comedor">
+                                    </div>
+                                    <span class="prod-name">Mesa de Comedor</span>
+                                </div>
+                            </td>
+                            <td class="qty-cell">1</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="prod-cell">
+                                    <div class="prod-thumb">
+                                        <img src="images/florero_1782182149891.png" alt="Florero Decorativo">
+                                    </div>
+                                    <span class="prod-name">Florero Decorativo</span>
+                                </div>
+                            </td>
+                            <td class="qty-cell">2</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Right Card Block: Movements Timeline -->
+            <div class="details-card-block">
+                <h3 class="block-title">Historial de movimientos</h3>
+                <div class="timeline-vertical">
+                    
+                    <!-- Item 1 -->
+                    <div class="timeline-item completed">
+                        <div class="timeline-marker"><i class="fas fa-check"></i></div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">Pedido recibido</h4>
+                            <span class="timeline-time">23/06/2026 - 08:00 AM</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="timeline-item completed">
+                        <div class="timeline-marker"><i class="fas fa-check"></i></div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">Pago confirmado</h4>
+                            <span class="timeline-time">23/06/2026 - 08:15 AM</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="timeline-item completed">
+                        <div class="timeline-marker"><i class="fas fa-check"></i></div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">Preparación completada</h4>
+                            <span class="timeline-time">23/06/2026 - 09:20 AM</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="timeline-item completed">
+                        <div class="timeline-marker"><i class="fas fa-check"></i></div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">Empacado</h4>
+                            <span class="timeline-time">23/06/2026 - 09:50 AM</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 (Active) -->
+                    <div class="timeline-item active">
+                        <div class="timeline-marker"><i class="fas fa-shipping-fast"></i></div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">En ruta</h4>
+                            <span class="timeline-time">23/06/2026 - 10:45 AM</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 6 -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h4 class="timeline-title">Entregado</h4>
+                            <span class="timeline-time">Pendiente</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Help Bar -->
+        <div class="card-help-bar">
+            <div class="help-left">
+                <div class="help-icon-circle">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div class="help-text">
+                    <h3>¿Necesitas ayuda?</h3>
+                    <p>Estamos aquí para ayudarte con tu pedido.</p>
+                </div>
+            </div>
+            <div class="help-right">
+                <a href="mailto:contacto@ivad.com" class="help-link-item">
+                    <i class="far fa-envelope"></i> contacto@ivad.com
+                </a>
+                <a href="tel:8091234567" class="help-link-item">
+                    <i class="fas fa-phone-alt"></i> (809) 123-4567
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <h2>IVAD.</h2>
+                    <span>Home &amp; Goods</span>
+                </div>
+                <p>Hogar y negocio en un solo lugar. Productos de calidad, servicio confiable y la mejor experiencia de compra.</p>
+                <span class="est-footer">Est. 1996</span>
+            </div>
+            <div class="footer-links">
+                <h3>ENLACES</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_decoracion.html">Nosotros</a></li>
+                    <li><a href="colecciones.html">Colecciones</a></li>
+                    <li><a href="index.html">Decoración</a></li>
+                    <li><a href="ambientes.html">Ambientes</a></li>
+                    <li><a href="rastreo.html">Rastreo</a></li>
+                    <li><a href="contacto_decoracion.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>COLECCIONES</h3>
+                <ul>
+                    <li><a href="#">Colección Minimalista</a></li>
+                    <li><a href="#">Colección Natural</a></li>
+                    <li><a href="#">Colección Elegance</a></li>
+                    <li><a href="#">Nuevos Productos</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>ATENCIÓN AL CLIENTE</h3>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Políticas de envío</a></li>
+                    <li><a href="#">Políticas de devolución</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>SÍGUENOS</h3>
+                <div class="social-icons-footer">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <h3>CONTÁCTANOS</h3>
+                <ul class="contact-info">
+                    <li><i class="fas fa-phone-alt"></i> (809) 123-4567</li>
+                    <li><i class="fas fa-envelope"></i> info@ivad.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Santo Domingo, RD</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2026 IVAD Home &amp; Goods. Todos los derechos reservados. Santo Domingo, República Dominicana.</p>
+            <div class="payment-icons">
+                <i class="fab fa-cc-visa"></i>
+                <i class="fab fa-cc-mastercard"></i>
+                <i class="fab fa-cc-paypal"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Supabase CDN y Configuración -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

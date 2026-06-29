@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.15" />
+    </filter>
+    <!-- Plastic White/Silver Gradients -->
+    <linearGradient id="forkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#f2f2f2" />
+      <stop offset="100%" stop-color="#d9d9d9" />
+    </linearGradient>
+    <linearGradient id="spoonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#eaeaea" />
+      <stop offset="100%" stop-color="#cfcfcf" />
+    </linearGradient>
+    <linearGradient id="knifeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="30%" stop-color="#f5f5f5" />
+      <stop offset="100%" stop-color="#cccccc" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="200" height="200" fill="#fcfcfc" rx="12"/>
+  
+  <!-- Group with shadow -->
+  <g filter="url(#shadow)">
+    <!-- Fork (Tenedor) -->
+    <g transform="translate(-10, 0)">
+      <!-- Handle -->
+      <path d="M55,95 L55,150 C55,153 57,155 60,155 C63,155 65,153 65,150 L65,95 Z" fill="url(#forkGrad)" />
+      <!-- Head Base -->
+      <path d="M47,65 C47,80 52,95 60,95 C68,95 73,80 73,65 Z" fill="url(#forkGrad)" />
+      <!-- Prongs (Dientes) -->
+      <rect x="47" y="45" width="4" height="25" rx="1.5" fill="url(#forkGrad)" />
+      <rect x="55" y="45" width="4" height="25" rx="1.5" fill="url(#forkGrad)" />
+      <rect x="61" y="45" width="4" height="25" rx="1.5" fill="url(#forkGrad)" />
+      <rect x="69" y="45" width="4" height="25" rx="1.5" fill="url(#forkGrad)" />
+    </g>
+    
+    <!-- Spoon (Cuchara) -->
+    <g transform="translate(0, 0)">
+      <!-- Handle -->
+      <path d="M97,100 L97,150 C97,153 99,155 102,155 C105,155 107,153 107,150 L107,100 Z" fill="url(#spoonGrad)" />
+      <!-- Bowl of Spoon -->
+      <ellipse cx="102" cy="65" rx="18" ry="25" fill="url(#spoonGrad)" />
+      <!-- Inner Bowl Highlight -->
+      <ellipse cx="99" cy="62" rx="13" ry="19" fill="#ffffff" opacity="0.4" />
+    </g>
+    
+    <!-- Knife (Cuchillo) -->
+    <g transform="translate(10, 0)">
+      <!-- Handle -->
+      <path d="M137,95 L137,150 C137,153 139,155 142,155 C145,155 147,153 147,150 L147,95 Z" fill="url(#knifeGrad)" />
+      <!-- Blade -->
+      <path d="M137,95 L137,48 C137,45 140,43 144,46 C149,50 151,70 147,95 Z" fill="url(#knifeGrad)" />
+    </g>
+  </g>
+</svg>
