@@ -57,6 +57,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Mobile Menu functionality (Inyectado para todas las paginas)
+    const headerIcons = document.querySelector('.header-icons');
+    const mainNav = document.querySelector('.main-nav');
+    
+    if (headerIcons && mainNav && !document.querySelector('.mobile-menu-btn')) {
+        const mobileBtn = document.createElement('button');
+        mobileBtn.className = 'mobile-menu-btn';
+        mobileBtn.innerHTML = '<i class="fas fa-bars"></i>';
+        
+        // Insert mobile menu button before the header icons
+        headerIcons.parentNode.insertBefore(mobileBtn, headerIcons);
+        
+        mobileBtn.addEventListener('click', () => {
+            mainNav.classList.toggle('nav-open');
+            if (mainNav.classList.contains('nav-open')) {
+                mobileBtn.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                mobileBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+    }
+
     // Product Database (for modal detail visualization)
     const productsData = {
         'sofa': {
