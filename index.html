@@ -3,1302 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IVAD Home & Goods – Desechables de Calidad</title>
-    <meta name="description" content="IVAD Home & Goods – Tu proveedor de productos desechables de calidad en República Dominicana desde 1996. Platos, vasos, cubiertos, bandejas y más.">
+    <title>Inicio - IVAD Home & Goods</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --primary: #1B365D;
-            --secondary: #C87A30;
-            --light: #F9F6F2;
-            --white: #ffffff;
-            --dark: #111827;
-            --gray: #6B7280;
-            --border: #E5E7EB;
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--white);
-            color: var(--dark);
-            overflow-x: hidden;
-        }
-
-        a { text-decoration: none; color: inherit; }
-        ul { list-style: none; }
-
-        /* ===== TOP BAR ===== */
-        .top-bar {
-            background: var(--primary);
-            color: #CBD5E1;
-            font-size: 0.78rem;
-            padding: 8px 0;
-            letter-spacing: 0.5px;
-        }
-        .top-bar-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-        .top-bar a { color: #CBD5E1; transition: color 0.2s; }
-        .top-bar a:hover { color: var(--secondary); }
-        .top-bar-right { display: flex; gap: 20px; align-items: center; }
-        .top-bar-right .soc { display: flex; gap: 10px; }
-        .top-bar-right .soc a {
-            width: 22px; height: 22px;
-            border: 1px solid rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: grid; place-items: center;
-            font-size: 0.65rem;
-        }
-
-        /* ===== HEADER ===== */
-        .header {
-            position: sticky; top: 0; z-index: 1000;
-            background: rgba(255,255,255,0.97);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            transition: box-shadow 0.3s;
-        }
-        .header.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .header-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 72px;
-        }
-        .logo { cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        .logo-icon {
-            width: 42px; height: 42px;
-            background: var(--primary);
-            border-radius: 8px;
-            display: grid; place-items: center;
-            color: var(--white);
-            font-weight: 900;
-            font-size: 1rem;
-            letter-spacing: -1px;
-        }
-        .logo-text h1 { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: 1px; line-height: 1; }
-        .logo-text span { font-size: 0.65rem; color: var(--secondary); letter-spacing: 2px; text-transform: uppercase; }
-
-        .main-nav ul { display: flex; gap: 32px; align-items: center; }
-        .main-nav a {
-            font-size: 0.85rem; font-weight: 600;
-            color: var(--gray); letter-spacing: 0.5px;
-            text-transform: uppercase;
-            position: relative; padding-bottom: 4px;
-            transition: color 0.2s;
-        }
-        .main-nav a::after {
-            content: ''; position: absolute; bottom: 0; left: 0;
-            width: 0; height: 2px;
-            background: var(--secondary);
-            transition: width 0.3s;
-        }
-        .main-nav a:hover, .main-nav a.active { color: var(--primary); }
-        .main-nav a:hover::after, .main-nav a.active::after { width: 100%; }
-
-        .header-actions { display: flex; gap: 16px; align-items: center; }
-        .header-actions a {
-            color: var(--gray);
-            font-size: 1rem;
-            transition: color 0.2s;
-        }
-        .header-actions a:hover { color: var(--primary); }
-        .cart-wrap { position: relative; }
-        .cart-badge {
-            position: absolute; top: -6px; right: -8px;
-            background: var(--secondary);
-            color: #fff; font-size: 0.6rem;
-            width: 16px; height: 16px;
-            border-radius: 50%; display: grid; place-items: center;
-            font-weight: 700;
-        }
-        .btn-cta {
-            background: var(--secondary);
-            color: #fff;
-            padding: 10px 22px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            transition: background 0.2s, transform 0.2s;
-        }
-        .btn-cta:hover { background: #a5631f; transform: translateY(-1px); }
-
-        .mobile-toggle {
-            display: none;
-            background: none; border: none;
-            font-size: 1.3rem;
-            color: var(--primary);
-            cursor: pointer;
-        }
-
-        /* ===== HERO SLIDER ===== */
-        .hero {
+        /* Estilos específicos para la nueva página de inicio, sin afectar el resto */
+        .home-hero {
             position: relative;
-            height: 92vh;
-            min-height: 580px;
+            height: 600px;
             overflow: hidden;
-        }
-        .slides-track {
             display: flex;
-            height: 100%;
-            transition: transform 0.8s cubic-bezier(0.77,0,0.18,1);
+            align-items: center;
         }
-        .slide {
+        .home-slider {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .home-slide {
             min-width: 100%;
             height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        .slide img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            transform: scale(1.05);
-            transition: transform 8s ease;
-        }
-        .slide.active img { transform: scale(1); }
-        .slide-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(
-                to right,
-                rgba(27,54,93,0.82) 0%,
-                rgba(27,54,93,0.45) 55%,
-                transparent 100%
-            );
-        }
-        .slide-content {
-            position: absolute;
-            top: 50%; left: 8%;
-            transform: translateY(-50%);
-            color: #fff;
-            max-width: 580px;
-            opacity: 0;
-            animation-fill-mode: forwards;
-        }
-        .slide.active .slide-content {
-            animation: slideIn 0.9s 0.3s ease forwards;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-50%) translateX(-30px); }
-            to   { opacity: 1; transform: translateY(-50%) translateX(0); }
-        }
-        .slide-tag {
-            display: inline-block;
-            background: var(--secondary);
-            color: #fff;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 5px 14px;
-            border-radius: 20px;
-            margin-bottom: 18px;
-        }
-        .slide-content h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 5vw, 3.8rem);
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 16px;
-        }
-        .slide-content h2 span { color: var(--secondary); }
-        .slide-content p {
-            font-size: 1rem;
-            color: rgba(255,255,255,0.85);
-            margin-bottom: 32px;
-            line-height: 1.7;
-            max-width: 440px;
-        }
-        .slide-btns { display: flex; gap: 14px; flex-wrap: wrap; }
-        .slide-btn {
-            padding: 14px 32px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            transition: all 0.25s;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-        .slide-btn.primary { background: var(--secondary); color: #fff; }
-        .slide-btn.primary:hover { background: #a5631f; transform: translateY(-2px); }
-        .slide-btn.outline { border-color: rgba(255,255,255,0.7); color: #fff; }
-        .slide-btn.outline:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
-
-        /* Slider controls */
-        .hero-prev, .hero-next {
-            position: absolute; top: 50%; z-index: 20;
-            transform: translateY(-50%);
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: #fff;
-            width: 52px; height: 52px;
-            border-radius: 50%;
-            display: grid; place-items: center;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background 0.25s, transform 0.25s;
-        }
-        .hero-prev { left: 30px; }
-        .hero-next { right: 30px; }
-        .hero-prev:hover, .hero-next:hover {
-            background: var(--secondary);
-            transform: translateY(-50%) scale(1.05);
-        }
-
-        .hero-dots {
-            position: absolute; bottom: 30px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; gap: 10px; z-index: 20;
-        }
-        .hero-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.4);
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-        }
-        .hero-dot.active {
-            background: var(--secondary);
-            width: 28px;
-            border-radius: 4px;
-        }
-
-        /* ===== STATS BAR ===== */
-        .stats-bar {
-            background: var(--primary);
-            padding: 28px 24px;
-        }
-        .stats-inner {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        .stat-item {
-            text-align: center;
-            color: #fff;
-            padding: 10px;
-            border-right: 1px solid rgba(255,255,255,0.12);
-        }
-        .stat-item:last-child { border-right: none; }
-        .stat-number {
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: var(--secondary);
-            line-height: 1;
-        }
-        .stat-label {
-            font-size: 0.78rem;
-            color: rgba(255,255,255,0.7);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-top: 4px;
-        }
-
-        /* ===== SECTION SHARED ===== */
-        section { padding: 90px 24px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .section-head { text-align: center; margin-bottom: 60px; }
-        .section-tag {
-            display: inline-block;
-            background: rgba(200,122,48,0.12);
-            color: var(--secondary);
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            padding: 5px 16px;
-            border-radius: 20px;
-            margin-bottom: 14px;
-        }
-        .section-head h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.8rem, 4vw, 2.8rem);
-            color: var(--primary);
-            line-height: 1.2;
-            margin-bottom: 14px;
-        }
-        .section-head h2 span { color: var(--secondary); }
-        .section-head p {
-            color: var(--gray);
-            max-width: 560px;
-            margin: 0 auto;
-            font-size: 0.98rem;
-            line-height: 1.8;
-        }
-        .divider {
-            width: 56px; height: 3px;
-            background: var(--secondary);
-            margin: 14px auto 0;
-            border-radius: 2px;
-        }
-
-        /* ===== POR QUÉ ELEGIRNOS ===== */
-        .why-section { background: var(--light); }
-        .why-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 28px;
-        }
-        .why-card {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 40px 32px;
-            text-align: center;
-            border: 1px solid var(--border);
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        .why-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: var(--secondary);
-            transform: scaleX(0);
-            transition: transform 0.3s;
-        }
-        .why-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(27,54,93,0.1); }
-        .why-card:hover::before { transform: scaleX(1); }
-        .why-icon {
-            width: 72px; height: 72px;
-            border-radius: 50%;
-            background: rgba(27,54,93,0.06);
-            display: grid; place-items: center;
-            margin: 0 auto 24px;
-            font-size: 1.8rem;
-            color: var(--primary);
-            transition: background 0.3s, color 0.3s;
-        }
-        .why-card:hover .why-icon { background: var(--primary); color: #fff; }
-        .why-card h3 { font-size: 1.05rem; color: var(--primary); margin-bottom: 12px; font-weight: 700; }
-        .why-card p { font-size: 0.9rem; color: var(--gray); line-height: 1.7; }
-
-        /* ===== CATEGORÍAS DESTACADAS ===== */
-        .cats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-        .cat-card {
-            border-radius: 14px;
-            overflow: hidden;
-            position: relative;
-            height: 240px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .cat-card:hover { transform: scale(1.02); }
-        .cat-card:first-child {
-            grid-column: span 2;
-            grid-row: span 2;
-            height: auto;
-        }
-        .cat-card img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-        .cat-card:hover img { transform: scale(1.08); }
-        .cat-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(27,54,93,0.85) 0%, transparent 60%);
-            display: flex; align-items: flex-end;
-            padding: 24px;
-        }
-        .cat-label {
-            color: #fff;
-        }
-        .cat-label span {
-            display: block;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--secondary);
-            margin-bottom: 4px;
-        }
-        .cat-label h3 { font-size: 1.15rem; font-weight: 700; }
-        .cat-card:first-child .cat-label h3 { font-size: 1.5rem; }
-
-        /* ===== PRODUCTOS DESTACADOS ===== */
-        .products-section { background: var(--light); }
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 22px;
-        }
-        .prod-card {
-            background: var(--white);
-            border-radius: 14px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .prod-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.09); }
-        .prod-img {
-            height: 200px;
-            overflow: hidden;
-            background: #f3f4f6;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .prod-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
-        .prod-card:hover .prod-img img { transform: scale(1.07); }
-        .prod-info { padding: 18px 20px 22px; }
-        .prod-cat { font-size: 0.65rem; color: var(--secondary); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
-        .prod-name { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
-        .prod-price { font-size: 1.1rem; font-weight: 800; color: var(--secondary); margin-bottom: 14px; }
-        .prod-btn {
-            width: 100%;
-            padding: 10px;
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 7px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .prod-btn:hover { background: var(--secondary); }
-
-        /* ===== TESTIMONIALS ===== */
-        .testimonials-section { background: var(--primary); overflow: hidden; }
-        .testimonials-section .section-head h2 { color: #fff; }
-        .testimonials-section .section-head p { color: rgba(255,255,255,0.65); }
-        .testimonials-section .section-tag { background: rgba(200,122,48,0.25); color: var(--secondary); }
-        .testimonials-section .divider { background: rgba(255,255,255,0.2); }
-
-        .testi-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-        .testi-card {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 32px 28px;
-            transition: background 0.3s;
-        }
-        .testi-card:hover { background: rgba(255,255,255,0.1); }
-        .testi-stars { color: var(--secondary); font-size: 0.85rem; margin-bottom: 16px; letter-spacing: 2px; }
-        .testi-text {
-            font-size: 0.92rem;
-            color: rgba(255,255,255,0.8);
-            line-height: 1.8;
-            margin-bottom: 24px;
-            font-style: italic;
-        }
-        .testi-text::before { content: '"'; font-size: 2rem; color: var(--secondary); line-height: 0; vertical-align: -14px; margin-right: 4px; }
-        .testi-author { display: flex; align-items: center; gap: 12px; }
-        .testi-avatar {
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            background: var(--secondary);
-            display: grid; place-items: center;
-            color: #fff;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        .testi-name { font-size: 0.85rem; color: #fff; font-weight: 600; }
-        .testi-role { font-size: 0.72rem; color: rgba(255,255,255,0.5); }
-
-        /* ===== BANNER CTA ===== */
-        .cta-section {
-            position: relative;
-            padding: 0;
-            overflow: hidden;
-            height: 420px;
-        }
-        .cta-bg {
-            position: absolute; inset: 0;
-            background-image: url('images/desechables_1782182109098.png');
             background-size: cover;
             background-position: center;
-            filter: brightness(0.35);
-        }
-        .cta-content {
-            position: relative; z-index: 2;
-            height: 100%;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: #fff;
-            padding: 24px;
+            position: relative;
         }
-        .cta-content h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.8rem, 5vw, 3rem);
-            margin-bottom: 14px;
+        .home-slide-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .home-slide-content {
+            position: relative;
+            z-index: 10;
+            color: #fff;
+            max-width: 600px;
+        }
+        .home-slide-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
             line-height: 1.2;
         }
-        .cta-content h2 span { color: var(--secondary); }
-        .cta-content p { color: rgba(255,255,255,0.75); max-width: 480px; margin-bottom: 32px; font-size: 1rem; line-height: 1.7; }
-        .cta-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-        .cta-btn {
-            padding: 14px 36px;
-            border-radius: 7px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.25s;
-            cursor: pointer;
+        .home-slide-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
         }
-        .cta-btn.solid { background: var(--secondary); color: #fff; border: none; }
-        .cta-btn.solid:hover { background: #a5631f; transform: translateY(-2px); }
-        .cta-btn.ghost { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.5); }
-        .cta-btn.ghost:hover { border-color: #fff; transform: translateY(-2px); }
-
-        /* ===== PROCESO / PASOS ===== */
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0;
-            position: relative;
-        }
-        .steps-grid::before {
-            content: '';
+        .home-slider-dots {
             position: absolute;
-            top: 40px; left: 12.5%; right: 12.5%;
-            height: 2px;
-            background: var(--border);
-            z-index: 0;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
         }
-        .step {
-            text-align: center;
-            padding: 0 20px;
-            position: relative; z-index: 1;
-        }
-        .step-num {
-            width: 80px; height: 80px;
+        .home-dot {
+            width: 12px; height: 12px;
+            background: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
-            background: var(--white);
-            border: 3px solid var(--secondary);
-            display: grid; place-items: center;
-            margin: 0 auto 20px;
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--secondary);
-            position: relative;
+            cursor: pointer;
         }
-        .step-num .step-icon { position: absolute; bottom: -4px; right: -4px; width: 26px; height: 26px; background: var(--primary); border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 0.65rem; }
-        .step h3 { font-size: 0.95rem; color: var(--primary); font-weight: 700; margin-bottom: 8px; }
-        .step p { font-size: 0.82rem; color: var(--gray); line-height: 1.6; }
-
-        /* ===== FOOTER ===== */
-        footer {
-            background: #0D1B2A;
-            color: rgba(255,255,255,0.7);
-            padding: 70px 24px 0;
+        .home-dot.active { background: #fff; }
+        
+        .home-features {
+            padding: 60px 0;
+            background: var(--bg-light);
         }
-        .footer-inner {
-            max-width: 1200px;
-            margin: 0 auto;
+        .features-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 40px;
-            padding-bottom: 50px;
-        }
-        .footer-brand h2 { color: #fff; font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; margin-bottom: 6px; }
-        .footer-brand h2 span { color: var(--secondary); }
-        .footer-brand .tagline { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--secondary); margin-bottom: 18px; }
-        .footer-brand p { font-size: 0.87rem; line-height: 1.8; max-width: 280px; }
-        .footer-soc { display: flex; gap: 10px; margin-top: 24px; }
-        .footer-soc a {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.15);
-            display: grid; place-items: center;
-            color: rgba(255,255,255,0.6);
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-        .footer-soc a:hover { background: var(--secondary); border-color: var(--secondary); color: #fff; }
-        .footer-col h4 { color: #fff; font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; }
-        .footer-col ul li { margin-bottom: 10px; }
-        .footer-col ul li a { font-size: 0.85rem; transition: color 0.2s; }
-        .footer-col ul li a:hover { color: var(--secondary); }
-        .footer-contact li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.85rem; margin-bottom: 12px; }
-        .footer-contact li i { color: var(--secondary); margin-top: 3px; font-size: 0.8rem; }
-        .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding: 22px 0;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
             text-align: center;
-            font-size: 0.78rem;
-            color: rgba(255,255,255,0.35);
-            max-width: 1200px;
-            margin: 0 auto;
         }
-
-        /* ===== SCROLL TO TOP ===== */
-        .scroll-top {
-            position: fixed;
-            bottom: 28px; right: 28px;
-            width: 46px; height: 46px;
-            background: var(--secondary);
+        .feature-card i {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+        
+        .home-categories { padding: 60px 0; }
+        .home-cats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .home-cat-card {
+            position: relative;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .home-cat-card img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .home-cat-card:hover img { transform: scale(1.05); }
+        .home-cat-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
             color: #fff;
-            border-radius: 50%;
-            display: grid; place-items: center;
-            font-size: 1rem;
-            cursor: pointer;
-            opacity: 0; pointer-events: none;
-            transition: all 0.3s;
-            z-index: 999;
-            border: none;
-            box-shadow: 0 6px 20px rgba(200,122,48,0.4);
-        }
-        .scroll-top.visible { opacity: 1; pointer-events: auto; }
-        .scroll-top:hover { transform: translateY(-3px); }
-
-        /* ===== MOBILE NAV ===== */
-        .mobile-overlay {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1100;
-        }
-        .mobile-nav {
-            position: fixed;
-            top: 0; right: -100%;
-            width: min(320px, 85vw);
-            height: 100%;
-            background: var(--white);
-            z-index: 1200;
-            padding: 30px 24px;
-            transition: right 0.35s cubic-bezier(0.77,0,0.18,1);
-            overflow-y: auto;
-        }
-        .mobile-nav.open { right: 0; }
-        .mobile-overlay.open { display: block; }
-        .mobile-nav-close {
-            background: none; border: none;
-            font-size: 1.3rem; color: var(--gray);
-            cursor: pointer;
-            display: block; margin-left: auto; margin-bottom: 30px;
-        }
-        .mobile-nav ul li { border-bottom: 1px solid var(--border); }
-        .mobile-nav ul li a {
-            display: block;
-            padding: 14px 0;
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--primary);
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1024px) {
-            .why-grid { grid-template-columns: repeat(2, 1fr); }
-            .cats-grid { grid-template-columns: repeat(2, 1fr); }
-            .cat-card:first-child { grid-column: span 2; height: 280px; }
-            .products-grid { grid-template-columns: repeat(2, 1fr); }
-            .steps-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
-            .steps-grid::before { display: none; }
-            .testi-grid { grid-template-columns: repeat(2, 1fr); }
-            .footer-inner { grid-template-columns: 1fr 1fr; }
-        }
-        @media (max-width: 768px) {
-            .main-nav, .btn-cta { display: none; }
-            .mobile-toggle { display: block; }
-            .stats-inner { grid-template-columns: repeat(2, 1fr); }
-            .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.12); }
-            .stat-item:nth-child(2n) { border-right: none; }
-            .stat-item:last-child, .stat-item:nth-last-child(2) { border-bottom: none; }
-            .why-grid { grid-template-columns: 1fr; }
-            .cats-grid { grid-template-columns: 1fr; }
-            .cat-card:first-child { grid-column: span 1; height: 240px; }
-            .products-grid { grid-template-columns: 1fr 1fr; }
-            .steps-grid { grid-template-columns: 1fr 1fr; }
-            .testi-grid { grid-template-columns: 1fr; }
-            .footer-inner { grid-template-columns: 1fr; }
-            .hero { height: 85vh; }
-            .hero-prev, .hero-next { width: 38px; height: 38px; font-size: 0.85rem; }
-            .hero-prev { left: 12px; }
-            .hero-next { right: 12px; }
-            section { padding: 60px 20px; }
-            .top-bar-left { display: none; }
-        }
-        @media (max-width: 480px) {
-            .products-grid { grid-template-columns: 1fr; }
-            .steps-grid { grid-template-columns: 1fr; }
-            .slide-content { left: 5%; max-width: 90%; }
+            text-align: center;
         }
     </style>
 </head>
 <body>
-
-<!-- TOP BAR -->
-<div class="top-bar">
-    <div class="top-bar-inner">
-        <span class="top-bar-left"><i class="fas fa-star" style="color:var(--secondary); margin-right:6px;"></i> Est. 1996 – Más de 28 años de experiencia</span>
-        <div class="top-bar-right">
-            <span><i class="fas fa-truck" style="margin-right:5px;"></i> Envíos a todo el país</span>
-            <a href="contacto.html">Contáctanos</a>
-            <div class="soc">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <span class="est">Est. 1996</span>
+            <div class="top-right">
+                <span>Envíos a todo el país</span>
+                <a href="contacto.html">Contáctanos</a>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- HEADER -->
-<header class="header" id="header">
-    <div class="header-inner">
-        <div class="logo" onclick="window.location.href='index.html'">
-            <div class="logo-icon">IV</div>
-            <div class="logo-text">
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="container header-inner">
+            <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
                 <h1>IVAD.</h1>
-                <span>Home &amp; Goods</span>
+                <span>Home & Goods</span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html" class="active">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li class="dropdown">
+                        <a href="#">Categorías <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="desechables.html">Todos</a></li>
+                            <li><a href="desechables.html?category=platos">Platos</a></li>
+                            <li><a href="desechables.html?category=vasos">Vasos</a></li>
+                            <li><a href="desechables.html?category=cubiertos">Cubiertos</a></li>
+                            <li><a href="desechables.html?category=bandejas">Bandejas</a></li>
+                            <li><a href="desechables.html?category=contenedores">Contenedores</a></li>
+                            <li><a href="desechables.html?category=servilletas">Servilletas</a></li>
+                            <li><a href="desechables.html?category=bolsas">Bolsas</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="desechables.html">Desechables</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <a href="#"><i class="fas fa-search"></i></a>
+                <a href="login.html"><i class="far fa-user"></i></a>
+                <a href="#" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
             </div>
         </div>
-        <nav class="main-nav">
-            <ul>
-                <li><a href="index.html" class="active">Inicio</a></li>
-                <li><a href="nosotros_desechables.html">Nosotros</a></li>
-                <li><a href="desechables.html">Productos</a></li>
-                <li><a href="contacto.html">Contacto</a></li>
-                <li><a href="rastreo.html">Rastrear pedido</a></li>
-            </ul>
-        </nav>
-        <div class="header-actions">
-            <a href="login.html" title="Mi cuenta"><i class="far fa-user"></i></a>
-            <a href="desechables.html" class="cart-wrap" title="Carrito">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-badge">0</span>
-            </a>
-            <a href="desechables.html" class="btn-cta">Ver Productos</a>
-        </div>
-        <button class="mobile-toggle" id="mobileToggle" aria-label="Menú">
-            <i class="fas fa-bars"></i>
-        </button>
-    </div>
-</header>
+    </header>
 
-<!-- MOBILE NAV -->
-<div class="mobile-overlay" id="mobileOverlay"></div>
-<nav class="mobile-nav" id="mobileNav">
-    <button class="mobile-nav-close" id="mobileClose"><i class="fas fa-times"></i></button>
-    <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="nosotros_desechables.html">Nosotros</a></li>
-        <li><a href="desechables.html">Productos</a></li>
-        <li><a href="contacto.html">Contacto</a></li>
-        <li><a href="rastreo.html">Rastrear pedido</a></li>
-        <li><a href="login.html">Mi cuenta</a></li>
-    </ul>
-</nav>
-
-<!-- ===== HERO SLIDER ===== -->
-<section class="hero" id="hero">
-    <div class="slides-track" id="slidesTrack">
-
-        <!-- Slide 1 -->
-        <div class="slide active">
-            <img src="images/desechables_1782182109098.png" alt="Desechables IVAD">
-            <div class="slide-overlay"></div>
-            <div class="slide-content">
-                <span class="slide-tag">Calidad garantizada</span>
-                <h2>La mejor línea de <span>Desechables</span> del país</h2>
-                <p>Platos, vasos, cubiertos y más — fabricados con los más altos estándares para eventos, restaurantes y hogares.</p>
-                <div class="slide-btns">
-                    <a href="desechables.html" class="slide-btn primary">Ver Productos</a>
-                    <a href="nosotros_desechables.html" class="slide-btn outline">Conócenos</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 2 -->
-        <div class="slide">
-            <img src="images/platos.png" alt="Platos desechables">
-            <div class="slide-overlay"></div>
-            <div class="slide-content">
-                <span class="slide-tag">Nueva colección</span>
-                <h2>Platos y Bandejas para <span>cada ocasión</span></h2>
-                <p>Desde fiestas íntimas hasta grandes eventos corporativos, tenemos el producto ideal para tu necesidad.</p>
-                <div class="slide-btns">
-                    <a href="desechables.html?category=platos" class="slide-btn primary">Ver Platos</a>
-                    <a href="contacto.html" class="slide-btn outline">Cotizar</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 3 -->
-        <div class="slide">
-            <img src="images/nosotros_historia.png" alt="IVAD Historia">
-            <div class="slide-overlay"></div>
-            <div class="slide-content">
-                <span class="slide-tag">Desde 1996</span>
-                <h2>28 años siendo tu <span>aliado de confianza</span></h2>
-                <p>Tradición, calidad y compromiso. IVAD Home &amp; Goods es tu proveedor de confianza en República Dominicana.</p>
-                <div class="slide-btns">
-                    <a href="nosotros_desechables.html" class="slide-btn primary">Nuestra historia</a>
-                    <a href="contacto.html" class="slide-btn outline">Contáctanos</a>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <button class="hero-prev" id="heroPrev" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
-    <button class="hero-next" id="heroNext" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
-
-    <div class="hero-dots" id="heroDots">
-        <button class="hero-dot active"></button>
-        <button class="hero-dot"></button>
-        <button class="hero-dot"></button>
-    </div>
-</section>
-
-<!-- ===== STATS ===== -->
-<div class="stats-bar">
-    <div class="stats-inner">
-        <div class="stat-item">
-            <div class="stat-number">+28</div>
-            <div class="stat-label">Años de experiencia</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">+500</div>
-            <div class="stat-label">Clientes satisfechos</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">+80</div>
-            <div class="stat-label">Productos disponibles</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">100%</div>
-            <div class="stat-label">Calidad garantizada</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== POR QUÉ ELEGIRNOS ===== -->
-<section class="why-section">
-    <div class="container">
-        <div class="section-head">
-            <span class="section-tag">Nuestra diferencia</span>
-            <h2>¿Por qué elegir <span>IVAD</span>?</h2>
-            <div class="divider"></div>
-            <p>Con más de 28 años en el mercado, sabemos exactamente lo que necesitas. Calidad, precio justo y servicio excepcional.</p>
-        </div>
-        <div class="why-grid">
-            <div class="why-card">
-                <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
-                <h3>Calidad Certificada</h3>
-                <p>Todos nuestros productos cumplen con los más altos estándares de calidad e higiene del mercado dominicano.</p>
-            </div>
-            <div class="why-card">
-                <div class="why-icon"><i class="fas fa-tags"></i></div>
-                <h3>Precios Competitivos</h3>
-                <p>Ofrecemos los mejores precios del mercado sin comprometer la calidad. Precios especiales para pedidos al por mayor.</p>
-            </div>
-            <div class="why-card">
-                <div class="why-icon"><i class="fas fa-truck"></i></div>
-                <h3>Envío Rápido</h3>
-                <p>Entregamos en todo el país con tiempos de entrega rápidos. Tu pedido llega seguro y a tiempo.</p>
-            </div>
-            <div class="why-card">
-                <div class="why-icon"><i class="fas fa-headset"></i></div>
-                <h3>Soporte Personalizado</h3>
-                <p>Nuestro equipo está disponible para asesorarte y encontrar la mejor solución para tu evento o negocio.</p>
-            </div>
-            <div class="why-card">
-                <div class="why-icon"><i class="fas fa-leaf"></i></div>
-                <h3>Productos Eco-Amigables</h3>
-                <p>Contamos con líneas de productos biodegradables y kraft que cuidan el medio ambiente sin sacrificar calidad.</p>
-            </div>
-            <div class="why-card">
-                <div class="why-icon"><i class="fas fa-boxes"></i></div>
-                <h3>Amplio Catálogo</h3>
-                <p>Más de 80 productos disponibles en diferentes materiales, tamaños y presentaciones para cada necesidad.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ===== CATEGORÍAS ===== -->
-<section>
-    <div class="container">
-        <div class="section-head">
-            <span class="section-tag">Explora</span>
-            <h2>Nuestras <span>Categorías</span></h2>
-            <div class="divider"></div>
-            <p>Encuentra exactamente lo que buscas en nuestra amplia selección de productos desechables.</p>
-        </div>
-        <div class="cats-grid">
-            <div class="cat-card" onclick="window.location.href='desechables.html'">
-                <img src="images/platos.png" alt="Platos">
-                <div class="cat-overlay">
-                    <div class="cat-label">
-                        <span>Más vendidos</span>
-                        <h3>Platos &amp; Bandejas</h3>
+    <!-- Hero Slider Automático -->
+    <section class="home-hero">
+        <div class="home-slider" id="homeSlider">
+            <div class="home-slide" style="background-image: url('images/desechables_1782182109098.png');">
+                <div class="home-slide-overlay"></div>
+                <div class="container">
+                    <div class="home-slide-content">
+                        <h1>Calidad en Desechables</h1>
+                        <p>Descubre nuestra amplia línea de productos resistentes y prácticos para cada necesidad.</p>
+                        <a href="desechables.html" class="btn btn-primary">Ver Catálogo</a>
                     </div>
                 </div>
             </div>
-            <div class="cat-card" onclick="window.location.href='desechables.html?category=vasos'">
-                <img src="images/vasos.png" alt="Vasos">
-                <div class="cat-overlay">
-                    <div class="cat-label">
-                        <span>Categoría</span>
-                        <h3>Vasos</h3>
+            <div class="home-slide" style="background-image: url('images/platos.png');">
+                <div class="home-slide-overlay"></div>
+                <div class="container">
+                    <div class="home-slide-content">
+                        <h1>Para Cada Ocasión</h1>
+                        <p>Desde grandes eventos hasta el uso diario, tenemos lo que necesitas.</p>
+                        <a href="desechables.html?category=platos" class="btn btn-primary">Comprar Platos</a>
                     </div>
                 </div>
             </div>
-            <div class="cat-card" onclick="window.location.href='desechables.html?category=cubiertos'">
-                <img src="images/cubiertos.png" alt="Cubiertos">
-                <div class="cat-overlay">
-                    <div class="cat-label">
-                        <span>Categoría</span>
+            <div class="home-slide" style="background-image: url('images/nosotros_historia.png');">
+                <div class="home-slide-overlay"></div>
+                <div class="container">
+                    <div class="home-slide-content">
+                        <h1>28 Años de Experiencia</h1>
+                        <p>Siendo tu aliado de confianza en República Dominicana desde 1996.</p>
+                        <a href="nosotros_desechables.html" class="btn btn-primary">Nuestra Historia</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="home-slider-dots" id="homeDots">
+            <div class="home-dot active" data-index="0"></div>
+            <div class="home-dot" data-index="1"></div>
+            <div class="home-dot" data-index="2"></div>
+        </div>
+    </section>
+
+    <!-- Por Qué Elegir IVAD -->
+    <section class="home-features">
+        <div class="container">
+            <h2 class="section-title">¿Por qué elegir IVAD?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-medal"></i>
+                    <h3>Calidad Garantizada</h3>
+                    <p>Todos nuestros productos cumplen con los más altos estándares de higiene y durabilidad.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-tags"></i>
+                    <h3>Precios Competitivos</h3>
+                    <p>Ofrecemos la mejor relación calidad-precio para tus eventos o negocio.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-truck"></i>
+                    <h3>Envíos Rápidos</h3>
+                    <p>Llevamos tu pedido a donde lo necesites en todo el país de forma segura.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categorías Destacadas -->
+    <section class="home-categories">
+        <div class="container">
+            <h2 class="section-title">Nuestras Categorías</h2>
+            <div class="home-cats-grid">
+                <div class="home-cat-card" onclick="window.location.href='desechables.html?category=platos'">
+                    <img src="images/platos.png" alt="Platos">
+                    <div class="home-cat-overlay">
+                        <h3>Platos y Bandejas</h3>
+                    </div>
+                </div>
+                <div class="home-cat-card" onclick="window.location.href='desechables.html?category=vasos'">
+                    <img src="images/vasos.png" alt="Vasos">
+                    <div class="home-cat-overlay">
+                        <h3>Vasos y Copas</h3>
+                    </div>
+                </div>
+                <div class="home-cat-card" onclick="window.location.href='desechables.html?category=cubiertos'">
+                    <img src="images/cubiertos.png" alt="Cubiertos">
+                    <div class="home-cat-overlay">
                         <h3>Cubiertos</h3>
                     </div>
                 </div>
             </div>
-            <div class="cat-card" onclick="window.location.href='desechables.html?category=contenedores'">
-                <img src="images/contenedor.png" alt="Contenedores">
-                <div class="cat-overlay">
-                    <div class="cat-label">
-                        <span>Categoría</span>
-                        <h3>Contenedores</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="cat-card" onclick="window.location.href='desechables.html?category=servilletas'">
-                <img src="images/servilletas.png" alt="Servilletas">
-                <div class="cat-overlay">
-                    <div class="cat-label">
-                        <span>Categoría</span>
-                        <h3>Servilletas</h3>
-                    </div>
-                </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="desechables.html" class="btn btn-outline-dark">Ver Todos los Productos</a>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- ===== PRODUCTOS DESTACADOS ===== -->
-<section class="products-section">
-    <div class="container">
-        <div class="section-head">
-            <span class="section-tag">Más populares</span>
-            <h2>Productos <span>Destacados</span></h2>
-            <div class="divider"></div>
-            <p>Una selección de nuestros productos más solicitados por hogares, restaurantes y organizadores de eventos.</p>
+    <!-- Bottom Banner Section -->
+    <section class="banner-section" id="banner" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/comedor_1782182137437.png'); background-size: cover; background-position: center;">
+        <div class="container banner-content">
+            <div class="banner-text">
+                <h2>CALIDAD QUE SE VE,<br>EXPERIENCIA QUE SE SIENTE.</h2>
+                <a href="contacto.html" class="btn btn-dark">Descubre más</a>
+            </div>
         </div>
-        <div class="products-grid">
-            <div class="prod-card">
-                <div class="prod-img"><img src="images/platos.png" alt="Platos Desechables"></div>
-                <div class="prod-info">
-                    <div class="prod-cat">Platos</div>
-                    <div class="prod-name">Platos Desechables</div>
-                    <div class="prod-price">RD$ 70.00</div>
-                    <button class="prod-btn" onclick="window.location.href='desechables.html'">Ver Producto</button>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <h2>IVAD.</h2>
+                    <span>Home & Goods</span>
                 </div>
+                <p>Hogar y negocio en un solo lugar. Productos de calidad, servicio confiable y la mejor experiencia de compra.</p>
+                <span class="est-footer">Est. 1996</span>
             </div>
-            <div class="prod-card">
-                <div class="prod-img"><img src="images/vasos.png" alt="Vasos Desechables"></div>
-                <div class="prod-info">
-                    <div class="prod-cat">Vasos</div>
-                    <div class="prod-name">Vasos Desechables</div>
-                    <div class="prod-price">RD$ 45.00</div>
-                    <button class="prod-btn" onclick="window.location.href='desechables.html'">Ver Producto</button>
+            <div class="footer-links">
+                <h3>ENLACES</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li><a href="desechables.html">Desechables</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>DEPARTAMENTOS</h3>
+                <ul>
+                    <li><a href="index.html#dep-decoracion">Decoración y Muebles</a></li>
+                    <li><a href="desechables.html">Desechables para Negocios</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>ATENCIÓN AL CLIENTE</h3>
+                <ul>
+                    <li><a href="#">Preguntas frecuentes</a></li>
+                    <li><a href="#">Políticas de envío</a></li>
+                    <li><a href="#">Políticas de devolución</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>SÍGUENOS</h3>
+                <div class="social-icons-footer">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
                 </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img"><img src="images/cubiertos.png" alt="Cubiertos"></div>
-                <div class="prod-info">
-                    <div class="prod-cat">Cubiertos</div>
-                    <div class="prod-name">Cubiertos Desechables</div>
-                    <div class="prod-price">RD$ 55.00</div>
-                    <button class="prod-btn" onclick="window.location.href='desechables.html'">Ver Producto</button>
-                </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img"><img src="images/bandeja_aluminio.png" alt="Bandeja Aluminio"></div>
-                <div class="prod-info">
-                    <div class="prod-cat">Bandejas</div>
-                    <div class="prod-name">Bandeja de Aluminio</div>
-                    <div class="prod-price">RD$ 120.00</div>
-                    <button class="prod-btn" onclick="window.location.href='desechables.html'">Ver Producto</button>
-                </div>
+                <h3>CONTÁCTANOS</h3>
+                <ul class="contact-info">
+                    <li><i class="fas fa-phone-alt"></i> (809) 123-4567</li>
+                    <li><i class="fas fa-envelope"></i> info@ivad.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Santo Domingo, RD</li>
+                </ul>
             </div>
         </div>
-        <div style="text-align:center; margin-top: 44px;">
-            <a href="desechables.html" class="btn-cta" style="display:inline-block; padding:15px 44px; background:var(--primary); color:#fff; border-radius:7px; font-weight:700; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px; transition:all 0.25s;">
-                Ver Todo el Catálogo <i class="fas fa-arrow-right" style="margin-left:8px;"></i>
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- ===== CÓMO FUNCIONA ===== -->
-<section>
-    <div class="container">
-        <div class="section-head">
-            <span class="section-tag">Simple y rápido</span>
-            <h2>¿Cómo <span>funciona</span>?</h2>
-            <div class="divider"></div>
-            <p>Comprar en IVAD es fácil, rápido y seguro. En solo 4 pasos tienes tu pedido en la puerta.</p>
-        </div>
-        <div class="steps-grid">
-            <div class="step">
-                <div class="step-num">
-                    <i class="fas fa-search" style="font-size:1.6rem;"></i>
-                    <span class="step-icon">1</span>
-                </div>
-                <h3>Explora el catálogo</h3>
-                <p>Navega por nuestra amplia selección de productos desechables y filtra por categoría.</p>
-            </div>
-            <div class="step">
-                <div class="step-num">
-                    <i class="fas fa-shopping-cart" style="font-size:1.6rem;"></i>
-                    <span class="step-icon">2</span>
-                </div>
-                <h3>Agrega al carrito</h3>
-                <p>Selecciona los productos y cantidades que necesitas y agrégalos a tu carrito de compras.</p>
-            </div>
-            <div class="step">
-                <div class="step-num">
-                    <i class="fas fa-credit-card" style="font-size:1.6rem;"></i>
-                    <span class="step-icon">3</span>
-                </div>
-                <h3>Realiza el pago</h3>
-                <p>Completa tu compra de forma segura. Aceptamos múltiples métodos de pago.</p>
-            </div>
-            <div class="step">
-                <div class="step-num">
-                    <i class="fas fa-box-open" style="font-size:1.6rem;"></i>
-                    <span class="step-icon">4</span>
-                </div>
-                <h3>Recibe tu pedido</h3>
-                <p>Tu pedido llega directo a tu puerta. Puedes rastrearlo en tiempo real desde nuestra web.</p>
+        <div class="footer-bottom container">
+            <p>&copy; 2024 IVAD Home & Goods. Todos los derechos reservados.</p>
+            <div class="payment-icons">
+                <i class="fab fa-cc-visa"></i>
+                <i class="fab fa-cc-mastercard"></i>
+                <i class="fab fa-cc-paypal"></i>
             </div>
         </div>
-    </div>
-</section>
+    </footer>
 
-<!-- ===== TESTIMONIOS ===== -->
-<section class="testimonials-section">
-    <div class="container">
-        <div class="section-head">
-            <span class="section-tag">Lo que dicen</span>
-            <h2>Nuestros <span>clientes</span> hablan</h2>
-            <div class="divider"></div>
-            <p>La satisfacción de nuestros clientes es nuestra mayor recompensa. Esto es lo que dicen sobre nosotros.</p>
-        </div>
-        <div class="testi-grid">
-            <div class="testi-card">
-                <div class="testi-stars">★★★★★</div>
-                <p class="testi-text">Los mejores desechables que he encontrado en el país. La calidad es excelente y los precios son muy competitivos. Siempre compro aquí para mis eventos.</p>
-                <div class="testi-author">
-                    <div class="testi-avatar">MR</div>
-                    <div>
-                        <div class="testi-name">María Rodríguez</div>
-                        <div class="testi-role">Organizadora de eventos</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testi-card">
-                <div class="testi-stars">★★★★★</div>
-                <p class="testi-text">Llevo más de 5 años comprando en IVAD para mi restaurante. El servicio al cliente es excelente y los tiempos de entrega son muy puntuales.</p>
-                <div class="testi-author">
-                    <div class="testi-avatar">JP</div>
-                    <div>
-                        <div class="testi-name">José Pérez</div>
-                        <div class="testi-role">Dueño de restaurante</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testi-card">
-                <div class="testi-stars">★★★★★</div>
-                <p class="testi-text">Excelente variedad de productos. Pude encontrar todo lo que necesitaba para mi catering en un solo lugar. Definitivamente los recomiendo.</p>
-                <div class="testi-author">
-                    <div class="testi-avatar">AL</div>
-                    <div>
-                        <div class="testi-name">Ana López</div>
-                        <div class="testi-role">Chef y catering</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    <!-- Supabase CDN y Configuración -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    
+    <!-- Script para el slider -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('homeSlider');
+            const dots = document.querySelectorAll('.home-dot');
+            let currentIndex = 0;
+            const totalSlides = dots.length;
 
-<!-- ===== CTA BANNER ===== -->
-<section class="cta-section">
-    <div class="cta-bg"></div>
-    <div class="cta-content">
-        <h2>¿Listo para hacer tu <span>pedido?</span></h2>
-        <p>Explora nuestro catálogo completo y encuentra los productos desechables perfectos para tu hogar, negocio o evento.</p>
-        <div class="cta-btns">
-            <a href="desechables.html" class="cta-btn solid">Ver Catálogo</a>
-            <a href="contacto.html" class="cta-btn ghost">Contáctanos</a>
-        </div>
-    </div>
-</section>
+            function updateSlider() {
+                slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+                dots.forEach(dot => dot.classList.remove('active'));
+                dots[currentIndex].classList.add('active');
+            }
 
-<!-- ===== FOOTER ===== -->
-<footer>
-    <div class="footer-inner">
-        <div class="footer-brand">
-            <h2>IVAD. <span>Home &amp; Goods</span></h2>
-            <div class="tagline">Est. 1996 – República Dominicana</div>
-            <p>Tu proveedor de confianza de productos desechables de calidad. Más de 28 años sirviendo a hogares, restaurantes y eventos en todo el país.</p>
-            <div class="footer-soc">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
-                <a href="#"><i class="fab fa-tiktok"></i></a>
-            </div>
-        </div>
-        <div class="footer-col">
-            <h4>Navegación</h4>
-            <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="nosotros_desechables.html">Nosotros</a></li>
-                <li><a href="desechables.html">Productos</a></li>
-                <li><a href="contacto.html">Contacto</a></li>
-                <li><a href="rastreo.html">Rastrear pedido</a></li>
-                <li><a href="login.html">Mi cuenta</a></li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h4>Categorías</h4>
-            <ul>
-                <li><a href="desechables.html?category=platos">Platos</a></li>
-                <li><a href="desechables.html?category=vasos">Vasos</a></li>
-                <li><a href="desechables.html?category=cubiertos">Cubiertos</a></li>
-                <li><a href="desechables.html?category=bandejas">Bandejas</a></li>
-                <li><a href="desechables.html?category=contenedores">Contenedores</a></li>
-                <li><a href="desechables.html?category=servilletas">Servilletas</a></li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h4>Contacto</h4>
-            <ul class="footer-contact">
-                <li><i class="fas fa-phone"></i><span>849-425-2220</span></li>
-                <li><i class="fas fa-envelope"></i><span>tecnologia@ivadsrl.com</span></li>
-                <li><i class="fas fa-map-marker-alt"></i><span>República Dominicana</span></li>
-                <li><i class="fab fa-whatsapp"></i><a href="https://wa.me/18494252220" style="color:inherit;">WhatsApp</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>© 2024 IVAD Home &amp; Goods. Todos los derechos reservados. | Diseñado con ❤️ en República Dominicana</p>
-    </div>
-</footer>
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateSlider();
+            }
 
-<!-- SCROLL TO TOP -->
-<button class="scroll-top" id="scrollTop" aria-label="Volver arriba">
-    <i class="fas fa-chevron-up"></i>
-</button>
+            let sliderInterval = setInterval(nextSlide, 5000);
 
-<script>
-// ===== HEADER SCROLL =====
-window.addEventListener('scroll', () => {
-    document.getElementById('header').classList.toggle('scrolled', window.scrollY > 40);
-    document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 400);
-});
+            dots.forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    clearInterval(sliderInterval);
+                    currentIndex = parseInt(e.target.getAttribute('data-index'));
+                    updateSlider();
+                    sliderInterval = setInterval(nextSlide, 5000);
+                });
+            });
+            
+            // Dropdown logic from main.js
+            const dropdownToggles = document.querySelectorAll('.dropdown > a');
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const menu = toggle.nextElementSibling;
+                    if (menu && menu.classList.contains('dropdown-menu')) {
+                        menu.classList.toggle('show');
+                    }
+                });
+            });
 
-// ===== SCROLL TOP =====
-document.getElementById('scrollTop').addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-// ===== MOBILE NAV =====
-const mobileToggle = document.getElementById('mobileToggle');
-const mobileNav    = document.getElementById('mobileNav');
-const mobileOverlay = document.getElementById('mobileOverlay');
-const mobileClose  = document.getElementById('mobileClose');
-
-function openMobileNav() { mobileNav.classList.add('open'); mobileOverlay.classList.add('open'); }
-function closeMobileNav() { mobileNav.classList.remove('open'); mobileOverlay.classList.remove('open'); }
-
-mobileToggle.addEventListener('click', openMobileNav);
-mobileClose.addEventListener('click', closeMobileNav);
-mobileOverlay.addEventListener('click', closeMobileNav);
-
-// ===== HERO SLIDER =====
-const track   = document.getElementById('slidesTrack');
-const slides  = document.querySelectorAll('.slide');
-const dots    = document.querySelectorAll('.hero-dot');
-let current   = 0;
-let autoplay;
-
-function goTo(idx) {
-    slides[current].classList.remove('active');
-    dots[current].classList.remove('active');
-    current = (idx + slides.length) % slides.length;
-    slides[current].classList.add('active');
-    dots[current].classList.add('active');
-    track.style.transform = `translateX(-${current * 100}%)`;
-}
-
-function startAutoplay() {
-    autoplay = setInterval(() => goTo(current + 1), 5500);
-}
-
-document.getElementById('heroPrev').addEventListener('click', () => { clearInterval(autoplay); goTo(current - 1); startAutoplay(); });
-document.getElementById('heroNext').addEventListener('click', () => { clearInterval(autoplay); goTo(current + 1); startAutoplay(); });
-dots.forEach((dot, i) => dot.addEventListener('click', () => { clearInterval(autoplay); goTo(i); startAutoplay(); }));
-
-// Pause on hover
-track.addEventListener('mouseenter', () => clearInterval(autoplay));
-track.addEventListener('mouseleave', startAutoplay);
-
-startAutoplay();
-
-// Touch swipe
-let touchStartX = 0;
-track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-track.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 50) { clearInterval(autoplay); goTo(dx < 0 ? current + 1 : current - 1); startAutoplay(); }
-});
-
-// ===== ANIMATE ON SCROLL =====
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.why-card, .cat-card, .prod-card, .testi-card, .step').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(el);
-});
-</script>
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown') || e.target.closest('.dropdown-menu a')) {
+                    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
