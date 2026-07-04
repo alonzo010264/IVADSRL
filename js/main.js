@@ -1284,7 +1284,7 @@ window.showToast = function(message) {
 
     const toast = document.createElement('div');
     toast.className = 'toast-notification';
-    toast.innerHTML = <i class="fas fa-check-circle"></i> <span> + message + </span>;
+    toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>` + message + `</span>`;
     
     container.appendChild(toast);
 
