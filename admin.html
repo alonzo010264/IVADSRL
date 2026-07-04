@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="icon" type="image/png" href="logo_transparent.png">
 </head>
 <body>
 <div class="admin-layout">
@@ -29,7 +28,8 @@
                 <li data-section="clientes" style="display:none;"><a href="#"><i class="fas fa-users"></i> Clientes</a></li>
                 <li data-section="inventario" style="display:none;"><a href="#"><i class="fas fa-clipboard-list"></i> Inventario</a></li>
                 <li data-section="cupones" style="display:none;"><a href="#"><i class="fas fa-ticket-alt"></i> Cupones</a></li>
-                <li data-section="envios"><a href="#"><i class="fas fa-truck"></i> Envíos</a></li>
+                <li data-section="envios"><a href="#"><i class="fas fa-truck"></i> Despachos</a></li>
+                <li data-section="pagos"><a href="#"><i class="fas fa-credit-card"></i> Pagos (Azul)</a></li>
                 <li data-section="opiniones" style="display:none;"><a href="#"><i class="far fa-comment-dots"></i> Opiniones</a></li>
                 <li data-section="reportes" style="display:none;"><a href="#"><i class="fas fa-chart-bar"></i> Reportes</a></li>
                 <li data-section="configuracion"><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
@@ -413,33 +413,146 @@
             </section>
 
             <!-- ============================================================
-                 ENVÍOS
+                 DESPACHOS
             ============================================================ -->
             <section class="page-section" id="sec-envios">
                 <div class="card full-height-card">
                     <div class="card-header section-header">
-                        <h2>Gestión de envíos</h2>
+                        <h2>Despachos de pedidos</h2>
                         <div class="header-controls">
-                            <select class="filter-select"><option>Todos</option><option>En tránsito</option><option>Entregado</option><option>Por despachar</option></select>
+                            <select class="filter-select" id="filterDespacho">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">Pendiente de despacho</option>
+                                <option value="en_camino">En camino</option>
+                                <option value="entregado">Entregado</option>
+                            </select>
                         </div>
                     </div>
+
+                    <!-- Info banner -->
+                    <div style="margin: 0 0 20px 0; padding: 14px 20px; background: #f0f7ff; border-left: 4px solid #4A90D9; border-radius: 8px; font-size: 0.88rem; color: #2c5282;">
+                        <i class="fas fa-info-circle" style="margin-right:8px;"></i>
+                        <strong>Modelo de entrega IVAD:</strong> Los pedidos se despachan por entrega propia de IVAD o a través del transportista elegido por el cliente al momento de pedir. Actualiza el estado de cada pedido aquí.
+                    </div>
+
                     <div class="table-responsive">
-                        <table class="product-table">
-                            <thead><tr><th>TRACKING</th><th>PEDIDO</th><th>CLIENTE</th><th>DESTINO</th><th>TRANSPORTISTA</th><th>ESTADO</th><th>ENTREGA EST.</th></tr></thead>
-                            <tbody>
-                                <tr><td><span class="coupon-code">TRK-4829</span></td><td>#PED-001</td><td>María López</td><td>Santo Domingo, RD</td><td>DHL Express</td><td><span class="status-badge processing">En tránsito</span></td><td>24 Jun 2026</td></tr>
-                                <tr><td><span class="coupon-code">TRK-4830</span></td><td>#PED-002</td><td>Carlos Pérez</td><td>Santiago, RD</td><td>FedEx</td><td><span class="status-badge pending">Por despachar</span></td><td>25 Jun 2026</td></tr>
-                                <tr><td><span class="coupon-code">TRK-4825</span></td><td>#PED-003</td><td>Ana Rodríguez</td><td>La Romana, RD</td><td>DHL Express</td><td><span class="status-badge active">Entregado</span></td><td>20 Jun 2026</td></tr>
-                                <tr><td><span class="coupon-code">TRK-4826</span></td><td>#PED-004</td><td>Pedro Martínez</td><td>Puerto Plata, RD</td><td>EPS</td><td><span class="status-badge processing">En tránsito</span></td><td>23 Jun 2026</td></tr>
-                                <tr><td><span class="coupon-code">TRK-4827</span></td><td>#PED-005</td><td>Lucía Sánchez</td><td>Santo Domingo, RD</td><td>FedEx</td><td><span class="status-badge active">Entregado</span></td><td>21 Jun 2026</td></tr>
-                                <tr><td><span class="coupon-code">TRK-4821</span></td><td>#PED-007</td><td>Rosa Díaz</td><td>Barahona, RD</td><td>EPS</td><td><span class="status-badge active">Entregado</span></td><td>19 Jun 2026</td></tr>
+                        <table class="product-table" id="despachos-table">
+                            <thead><tr><th>PEDIDO</th><th>CLIENTE</th><th>DIRECCIÓN</th><th>MÉTODO ENTREGA</th><th>ESTADO</th><th>FECHA PEDIDO</th><th>ACCIONES</th></tr></thead>
+                            <tbody id="despachos-tbody">
+                                <!-- Rows loaded from orders table via JS -->
+                                <tr><td colspan="7" style="text-align:center; padding: 40px; color: #aaa;"><i class="fas fa-truck" style="font-size:2rem; display:block; margin-bottom:10px;"></i>Cargando pedidos...</td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <div class="pagination-footer">
-                        <span>Mostrando 6 envíos activos</span>
-                        <div class="pagination"><button class="page-btn"><i class="fas fa-chevron-left"></i></button><button class="page-btn active">1</button><button class="page-btn"><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 PAGOS CON AZUL
+            ============================================================ -->
+            <section class="page-section" id="sec-pagos">
+                <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap: 24px;">
+
+                    <!-- Status Card -->
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <div class="card-header">
+                            <h2>Integración de Pagos — <span style="color:#0066CC;">Azul</span> (Servicios Digitales Popular)</h2>
+                        </div>
+                        <div class="product-form">
+                            <div style="display:flex; align-items:center; gap:20px; padding: 20px; background: linear-gradient(135deg, #0066CC10, #0099FF10); border-radius: 12px; border: 1px solid #0066CC30; margin-bottom: 24px;">
+                                <img src="https://www.azul.com.do/wp-content/themes/azul/img/logo-azul.png" alt="Azul" style="height:48px; object-fit:contain;" onerror="this.style.display='none'">
+                                <div>
+                                    <div style="font-size:1rem; font-weight:700; color:#0066CC;">Azul — Servicios Digitales Popular</div>
+                                    <div style="font-size:0.83rem; color:#555; margin-top:4px;">Pasarela de pago líder en República Dominicana. Acepta tarjetas Visa, Mastercard y American Express.</div>
+                                    <div style="margin-top:8px;">
+                                        <span id="azul-status-badge" style="display:inline-flex; align-items:center; gap:6px; padding: 4px 12px; border-radius:20px; font-size:0.78rem; font-weight:600; background:#fef3c7; color:#92400e;"><i class="fas fa-circle" style="font-size:0.5rem;"></i> No configurado</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Azul Credentials Form -->
+                            <div class="form-section">
+                                <h3><i class="fas fa-key" style="margin-right:8px; color:#0066CC;"></i>Credenciales de Azul</h3>
+                                <p style="font-size:0.83rem; color:#888; margin-bottom:16px;">Obtén estas credenciales registrándote como comercio en <a href="https://www.azul.com.do" target="_blank" style="color:#0066CC;">azul.com.do</a> o escribiendo a <a href="mailto:solucionesecommerce@azul.com.do" style="color:#0066CC;">solucionesecommerce@azul.com.do</a></p>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                                    <div class="form-group">
+                                        <label>Merchant ID (Auth1)</label>
+                                        <input type="text" id="azul-merchant-id" placeholder="Ej. 39038540035" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Merchant Name</label>
+                                        <input type="text" id="azul-merchant-name" placeholder="IVAD SRL" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Auth1 (Usuario)</label>
+                                        <input type="text" id="azul-auth1" placeholder="Usuario de API" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Auth2 (Contraseña)</label>
+                                        <input type="password" id="azul-auth2" placeholder="Contraseña de API" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-top:8px;">
+                                    <label>Ambiente</label>
+                                    <select id="azul-env">
+                                        <option value="sandbox">🧪 Pruebas (Sandbox)</option>
+                                        <option value="production">🔴 Producción</option>
+                                    </select>
+                                </div>
+                                <button class="btn-save" id="btn-save-azul" onclick="saveAzulConfig()" style="margin-top:12px;"><i class="fas fa-save"></i> Guardar configuración</button>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Integration Method Card -->
+                    <div class="card">
+                        <div class="card-header"><h2>Método de integración</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Página de Pagos (Recomendado)</h3>
+                                <p style="font-size:0.83rem; color:#666; line-height:1.6;">El cliente es redirigido a la página segura de Azul para completar el pago. Sin necesidad de manejo de datos de tarjeta en tu servidor. Menor requisito de cumplimiento PCI.</p>
+                                <div style="margin-top:12px; padding:12px; background:#f0fdf4; border-radius:8px; border:1px solid #86efac;">
+                                    <strong style="color:#166534; font-size:0.85rem;"><i class="fas fa-check-circle"></i> Recomendado para IVAD</strong>
+                                    <p style="font-size:0.8rem; color:#166534; margin:4px 0 0;">Implementación simple, máxima seguridad, sin costos adicionales de infraestructura.</p>
+                                </div>
+                                <div style="margin-top:16px; padding:12px; background:#f8f9fa; border-radius:8px; border:1px solid #e2e8f0; font-size:0.82rem; color:#555;">
+                                    <strong>URL de Retorno (Post-Pago):</strong><br>
+                                    <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:0.8rem;">https://www.ivadsrl.com/pago-exitoso</code>
+                                    <br><br>
+                                    <strong>URL de Error:</strong><br>
+                                    <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:0.8rem;">https://www.ivadsrl.com/pago-error</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Help Card -->
+                    <div class="card">
+                        <div class="card-header"><h2>Soporte y contacto Azul</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <div style="display:flex; flex-direction:column; gap:14px; font-size:0.88rem;">
+                                    <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                                        <i class="fas fa-envelope" style="color:#0066CC; font-size:1.2rem; width:24px;"></i>
+                                        <div><strong>E-commerce</strong><br><a href="mailto:solucionesecommerce@azul.com.do" style="color:#0066CC;">solucionesecommerce@azul.com.do</a></div>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                                        <i class="fas fa-phone" style="color:#0066CC; font-size:1.2rem; width:24px;"></i>
+                                        <div><strong>Teléfono</strong><br><a href="tel:8095442985" style="color:#0066CC;">809-544-2985</a></div>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                                        <i class="fas fa-globe" style="color:#0066CC; font-size:1.2rem; width:24px;"></i>
+                                        <div><strong>Portal de desarrolladores</strong><br><a href="https://www.azul.com.do" target="_blank" style="color:#0066CC;">azul.com.do → Desarrolladores</a></div>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                                        <i class="fas fa-credit-card" style="color:#0066CC; font-size:1.2rem; width:24px;"></i>
+                                        <div><strong>Acepta</strong><br>Visa · Mastercard · American Express</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </section>
 
@@ -1257,9 +1370,105 @@ async function deleteCategory(id) {
 window.addEventListener('DOMContentLoaded', () => {
   loadProducts();
   loadCategories();
+  loadDespachos();
+  loadAzulConfig();
 });
+
+// ============ AZUL CONFIG ============
+function loadAzulConfig() {
+    const cfg = JSON.parse(localStorage.getItem('ivad_azul_config') || '{}');
+    if (cfg.merchantId) document.getElementById('azul-merchant-id').value = cfg.merchantId;
+    if (cfg.merchantName) document.getElementById('azul-merchant-name').value = cfg.merchantName;
+    if (cfg.auth1) document.getElementById('azul-auth1').value = cfg.auth1;
+    if (cfg.auth2) document.getElementById('azul-auth2').value = cfg.auth2;
+    if (cfg.env) document.getElementById('azul-env').value = cfg.env;
+    const badge = document.getElementById('azul-status-badge');
+    if (badge && cfg.merchantId) {
+        badge.style.background = '#d1fae5';
+        badge.style.color = '#065f46';
+        badge.innerHTML = '<i class="fas fa-circle" style="font-size:0.5rem;"></i> Configurado';
+    }
+}
+
+function saveAzulConfig() {
+    const cfg = {
+        merchantId: document.getElementById('azul-merchant-id').value.trim(),
+        merchantName: document.getElementById('azul-merchant-name').value.trim(),
+        auth1: document.getElementById('azul-auth1').value.trim(),
+        auth2: document.getElementById('azul-auth2').value.trim(),
+        env: document.getElementById('azul-env').value
+    };
+    if (!cfg.merchantId || !cfg.auth1 || !cfg.auth2) {
+        alert('Por favor completa Merchant ID, Auth1 y Auth2 antes de guardar.');
+        return;
+    }
+    localStorage.setItem('ivad_azul_config', JSON.stringify(cfg));
+    const badge = document.getElementById('azul-status-badge');
+    if (badge) {
+        badge.style.background = '#d1fae5';
+        badge.style.color = '#065f46';
+        badge.innerHTML = '<i class="fas fa-circle" style="font-size:0.5rem;"></i> Configurado';
+    }
+    alert('Configuración de Azul guardada correctamente.');
+}
+
+// ============ DESPACHOS ============
+async function loadDespachos() {
+    const tbody = document.getElementById('despachos-tbody');
+    if (!tbody) return;
+
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#aaa;">Conecta Supabase para ver pedidos</td></tr>';
+        return;
+    }
+
+    const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+    if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#aaa;"><i class="fas fa-truck" style="font-size:2rem; display:block; margin-bottom:10px;"></i>No hay pedidos aún</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = data.map(o => {
+        const statusMap = {
+            'pendiente': '<span class="status-badge pending">Pendiente de despacho</span>',
+            'en_camino': '<span class="status-badge processing">En camino</span>',
+            'entregado': '<span class="status-badge active">Entregado</span>',
+            'cancelado': '<span class="status-badge inactive">Cancelado</span>'
+        };
+        const deliveryMethod = o.delivery_method || o.shipping_method || 'Por confirmar';
+        const address = o.client_address || o.address || '—';
+        const fecha = o.created_at ? new Date(o.created_at).toLocaleDateString('es-DO') : '—';
+        const statusBadge = statusMap[o.status] || `<span class="status-badge pending">${o.status || 'Pendiente'}</span>`;
+        return `
+        <tr>
+            <td><strong>#${o.id ? o.id.toString().slice(-6).toUpperCase() : '—'}</strong></td>
+            <td>${o.client_name || '—'}<br><small style="color:#888">${o.client_email || ''}</small></td>
+            <td>${address}</td>
+            <td><i class="fas fa-truck" style="color:#4A90D9; margin-right:4px;"></i>${deliveryMethod}</td>
+            <td>${statusBadge}</td>
+            <td>${fecha}</td>
+            <td>
+                <div class="actions">
+                    <select onchange="updateDespachoStatus('${o.id}', this.value)" style="font-size:0.78rem; padding:4px 8px; border-radius:6px; border:1px solid #ddd; cursor:pointer;">
+                        <option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option>
+                        <option value="en_camino" ${o.status==='en_camino'?'selected':''}>En camino</option>
+                        <option value="entregado" ${o.status==='entregado'?'selected':''}>Entregado</option>
+                        <option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>
+                    </select>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+async function updateDespachoStatus(orderId, newStatus) {
+    if (!supabaseClient) return;
+    const { error } = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', orderId);
+    if (error) {
+        alert('Error al actualizar: ' + error.message);
+    }
+}
 </script>
 </body>
 </html>
-
 
