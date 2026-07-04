@@ -1637,8 +1637,9 @@ h1, h2, h3, h4 {
 
 .modern-card .store-card-actions {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
     margin-top: 10px;
 }
 
@@ -2572,15 +2573,16 @@ h1, h2, h3, h4 {
     color: #fff;
     border: none;
     border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 0.78rem;
+    padding: 10px 16px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
     transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
-    white-space: nowrap;
     letter-spacing: 0.3px;
 }
 
