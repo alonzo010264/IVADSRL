@@ -276,12 +276,86 @@ document.addEventListener('DOMContentLoaded', () => {
     const qtyInput = document.querySelector('.qty-input');
 
     if (modalOverlay) {
+        // Helper: inject recommended products into modal
+        function showRecommended(currentId) {
+            const recommendedGrid = document.getElementById('modal-recommended-grid');
+            if (!recommendedGrid) return;
+            
+            // Get the current product category
+            const currentData = productsData[currentId];
+            const currentCat = currentData ? currentData.category : null;
+            
+            // Filter out current product, prefer same category
+            let pool = Object.entries(productsData)
+                .filter(([key]) => key !== currentId)
+                .map(([key, val]) => ({ id: key, ...val }));
+            
+            // Prefer same category, fallback to all
+            let sameCat = pool.filter(p => p.category === currentCat);
+            if (sameCat.length < 4) sameCat = pool;
+            
+            // Shuffle and pick 4
+            const shuffled = sameCat.sort(() => Math.random() - 0.5).slice(0, 4);
+            
+            if (shuffled.length === 0) {
+                recommendedGrid.closest('.modal-recommended').style.display = 'none';
+                return;
+            }
+            recommendedGrid.closest('.modal-recommended').style.display = '';
+            recommendedGrid.innerHTML = shuffled.map(p => `
+                <div class="rec-card" data-id="${p.id}">
+                    <div class="rec-card-img">
+                        <img src="${p.img}" alt="${p.title}" loading="lazy">
+                    </div>
+                    <div class="rec-card-info">
+                        <p class="rec-card-title">${p.title}</p>
+                        <span class="rec-card-price">${p.price}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         // Delegate click for product cards (both static on index and dynamic on store)
         document.addEventListener('click', (e) => {
+            // Handle 'Add to cart' button on card directly (no modal)
+            const addBtn = e.target.closest('.btn-add-to-cart-card');
+            if (addBtn) {
+                e.stopPropagation();
+                const id = addBtn.getAttribute('data-id');
+                const title = addBtn.getAttribute('data-title');
+                const price = addBtn.getAttribute('data-price');
+                const img = addBtn.getAttribute('data-img');
+                addToCart(id, title, price, img, 1);
+                return;
+            }
+
+            // Handle recommended product click inside modal
+            const recCard = e.target.closest('.rec-card');
+            if (recCard && modalOverlay.classList.contains('active')) {
+                const id = recCard.getAttribute('data-id');
+                if (id && productsData[id]) {
+                    const data = productsData[id];
+                    if (mImg) mImg.src = data.img;
+                    if (mCategory) mCategory.textContent = data.category;
+                    if (mTitle) mTitle.textContent = data.title;
+                    if (mPrice) mPrice.textContent = data.price;
+                    if (mReviewsCount) mReviewsCount.textContent = data.reviews;
+                    if (mDesc) mDesc.textContent = data.desc;
+                    if (mFeatures) mFeatures.innerHTML = data.features.map(f => `<li>${f}</li>`).join('');
+                    if (qtyInput) qtyInput.value = 1;
+                    showRecommended(id);
+                    // Scroll modal back to top
+                    const mc = document.querySelector('.modal-content');
+                    if (mc) mc.scrollTop = 0;
+                }
+                return;
+            }
+
+            // Open modal on card click (but not on add-to-cart button)
             const card = e.target.closest('.producto-card, .store-card');
             if (card) {
-                // Skip if clicking inside fav buttons
-                if (e.target.closest('.fav-btn-card') || e.target.closest('.fav-btn')) {
+                // Skip if clicking inside fav buttons or the add to cart button
+                if (e.target.closest('.fav-btn-card') || e.target.closest('.fav-btn') || e.target.closest('.btn-add-to-cart-card')) {
                     return;
                 }
                 const id = card.getAttribute('data-id');
@@ -298,6 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         mFeatures.innerHTML = data.features.map(f => `<li>${f}</li>`).join('');
                     }
                     if (qtyInput) qtyInput.value = 1;
+                    showRecommended(id);
 
                     modalOverlay.classList.add('active');
                     document.body.style.overflow = 'hidden'; // Prevent background scrolling
@@ -738,21 +813,20 @@ async function fetchStoreProducts() {
             }
             
             storeGrid.innerHTML = products.map(p => {
-                const isNew = Math.random() > 0.7 ? '<span class="modern-badge badge-new">Nuevo</span>' : '';
+                const isNew = (p.recentScore && p.recentScore > 7) ? '<span class="modern-badge badge-new">Nuevo</span>' : '';
                 return `
                 <div class="store-card modern-card" data-id="${p.id}">
-                    <div class="producto-img-container">
+                    <div class="producto-img-container card-open-modal">
                         ${isNew}
                         <img src="${p.img}" alt="${p.title}" loading="lazy">
-                        <div class="card-overlay-actions">
-                            <button class="btn-icon-action add-to-cart-quick" data-id="${p.id}" title="Añadir al Carrito"><i class="fas fa-cart-plus"></i></button>
-                            <button class="btn-icon-action btn-quick-view" title="Vista Rápida"><i class="far fa-eye"></i></button>
-                        </div>
                     </div>
                     <div class="producto-info">
-                        <h4>${p.title}</h4>
+                        <h4 class="card-open-modal">${p.title}</h4>
                         <div class="store-card-actions">
                             <span class="modern-price">${p.price}</span>
+                            <button class="btn-add-to-cart-card" data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}" data-price="${p.price}" data-img="${p.img}">
+                                <i class="fas fa-cart-plus"></i> Agregar
+                            </button>
                         </div>
                     </div>
                 </div>
