@@ -695,12 +695,13 @@
 <script>
 // Navegación
 const sectionMeta = {
-    dashboard:     { title: 'Dashboard',       sub: 'Bienvenido al panel de administración' },
-    productos:     { title: 'Productos',        sub: 'Gestiona tu catálogo de productos de desechables' },
-    categorias:    { title: 'Categorías',       sub: 'Administra las categorías de tus productos' },
-    envios:        { title: 'Envíos',           sub: 'Configura las tarifas de envío' },
-    pedidos:       { title: 'Pedidos',          sub: 'Revisa y gestiona los pedidos recibidos' },
-    configuracion: { title: 'Configuración',    sub: 'Ajustes generales de la tienda' },
+    dashboard:     { title: 'Dashboard',              sub: 'Bienvenido al panel de administración' },
+    productos:     { title: 'Productos',               sub: 'Gestiona tu catálogo de productos de desechables' },
+    categorias:    { title: 'Categorías',              sub: 'Administra las categorías de tus productos' },
+    envios:        { title: 'Despachos',               sub: 'Gestiona el estado de entrega de tus pedidos' },
+    pagos:         { title: 'Pagos — Azul',            sub: 'Configura la pasarela de pago Azul para República Dominicana' },
+    pedidos:       { title: 'Pedidos',                 sub: 'Revisa y gestiona los pedidos recibidos' },
+    configuracion: { title: 'Configuración',           sub: 'Ajustes generales de la tienda' },
 };
 
 document.querySelectorAll('.sidebar-nav li').forEach(li => {
@@ -1418,13 +1419,13 @@ async function loadDespachos() {
     if (!tbody) return;
 
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#aaa;">Conecta Supabase para ver pedidos</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#aaa;"><i class="fas fa-plug" style="font-size:2rem; display:block; margin-bottom:10px;"></i>Conecta Supabase para ver pedidos</td></tr>';
         return;
     }
 
     const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
     if (error || !data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#aaa;"><i class="fas fa-truck" style="font-size:2rem; display:block; margin-bottom:10px;"></i>No hay pedidos aún</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#aaa;"><i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:10px;"></i>Aún no hay pedidos registrados</td></tr>';
         return;
     }
 
