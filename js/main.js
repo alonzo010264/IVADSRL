@@ -913,7 +913,19 @@ async function fetchStoreProducts() {
         fetchStoreProducts();
 
         if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-            supabaseClient.channel('store-updates').on('postgres_changes', {event:'*', schema:'public'}, () => { fetchStoreProducts(); loadStoreCategories(); }).subscribe();
+            supabaseClient.channel('store-products')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
+                    console.log('Realtime products payload:', payload);
+                    fetchStoreProducts(); 
+                })
+                .subscribe();
+
+            supabaseClient.channel('store-categories')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, (payload) => {
+                    console.log('Realtime categories payload:', payload);
+                    loadStoreCategories(); 
+                })
+                .subscribe();
         }
     }
 
