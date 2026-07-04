@@ -700,6 +700,11 @@ async function fetchStoreProducts() {
         const urlParams = new URLSearchParams(window.location.search);
         let activeCategory = urlParams.get('category') || 'all';
 
+        // Ocultar parámetro de la URL
+        if (urlParams.has('category')) {
+            window.history.replaceState(null, '', window.location.pathname);
+        }
+
         // Sync initial active state in UI if category is from URL
         if (activeCategory !== 'all') {
             catLinks.forEach(l => {
@@ -732,25 +737,27 @@ async function fetchStoreProducts() {
                 return;
             }
             
-            storeGrid.innerHTML = products.map(p => `
-                <div class="store-card" data-id="${p.id}">
+            storeGrid.innerHTML = products.map(p => {
+                const isNew = Math.random() > 0.7 ? '<span class="modern-badge badge-new">Nuevo</span>' : '';
+                return `
+                <div class="store-card modern-card" data-id="${p.id}">
                     <div class="producto-img-container">
-                        <img src="${p.img}" alt="${p.title}">
+                        ${isNew}
+                        <img src="${p.img}" alt="${p.title}" loading="lazy">
+                        <div class="card-overlay-actions">
+                            <button class="btn-icon-action add-to-cart-quick" data-id="${p.id}" title="Añadir al Carrito"><i class="fas fa-cart-plus"></i></button>
+                            <button class="btn-icon-action btn-quick-view" title="Vista Rápida"><i class="far fa-eye"></i></button>
+                        </div>
                     </div>
                     <div class="producto-info">
                         <h4>${p.title}</h4>
                         <div class="store-card-actions">
-                            <span class="btn-detail-link">Ver detalles</span>
-                            <button class="add-to-cart-quick" data-id="${p.id}" aria-label="Agregar al carrito" style="background: none; border: none; cursor: pointer; color: var(--primary-color); font-size: 1.15rem; padding: 5px; transition: color 0.2s ease;">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                            <button class="fav-btn-card" aria-label="Favorito">
-                                <i class="far fa-heart"></i>
-                            </button>
+                            <span class="modern-price">${p.price}</span>
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
             
             if (resultsCount) {
                 resultsCount.textContent = `Mostrando 1-${products.length} de ${products.length} productos`;
@@ -1111,7 +1118,11 @@ async function fetchStoreProducts() {
             cart.push({ id, title, price, img, qty });
         }
         saveAndRenderCart();
-        toggleCart(true);
+        if (window.innerWidth <= 768) {
+            window.showToast("Agregado: " + title);
+        } else {
+            toggleCart(true); // En escritorio sí lo abrimos
+        }
     }
 
     // Add to Cart from the Detail Modal
@@ -1249,3 +1260,33 @@ async function fetchStoreProducts() {
         }
     }
 });
+
+// Toast Notifications System
+window.showToast = function(message) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = <i class="fas fa-check-circle"></i> <span> + message + </span>;
+    
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 400); // Wait for fade out animation
+    }, 3000); // Show for 3 seconds
+};
+
+    // Mobile Filter Toggle
+    const btnToggleFilters = document.getElementById('btn-toggle-filters');
+    const filtersSidebar = document.getElementById('filters-sidebar');
+    if (btnToggleFilters && filtersSidebar) {
+        btnToggleFilters.addEventListener('click', () => {
+            filtersSidebar.classList.toggle('show-mobile');
+        });
+    }

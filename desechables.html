@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/png" href="logo_transparent.png">
 </head>
 <body>
     <!-- Top Bar -->
@@ -86,8 +85,12 @@
 
     <!-- Main Content Layout -->
     <div class="container store-layout">
+        <!-- Mobile Filter Toggle -->
+        <div class="mobile-filter-bar">
+            <button id="btn-toggle-filters" class="btn btn-outline-dark"><i class="fas fa-filter"></i> Filtrar Productos</button>
+        </div>
         <!-- Sidebar Filters -->
-        <aside class="filters-sidebar">
+        <aside class="filters-sidebar" id="filters-sidebar">
             <div class="filter-section">
                 <h3>CATEGORÍAS</h3>
                 <ul class="category-links">
@@ -361,5 +364,4 @@
     <script src="js/main.js"></script>
 </body>
 </html>
-
 
