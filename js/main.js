@@ -814,6 +814,10 @@ async function fetchStoreProducts() {
             
             storeGrid.innerHTML = products.map(p => {
                 const isNew = (p.recentScore && p.recentScore > 7) ? '<span class="modern-badge badge-new">Nuevo</span>' : '';
+                // Short description: pull from productsData if available, fallback to category + material
+                const pData = productsData[p.id];
+                const rawDesc = pData && pData.desc ? pData.desc : (p.material ? `Material: ${p.material}` : '');
+                const shortDesc = rawDesc && rawDesc !== p.title ? rawDesc.substring(0, 60) + (rawDesc.length > 60 ? '...' : '') : '';
                 return `
                 <div class="store-card modern-card" data-id="${p.id}">
                     <div class="producto-img-container card-open-modal">
@@ -822,10 +826,11 @@ async function fetchStoreProducts() {
                     </div>
                     <div class="producto-info">
                         <h4 class="card-open-modal">${p.title}</h4>
+                        ${shortDesc ? `<p class="card-desc">${shortDesc}</p>` : ''}
                         <div class="store-card-actions">
                             <span class="modern-price">${p.price}</span>
                             <button class="btn-add-to-cart-card" data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}" data-price="${p.price}" data-img="${p.img}">
-                                <i class="fas fa-cart-plus"></i> Agregar
+                                <i class="fas fa-cart-plus"></i> Agregar al carrito
                             </button>
                         </div>
                     </div>
