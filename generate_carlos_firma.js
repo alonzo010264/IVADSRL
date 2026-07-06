@@ -80,13 +80,6 @@ async function main() {
         </tr>
       </table>
       
-      <!-- Línea naranja larga horizontal -->
-      <div style="width: 100%; height: 1.5px; background-color: #C87A30; margin-bottom: 12px;"></div>
-      
-      <!-- Eslogan en cursiva -->
-      <div style="margin-top: 5px;">
-        <img src="${sloganUrl}" alt="Hazlo especial, hazlo IVAD." height="32" style="display: block; height: 32px; border: none;">
-      </div>
       
     </td>
   </tr>
