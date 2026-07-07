@@ -683,7 +683,8 @@ async function fetchStoreProducts() {
                     if (error) throw error;
                     
                     if (data && data.length > 0) {
-                        desechablesProductsList = data.map(p => ({
+                        const disposableData = data.filter(p => p.sub_category !== 'fotos');
+                        desechablesProductsList = disposableData.map(p => ({
                             id: p.id,
                             title: p.title,
                             price: p.price,
@@ -696,13 +697,13 @@ async function fetchStoreProducts() {
                         }));
 
                         // Inject database details into productsData dynamically
-                        data.forEach(p => {
+                        disposableData.forEach(p => {
                             productsData[p.id] = {
                                 category: 'DESECHABLES',
                                 title: p.title,
                                 price: p.price,
                                 img: p.img,
-                                reviews: `(${Math.floor(Math.random() * 80) + 20} reseñas)`,
+                                reviews: `(${Math.floor(Math.random() * 80) + 20} reseÃ±as)`,
                                 desc: p.description || p.title,
                                 features: p.features || [
                                     `<i class="fas fa-tag"></i> Material: ${p.material || 'Varios'}`
@@ -735,7 +736,8 @@ async function fetchStoreProducts() {
                 sourceList = [];
             }
 
-            desechablesProductsList = sourceList.filter(p => p.status === 'Activo').map(p => ({
+            const disposableSource = sourceList.filter(p => p.status === 'Activo' && (p.sub_category || p.subCategory) !== 'fotos');
+            desechablesProductsList = disposableSource.map(p => ({
                 id: p.id,
                 title: p.title,
                 price: p.price,
@@ -747,13 +749,13 @@ async function fetchStoreProducts() {
                 recentScore: p.recent_score || p.recentScore || 0
             }));
 
-            sourceList.forEach(p => {
+            disposableSource.forEach(p => {
                 productsData[p.id] = {
                     category: 'DESECHABLES',
                     title: p.title,
                     price: p.price,
                     img: p.img,
-                    reviews: `(${Math.floor(Math.random() * 85) + 15} reseñas)`,
+                    reviews: `(${Math.floor(Math.random() * 85) + 15} reseÃ±as)`,
                     desc: p.description || p.desc || p.title,
                     features: p.features || [
                         `<i class="fas fa-tag"></i> Material: ${p.material || 'Varios'}`
