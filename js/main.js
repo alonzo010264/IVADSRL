@@ -1018,6 +1018,68 @@ async function fetchStoreProducts() {
             });
         }
 
+        // Initialize Top Hero Slider
+        const sliderSlides = document.querySelectorAll('.top-hero-slider .slide');
+        const prevSlideBtn = document.querySelector('.prev-slide');
+        const nextSlideBtn = document.querySelector('.next-slide');
+        const slideDots = document.querySelectorAll('.slider-dots .dot');
+
+        if (sliderSlides.length > 0) {
+            let currentSlideIndex = 0;
+            let slideInterval;
+
+            function showSlide(index) {
+                sliderSlides.forEach(s => s.classList.remove('active'));
+                slideDots.forEach(d => d.classList.remove('active'));
+
+                currentSlideIndex = (index + sliderSlides.length) % sliderSlides.length;
+                sliderSlides[currentSlideIndex].classList.add('active');
+                if (slideDots[currentSlideIndex]) {
+                    slideDots[currentSlideIndex].classList.add('active');
+                }
+            }
+
+            function nextSlide() {
+                showSlide(currentSlideIndex + 1);
+            }
+
+            function prevSlide() {
+                showSlide(currentSlideIndex - 1);
+            }
+
+            function startSlideShow() {
+                stopSlideShow();
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+
+            function stopSlideShow() {
+                if (slideInterval) clearInterval(slideInterval);
+            }
+
+            if (nextSlideBtn) {
+                nextSlideBtn.addEventListener('click', () => {
+                    nextSlide();
+                    startSlideShow();
+                });
+            }
+
+            if (prevSlideBtn) {
+                prevSlideBtn.addEventListener('click', () => {
+                    prevSlide();
+                    startSlideShow();
+                });
+            }
+
+            slideDots.forEach((dot, idx) => {
+                dot.addEventListener('click', () => {
+                    showSlide(idx);
+                    startSlideShow();
+                });
+            });
+
+            startSlideShow();
+        }
+
         // Initialize grid on load
         loadStoreCategories();
         fetchStoreProducts();
