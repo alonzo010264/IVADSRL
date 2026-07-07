@@ -28,9 +28,10 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         html, body {
-            min-height: 100vh;
+            height: 100%;
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
 
         body {
@@ -45,7 +46,8 @@
             flex: 1;
             display: flex;
             align-items: stretch;
-            min-height: calc(100vh - 120px);
+            height: 0; /* flex will expand to fill remaining space */
+            overflow: hidden;
         }
 
         /* ═══ LEFT PANEL ═══════════════════════════════════════════ */
@@ -224,7 +226,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 48px 56px;
+            padding: 32px 56px;
             overflow-y: auto;
             background: var(--off-white);
         }
@@ -515,8 +517,8 @@
         /* ═══ RESPONSIVE ═══════════════════════════════════════════ */
         @media (max-width: 900px) {
             .lp-left { display: none; }
-            .lp-right { flex: 1; padding: 32px 24px; }
-            .lp-main { min-height: calc(100vh - 120px); }
+            .lp-right { flex: 1; padding: 32px 24px; overflow-y: auto; }
+            .lp-main { height: auto; min-height: calc(100vh - 120px); }
         }
         @media (max-width: 520px) {
             .lp-row { grid-template-columns: 1fr; gap: 0; }
@@ -543,13 +545,24 @@
 
     <!-- Header / Navigation -->
     <header class="header">
-        <div class="container header-inner" style="justify-content: space-between;">
-            <div class="logo" onclick="window.location.href='desechables.html'" style="cursor: pointer;">
+        <div class="container header-inner">
+            <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
                 <h1>IVAD.</h1>
-                <span>Home & Goods</span>
+                <span>Home &amp; Goods</span>
             </div>
-            <div style="font-size: 0.85rem; font-weight: 500; color: var(--text-light); display: flex; align-items: center; gap: 8px;">
-                <i class="fas fa-lock" style="color: var(--secondary-color);"></i> Acceso Seguro
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li><a href="desechables.html">Tienda</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+            <button class="mobile-menu-btn" onclick="document.querySelector('.main-nav').classList.toggle('nav-open')"><i class="fas fa-bars"></i></button>
+            <div class="header-icons">
+                <a href="#"><i class="fas fa-search"></i></a>
+                <a href="login.html" class="active"><i class="far fa-user"></i></a>
+                <a href="#" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
             </div>
         </div>
     </header>
