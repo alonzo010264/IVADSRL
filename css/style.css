@@ -154,6 +154,16 @@ h1, h2, h3, h4 {
     letter-spacing: 1px;
 }
 
+.logo img {
+    height: 85px !important; /* Enlarged logo from 60px to 85px */
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+    transform: scale(1.05); /* Premium hover micro-interaction */
+}
+
 .main-nav > ul {
     display: flex;
     gap: 30px;
