@@ -673,17 +673,32 @@ function renderStoreCategories() {
     });
 }
 
-async function fetchStoreProducts() {
+// Categorias internas que NO son productos de venta
+        const EXCLUDED_CATEGORIES = new Set(['fotos','logo_banners','images','ivad_pagina']);
+
+        async function fetchStoreProducts() {
             if (supabaseClient) {
                 try {
-                    const { data, error } = await supabaseClient
-                        .from('products')
-                        .select('*')
-                        .eq('status', 'Activo');
-                    if (error) throw error;
+                    // Paginacion para obtener TODOS los productos (Supabase limita a 1000 por llamada)
+                    let allData = [];
+                    let from = 0;
+                    const PAGE_SIZE = 1000;
+                    while (true) {
+                        const { data: page, error } = await supabaseClient
+                            .from('products')
+                            .select('*')
+                            .eq('status', 'Activo')
+                            .range(from, from + PAGE_SIZE - 1);
+                        if (error) throw error;
+                        if (!page || page.length === 0) break;
+                        allData = allData.concat(page);
+                        if (page.length < PAGE_SIZE) break;
+                        from += PAGE_SIZE;
+                    }
+                    const data = allData;
                     
                     if (data && data.length > 0) {
-                        const disposableData = data.filter(p => p.sub_category !== 'fotos');
+                        const disposableData = data.filter(p => !EXCLUDED_CATEGORIES.has(p.sub_category));
                         desechablesProductsList = disposableData.map(p => ({
                             id: p.id,
                             title: p.title,
@@ -736,7 +751,7 @@ async function fetchStoreProducts() {
                 sourceList = [];
             }
 
-            const disposableSource = sourceList.filter(p => p.status === 'Activo' && (p.sub_category || p.subCategory) !== 'fotos');
+            const disposableSource = sourceList.filter(p => p.status === 'Activo' && !EXCLUDED_CATEGORIES.has(p.sub_category || p.subCategory));
             desechablesProductsList = disposableSource.map(p => ({
                 id: p.id,
                 title: p.title,
