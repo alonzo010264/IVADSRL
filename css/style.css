@@ -101,7 +101,7 @@ h1, h2, h3, h4 {
 
 /* Top Bar */
 .top-bar {
-    background-color: var(--primary-color);
+    background-color: #22252a; /* Dark charcoal/black */
     color: var(--text-light);
     font-size: 0.8rem;
     padding: 10px 0;
@@ -125,13 +125,13 @@ h1, h2, h3, h4 {
 
 /* Header */
 .header {
-    background-color: #f0f0ee;
+    background-color: #e2e5e8; /* Defined cool gray */
     color: #313f4a;
     padding: 20px 0;
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #c8ccd0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
