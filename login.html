@@ -27,11 +27,17 @@
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+        html, body {
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--off-white);
             color: var(--text);
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -39,8 +45,25 @@
         .lp-main {
             flex: 1;
             display: flex;
-            align-items: stretch;
-            min-height: calc(100vh - 120px);
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 120px);
+            background: var(--off-white);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .lp-card {
+            display: flex;
+            width: 100%;
+            max-width: 960px;
+            height: 100%;
+            max-height: 520px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            overflow: hidden;
+            border: 1px solid var(--border);
         }
 
         /* ═══ LEFT PANEL ═══════════════════════════════════════════ */
@@ -416,7 +439,7 @@
         .lp-btn-submit {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            background: var(--gold);
             color: var(--white);
             border: none;
             border-radius: 8px;
@@ -427,11 +450,9 @@
             cursor: pointer;
             transition: all .25s;
             font-family: 'Montserrat', sans-serif;
-            box-shadow: 0 4px 14px rgba(191,166,135,.4);
         }
         .lp-btn-submit:hover {
-            background: linear-gradient(135deg, #cdb29a 0%, var(--gold) 100%);
-            box-shadow: 0 6px 20px rgba(191,166,135,.5);
+            background: var(--gold-dark);
             transform: translateY(-1px);
         }
         .lp-btn-submit:active { transform: translateY(0); }
@@ -511,14 +532,29 @@
 
         /* ═══ RESPONSIVE ═══════════════════════════════════════════ */
         @media (max-width: 900px) {
+            html, body {
+                overflow: auto;
+                height: auto;
+            }
+            .lp-main {
+                height: auto;
+                padding: 10px;
+                min-height: calc(100vh - 120px);
+                align-items: flex-start;
+            }
+            .lp-card {
+                flex-direction: column;
+                max-height: none;
+                height: auto;
+                box-shadow: none;
+                border: none;
+                background: transparent;
+            }
             .lp-left { display: none; }
-            .lp-right { flex: 1; padding: 32px 24px; }
-            .lp-main { min-height: calc(100vh - 57px); }
+            .lp-right { flex: 1; padding: 20px 10px; background: transparent; }
         }
         @media (max-width: 520px) {
             .lp-row { grid-template-columns: 1fr; gap: 0; }
-            .lp-header { padding: 12px 16px; }
-            .lp-secure-badge { display: none; }
         }
     </style>
 </head>
@@ -542,28 +578,20 @@
 
     <!-- Header / Navigation -->
     <header class="header">
-        <div class="container header-inner">
+        <div class="container header-inner" style="justify-content: space-between;">
             <div class="logo" onclick="window.location.href='desechables.html'" style="cursor: pointer;">
                 <h1>IVAD.</h1>
                 <span>Home & Goods</span>
             </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="desechables.html">Inicio</a></li>
-                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
-                    <li><a href="desechables.html" class="active">Desechables</a></li>
-                    <li><a href="contacto.html">Contacto</a></li>
-                </ul>
-            </nav>
-            <div class="header-icons">
-                <a href="login.html" class="active"><i class="far fa-user"></i></a>
-                <a href="desechables.html" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+            <div style="font-size: 0.85rem; font-weight: 500; color: var(--text-light); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-lock" style="color: var(--secondary-color);"></i> Acceso Seguro
             </div>
         </div>
     </header>
 
 <!-- ═══ MAIN ════════════════════════════════════════════════════ -->
 <main class="lp-main">
+    <div class="lp-card">
 
     <!-- LEFT PANEL -->
     <div class="lp-left">
@@ -774,7 +802,7 @@
             </div>
         </div>
     </div>
-
+    </div>
 </main>
 
 <!-- Supabase -->
