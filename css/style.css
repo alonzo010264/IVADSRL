@@ -155,7 +155,7 @@ h1, h2, h3, h4 {
 }
 
 .logo img {
-    height: 85px !important; /* Enlarged logo from 60px to 85px */
+    height: 120px !important; /* Enlarged logo to 120px */
     width: auto;
     transition: transform 0.3s ease;
 }
