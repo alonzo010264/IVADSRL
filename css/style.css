@@ -125,14 +125,14 @@ h1, h2, h3, h4 {
 
 /* Header */
 .header {
-    background-color: #e2e5e8; /* Defined cool gray */
-    color: #313f4a;
+    background-color: #22252a; /* Unified dark charcoal/black */
+    color: var(--text-light);
     padding: 20px 0;
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid #c8ccd0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-bottom: 1px solid #32353a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .header-inner {
@@ -162,7 +162,7 @@ h1, h2, h3, h4 {
 .main-nav a {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #313f4a;
+    color: #ffffff;
     transition: color 0.3s;
 }
 
@@ -179,7 +179,7 @@ h1, h2, h3, h4 {
     display: flex;
     gap: 20px;
     font-size: 1.2rem;
-    color: #313f4a;
+    color: #ffffff;
 }
 
 .mobile-menu-btn {
