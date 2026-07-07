@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
         :root {
             --primary:   #313f4a;
@@ -34,78 +35,12 @@
             display: flex;
             flex-direction: column;
         }
-
-        /* ═══ HEADER ═══════════════════════════════════════════════ */
-        .lp-header {
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            padding: 14px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 200;
-            box-shadow: 0 1px 8px rgba(0,0,0,.06);
-        }
-
-        .lp-logo {
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            line-height: 1;
-        }
-        .lp-logo-wordmark {
-            font-size: 1.75rem;
-            font-weight: 300;
-            letter-spacing: 4px;
-            color: var(--primary);
-        }
-        .lp-logo-wordmark span { color: var(--gold); font-weight: 700; }
-        .lp-logo-sub {
-            font-size: 0.62rem;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        .lp-header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .lp-back-link {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--muted);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color .2s;
-        }
-        .lp-back-link:hover { color: var(--primary); }
-
-        .lp-secure-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--muted);
-            background: #f0ede8;
-            padding: 5px 12px;
-            border-radius: 20px;
-        }
-        .lp-secure-badge i { color: var(--gold); }
-
-        /* ═══ MAIN LAYOUT ══════════════════════════════════════════ */
+        /* Main Layout */
         .lp-main {
             flex: 1;
             display: flex;
             align-items: stretch;
-            min-height: calc(100vh - 57px);
+            min-height: calc(100vh - 120px);
         }
 
         /* ═══ LEFT PANEL ═══════════════════════════════════════════ */
@@ -590,21 +525,42 @@
 <body>
 
 <!-- ═══ HEADER ══════════════════════════════════════════════════ -->
-<header class="lp-header">
-    <a href="desechables.html" class="lp-logo">
-        <span class="lp-logo-wordmark">IVAD<span>.</span></span>
-        <span class="lp-logo-sub">Home &amp; Goods</span>
-    </a>
-    <div class="lp-header-right">
-        <a href="desechables.html" class="lp-back-link">
-            <i class="fas fa-arrow-left"></i> Volver a la tienda
-        </a>
-        <div class="lp-secure-badge">
-            <i class="fas fa-lock"></i>
-            <span>Acceso seguro</span>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <span class="est">Est. 1996</span>
+            <div class="top-right">
+                <span>Envíos a todo el país</span>
+                <a href="contacto.html">Contáctanos</a>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
         </div>
     </div>
-</header>
+
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="container header-inner">
+            <div class="logo" onclick="window.location.href='desechables.html'" style="cursor: pointer;">
+                <h1>IVAD.</h1>
+                <span>Home & Goods</span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="desechables.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li><a href="desechables.html" class="active">Desechables</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <a href="login.html" class="active"><i class="far fa-user"></i></a>
+                <a href="desechables.html" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+            </div>
+        </div>
+    </header>
 
 <!-- ═══ MAIN ════════════════════════════════════════════════════ -->
 <main class="lp-main">
