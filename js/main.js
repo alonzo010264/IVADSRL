@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Open modal on card click (but not on add-to-cart button)
-            const card = e.target.closest('.producto-card, .store-card');
+            const card = e.target.closest('.producto-card, .store-card, .temu-card');
             if (card) {
                 // Skip if clicking inside fav buttons or the add to cart button
                 if (e.target.closest('.fav-btn-card') || e.target.closest('.fav-btn') || e.target.closest('.btn-add-to-cart-card')) {
@@ -764,73 +764,66 @@ async function fetchStoreProducts() {
 
         const searchInput = document.getElementById('search-input');
         const sortSelect = document.getElementById('sort-select');
-        const catLinks = document.querySelectorAll('.cat-link');
-        const highlightCards = document.querySelectorAll('.highlight-card');
-        const materialCheckboxes = document.querySelectorAll('input[name="material"]');
-        const usoCheckboxes = document.querySelectorAll('input[name="uso"]');
-        const btnClearFilters = document.getElementById('btn-clear-filters');
+        const catPills = document.querySelectorAll('.cat-pill');
         const resultsCount = document.getElementById('results-count');
         const btnShowAllPromo = document.getElementById('btn-show-all-promo');
+        const searchSuggestions = document.getElementById('search-suggestions');
+        const temuSearchBtn = document.getElementById('temu-search-btn');
+        const btnLoadMore = document.getElementById('btn-load-more');
+        const loadMoreWrapper = document.getElementById('load-more-wrapper');
 
         const urlParams = new URLSearchParams(window.location.search);
         let activeCategory = urlParams.get('category') || 'all';
 
-        // Ocultar parámetro de la URL
+        let currentLimit = 20;
+        let filteredProductsList = [];
+
+        // Hide parameter in URL
         if (urlParams.has('category')) {
             window.history.replaceState(null, '', window.location.pathname);
         }
 
         // Sync initial active state in UI if category is from URL
         if (activeCategory !== 'all') {
-            catLinks.forEach(l => {
-                if (l.getAttribute('data-category') === activeCategory) {
-                    l.classList.add('active');
+            catPills.forEach(p => {
+                if (p.getAttribute('data-category') === activeCategory) {
+                    p.classList.add('active');
                 } else {
-                    l.classList.remove('active');
-                }
-            });
-            highlightCards.forEach(c => {
-                if (c.getAttribute('data-category') === activeCategory) {
-                    c.style.borderColor = 'var(--secondary-color)';
-                    c.style.boxShadow = '0 5px 15px rgba(0,0,0,0.05)';
-                } else {
-                    c.style.borderColor = 'var(--border-color)';
-                    c.style.boxShadow = 'none';
+                    p.classList.remove('active');
                 }
             });
         }
 
-        function renderProducts(products) {
-            if (products.length === 0) {
+        function renderProducts() {
+            const productsToRender = filteredProductsList.slice(0, currentLimit);
+            
+            if (filteredProductsList.length === 0) {
                 storeGrid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--gray-text);">
-                        <i class="fas fa-box-open" style="font-size: 3.5rem; margin-bottom: 15px; color: #ccc;"></i>
-                        <p style="font-size: 1rem; font-weight: 500;">No se encontraron productos con los filtros seleccionados.</p>
+                    <div class="temu-no-results">
+                        <i class="fas fa-search-minus"></i>
+                        <p>No se encontraron productos con los filtros seleccionados.</p>
                     </div>
                 `;
-                if (resultsCount) resultsCount.textContent = 'Mostrando 0 productos';
+                if (resultsCount) resultsCount.textContent = '0 productos encontrados';
+                if (loadMoreWrapper) loadMoreWrapper.style.display = 'none';
                 return;
             }
             
-            storeGrid.innerHTML = products.map(p => {
-                const isNew = (p.recentScore && p.recentScore > 7) ? '<span class="modern-badge badge-new">Nuevo</span>' : '';
-                // Short description: pull from productsData if available, fallback to category + material
-                const pData = productsData[p.id];
-                const rawDesc = pData && pData.desc ? pData.desc : (p.material ? `Material: ${p.material}` : '');
-                const shortDesc = rawDesc && rawDesc !== p.title ? rawDesc.substring(0, 60) + (rawDesc.length > 60 ? '...' : '') : '';
+            storeGrid.innerHTML = productsToRender.map(p => {
+                const isNew = (p.recentScore && p.recentScore > 7) ? '<span class="temu-card-badge">Nuevo</span>' : '';
                 return `
-                <div class="store-card modern-card" data-id="${p.id}">
-                    <div class="producto-img-container card-open-modal">
+                <div class="temu-card card-open-modal" data-id="${p.id}">
+                    <div class="temu-card-img">
                         ${isNew}
                         <img src="${p.img}" alt="${p.title}" loading="lazy">
                     </div>
-                    <div class="producto-info">
-                        <h4 class="card-open-modal">${p.title}</h4>
-                        ${shortDesc ? `<p class="card-desc">${shortDesc}</p>` : ''}
-                        <div class="store-card-actions">
-                            <span class="modern-price">${p.price}</span>
-                            <button class="btn-add-to-cart-card" data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}" data-price="${p.price}" data-img="${p.img}">
-                                <i class="fas fa-cart-plus"></i> Agregar al carrito
+                    <div class="temu-card-body">
+                        <div class="temu-card-title">${p.title}</div>
+                        <div class="temu-card-category">${(p.subCategory || '').replace(/_/g, ' ').toUpperCase()}</div>
+                        <div class="temu-card-price">${p.price}</div>
+                        <div class="temu-card-actions">
+                            <button class="temu-cart-btn btn-add-to-cart-card" data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}" data-price="${p.price}" data-img="${p.img}">
+                                <i class="fas fa-cart-plus"></i> Agregar
                             </button>
                         </div>
                     </div>
@@ -839,7 +832,16 @@ async function fetchStoreProducts() {
             }).join('');
             
             if (resultsCount) {
-                resultsCount.textContent = `Mostrando 1-${products.length} de ${products.length} productos`;
+                const showingCount = Math.min(currentLimit, filteredProductsList.length);
+                resultsCount.textContent = `Mostrando ${showingCount} de ${filteredProductsList.length} productos`;
+            }
+            
+            if (loadMoreWrapper) {
+                if (currentLimit < filteredProductsList.length) {
+                    loadMoreWrapper.style.display = 'block';
+                } else {
+                    loadMoreWrapper.style.display = 'none';
+                }
             }
         }
 
@@ -855,30 +857,11 @@ async function fetchStoreProducts() {
             if (searchInput) {
                 const query = searchInput.value.toLowerCase().trim();
                 if (query) {
-                    filtered = filtered.filter(p => p.title.toLowerCase().includes(query));
+                    filtered = filtered.filter(p => p.title.toLowerCase().includes(query) || (p.subCategory && p.subCategory.toLowerCase().includes(query)));
                 }
             }
             
-            // 3. Filter by Materials
-            const selectedMaterials = Array.from(materialCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            if (selectedMaterials.length > 0) {
-                filtered = filtered.filter(p => selectedMaterials.includes(p.material));
-            }
-            
-            // 4. Filter by Uso
-            const selectedUsos = Array.from(usoCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            if (selectedUsos.length > 0) {
-                filtered = filtered.filter(p => {
-                    const usos = Array.isArray(p.uso) ? p.uso : [p.uso];
-                    return selectedUsos.some(u => usos.includes(u));
-                });
-            }
-            
-            // 5. Sort
+            // 3. Sort
             if (sortSelect) {
                 const sortBy = sortSelect.value;
                 if (sortBy === 'recent') {
@@ -890,100 +873,148 @@ async function fetchStoreProducts() {
                 }
             }
             
-            renderProducts(filtered);
+            filteredProductsList = filtered;
+            renderProducts();
         }
 
-        // Bind input listeners
-        if (searchInput) searchInput.addEventListener('input', applyFilters);
+        // Autocomplete suggestions like Temu
+        if (searchInput && searchSuggestions) {
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase().trim();
+                if (!query) {
+                    searchSuggestions.style.display = 'none';
+                    applyFilters();
+                    return;
+                }
+
+                const matchingCategories = new Set();
+                const matchingProducts = [];
+
+                desechablesProductsList.forEach(p => {
+                    if (p.subCategory && p.subCategory.toLowerCase().includes(query)) {
+                        matchingCategories.add(p.subCategory);
+                    }
+                    if (p.title.toLowerCase().includes(query)) {
+                        matchingProducts.push(p);
+                    }
+                });
+
+                let html = '';
+                
+                matchingCategories.forEach(cat => {
+                    html += `
+                        <div class="suggestion-item" data-type="category" data-value="${cat}">
+                            <i class="fas fa-th-large"></i> Categoría: <span class="suggestion-highlight">${cat.replace(/_/g, ' ')}</span>
+                        </div>
+                    `;
+                });
+
+                matchingProducts.slice(0, 5).forEach(p => {
+                    html += `
+                        <div class="suggestion-item" data-type="product" data-value="${p.title}" data-id="${p.id}">
+                            <i class="fas fa-search"></i> ${p.title}
+                        </div>
+                    `;
+                });
+
+                if (html) {
+                    searchSuggestions.innerHTML = html;
+                    searchSuggestions.style.display = 'block';
+                } else {
+                    searchSuggestions.style.display = 'none';
+                }
+
+                applyFilters();
+            });
+
+            // Handle suggestion click
+            searchSuggestions.addEventListener('click', (e) => {
+                const item = e.target.closest('.suggestion-item');
+                if (!item) return;
+
+                const type = item.getAttribute('data-type');
+                const val = item.getAttribute('data-value');
+
+                if (type === 'category') {
+                    activeCategory = val;
+                    catPills.forEach(p => {
+                        if (p.getAttribute('data-category') === val) {
+                            p.classList.add('active');
+                        } else {
+                            p.classList.remove('active');
+                        }
+                    });
+                    searchInput.value = '';
+                } else {
+                    searchInput.value = val;
+                }
+
+                searchSuggestions.style.display = 'none';
+                currentLimit = 20;
+                applyFilters();
+            });
+
+            // Close suggestions when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.temu-search-inner')) {
+                    searchSuggestions.style.display = 'none';
+                }
+            });
+
+            // Close on Enter key
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    searchSuggestions.style.display = 'none';
+                    currentLimit = 20;
+                    applyFilters();
+                }
+            });
+        }
+
+        if (temuSearchBtn) {
+            temuSearchBtn.addEventListener('click', () => {
+                if (searchSuggestions) searchSuggestions.style.display = 'none';
+                currentLimit = 20;
+                applyFilters();
+            });
+        }
+
+        if (btnLoadMore) {
+            btnLoadMore.addEventListener('click', () => {
+                currentLimit += 20;
+                renderProducts();
+            });
+        }
+
         if (sortSelect) sortSelect.addEventListener('change', applyFilters);
-        
-        materialCheckboxes.forEach(cb => cb.addEventListener('change', applyFilters));
-        usoCheckboxes.forEach(cb => cb.addEventListener('change', applyFilters));
 
-        // Bind categories click
-        catLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
+        // Bind category pills click
+        catPills.forEach(pill => {
+            pill.addEventListener('click', (e) => {
                 e.preventDefault();
-                catLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                activeCategory = link.getAttribute('data-category');
+                catPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                activeCategory = pill.getAttribute('data-category');
                 
-                // Highlight corresponding card if exists
-                highlightCards.forEach(c => {
-                    if (c.getAttribute('data-category') === activeCategory) {
-                        c.style.borderColor = 'var(--secondary-color)';
-                        c.style.boxShadow = '0 5px 15px rgba(0,0,0,0.05)';
-                    } else {
-                        c.style.borderColor = 'var(--border-color)';
-                        c.style.boxShadow = 'none';
-                    }
-                });
-                
+                currentLimit = 20;
                 applyFilters();
             });
         });
-
-        // Bind highlight cards click
-        highlightCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const category = card.getAttribute('data-category');
-                activeCategory = category;
-                
-                // Sync sidebar links
-                catLinks.forEach(l => {
-                    if (l.getAttribute('data-category') === category) {
-                        l.classList.add('active');
-                    } else {
-                        l.classList.remove('active');
-                    }
-                });
-                
-                // Update highlight cards style
-                highlightCards.forEach(c => {
-                    if (c === card) {
-                        c.style.borderColor = 'var(--secondary-color)';
-                        c.style.boxShadow = '0 5px 15px rgba(0,0,0,0.05)';
-                    } else {
-                        c.style.borderColor = 'var(--border-color)';
-                        c.style.boxShadow = 'none';
-                    }
-                });
-                
-                applyFilters();
-            });
-        });
-
-        // Clear filters logic
-        if (btnClearFilters) {
-            btnClearFilters.addEventListener('click', () => {
-                if (searchInput) searchInput.value = '';
-                if (sortSelect) sortSelect.value = 'recent';
-                activeCategory = 'all';
-                
-                catLinks.forEach(l => {
-                    if (l.getAttribute('data-category') === 'all') {
-                        l.classList.add('active');
-                    } else {
-                        l.classList.remove('active');
-                    }
-                });
-                
-                highlightCards.forEach(c => {
-                    c.style.borderColor = 'var(--border-color)';
-                    c.style.boxShadow = 'none';
-                });
-                
-                materialCheckboxes.forEach(cb => cb.checked = false);
-                usoCheckboxes.forEach(cb => cb.checked = false);
-                
-                applyFilters();
-            });
-        }
 
         if (btnShowAllPromo) {
             btnShowAllPromo.addEventListener('click', (e) => {
                 e.preventDefault();
-                if (btnClearFilters) btnClearFilters.click();
+                activeCategory = 'all';
+                catPills.forEach(p => {
+                    if (p.getAttribute('data-category') === 'all') {
+                        p.classList.add('active');
+                    } else {
+                        p.classList.remove('active');
+                    }
+                });
+                if (searchInput) searchInput.value = '';
+                currentLimit = 20;
+                applyFilters();
             });
         }
 

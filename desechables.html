@@ -83,129 +83,94 @@
         </div>
     </div>
 
-    <!-- Main Content Layout -->
-    <div class="container store-layout">
-        <!-- Mobile Filter Toggle -->
-        <div class="mobile-filter-bar">
-            <button id="btn-toggle-filters" class="btn btn-outline-dark"><i class="fas fa-filter"></i> Filtrar Productos</button>
+    <!-- ===== TEMU-STYLE SEARCH BAR ===== -->
+    <div class="temu-search-wrapper">
+        <div class="temu-search-inner">
+            <div class="temu-search-box">
+                <i class="fas fa-search temu-search-icon"></i>
+                <input type="text" id="search-input" placeholder="Buscar productos, categorías..." autocomplete="off">
+                <button class="temu-search-btn" id="temu-search-btn"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+            <div class="temu-search-suggestions" id="search-suggestions" style="display:none;"></div>
         </div>
-        <!-- Sidebar Filters -->
-        <aside class="filters-sidebar" id="filters-sidebar">
-            <div class="filter-section">
-                <h3>CATEGORÍAS</h3>
-                <ul class="category-links">
-                    <!-- Categories will be dynamically populated here by JS -->
-                </ul>
-            </div>
+    </div>
 
-            <div class="filter-section">
-                <h3>MATERIAL</h3>
-                <div class="checkbox-group">
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="material" value="plastico">
-                        <span class="checkmark"></span>
-                        Plástico
-                    </label>
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="material" value="foam">
-                        <span class="checkmark"></span>
-                        Foam
-                    </label>
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="material" value="carton">
-                        <span class="checkmark"></span>
-                        Cartón
-                    </label>
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="material" value="biodegradable">
-                        <span class="checkmark"></span>
-                        Biodegradable
-                    </label>
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="material" value="papel">
-                        <span class="checkmark"></span>
-                        Papel
-                    </label>
-                </div>
-            </div>
-
-            <div class="filter-section">
-                <h3>USO</h3>
-                <div class="checkbox-group">
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="uso" value="fiestas">
-                        <span class="checkmark"></span>
-                        Fiestas
-                    </label>
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="uso" value="eventos">
-                        <span class="checkmark"></span>
-                        Eventos
-                    </label>
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="uso" value="restaurantes">
-                        <span class="checkmark"></span>
-                        Restaurantes
-                    </label>
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="uso" value="para llevar">
-                        <span class="checkmark"></span>
-                        Para llevar
-                    </label>
-                    <label class="checkbox-container">
-                        <input type="checkbox" name="uso" value="diario">
-                        <span class="checkmark"></span>
-                        Diario
-                    </label>
-                </div>
-            </div>
-
-            <button class="btn btn-outline-dark btn-clear-filters" id="btn-clear-filters">
-                <i class="fas fa-trash-alt"></i> Limpiar filtros
+    <!-- ===== CATEGORY STRIP ===== -->
+    <div class="category-strip-wrapper">
+        <div class="category-strip-scroll" id="category-strip">
+            <button class="cat-pill active" data-category="all">
+                <i class="fas fa-th-large"></i> Todo
             </button>
-        </aside>
+            <button class="cat-pill" data-category="aluminio">
+                <i class="fas fa-box"></i> Aluminio
+            </button>
+            <button class="cat-pill" data-category="bolsas">
+                <i class="fas fa-shopping-bag"></i> Bolsas
+            </button>
+            <button class="cat-pill" data-category="cajas">
+                <i class="fas fa-archive"></i> Cajas
+            </button>
+            <button class="cat-pill" data-category="cups_lids">
+                <i class="fas fa-coffee"></i> Vasos / Tapas
+            </button>
+            <button class="cat-pill" data-category="cuttlery">
+                <i class="fas fa-utensils"></i> Cubiertos
+            </button>
+            <button class="cat-pill" data-category="foodcontainers">
+                <i class="fas fa-box-open"></i> Contenedores
+            </button>
+            <button class="cat-pill" data-category="foodtrays">
+                <i class="fas fa-layer-group"></i> Bandejas
+            </button>
+            <button class="cat-pill" data-category="napkins">
+                <i class="fas fa-scroll"></i> Servilletas
+            </button>
+            <button class="cat-pill" data-category="platos">
+                <i class="fas fa-circle-notch"></i> Platos
+            </button>
+            <button class="cat-pill" data-category="straws">
+                <i class="fas fa-grip-lines"></i> Pajillas
+            </button>
+            <button class="cat-pill" data-category="salad_bowls">
+                <i class="fas fa-leaf"></i> Ensaladeras
+            </button>
+            <button class="cat-pill" data-category="portion_cups">
+                <i class="fas fa-wine-glass"></i> Vasitos
+            </button>
+            <button class="cat-pill" data-category="fineline">
+                <i class="fas fa-star"></i> Fineline
+            </button>
+            <button class="cat-pill" data-category="delipaper">
+                <i class="fas fa-receipt"></i> Delipaper
+            </button>
+        </div>
+    </div>
 
-        <!-- Product Grid Area -->
-        <main class="store-main">
-            <!-- Search & Sort Header -->
-            <div class="store-header">
-                <div class="search-box-store">
-                    <i class="fas fa-search search-icon-store"></i>
-                    <input type="text" id="search-input" placeholder="Buscar productos desechables...">
-                </div>
-                <div class="sort-selector">
-                    <label for="sort-select">Ordenar por:</label>
-                    <select id="sort-select">
-                        <option value="recent">Más recientes</option>
-                        <option value="price-asc">Precio: de menor a mayor</option>
-                        <option value="price-desc">Precio: de mayor a menor</option>
-                    </select>
-                </div>
-            </div>
+    <!-- ===== SORT + RESULTS BAR ===== -->
+    <div class="results-sort-bar container">
+        <span id="results-count" class="results-count-text">Cargando productos...</span>
+        <div class="sort-selector-inline">
+            <label for="sort-select"><i class="fas fa-sort"></i></label>
+            <select id="sort-select">
+                <option value="recent">Más recientes</option>
+                <option value="price-asc">Precio: menor a mayor</option>
+                <option value="price-desc">Precio: mayor a menor</option>
+            </select>
+        </div>
+    </div>
 
+    <!-- ===== MAIN PRODUCT GRID ===== -->
+    <div class="container">
+        <div class="temu-product-grid" id="store-grid">
+            <!-- Products injected by JS -->
+        </div>
 
-
-            <!-- Product Count -->
-            <div class="products-count-bar">
-                <span id="results-count">Mostrando 1-8 de 8 productos</span>
-            </div>
-
-            <!-- Main Product Grid -->
-            <div class="store-grid" id="store-grid">
-                <!-- Products will be dynamically populated here via JavaScript -->
-            </div>
-
-            <!-- Pagination -->
-            <div class="pagination-wrapper">
-                <ul class="pagination">
-                    <li class="page-item active"><a href="#" class="page-link">1</a></li>
-                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                    <li class="page-item"><a href="#" class="page-link">3</a></li>
-                    <li class="page-item"><a href="#" class="page-link">4</a></li>
-                    <li class="page-item"><a href="#" class="page-link"><i class="fas fa-chevron-right"></i></a></li>
-                </ul>
-            </div>
-        </main>
+        <!-- Load More Button -->
+        <div class="load-more-wrapper" id="load-more-wrapper" style="display:none;">
+            <button class="btn-load-more" id="btn-load-more">
+                <i class="fas fa-plus-circle"></i> Mostrar más productos
+            </button>
+        </div>
     </div>
 
     <!-- Central Banner Section -->
