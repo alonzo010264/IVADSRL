@@ -177,9 +177,16 @@ export default async function handler(req, res) {
         <title>Nueva Orden Recibida - IVAD</title>
       </head>
       <body style="font-family: Arial, sans-serif; background-color: #f7fafc; margin: 0; padding: 20px;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #edf2f7; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-          <h2 style="color: #22252a; border-bottom: 2px solid #bfa687; padding-bottom: 10px; margin-top: 0;">🚨 Nueva Orden Recibida</h2>
-          <p style="color: #4a5568;">Se ha registrado una nueva orden exitosamente en la tienda en línea de IVAD.</p>
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+          <!-- Header -->
+          <div style="background-color: #22252a; padding: 25px; text-align: center; border-bottom: 3px solid #bfa687;">
+            <img src="${logoUrl}" alt="IVAD Home & Goods" style="height: 90px; width: auto; display: block; margin: 0 auto 10px;">
+            <span style="color: #bfa687; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; display: block;">Calidad y Diseño en cada Detalle</span>
+          </div>
+          
+          <div style="padding: 30px;">
+            <h2 style="color: #22252a; border-bottom: 2px solid #bfa687; padding-bottom: 10px; margin-top: 0; font-size: 1.4rem;">🚨 Nueva Orden Recibida</h2>
+            <p style="color: #4a5568; line-height: 1.5;">Se ha registrado una nueva orden exitosamente en la tienda en línea de IVAD.</p>
           
           <h3 style="color: #2d3748; font-size: 1.1rem; margin-top: 20px; margin-bottom: 10px;">Detalles de la Transacción</h3>
           <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem; margin-bottom: 25px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
@@ -231,7 +238,8 @@ export default async function handler(req, res) {
             <p>IVAD Home & Goods - Panel Administrativo</p>
           </div>
         </div>
-      </body>
+      </div>
+    </body>
       </html>
     `;
 
