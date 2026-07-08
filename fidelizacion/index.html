@@ -34,7 +34,7 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            overflow-x: hidden;
+            overflow: hidden;
             position: relative;
         }
 
@@ -42,40 +42,115 @@
         .orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(100px);
+            filter: blur(120px);
             z-index: 1;
             opacity: 0.15;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatOrb {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(40px, -40px) scale(1.1); }
         }
 
         .orb-1 {
-            top: -10%;
-            left: -10%;
-            width: 400px;
-            height: 400px;
+            top: -15%;
+            left: -15%;
+            width: 450px;
+            height: 450px;
             background-color: var(--accent-gold);
         }
 
         .orb-2 {
-            bottom: -10%;
-            right: -10%;
+            bottom: -15%;
+            right: -15%;
             width: 550px;
             height: 550px;
-            background-color: #313f4a;
+            background-color: #1e2c3a;
+        }
+
+        /* Floating decorative cards in background */
+        .floating-card-decor {
+            position: absolute;
+            width: 260px;
+            height: 160px;
+            background: linear-gradient(135deg, rgba(25, 45, 69, 0.05) 0%, rgba(9, 22, 36, 0.1) 100%);
+            border: 1.5px solid rgba(191, 166, 135, 0.08);
+            border-radius: 14px;
+            z-index: 0;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .decor-1 {
+            top: 15%;
+            left: 5%;
+            transform: rotate(-15deg);
+            animation: floatCard1 9s ease-in-out infinite alternate;
+        }
+
+        .decor-2 {
+            bottom: 15%;
+            right: 5%;
+            transform: rotate(12deg);
+            animation: floatCard2 11s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatCard1 {
+            0% { transform: translateY(0) rotate(-15deg); }
+            100% { transform: translateY(-20px) rotate(-10deg); }
+        }
+
+        @keyframes floatCard2 {
+            0% { transform: translateY(0) rotate(12deg); }
+            100% { transform: translateY(25px) rotate(16deg); }
+        }
+
+        .decor-logo {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: rgba(191, 166, 135, 0.15);
+            letter-spacing: 2px;
+        }
+
+        .decor-chip {
+            width: 30px;
+            height: 22px;
+            background: rgba(191, 166, 135, 0.06);
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+
+        .decor-number {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.08);
+            letter-spacing: 2px;
         }
 
         .login-container {
             width: 100%;
-            max-width: 450px;
-            background: rgba(31, 34, 40, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            max-width: 440px;
+            background: rgba(31, 34, 40, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            border-radius: 20px;
+            padding: 45px 40px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.5);
             z-index: 10;
             text-align: center;
             position: relative;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .login-container::before {
@@ -84,7 +159,7 @@
             top: 0; left: 0; right: 0;
             height: 4px;
             background: linear-gradient(90deg, var(--bg-dark), var(--accent-gold), var(--bg-dark));
-            border-radius: 16px 16px 0 0;
+            border-radius: 20px 20px 0 0;
         }
 
         .logo-wrap {
@@ -99,7 +174,7 @@
         }
 
         .logo-wrap h2 {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             color: var(--accent-gold);
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -107,7 +182,7 @@
         }
 
         .logo-wrap p {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -140,34 +215,39 @@
             transform: translateY(-50%);
             color: var(--text-muted);
             font-size: 0.95rem;
+            transition: color 0.3s;
         }
 
         .input-wrap input {
             width: 100%;
-            padding: 12px 15px 12px 42px;
-            background: rgba(18, 20, 23, 0.6);
+            padding: 13px 15px 13px 45px;
+            background: rgba(18, 20, 23, 0.65);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 10px;
             color: #fff;
             font-family: inherit;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             outline: none;
             transition: all 0.3s ease;
         }
 
         .input-wrap input:focus {
             border-color: var(--accent-gold);
-            box-shadow: 0 0 10px rgba(191, 166, 135, 0.15);
-            background: rgba(18, 20, 23, 0.85);
+            box-shadow: 0 0 15px rgba(191, 166, 135, 0.2);
+            background: rgba(18, 20, 23, 0.9);
+        }
+
+        .input-wrap input:focus + i {
+            color: var(--accent-gold);
         }
 
         .btn-submit {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
             background: var(--accent-gold);
             color: #121417;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-family: inherit;
             font-weight: 800;
             font-size: 0.9rem;
@@ -176,44 +256,17 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(191, 166, 135, 0.15);
         }
 
         .btn-submit:hover {
             background: var(--accent-gold-hover);
-            transform: translateY(-1px);
+            transform: translateY(-1.5px);
+            box-shadow: 0 6px 20px rgba(191, 166, 135, 0.25);
         }
 
         .btn-submit:active {
             transform: translateY(0);
-        }
-
-        .tab-buttons {
-            display: flex;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 30px;
-            background: rgba(18, 20, 23, 0.4);
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 10px 0;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-family: inherit;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.25s;
-        }
-
-        .tab-btn.active {
-            background: var(--accent-gold);
-            color: #121417;
         }
 
         .error-box {
@@ -221,7 +274,7 @@
             border: 1px solid rgba(192, 57, 43, 0.3);
             color: #e74c3c;
             border-radius: 8px;
-            padding: 10px;
+            padding: 12px;
             font-size: 0.8rem;
             margin-bottom: 20px;
             display: none;
@@ -235,6 +288,7 @@
             font-size: 0.72rem;
             color: var(--text-muted);
             letter-spacing: 0.5px;
+            line-height: 1.5;
         }
 
         .footer-line a {
@@ -246,9 +300,38 @@
         .footer-line a:hover {
             text-decoration: underline;
         }
+
+        .admin-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 25px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.25s;
+        }
+
+        .admin-link:hover {
+            color: var(--accent-gold);
+        }
     </style>
 </head>
 <body>
+
+    <!-- Floating Cards in Background -->
+    <div class="floating-card-decor decor-1">
+        <div class="decor-logo">IVAD</div>
+        <div class="decor-chip"></div>
+        <div class="decor-number">•••• •••• •••• ••••</div>
+    </div>
+    
+    <div class="floating-card-decor decor-2">
+        <div class="decor-logo">IVAD</div>
+        <div class="decor-chip"></div>
+        <div class="decor-number">•••• •••• •••• ••••</div>
+    </div>
 
     <!-- Orbs -->
     <div class="orb orb-1"></div>
@@ -262,12 +345,6 @@
             <p>Acumula puntos y gana premios</p>
         </div>
 
-        <!-- Mode Tabs -->
-        <div class="tab-buttons">
-            <button class="tab-btn active" id="tab-client" onclick="switchMode('client')">Cliente</button>
-            <button class="tab-btn" id="tab-admin" onclick="switchMode('admin')">Administrador</button>
-        </div>
-
         <!-- Error Msg -->
         <div class="error-box" id="error-message">
             <i class="fas fa-exclamation-circle"></i>
@@ -279,59 +356,34 @@
             <div class="form-group">
                 <label for="client-ident">Email o Código de Tarjeta</label>
                 <div class="input-wrap">
-                    <i class="far fa-envelope"></i>
                     <input type="text" id="client-ident" placeholder="ej: cliente@correo.com o IVAD-723A8" required>
+                    <i class="far fa-envelope"></i>
                 </div>
             </div>
             <div class="form-group">
                 <label for="client-pass">Contraseña Temporal</label>
                 <div class="input-wrap">
-                    <i class="fas fa-lock"></i>
                     <input type="password" id="client-pass" placeholder="••••••" required>
+                    <i class="fas fa-lock"></i>
                 </div>
             </div>
             <button type="submit" class="btn-submit" id="client-btn-text">Ver mi Tarjeta</button>
-        </form>
-
-        <!-- Admin Form (hidden by default) -->
-        <form id="admin-form" onsubmit="handleAdminLogin(event)" style="display: none;">
-            <div class="form-group">
-                <label for="admin-pass">Contraseña Administrativa</label>
-                <div class="input-wrap">
-                    <i class="fas fa-shield-alt"></i>
-                    <input type="password" id="admin-pass" placeholder="••••••••" required>
-                </div>
-            </div>
-            <button type="submit" class="btn-submit" id="admin-btn-text">Ingresar al Panel</button>
         </form>
 
         <div class="footer-line">
             ¿No tienes una tarjeta de fidelización? <br>
             Pídela gratis al realizar tu compra o en <a href="../contacto.html">Atención al Cliente</a>.
         </div>
+
+        <a href="admin-login.html" class="admin-link">
+            <i class="fas fa-shield-halved"></i> Acceso Administrativo
+        </a>
     </div>
 
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-config.js"></script>
     <script>
-        let activeMode = 'client';
-
-        function switchMode(mode) {
-            activeMode = mode;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('tab-' + mode).classList.add('active');
-            document.getElementById('error-message').style.display = 'none';
-
-            if (mode === 'client') {
-                document.getElementById('client-form').style.display = 'block';
-                document.getElementById('admin-form').style.display = 'none';
-            } else {
-                document.getElementById('client-form').style.display = 'none';
-                document.getElementById('admin-form').style.display = 'block';
-            }
-        }
-
         function showError(msg) {
             const errBox = document.getElementById('error-message');
             const errText = document.getElementById('error-text');
@@ -406,30 +458,6 @@
                     }
                 }, 800);
             }
-        }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            document.getElementById('error-message').style.display = 'none';
-
-            const pass = document.getElementById('admin-pass').value.trim();
-            const btn = document.getElementById('admin-btn-text');
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
-
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.textContent = 'Ingresar al Panel';
-
-                // Use a secure administrative code for accessing the local admin panel
-                if (pass === 'adminivad1996') {
-                    localStorage.setItem('ivad_loyalty_admin', 'true');
-                    window.location.href = 'admin.html';
-                } else {
-                    showError('Contraseña administrativa incorrecta.');
-                }
-            }, 500);
         }
     </script>
 </body>
