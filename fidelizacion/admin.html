@@ -1120,6 +1120,8 @@
             updateCardPreview();
         }
 
+        let isSimulationMode = false;
+
         // Load clients from Supabase
         async function loadClients() {
             const container = document.getElementById('saved-cards-container');
@@ -1131,21 +1133,74 @@
                         .select('*')
                         .order('created_at', { ascending: false });
 
-                    if (error) throw error;
+                    if (error) {
+                        console.warn("Table relation not found or db error, falling back to local simulation:", error);
+                        isSimulationMode = true;
+                        loadSimulationCards();
+                        return;
+                    }
 
+                    isSimulationMode = false;
                     allCards = data || [];
                     renderClientsCards(allCards);
                 } catch (err) {
-                    console.error('Error loading cards:', err);
-                    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#c0392b;padding:30px 0;">Error de conexión con la base de datos.</div>';
+                    console.error('Error loading cards, falling back to local simulation:', err);
+                    isSimulationMode = true;
+                    loadSimulationCards();
                 }
             } else {
-                // Mock local simulation data
-                allCards = [
-                    { id: 'mock-uuid-1', card_code: 'IVAD-693886E7', client_name: 'Alonzo', client_email: 'alonzo@correo.com', client_phone: '809-241-6555', current_points: 0, points_target: 10, temp_password: '123456', created_at: Date.now() }
-                ];
-                renderClientsCards(allCards);
+                isSimulationMode = true;
+                loadSimulationCards();
             }
+        }
+
+        // Load mock simulation cards from localStorage
+        function loadSimulationCards() {
+            const stored = localStorage.getItem('ivad_loyalty_cards_simulated');
+            if (stored) {
+                allCards = JSON.parse(stored);
+            } else {
+                // Initialize with Alonzo card from screenshot
+                allCards = [
+                    { 
+                        id: 'mock-uuid-alonzo', 
+                        card_code: 'IVAD-693886E7', 
+                        client_name: 'Alonzo', 
+                        client_email: 'alonzo@correo.com', 
+                        client_phone: '809-241-6555', 
+                        current_points: 0, 
+                        points_target: 10, 
+                        temp_password: 'pwd-alonzo', 
+                        created_at: new Date('2026-07-01').getTime()
+                    }
+                ];
+                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+            }
+            renderClientsCards(allCards);
+
+            // Append warning notice
+            const container = document.getElementById('saved-cards-container');
+            const notice = document.createElement('div');
+            notice.style.gridColumn = '1 / -1';
+            notice.style.backgroundColor = '#fef9c3';
+            notice.style.border = '1px solid #fef08a';
+            notice.style.color = '#854d0e';
+            notice.style.padding = '14px 18px';
+            notice.style.borderRadius = '10px';
+            notice.style.fontSize = '0.78rem';
+            notice.style.fontWeight = '600';
+            notice.style.display = 'flex';
+            notice.style.alignItems = 'center';
+            notice.style.gap = '12px';
+            notice.style.marginTop = '15px';
+            notice.style.lineHeight = '1.4';
+            notice.innerHTML = `
+                <i class="fas fa-exclamation-triangle" style="font-size: 1.1rem; color: #ca8a04;"></i>
+                <span><strong>Modo de Simulación Activo:</strong> Base de datos de Supabase no conectada o tablas no creadas en el SQL Editor. 
+                Ejecuta el script SQL del archivo <code>db.sql</code> en tu proyecto de Supabase para activar el modo en vivo. 
+                Los cambios actuales se guardarán temporalmente en tu navegador.</span>
+            `;
+            container.appendChild(notice);
         }
 
         // Render Clients Cards Grid
@@ -1206,7 +1261,7 @@
             const newPoints = Math.max(0, Math.min(card.points_target, card.current_points + amount));
             if (newPoints === card.current_points) return; // No change
 
-            if (typeof supabaseClient !== 'undefined' && supabaseClient && card.id !== 'mock-uuid-1') {
+            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
                 try {
                     const { error } = await supabaseClient
                         .from('loyalty_cards')
@@ -1241,6 +1296,7 @@
             } else {
                 // Mock local adjustment
                 card.current_points = newPoints;
+                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
                 document.getElementById(`pts-count-${cardId}`).textContent = newPoints;
                 
                 const previewCodeText = document.getElementById('prev-card-code').textContent;
@@ -1288,7 +1344,7 @@
             const randomCode = 'IVAD-' + Math.random().toString(36).substring(2, 7).toUpperCase();
             const randomPass = Math.random().toString(36).substring(2, 8); // 6 character password
 
-            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient
                         .from('loyalty_cards')
@@ -1353,6 +1409,7 @@
                     created_at: Date.now()
                 };
                 allCards.unshift(mockNewCard);
+                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
 
                 // Show Modal
                 document.getElementById('m-code').textContent = randomCode;
@@ -1363,7 +1420,7 @@
                 document.getElementById('create-card-form').reset();
                 document.getElementById('client-since').value = "julio de 2026";
                 document.getElementById('client-init-points').value = "0";
-                renderClientsCards(allCards);
+                loadSimulationCards();
             }
         }
 
@@ -1371,7 +1428,7 @@
         async function deleteCard(cardId, name) {
             if (!confirm(`¿Estás seguro de que deseas eliminar la tarjeta de fidelización de ${name}? Esta acción borrará todo su historial y es irreversible.`)) return;
 
-            if (typeof supabaseClient !== 'undefined' && supabaseClient && cardId !== 'mock-uuid-1') {
+            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
                 try {
                     const { error } = await supabaseClient
                         .from('loyalty_cards')
@@ -1388,7 +1445,8 @@
                 }
             } else {
                 allCards = allCards.filter(c => c.id !== cardId);
-                renderClientsCards(allCards);
+                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+                loadSimulationCards();
             }
         }
 
