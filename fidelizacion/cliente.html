@@ -101,133 +101,202 @@
             z-index: 10;
         }
 
-        /* Digital Wallet Card */
-        .loyalty-card {
-            background: linear-gradient(135deg, #12273d 0%, #091624 100%);
-            border: 1.5px solid rgba(191, 166, 135, 0.25);
-            border-radius: 20px;
-            padding: 30px;
+        /* ===== 3D FLIP CARD ===== */
+        .card-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 380px;
+            height: 240px;
+            margin: 0 auto 10px auto;
+        }
+
+        .flip-card-inner {
             position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-            aspect-ratio: 1.58 / 1; /* Standard credit card aspect ratio */
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card-container.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 22px 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+            border: 1.5px solid rgba(191, 166, 135, 0.2);
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
-        .loyalty-card::before {
-            content: '';
-            position: absolute;
-            top: -20%; right: -20%;
-            width: 250px; height: 250px;
-            border: 1.5px solid rgba(191, 166, 135, 0.05);
-            border-radius: 50%;
-            pointer-events: none;
+        .flip-card-front {
+            background: linear-gradient(135deg, #12273d 0%, #091624 100%);
+            transform: rotateY(0deg);
+            -webkit-transform: rotateY(0deg);
         }
 
-        .card-header {
+        .card-front-top {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
         }
 
-        .card-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .card-brand img {
-            height: 48px;
-            width: auto;
-        }
-
-        .card-brand-text h2 {
-            font-size: 0.95rem;
+        .card-front-logo h3 {
+            font-size: 1.15rem;
             font-weight: 800;
-            color: #fff;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ffffff;
         }
 
-        .card-brand-text p {
-            font-size: 0.58rem;
+        .card-front-logo p {
+            font-size: 0.52rem;
             color: var(--accent-gold);
             letter-spacing: 1px;
             text-transform: uppercase;
-        }
-
-        .card-points-badge {
-            background: rgba(191, 166, 135, 0.15);
-            border: 1px solid rgba(191, 166, 135, 0.4);
-            color: var(--accent-gold);
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 0.8rem;
+            margin-top: 2px;
             font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .card-middle {
-            margin: 15px 0;
-            position: relative;
         }
 
         .card-front-nfc {
-            position: absolute;
-            right: 0;
-            top: -5px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .card-front-chip {
-            margin: 10px 0;
+            margin: 8px 0;
             display: inline-block;
         }
 
-        .card-holder {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #ffffff;
-            margin-bottom: 4px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .card-number {
+        .card-front-number {
             font-family: monospace;
             font-size: 1.15rem;
-            color: #ffffff;
             letter-spacing: 3px;
+            color: #ffffff;
             text-shadow: -1px -1px 0px rgba(0,0,0,0.6), 1px 1px 0px rgba(255,255,255,0.2);
-            margin-top: 10px;
+            margin-bottom: 8px;
         }
 
-        .card-footer {
+        .card-front-bottom {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
         }
 
-        .card-reward-label {
-            font-size: 0.6rem;
-            color: var(--text-muted);
+        .front-label {
+            font-size: 0.52rem;
+            color: #7f8c8d;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            letter-spacing: 1px;
             margin-bottom: 2px;
         }
 
-        .card-reward-val {
-            font-size: 0.82rem;
+        .front-val {
+            font-size: 0.85rem;
             font-weight: 700;
-            color: var(--accent-gold);
+            color: #ffffff;
         }
 
-        .card-date {
-            font-size: 0.6rem;
+        .card-points-badge {
+            background: rgba(191, 166, 135, 0.15);
+            border: 1px solid rgba(191, 166, 135, 0.4);
+            color: var(--accent-gold);
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Back Styling */
+        .flip-card-back {
+            background: linear-gradient(135deg, #091624 0%, #12273d 100%);
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+            padding: 20px 25px;
+        }
+
+        .card-back-inner {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-qr-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #ffffff;
+            padding: 8px;
+            border-radius: 12px;
+            width: 100px;
+            height: 100px;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .back-qr-wrap img {
+            width: 72px;
+            height: 72px;
+            display: block;
+        }
+
+        .back-qr-wrap span {
+            font-size: 0.48rem;
+            color: #121417;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-top: 3px;
+        }
+
+        .back-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+        }
+
+        .back-details h4 {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            letter-spacing: 1px;
+        }
+
+        .back-details div {
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-details div i {
+            color: var(--accent-gold);
+            width: 12px;
+        }
+
+        .card-back-footer {
+            font-size: 0.55rem;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+            letter-spacing: 0.5px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 6px;
+            margin-top: 4px;
+        }
             color: var(--text-muted);
             text-align: right;
         }
@@ -496,61 +565,79 @@
 
     <div class="main-wrapper">
 
-        <!-- Digital Card -->
-        <div class="loyalty-card">
-            <div class="card-header">
-                <div class="card-brand">
-                    <img src="../logo_transparent.png" alt="IVAD">
-                    <div class="card-brand-text">
-                        <h2>IVAD</h2>
-                        <p>Home & Goods</p>
+        <!-- 3D Card Wrapper -->
+        <div class="card-container" id="preview-card-container">
+            <div class="flip-card-inner" onclick="toggleCardFlip()">
+                
+                <!-- Front Face -->
+                <div class="flip-card-front">
+                    <div class="card-front-top">
+                        <div class="card-front-logo">
+                            <h3 id="client-biz-name">IVAD</h3>
+                            <p id="client-biz-slogan">HOME Y GOODS</p>
+                        </div>
+                        <div class="card-front-nfc">
+                            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: none; stroke: var(--accent-gold); stroke-width: 2.5; stroke-linecap: round;">
+                                <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5" />
+                                <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6" />
+                                <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5" />
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="card-front-chip">
+                        <svg viewBox="0 0 100 80" style="width: 44px; height: 34px; display: block; border-radius: 5px;">
+                            <defs>
+                                <linearGradient id="chip-gold-client" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#f5d382"/>
+                                    <stop offset="50%" stop-color="#d4af37"/>
+                                    <stop offset="100%" stop-color="#aa8010"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="100" height="80" rx="10" fill="url(#chip-gold-client)" />
+                            <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="25" y1="50" x2="25" y2="80" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="75" y1="0" x2="75" y2="30" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="75" y1="50" x2="75" y2="80" stroke="#5d4308" stroke-width="2"/>
+                            <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="card-front-number" id="card-code-text">IVAD 0000 0000 ••••</div>
+                    
+                    <div class="card-front-bottom">
+                        <div>
+                            <div class="front-label">Titular</div>
+                            <div class="front-val" id="card-holder-name">Nombre de Cliente</div>
+                        </div>
+                        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                            <span class="card-points-badge" id="card-points-text">0 / 10 PUNTOS</span>
+                            <div class="front-val" id="card-member-date">--/--/----</div>
+                        </div>
                     </div>
                 </div>
-                <div class="card-points-badge" id="card-points-text">0 / 10 PUNTOS</div>
-            </div>
 
-            <div class="card-middle">
-                <div class="card-front-nfc">
-                    <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: none; stroke: var(--accent-gold); stroke-width: 2.5; stroke-linecap: round;">
-                        <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5" />
-                        <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6" />
-                        <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5" />
-                    </svg>
+                <!-- Back Face -->
+                <div class="flip-card-back">
+                    <div class="card-back-inner">
+                        <div class="back-qr-wrap">
+                            <img id="client-qr-img" src="" alt="QR">
+                            <span>ESCANEA</span>
+                        </div>
+                        <div class="back-details">
+                            <h4 id="client-back-biz-title">IVAD</h4>
+                            <div><i class="fas fa-phone-alt"></i> <span id="client-back-phone">809-241-6555</span></div>
+                            <div><i class="fas fa-globe"></i> <span id="client-back-web">www.ivadsrl.com</span></div>
+                            <div><i class="fas fa-map-marker-alt"></i> <span id="client-back-address">Ave. 27 de febrero</span></div>
+                        </div>
+                    </div>
+                    <div class="card-back-footer" id="client-back-footer-text">
+                        Personal e intransferible - Est. 1996
+                    </div>
                 </div>
-                
-                <div class="card-front-chip">
-                    <svg viewBox="0 0 100 80" style="width: 44px; height: 34px; display: block; border-radius: 5px;">
-                        <defs>
-                            <linearGradient id="chip-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#f5d382"/>
-                                <stop offset="50%" stop-color="#d4af37"/>
-                                <stop offset="100%" stop-color="#aa8010"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="100" height="80" rx="10" fill="url(#chip-gold)" />
-                        <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
-                        <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
-                        <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
-                        <line x1="25" y1="50" x2="25" y2="80" stroke="#5d4308" stroke-width="2"/>
-                        <line x1="75" y1="0" x2="75" y2="30" stroke="#5d4308" stroke-width="2"/>
-                        <line x1="75" y1="50" x2="75" y2="80" stroke="#5d4308" stroke-width="2"/>
-                        <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
-                    </svg>
-                </div>
-                
-                <div class="card-number" id="card-code-text">IVAD 0000 0000 0000</div>
-                <div class="card-holder" id="card-holder-name" style="margin-top: 10px;">Nombre de Cliente</div>
-            </div>
 
-            <div class="card-footer">
-                <div>
-                    <div class="card-reward-label">Premio Acordado</div>
-                    <div class="card-reward-val">¡Un plato biodegradable gratis!</div>
-                </div>
-                <div class="card-date">
-                    Miembro desde<br>
-                    <strong id="card-member-date">--/--/----</strong>
-                </div>
             </div>
         </div>
 
@@ -677,6 +764,13 @@
             }
         }
 
+        // Toggle Card 3D Flip
+        function toggleCardFlip(e) {
+            if (e) e.stopPropagation();
+            const container = document.getElementById('preview-card-container');
+            container.classList.toggle('flipped');
+        }
+
         // Helper to format card codes into credit card blocks
         function formatCardCode(code) {
             const clean = code.replace(/[-\s]/g, '');
@@ -713,6 +807,34 @@
                 }
             }
 
+            // Populate business settings details
+            let businessSettings = {
+                name: "IVAD HOME Y GOODS",
+                slogan: "Est. 1996",
+                phone: "809-241-6555",
+                web: "www.ivadsrl.com",
+                address: "Ave. 27 de febrero"
+            };
+            const storedBiz = localStorage.getItem('ivad_loyalty_biz_settings');
+            if (storedBiz) {
+                businessSettings = JSON.parse(storedBiz);
+            }
+
+            // Split name for front logo
+            const bizName = businessSettings.name || "IVAD";
+            const firstWord = bizName.split(' ')[0] || bizName;
+            const restOfName = bizName.split(' ').slice(1).join(' ') || businessSettings.slogan;
+
+            document.getElementById('client-biz-name').textContent = firstWord;
+            document.getElementById('client-biz-slogan').textContent = restOfName;
+
+            // Fill card back details
+            document.getElementById('client-back-biz-title').textContent = businessSettings.name;
+            document.getElementById('client-back-phone').textContent = businessSettings.phone;
+            document.getElementById('client-back-web').textContent = businessSettings.web;
+            document.getElementById('client-back-address').textContent = businessSettings.address;
+            document.getElementById('client-back-footer-text').textContent = `Personal e intransferible - ${businessSettings.slogan}`;
+
             // Populate view details
             document.getElementById('card-holder-name').textContent = clientData.client_name;
             document.getElementById('card-code-text').textContent = formatCardCode(clientData.card_code);
@@ -729,6 +851,7 @@
             // Generate QR Code Image URL
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(clientData.card_code)}&color=12-14-17`;
             document.getElementById('qr-image').src = qrUrl;
+            document.getElementById('client-qr-img').src = qrUrl;
 
             // Render stamps
             renderStamps(clientData.current_points, clientData.points_target);
