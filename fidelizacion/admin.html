@@ -377,6 +377,8 @@
 
         .flip-card-front {
             background: linear-gradient(135deg, #12273d 0%, #091624 100%);
+            transform: rotateY(0deg);
+            -webkit-transform: rotateY(0deg);
         }
 
         .card-front-top {
@@ -445,6 +447,7 @@
         .flip-card-back {
             background: linear-gradient(135deg, #091624 0%, #12273d 100%);
             transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
             padding: 20px 25px;
         }
 
@@ -1083,7 +1086,14 @@
                         
                         <div class="card-front-chip">
                             <svg viewBox="0 0 100 80" style="width: 44px; height: 34px; display: block; border-radius: 5px;">
-                                <rect width="100" height="80" rx="10" fill="url(#chip-gold)" />
+                                <defs>
+                                    <linearGradient id="chip-gold-modal" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#f5d382"/>
+                                        <stop offset="50%" stop-color="#d4af37"/>
+                                        <stop offset="100%" stop-color="#aa8010"/>
+                                    </linearGradient>
+                                </defs>
+                                <rect width="100" height="80" rx="10" fill="url(#chip-gold-modal)" />
                                 <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
                                 <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
                                 <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
@@ -1268,7 +1278,7 @@
             document.getElementById('prev-card-since').textContent = clientSince;
             
             // Format card code preview dynamically (using dummy preview code)
-            document.getElementById('prev-card-code').textContent = "IVAD 0000 0000 0000";
+            document.getElementById('prev-card-code').textContent = "IVAD 0000 0000 ••••";
         }
 
         // Helper to format card codes into credit card blocks
@@ -1280,7 +1290,7 @@
                 body = clean.substring(4);
             }
             const padded = body.padEnd(8, '0');
-            return `${prefix} ${padded.substring(0, 4)} ${padded.substring(4, 8)}`.toUpperCase();
+            return `${prefix} ${padded.substring(0, 4)} ${padded.substring(4, 8)} ••••`.toUpperCase();
         }
 
         // Save Business settings locally
