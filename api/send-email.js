@@ -148,7 +148,8 @@ export default async function handler(req, res) {
   `;
 
   try {
-    const response = await fetch('https://api.resend.com/emails', {
+    // 1. Send receipt email to client
+    const clientResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -162,12 +163,98 @@ export default async function handler(req, res) {
       })
     });
 
-    const data = await response.json();
-    if (!response.ok) {
-      console.error('Error from Resend:', data);
-      return res.status(response.status).json({ error: data });
+    const clientData = await clientResponse.json();
+    if (!clientResponse.ok) {
+      console.error('Error from Resend (Client Receipt):', clientData);
     }
-    return res.status(200).json({ success: true, data });
+
+    // 2. Send notification email to Admin (anotasy@gmail.com)
+    const adminHtmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Nueva Orden Recibida - IVAD</title>
+      </head>
+      <body style="font-family: Arial, sans-serif; background-color: #f7fafc; margin: 0; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #edf2f7; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+          <h2 style="color: #22252a; border-bottom: 2px solid #bfa687; padding-bottom: 10px; margin-top: 0;">🚨 Nueva Orden Recibida</h2>
+          <p style="color: #4a5568;">Se ha registrado una nueva orden exitosamente en la tienda en línea de IVAD.</p>
+          
+          <h3 style="color: #2d3748; font-size: 1.1rem; margin-top: 20px; margin-bottom: 10px;">Detalles de la Transacción</h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem; margin-bottom: 25px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <tr>
+              <td style="padding: 8px 12px; font-weight: bold; color: #718096; border-bottom: 1px solid #e2e8f0;">No. Pedido:</td>
+              <td style="padding: 8px 12px; color: #2d3748; font-weight: bold; border-bottom: 1px solid #e2e8f0;">#${orderId}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 12px; font-weight: bold; color: #718096; border-bottom: 1px solid #e2e8f0;">Cliente:</td>
+              <td style="padding: 8px 12px; color: #2d3748; border-bottom: 1px solid #e2e8f0;">${client_name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 12px; font-weight: bold; color: #718096; border-bottom: 1px solid #e2e8f0;">Correo Electrónico:</td>
+              <td style="padding: 8px 12px; color: #2d3748; border-bottom: 1px solid #e2e8f0;">${client_email}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 12px; font-weight: bold; color: #718096; border-bottom: 1px solid #e2e8f0;">Teléfono:</td>
+              <td style="padding: 8px 12px; color: #2d3748; border-bottom: 1px solid #e2e8f0;">${client_phone || 'No especificado'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 12px; font-weight: bold; color: #718096; border-bottom: 1px solid #e2e8f0;">Fecha:</td>
+              <td style="padding: 8px 12px; color: #2d3748; border-bottom: 1px solid #e2e8f0;">${dateStr}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 12px; font-weight: bold; color: #718096; border-bottom: 1px solid #e2e8f0;">Método de Pago:</td>
+              <td style="padding: 8px 12px; color: #2d3748; border-bottom: 1px solid #e2e8f0;">${card_info || 'Tarjeta bancaria'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 12px; font-weight: bold; color: #718096;">Total Cobrado:</td>
+              <td style="padding: 8px 12px; color: #2e7d32; font-weight: bold; font-size: 1.05rem;">RD$ ${total.toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            </tr>
+          </table>
+
+          <h3 style="color: #2d3748; font-size: 1.1rem; border-bottom: 2px solid #edf2f7; padding-bottom: 8px; margin-bottom: 15px;">Productos Adquiridos</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+            <thead>
+              <tr style="font-size: 0.85rem; color: #718096; text-transform: uppercase;">
+                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #edf2f7;">Detalle</th>
+                <th style="padding: 8px; text-align: center; border-bottom: 2px solid #edf2f7; width: 60px;">Cant.</th>
+                <th style="padding: 8px; text-align: right; border-bottom: 2px solid #edf2f7; width: 100px;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+
+          <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #edf2f7; text-align: center; font-size: 0.8rem; color: #a0aec0;">
+            <p>IVAD Home & Goods - Panel Administrativo</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const adminResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${resendApiKey}`
+      },
+      body: JSON.stringify({
+        from: 'Notificaciones IVAD <facturacion@ivadsrl.com>',
+        to: ['anotasy@gmail.com'],
+        subject: `🚨 Nueva Orden Recibida #${orderId} - ${client_name}`,
+        html: adminHtmlContent
+      })
+    });
+
+    const adminData = await adminResponse.json();
+    if (!adminResponse.ok) {
+      console.error('Error from Resend (Admin Notification):', adminData);
+    }
+
+    return res.status(200).json({ success: true, client_receipt: clientData, admin_notification: adminData });
   } catch (error) {
     console.error('Exception sending email:', error);
     return res.status(500).json({ error: error.message });
