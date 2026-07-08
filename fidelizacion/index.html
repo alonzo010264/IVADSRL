@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club de Fidelización - IVAD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #121417;
+            --card-dark: #1f2228;
+            --accent-gold: #bfa687;
+            --accent-gold-hover: #a8906f;
+            --text-light: #f7fafc;
+            --text-muted: #a0aec0;
+            --border-color: #2d3139;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Decorative Background Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 1;
+            opacity: 0.15;
+        }
+
+        .orb-1 {
+            top: -10%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background-color: var(--accent-gold);
+        }
+
+        .orb-2 {
+            bottom: -10%;
+            right: -10%;
+            width: 550px;
+            height: 550px;
+            background-color: #313f4a;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(31, 34, 40, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            z-index: 10;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--bg-dark), var(--accent-gold), var(--bg-dark));
+            border-radius: 16px 16px 0 0;
+        }
+
+        .logo-wrap {
+            margin-bottom: 30px;
+        }
+
+        .logo-wrap img {
+            height: 90px;
+            width: auto;
+            display: block;
+            margin: 0 auto 10px;
+        }
+
+        .logo-wrap h2 {
+            font-size: 1.15rem;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .logo-wrap p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 12px 15px 12px 42px;
+            background: rgba(18, 20, 23, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 10px rgba(191, 166, 135, 0.15);
+            background: rgba(18, 20, 23, 0.85);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: var(--accent-gold);
+            color: #121417;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: var(--accent-gold-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .tab-buttons {
+            display: flex;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            background: rgba(18, 20, 23, 0.4);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.25s;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-gold);
+            color: #121417;
+        }
+
+        .error-box {
+            background: rgba(192, 57, 43, 0.15);
+            border: 1px solid rgba(192, 57, 43, 0.3);
+            color: #e74c3c;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .footer-line {
+            margin-top: 25px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .footer-line a {
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer-line a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="logo-wrap">
+            <img src="../logo_transparent.png" alt="IVAD Logo">
+            <h2>Fidelidad IVAD</h2>
+            <p>Acumula puntos y gana premios</p>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="tab-client" onclick="switchMode('client')">Cliente</button>
+            <button class="tab-btn" id="tab-admin" onclick="switchMode('admin')">Administrador</button>
+        </div>
+
+        <!-- Error Msg -->
+        <div class="error-box" id="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="error-text">Credenciales incorrectas.</span>
+        </div>
+
+        <!-- Client Form -->
+        <form id="client-form" onsubmit="handleClientLogin(event)">
+            <div class="form-group">
+                <label for="client-ident">Email o Código de Tarjeta</label>
+                <div class="input-wrap">
+                    <i class="far fa-envelope"></i>
+                    <input type="text" id="client-ident" placeholder="ej: cliente@correo.com o IVAD-723A8" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="client-pass">Contraseña Temporal</label>
+                <div class="input-wrap">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="client-pass" placeholder="••••••" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit" id="client-btn-text">Ver mi Tarjeta</button>
+        </form>
+
+        <!-- Admin Form (hidden by default) -->
+        <form id="admin-form" onsubmit="handleAdminLogin(event)" style="display: none;">
+            <div class="form-group">
+                <label for="admin-pass">Contraseña Administrativa</label>
+                <div class="input-wrap">
+                    <i class="fas fa-shield-alt"></i>
+                    <input type="password" id="admin-pass" placeholder="••••••••" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit" id="admin-btn-text">Ingresar al Panel</button>
+        </form>
+
+        <div class="footer-line">
+            ¿No tienes una tarjeta de fidelización? <br>
+            Pídela gratis al realizar tu compra o en <a href="../contacto.html">Atención al Cliente</a>.
+        </div>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script>
+        let activeMode = 'client';
+
+        function switchMode(mode) {
+            activeMode = mode;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-' + mode).classList.add('active');
+            document.getElementById('error-message').style.display = 'none';
+
+            if (mode === 'client') {
+                document.getElementById('client-form').style.display = 'block';
+                document.getElementById('admin-form').style.display = 'none';
+            } else {
+                document.getElementById('client-form').style.display = 'none';
+                document.getElementById('admin-form').style.display = 'block';
+            }
+        }
+
+        function showError(msg) {
+            const errBox = document.getElementById('error-message');
+            const errText = document.getElementById('error-text');
+            errText.textContent = msg;
+            errBox.style.display = 'flex';
+        }
+
+        async function handleClientLogin(e) {
+            e.preventDefault();
+            document.getElementById('error-message').style.display = 'none';
+
+            const ident = document.getElementById('client-ident').value.trim();
+            const pass = document.getElementById('client-pass').value.trim();
+            const btn = document.getElementById('client-btn-text');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+
+            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+                try {
+                    // Search in loyalty_cards table by email OR by card_code
+                    const { data, error } = await supabaseClient
+                        .from('loyalty_cards')
+                        .select('*')
+                        .or(`client_email.eq."${ident}",card_code.eq."${ident}"`)
+                        .single();
+
+                    btn.disabled = false;
+                    btn.textContent = 'Ver mi Tarjeta';
+
+                    if (error || !data) {
+                        showError('Tarjeta no encontrada en el sistema.');
+                    } else if (data.temp_password !== pass) {
+                        showError('Contraseña temporal incorrecta.');
+                    } else {
+                        // Success! Save session locally and redirect
+                        localStorage.setItem('ivad_loyalty_card', JSON.stringify(data));
+                        window.location.href = 'cliente.html';
+                    }
+                } catch (err) {
+                    btn.disabled = false;
+                    btn.textContent = 'Ver mi Tarjeta';
+                    console.error('Login error:', err);
+                    showError('Error de conexión con la base de datos.');
+                }
+            } else {
+                // Mock fallback simulation
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Ver mi Tarjeta';
+                    
+                    if (ident === 'test@test.com' || ident === 'IVAD-12345') {
+                        if (pass === '123456') {
+                            const mockCard = {
+                                id: 'mock-uuid',
+                                card_code: 'IVAD-12345',
+                                client_name: 'Cliente de Prueba',
+                                client_email: 'test@test.com',
+                                client_phone: '809-123-4567',
+                                current_points: 4,
+                                points_target: 10,
+                                temp_password: '123456',
+                                status: 'activo'
+                            };
+                            localStorage.setItem('ivad_loyalty_card', JSON.stringify(mockCard));
+                            window.location.href = 'cliente.html';
+                        } else {
+                            showError('Contraseña temporal incorrecta (Prueba: 123456).');
+                        }
+                    } else {
+                        showError('Prueba con el correo test@test.com y contraseña 123456.');
+                    }
+                }, 800);
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            document.getElementById('error-message').style.display = 'none';
+
+            const pass = document.getElementById('admin-pass').value.trim();
+            const btn = document.getElementById('admin-btn-text');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = 'Ingresar al Panel';
+
+                // Use a secure administrative code for accessing the local admin panel
+                if (pass === 'adminivad1996') {
+                    localStorage.setItem('ivad_loyalty_admin', 'true');
+                    window.location.href = 'admin.html';
+                } else {
+                    showError('Contraseña administrativa incorrecta.');
+                }
+            }, 500);
+        }
+    </script>
+</body>
+</html>
