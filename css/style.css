@@ -723,13 +723,14 @@ h1, h2, h3, h4 {
         background: none;
         border: none;
         font-size: 1.6rem;
-        color: var(--primary-color);
+        color: #ffffff;
         cursor: pointer;
         padding: 5px 10px;
     }
 
     .header-icons {
         gap: 15px;
+        align-items: center;
     }
     
     .hero-title {

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntas Frecuentes y Ayuda - IVAD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Custom styles for FAQ Accordion page */
+        .help-hero {
+            background-color: #22252a;
+            color: #fff;
+            padding: 80px 0;
+            text-align: center;
+            border-bottom: 3px solid #bfa687;
+        }
+
+        .help-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .help-hero p {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 1px solid #4a5568;
+            border-radius: 30px;
+            background-color: #2d3748;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-container input:focus {
+            border-color: #bfa687;
+            background-color: #1a202c;
+            box-shadow: 0 0 10px rgba(191, 166, 135, 0.2);
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 1.2rem;
+        }
+
+        .faq-section {
+            padding: 80px 0;
+            background-color: #f7fafc;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-category-title {
+            font-size: 1.5rem;
+            color: #22252a;
+            font-weight: 700;
+            margin: 40px 0 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #edf2f7;
+            letter-spacing: 0.5px;
+        }
+
+        .faq-item {
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: 20px;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            outline: none;
+            transition: color 0.2s ease;
+        }
+
+        .faq-question:hover {
+            color: #bfa687;
+        }
+
+        .faq-question i {
+            transition: transform 0.3s ease;
+            color: #a0aec0;
+            font-size: 1.1rem;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+            padding: 0 20px;
+            color: #4a5568;
+            font-size: 1rem;
+            line-height: 1.6;
+            background-color: #fafbfc;
+        }
+
+        /* Active Accordion State */
+        .faq-item.active {
+            border-color: #bfa687;
+            box-shadow: 0 4px 12px rgba(191, 166, 135, 0.08);
+        }
+
+        .faq-item.active .faq-question {
+            color: #bfa687;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+            color: #bfa687;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 20px;
+        }
+
+        /* Helpful block */
+        .feedback-section {
+            background-color: #fff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 30px;
+            text-align: center;
+            margin-top: 60px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .feedback-section h3 {
+            font-size: 1.3rem;
+            color: #22252a;
+            margin-bottom: 15px;
+        }
+
+        .feedback-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feedback-btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            background: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .feedback-btn:hover {
+            border-color: #bfa687;
+            color: #bfa687;
+            background-color: #fafbfc;
+            transform: translateY(-1px);
+        }
+
+        .feedback-btn.btn-yes:hover {
+            border-color: #2e7d32;
+            color: #2e7d32;
+            background-color: #f0f7f0;
+        }
+
+        .feedback-btn.btn-no:hover {
+            border-color: #c53030;
+            color: #c53030;
+            background-color: #fff5f5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <span class="est">Calidad y Diseño en cada Detalle</span>
+            <div class="top-right">
+                <span>Envíos a todo el país</span>
+                <a href="contacto.html">Contáctanos</a>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="container header-inner">
+            <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="logo_transparent.png" alt="IVAD Home & Goods" style="height: 60px; width: auto; display: block;">
+            </div>
+            
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li><a href="desechables.html">Tienda</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <a href="#"><i class="fas fa-search"></i></a>
+                <a href="login.html"><i class="far fa-user"></i></a>
+                <a href="#" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+            
+                <button class="mobile-menu-btn" onclick="document.querySelector('.main-nav').classList.toggle('nav-open')"><i class="fas fa-bars"></i></button></div>
+        </div>
+    </header>
+
+    <!-- Help Hero Section -->
+    <section class="help-hero">
+        <div class="container">
+            <h1>¿Cómo podemos ayudarte hoy?</h1>
+            <p>Encuentra respuestas rápidas a las preguntas más frecuentes sobre pedidos, envíos, métodos de pago y políticas de IVAD.</p>
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="faq-search" placeholder="Busca tu duda o pregunta aquí...">
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Accordion Section -->
+    <section class="faq-section">
+        <div class="container faq-container">
+            
+            <!-- Category 1: Pedidos y Envíos -->
+            <h2 class="faq-category-title">Pedidos y Envíos</h2>
+            
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span class="faq-question-text">¿A qué zonas realizan envíos?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    Realizamos envíos a todo el territorio nacional de la República Dominicana. Trabajamos con las principales empresas de transporte del país y mensajería privada para asegurar que tu pedido llegue de forma rápida y segura a tu puerta o sucursal seleccionada.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span class="faq-question-text">¿Cuánto tarda en llegar mi pedido?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    El tiempo promedio de entrega es de 24 a 48 horas laborables una vez confirmado tu pago. Para zonas muy apartadas, la entrega puede demorar hasta 72 horas laborables. Te notificaremos vía correo electrónico tan pronto tu orden sea despachada con la información de rastreo.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span class="faq-question-text">¿El envío tiene algún costo?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    Ofrecemos envíos gratis para la mayoría de los pedidos en nuestra tienda online según promociones vigentes. Durante el proceso de pago (checkout) se te especificará el costo de envío exacto antes de completar la transacción.
+                </div>
+            </div>
+
+            <!-- Category 2: Métodos de Pago -->
+            <h2 class="faq-category-title">Métodos de Pago</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span class="faq-question-text">¿Qué métodos de pago aceptan?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    Aceptamos todas las tarjetas de crédito y débito Visa, Mastercard y American Express a través de nuestra pasarela de pago segura (integración con Azul). También aceptamos pagos simulados de prueba para validar el correcto funcionamiento del sistema.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span class="faq-question-text">¿Es seguro realizar pagos en IVAD?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    Absolutamente. Todas las transacciones se realizan con un cifrado de seguridad SSL avanzado. No almacenamos los datos completos de tu tarjeta ni el código CVV en nuestros servidores. Toda la información bancaria es procesada de forma encriptada directamente por la red bancaria.
+                </div>
+            </div>
+
+            <!-- Category 3: Productos y Negocios -->
+            <h2 class="faq-category-title">Productos y Ventas</h2>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span class="faq-question-text">¿Venden suministros y desechables al por mayor?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    Sí, somos distribuidores directos y atendemos pedidos a gran escala para restaurantes, hoteles, caterings, organizadores de eventos y negocios en general. Puedes contactarnos por correo en <a href="mailto:info@ivad.com" style="color: #bfa687; text-decoration: underline;">info@ivad.com</a> para cotizaciones de volumen.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span class="faq-question-text">¿Qué tipos de desechables tienen disponibles?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    Contamos con un amplio catálogo que incluye vasos, platos, cubiertos, envases para comida para llevar (takeout), servilletas, bolsas y suministros de higiene. Trabajamos tanto con materiales tradicionales como ecológicos y biodegradables.
+                </div>
+            </div>
+
+            <!-- Interactive Help / Feedback Box -->
+            <div class="feedback-section" id="feedback-box">
+                <h3>¿Se resolvió tu problema?</h3>
+                <p>Tu opinión nos ayuda a mejorar nuestro centro de soporte constantemente.</p>
+                <div class="feedback-buttons">
+                    <button class="feedback-btn btn-yes" data-resolved="yes"><i class="far fa-thumbs-up" style="margin-right: 8px;"></i>Sí, gracias</button>
+                    <button class="feedback-btn btn-no" data-resolved="no"><i class="far fa-thumbs-down" style="margin-right: 8px;"></i>No del todo</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer; margin-bottom: 15px;">
+                    <img src="logo_transparent.png" alt="IVAD Home & Goods" style="height: 70px; width: auto; display: block;">
+                </div>
+                <p>Hogar y negocio en un solo lugar. Productos de calidad, servicio confiable y la mejor experiencia de compra.</p>
+                <span class="est-footer">Est. 1996</span>
+            </div>
+            <div class="footer-links">
+                <h3>ENLACES</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li><a href="desechables.html">Desechables</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>DEPARTAMENTOS</h3>
+                <ul>
+                    <li><a href="index.html#dep-decoracion">Decoración y Muebles</a></li>
+                    <li><a href="desechables.html">Desechables para Negocios</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>ATENCIÓN AL CLIENTE</h3>
+                <ul>
+                    <li><a href="ayuda.html">Preguntas frecuentes</a></li>
+                    <li><a href="#">Políticas de envío</a></li>
+                    <li><a href="#">Políticas de devolución</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>SÍGUENOS</h3>
+                <div class="social-icons-footer">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+                <h3>CONTÁCTANOS</h3>
+                <ul class="contact-info">
+                    <li><i class="fas fa-phone-alt"></i> (809) 123-4567</li>
+                    <li><i class="fas fa-envelope"></i> info@ivad.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Santo Domingo, RD</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2024 IVAD Home & Goods. Todos los derechos reservados.</p>
+            <div class="payment-icons">
+                <i class="fab fa-cc-visa"></i>
+                <i class="fab fa-cc-mastercard"></i>
+                <i class="fab fa-cc-paypal"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive FAQ Script -->
+    <script>
+        // Toggle Accordion items
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.parentElement;
+                const isActive = item.classList.contains('active');
+                
+                // Close all other items for a clean accordion behavior
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Search/Filter FAQs
+        const searchInput = document.getElementById('faq-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const val = e.target.value.toLowerCase();
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    const question = item.querySelector('.faq-question-text').textContent.toLowerCase();
+                    const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                    
+                    if (question.includes(val) || answer.includes(val)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Resolvió tu problema feedback logic
+        const feedButtons = document.querySelectorAll('.feedback-btn');
+        const feedbackBox = document.getElementById('feedback-box');
+        if (feedButtons && feedbackBox) {
+            feedButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const wasResolved = btn.dataset.resolved === 'yes';
+                    if (wasResolved) {
+                        feedbackBox.innerHTML = `
+                            <div style="color: #2e7d32; font-weight: 600; font-size: 1.15rem; padding: 15px 0;">
+                                <i class="fas fa-check-circle" style="margin-right: 8px; font-size: 1.3rem;"></i> ¡Nos alegra mucho haberte ayudado! Gracias por tu valoración.
+                            </div>
+                        `;
+                    } else {
+                        feedbackBox.innerHTML = `
+                            <div style="color: #c53030; font-weight: 600; font-size: 1.15rem; padding: 15px 0;">
+                                <i class="fas fa-info-circle" style="margin-right: 8px; font-size: 1.3rem;"></i> Lamentamos no haber resuelto tu duda.
+                            </div>
+                            <p style="color: #4a5568; font-size: 0.95rem; margin-top: 5px; line-height: 1.5;">
+                                Por favor, ponte en contacto con nuestro equipo de atención al cliente enviando un correo a 
+                                <a href="mailto:info@ivad.com" style="color: #bfa687; font-weight: 700; text-decoration: underline;">info@ivad.com</a> 
+                                o escribiéndonos por WhatsApp al <strong>(809) 123-4567</strong>. ¡Estaremos encantados de asistirte!
+                            </p>
+                        `;
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
