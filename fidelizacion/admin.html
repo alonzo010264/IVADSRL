@@ -1072,8 +1072,8 @@
                     <div class="flip-card-front">
                         <div class="card-front-top">
                             <div class="card-front-logo">
-                                <h3 class="m-biz-name">IVAD</h3>
-                                <p class="m-biz-slogan">HOME Y GOODS</p>
+                                <h3 id="modal-biz-name-label">IVAD</h3>
+                                <p id="modal-biz-slogan-label">HOME Y GOODS</p>
                             </div>
                             <div class="card-front-nfc">
                                 <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: none; stroke: var(--accent-gold); stroke-width: 2.5; stroke-linecap: round;">
@@ -1126,13 +1126,13 @@
                                 <span>ESCANEA</span>
                             </div>
                             <div class="back-details">
-                                <h4 class="m-biz-name">IVAD</h4>
-                                <div><i class="fas fa-phone-alt"></i> <span class="m-biz-phone">809-241-6555</span></div>
-                                <div><i class="fas fa-globe"></i> <span class="m-biz-web">www.ivadsrl.com</span></div>
-                                <div><i class="fas fa-map-marker-alt"></i> <span class="m-biz-address">Ave. 27 de febrero</span></div>
+                                <h4 id="modal-back-biz-title">IVAD</h4>
+                                <div><i class="fas fa-phone-alt"></i> <span id="modal-back-phone">809-241-6555</span></div>
+                                <div><i class="fas fa-globe"></i> <span id="modal-back-web">www.ivadsrl.com</span></div>
+                                <div><i class="fas fa-map-marker-alt"></i> <span id="modal-back-address">Ave. 27 de febrero</span></div>
                             </div>
                         </div>
-                        <div class="card-back-footer class-m-biz-slogan">
+                        <div class="card-back-footer" id="modal-back-footer-text">
                             Personal e intransferible - Est. 1996
                         </div>
                     </div>
@@ -1220,15 +1220,20 @@
             document.getElementById('modal-card-since').textContent = sinceStr;
             document.getElementById('modal-card-code').textContent = formatCardCode(card.card_code);
 
-            // Fill card back details using businessSettings
-            const elementsName = document.querySelectorAll('.m-biz-name');
-            elementsName.forEach(el => el.textContent = businessSettings.name);
+            // Split business name for the card front logo
+            const bizName = businessSettings.name || "IVAD";
+            const firstWord = bizName.split(' ')[0] || bizName;
+            const restOfName = bizName.split(' ').slice(1).join(' ') || businessSettings.slogan;
 
-            document.querySelector('.m-biz-slogan').textContent = businessSettings.slogan;
-            document.querySelector('.class-m-biz-slogan').textContent = `Personal e intransferible - ${businessSettings.slogan}`;
-            document.querySelector('.m-biz-phone').textContent = businessSettings.phone;
-            document.querySelector('.m-biz-web').textContent = businessSettings.web;
-            document.querySelector('.m-biz-address').textContent = businessSettings.address;
+            document.getElementById('modal-biz-name-label').textContent = firstWord;
+            document.getElementById('modal-biz-slogan-label').textContent = restOfName;
+
+            // Fill card back details using businessSettings and specific IDs
+            document.getElementById('modal-back-biz-title').textContent = businessSettings.name;
+            document.getElementById('modal-back-phone').textContent = businessSettings.phone;
+            document.getElementById('modal-back-web').textContent = businessSettings.web;
+            document.getElementById('modal-back-address').textContent = businessSettings.address;
+            document.getElementById('modal-back-footer-text').textContent = `Personal e intransferible - ${businessSettings.slogan}`;
 
             // QR Code URL
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(card.card_code)}&color=12-14-17`;
