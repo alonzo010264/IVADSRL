@@ -776,6 +776,50 @@
         .btn-modal-close:hover {
             background: var(--button-dark-hover);
         }
+
+        /* ===== CARD DETAIL MODAL ===== */
+        .card-modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 420px;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .card-modal-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .card-modal-header h3 {
+            font-size: 1.5rem;
+            color: #ffffff;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .card-modal-header p {
+            font-size: 0.88rem;
+            color: var(--accent-gold);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .card-modal-footer {
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.45);
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
@@ -1009,6 +1053,91 @@
         </div>
     </div>
 
+    <!-- Card Detail Modal Overlay -->
+    <div class="modal-overlay" id="card-modal" onclick="closeCardModal(event)">
+        <div class="card-modal-content" onclick="event.stopPropagation()">
+            <!-- Header: Name, Code & Points -->
+            <div class="card-modal-header">
+                <h3 id="modal-client-name">Alonzo</h3>
+                <p id="modal-client-subtitle">IVAD-693886E7 - 0 puntos</p>
+            </div>
+            
+            <!-- 3D Card Wrapper -->
+            <div class="card-container" id="modal-card-container">
+                <div class="flip-card-inner" onclick="toggleModalCardFlip()">
+                    
+                    <!-- Front Face -->
+                    <div class="flip-card-front">
+                        <div class="card-front-top">
+                            <div class="card-front-logo">
+                                <h3 class="m-biz-name">IVAD</h3>
+                                <p class="m-biz-slogan">HOME Y GOODS</p>
+                            </div>
+                            <div class="card-front-nfc">
+                                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: none; stroke: var(--accent-gold); stroke-width: 2.5; stroke-linecap: round;">
+                                    <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5" />
+                                    <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6" />
+                                    <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="card-front-chip">
+                            <svg viewBox="0 0 100 80" style="width: 44px; height: 34px; display: block; border-radius: 5px;">
+                                <rect width="100" height="80" rx="10" fill="url(#chip-gold)" />
+                                <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
+                                <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
+                                <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
+                                <line x1="25" y1="50" x2="25" y2="80" stroke="#5d4308" stroke-width="2"/>
+                                <line x1="75" y1="0" x2="75" y2="30" stroke="#5d4308" stroke-width="2"/>
+                                <line x1="75" y1="50" x2="75" y2="80" stroke="#5d4308" stroke-width="2"/>
+                                <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        
+                        <div class="card-front-number" id="modal-card-code">IVAD 6938 86E7 0000</div>
+                        
+                        <div class="card-front-bottom">
+                            <div>
+                                <div class="front-label">Titular</div>
+                                <div class="front-val" id="modal-card-holder">Alonzo</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="front-label">Desde</div>
+                                <div class="front-val" id="modal-card-since">07/2026</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Back Face -->
+                    <div class="flip-card-back">
+                        <div class="card-back-inner">
+                            <div class="back-qr-wrap">
+                                <img id="modal-qr-img" src="" alt="QR">
+                                <span>ESCANEA</span>
+                            </div>
+                            <div class="back-details">
+                                <h4 class="m-biz-name">IVAD</h4>
+                                <div><i class="fas fa-phone-alt"></i> <span class="m-biz-phone">809-241-6555</span></div>
+                                <div><i class="fas fa-globe"></i> <span class="m-biz-web">www.ivadsrl.com</span></div>
+                                <div><i class="fas fa-map-marker-alt"></i> <span class="m-biz-address">Ave. 27 de febrero</span></div>
+                            </div>
+                        </div>
+                        <div class="card-back-footer class-m-biz-slogan">
+                            Personal e intransferible - Est. 1996
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <!-- Bottom Text -->
+            <div class="card-modal-footer">
+                Toca la tarjeta para voltearla · Haz clic fuera para cerrar
+            </div>
+        </div>
+    </div>
+
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-config.js"></script>
@@ -1057,6 +1186,55 @@
             if (e) e.stopPropagation();
             const container = document.getElementById('preview-card-container');
             container.classList.toggle('flipped');
+        }
+
+        // Toggle Modal Card 3D Flip
+        function toggleModalCardFlip() {
+            const container = document.getElementById('modal-card-container');
+            container.classList.toggle('flipped');
+        }
+
+        // Open Card detail modal
+        function openCardModal(cardId) {
+            const card = allCards.find(c => c.id === cardId);
+            if (!card) return;
+
+            // Fill header info
+            document.getElementById('modal-client-name').textContent = card.client_name;
+            document.getElementById('modal-client-subtitle').textContent = `${card.card_code} - ${card.current_points} punto${card.current_points !== 1 ? 's' : ''}`;
+
+            // Fill card front
+            document.getElementById('modal-card-holder').textContent = card.client_name;
+            
+            const date = new Date(card.created_at || Date.now());
+            const sinceStr = `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+            document.getElementById('modal-card-since').textContent = sinceStr;
+            document.getElementById('modal-card-code').textContent = formatCardCode(card.card_code);
+
+            // Fill card back details using businessSettings
+            const elementsName = document.querySelectorAll('.m-biz-name');
+            elementsName.forEach(el => el.textContent = businessSettings.name);
+
+            document.querySelector('.m-biz-slogan').textContent = businessSettings.slogan;
+            document.querySelector('.class-m-biz-slogan').textContent = `Personal e intransferible - ${businessSettings.slogan}`;
+            document.querySelector('.m-biz-phone').textContent = businessSettings.phone;
+            document.querySelector('.m-biz-web').textContent = businessSettings.web;
+            document.querySelector('.m-biz-address').textContent = businessSettings.address;
+
+            // QR Code URL
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(card.card_code)}&color=12-14-17`;
+            document.getElementById('modal-qr-img').src = qrUrl;
+
+            // Reset flipped state
+            document.getElementById('modal-card-container').classList.remove('flipped');
+
+            // Show Modal
+            document.getElementById('card-modal').style.display = 'flex';
+        }
+
+        // Close Card detail modal
+        function closeCardModal(e) {
+            document.getElementById('card-modal').style.display = 'none';
         }
 
         // Update Card Preview Live from inputs
@@ -1245,7 +1423,7 @@
                         </button>
                     </div>
                     
-                    <button class="btn-view-card" onclick="viewClientCardInPreview('${card.id}')">
+                    <button class="btn-view-card" onclick="openCardModal('${card.id}')">
                         <i class="far fa-eye"></i> Ver tarjeta
                     </button>
                 `;
