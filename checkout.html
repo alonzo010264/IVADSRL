@@ -1042,10 +1042,10 @@
                                 if (!res.ok) console.warn('Error sending receipt email');
                             }).catch(err => {
                                 console.error('Error calling send-email endpoint:', err);
+                            }).finally(() => {
+                                // Redirect to processing page after email is dispatched/failed
+                                window.location.href = 'verificando-pago.html';
                             });
-
-                            // Redirect to processing page
-                            window.location.href = 'verificando-pago.html';
                         }
                     }).catch(err => {
                         submitBtn.disabled = false;

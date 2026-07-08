@@ -19,11 +19,8 @@ export default async function handler(req, res) {
 
   const { client_name, client_email, client_phone, total_amount, items, card_info, id } = req.body;
 
-  const resendApiKey = process.env.RESEND_API_KEY;
-  if (!resendApiKey) {
-    return res.status(500).json({ error: 'Resend API key is not configured' });
-  }
-
+  const resendApiKey = process.env.RESEND_API_KEY || "re_ENozXFAk_4NkvyYsRjcRHE3CCRFQtJjma";
+  
   const orderId = id ? id.substring(0, 8).toUpperCase() : Math.random().toString(36).substring(2, 10).toUpperCase();
   const dateStr = new Date().toLocaleDateString('es-DO', {
     year: 'numeric',
@@ -57,9 +54,8 @@ export default async function handler(req, res) {
     </tr>
   `).join('');
 
-  // Dynamically resolve logo URL from Vercel deployment or default to public repository file
-  const host = req.headers.host || 'ivadsrl.com';
-  const logoUrl = `https://${host}/logo_transparent.png`;
+  // Permanent public Supabase URL for guaranteed loading in email clients
+  const logoUrl = "https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/logo_transparent.png";
 
   const htmlContent = `
     <!DOCTYPE html>
