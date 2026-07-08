@@ -159,11 +159,68 @@
                 <span class="detail-label">Método de pago:</span>
                 <span class="detail-value">Azul (Tarjeta)</span>
             </div>
-            <!-- More order details could be populated here dynamically via URL params or local storage -->
         </div>
 
-        <a href="desechables" class="btn-home"><i class="fas fa-shopping-cart" style="margin-right: 8px;"></i> Volver a la tienda</a>
+        <a href="desechables.html" class="btn-home"><i class="fas fa-shopping-cart" style="margin-right: 8px;"></i> Volver a la tienda</a>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const orderDataStr = localStorage.getItem('ivad_last_order');
+            if (orderDataStr) {
+                try {
+                    const order = JSON.parse(orderDataStr);
+                    const detailsContainer = document.querySelector('.order-details');
+                    
+                    const orderId = order.id ? (order.id.substring(0, 8).toUpperCase()) : 'N/A';
+                    const totalFormatted = order.total_amount ? `RD$ ${Number(order.total_amount).toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A';
+                    
+                    let itemsHtml = '';
+                    if (order.items && order.items.length > 0) {
+                        itemsHtml = `
+                            <div style="margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px;">
+                                <h4 style="margin: 0 0 10px 0; color: var(--primary-color); font-size: 0.95rem; font-weight: 700;">Productos comprados:</h4>
+                                ${order.items.map(item => `
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                                        <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                                            <img src="${item.img}" alt="${item.title}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #eee;">
+                                            <span style="color: #4a5568; font-weight: 500;">${item.title} <span style="color: #a0aec0; font-size: 0.8rem;">(x${item.qty})</span></span>
+                                        </div>
+                                        <span style="font-weight: 600; color: var(--primary-color);">RD$ ${(Number(item.price) * item.qty).toFixed(2)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    detailsContainer.innerHTML = `
+                        <div class="detail-row">
+                            <span class="detail-label">No. Pedido:</span>
+                            <span class="detail-value">#${orderId}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Cliente:</span>
+                            <span class="detail-value">${order.client_name || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Método de pago:</span>
+                            <span class="detail-value">${order.card_info || 'Azul (Tarjeta)'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Estado:</span>
+                            <span class="detail-value" style="color: var(--success-color);">Aprobado</span>
+                        </div>
+                        <div class="detail-row" style="margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                            <span class="detail-label" style="font-size: 1.1rem; font-weight: bold; color: var(--primary-color);">Total:</span>
+                            <span class="detail-value" style="font-size: 1.1rem; font-weight: bold; color: var(--success-color);">${totalFormatted}</span>
+                        </div>
+                        ${itemsHtml}
+                    `;
+                } catch (err) {
+                    console.error('Error parsing order data in success page:', err);
+                }
+            }
+        });
+    </script>
 </body>
 </html>

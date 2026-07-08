@@ -117,12 +117,10 @@
         <p>Por favor espera un momento, estamos procesando tu transacción de forma segura con Azul<span class="dots"></span></p>
     </div>
 
-    <!-- Script to simulate verification and redirect (this is a placeholder, actual redirection comes from Azul) -->
     <script>
         // Simulando una verificación de 3 segundos antes de continuar
         setTimeout(() => {
-            // En un flujo real, aquí el backend responde y te redirige a éxito o error.
-            // Esto es solo para pruebas visuales si abres la página directamente.
+            window.location.href = 'pago-exitoso.html';
         }, 3000);
     </script>
 </body>

@@ -986,6 +986,12 @@
                 const clientEmail = document.getElementById('client-email').value;
                 const clientPhone = document.getElementById('client-phone').value;
                 
+                // Get Card Details safely (last 4 digits and brand)
+                const rawCard = document.getElementById('card-number').value.replace(/\s/g, '');
+                const lastDigits = rawCard.slice(-4);
+                const cardBrand = rawCard.startsWith('4') ? 'Visa' : rawCard.startsWith('5') ? 'Mastercard' : 'Tarjeta';
+                const cardInfo = `${cardBrand} terminada en **** ${lastDigits}`;
+
                 // Calculate total amount
                 let subtotal = 0;
                 cart.forEach(item => { subtotal += item.price * item.qty; });
@@ -1006,19 +1012,40 @@
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Procesando pago...</span>';
 
-                    supabaseClient.from('orders').insert([orderData]).then(({ error }) => {
+                    // Insert and select to obtain order UUID
+                    supabaseClient.from('orders').insert([orderData]).select().then(({ data, error }) => {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalBtnText;
 
                         if (error) {
                             alert('Error al guardar el pedido en Supabase: ' + error.message);
                         } else {
-                            // Clear cart in localStorage
+                            const orderId = data && data[0] ? data[0].id : null;
+                            const fullOrderPayload = {
+                                ...orderData,
+                                id: orderId,
+                                card_info: cardInfo
+                            };
+
+                            // Save to localStorage for loading screen & success page
+                            localStorage.setItem('ivad_last_order', JSON.stringify(fullOrderPayload));
                             localStorage.removeItem('ivad_cart');
-                            // Show success modal
-                            if (successOverlay) {
-                                successOverlay.classList.add('active');
-                            }
+
+                            // Trigger email receipt serverless function in background
+                            fetch('/api/send-email', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(fullOrderPayload)
+                            }).then(res => {
+                                if (!res.ok) console.warn('Error sending receipt email');
+                            }).catch(err => {
+                                console.error('Error calling send-email endpoint:', err);
+                            });
+
+                            // Redirect to processing page
+                            window.location.href = 'verificando-pago.html';
                         }
                     }).catch(err => {
                         submitBtn.disabled = false;
@@ -1028,10 +1055,15 @@
                     });
                 } else {
                     // Fallback local mock mode
+                    const mockId = 'ORD-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+                    const fullOrderPayload = {
+                        ...orderData,
+                        id: mockId,
+                        card_info: cardInfo
+                    };
+                    localStorage.setItem('ivad_last_order', JSON.stringify(fullOrderPayload));
                     localStorage.removeItem('ivad_cart');
-                    if (successOverlay) {
-                        successOverlay.classList.add('active');
-                    }
+                    window.location.href = 'verificando-pago.html';
                 }
             });
         }
