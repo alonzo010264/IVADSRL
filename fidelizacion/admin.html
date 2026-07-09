@@ -766,11 +766,25 @@
 
     function toggleCardFlip() { document.getElementById('preview-card-container').classList.toggle('flipped'); }
     function toggleModalCardFlip() { document.getElementById('modal-card-container').classList.toggle('flipped'); }
-    function formatCardCode(code) {
+    
+    function maskCardCode(code) {
+        if (!code) return '';
+        const parts = code.split('-');
+        if (parts.length < 2) return code;
+        const body = parts[1];
+        if (body.length <= 2) return parts[0] + '-••';
+        return parts[0] + '-' + '•'.repeat(body.length - 2) + body.slice(-2);
+    }
+
+    function formatCardCode(code, mask = false) {
         const clean = code.replace(/[-\s]/g,'');
         let body = clean.toUpperCase().startsWith('IVAD') ? clean.substring(4) : clean;
-        const padded = body.padEnd(8,'0');
-        return 'IVAD ' + padded.substring(0,4) + ' ' + padded.substring(4,8) + ' ...';
+        if (mask) {
+            const len = body.length;
+            body = '•'.repeat(Math.max(0, len - 2)) + body.substring(Math.max(0, len - 2));
+        }
+        const padded = body.padEnd(8,'•');
+        return 'IVAD ' + padded.substring(0,4) + ' ' + padded.substring(4,8) + ' ••••';
     }
 
     async function loadClients() {
@@ -820,7 +834,7 @@
         if (!recent.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px 0;">Sin clientes registrados aun.</div>'; return; }
         el.innerHTML = recent.map(c => {
             const d = new Date(c.created_at || Date.now()).toLocaleDateString('es-DO', { day:'2-digit', month:'short', year:'numeric' });
-            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f7f6f4;border-radius:8px;"><div><div style="font-size:0.88rem;font-weight:700;color:var(--text-dark);">' + c.client_name + '</div><div style="font-size:0.7rem;color:var(--text-muted);font-family:monospace;">' + c.card_code + ' - ' + d + '</div></div><div style="font-size:0.82rem;font-weight:700;color:var(--accent-gold-dark);">' + c.current_points + ' pts</div></div>';
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f7f6f4;border-radius:8px;"><div><div style="font-size:0.88rem;font-weight:700;color:var(--text-dark);">' + c.client_name + '</div><div style="font-size:0.7rem;color:var(--text-muted);font-family:monospace;">' + maskCardCode(c.card_code) + ' - ' + d + '</div></div><div style="font-size:0.82rem;font-weight:700;color:var(--accent-gold-dark);">' + c.current_points + ' pts</div></div>';
         }).join('');
     }
 
@@ -830,7 +844,7 @@
         container.innerHTML = cards.map(card => {
             const date = new Date(card.created_at || Date.now());
             const since = String(date.getMonth()+1).padStart(2,'0') + '/' + date.getFullYear();
-            return '<div class="client-card"><div class="client-card-top"><h4>' + card.client_name + '</h4><button class="btn-trash" onclick="deleteCard(\'' + card.id + '\',\'' + card.client_name.replace(/'/g,"\\'") + '\')" title="Eliminar"><i class="far fa-trash-alt"></i></button></div><div class="client-meta"><span class="code">' + card.card_code + '</span>' + (card.client_cedula ? '<span><i class="fas fa-id-card" style="color:var(--text-muted);margin-right:4px;font-size:0.7rem;"></i>' + card.client_cedula + '</span>' : '') + '<span>desde ' + since + '</span></div><div class="pts-adjust-box"><button class="btn-adj" onclick="adjustPointsDirectly(\'' + card.id + '\',-1)"><i class="fas fa-minus"></i></button><div class="pts-display"><strong id="pts-count-' + card.id + '">' + card.current_points + '</strong><span>Puntos</span></div><button class="btn-adj btn-adj-plus" onclick="adjustPointsDirectly(\'' + card.id + '\',1)"><i class="fas fa-plus"></i></button></div><button class="btn-view" onclick="openCardModal(\'' + card.id + '\')"><i class="far fa-eye"></i> Ver tarjeta</button></div>';
+            return '<div class="client-card"><div class="client-card-top"><h4>' + card.client_name + '</h4><button class="btn-trash" onclick="deleteCard(\'' + card.id + '\',\'' + card.client_name.replace(/'/g,"\\'") + '\')" title="Eliminar"><i class="far fa-trash-alt"></i></button></div><div class="client-meta"><span class="code">' + maskCardCode(card.card_code) + '</span>' + (card.client_cedula ? '<span><i class="fas fa-id-card" style="color:var(--text-muted);margin-right:4px;font-size:0.7rem;"></i>' + card.client_cedula + '</span>' : '') + '<span>desde ' + since + '</span></div><div class="pts-adjust-box"><button class="btn-adj" onclick="adjustPointsDirectly(\'' + card.id + '\',-1)"><i class="fas fa-minus"></i></button><div class="pts-display"><strong id="pts-count-' + card.id + '">' + card.current_points + '</strong><span>Puntos</span></div><button class="btn-adj btn-adj-plus" onclick="adjustPointsDirectly(\'' + card.id + '\',1)"><i class="fas fa-plus"></i></button></div><button class="btn-view" onclick="openCardModal(\'' + card.id + '\')"><i class="far fa-eye"></i> Ver tarjeta</button></div>';
         }).join('');
     }
 
@@ -847,7 +861,7 @@
         const matches = allCards.filter(c => c.client_name.toLowerCase().includes(q) || c.card_code.toLowerCase().includes(q) || (c.client_cedula||'').toLowerCase().includes(q) || (c.client_email||'').toLowerCase().includes(q)).slice(0,6);
         if (!matches.length) { resultsBox.style.display='block'; resultsBox.innerHTML='<div style="padding:14px 16px;font-size:0.82rem;color:var(--text-muted);">No se encontro ningun cliente.</div>'; return; }
         resultsBox.style.display='block';
-        resultsBox.innerHTML = matches.map(c => '<div onclick="selectClient(\'' + c.id + '\')" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-color);" onmouseover="this.style.background=\'rgba(191,166,135,0.08)\'" onmouseout="this.style.background=\'transparent\'"><div style="font-size:0.88rem;font-weight:700;color:var(--text-dark);">' + c.client_name + '</div><div style="font-size:0.72rem;color:var(--text-muted);font-family:monospace;">' + c.card_code + ' - ' + (c.client_email||'') + '</div></div>').join('');
+        resultsBox.innerHTML = matches.map(c => '<div onclick="selectClient(\'' + c.id + '\')" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-color);" onmouseover="this.style.background=\'rgba(191,166,135,0.08)\'" onmouseout="this.style.background=\'transparent\'"><div style="font-size:0.88rem;font-weight:700;color:var(--text-dark);">' + c.client_name + '</div><div style="font-size:0.72rem;color:var(--text-muted);font-family:monospace;">' + maskCardCode(c.card_code) + ' - ' + (c.client_email||'') + '</div></div>').join('');
     }
 
     function selectClient(cardId) {
@@ -858,7 +872,7 @@
         document.getElementById('client-search-results').style.display = 'none';
         document.getElementById('selected-client-banner').style.display = 'block';
         document.getElementById('sel-name').textContent = card.client_name;
-        document.getElementById('sel-code').textContent = card.card_code + ' - ' + (card.client_email||'');
+        document.getElementById('sel-code').textContent = maskCardCode(card.card_code) + ' - ' + (card.client_email||'');
         document.getElementById('sel-pts').textContent = card.current_points + ' puntos actuales';
     }
 
@@ -1003,10 +1017,10 @@
         const since = String(date.getMonth()+1).padStart(2,'0') + '/' + date.getFullYear();
         const el = (id,v) => { const e = document.getElementById(id); if (e) e.textContent=v; };
         el('modal-client-name', card.client_name);
-        el('modal-client-subtitle', card.card_code + ' - ' + card.current_points + ' puntos');
+        el('modal-client-subtitle', maskCardCode(card.card_code) + ' - ' + card.current_points + ' puntos');
         el('modal-card-holder', card.client_name);
         el('modal-card-since', since);
-        el('modal-card-code', formatCardCode(card.card_code));
+        el('modal-card-code', formatCardCode(card.card_code, true));
         el('modal-biz-name-label', businessSettings.name.split(' ')[0]);
         el('modal-biz-slogan-label', businessSettings.name.split(' ').slice(1).join(' ') || businessSettings.slogan);
         el('modal-back-biz-title', businessSettings.name);
