@@ -1041,8 +1041,8 @@
             const clean = code.replace(/[-\s]/g, '');
             let prefix = "IVAD";
             let body = clean.toUpperCase().startsWith("IVAD") ? clean.substring(4) : clean;
-            const padded = body.padEnd(8, '0');
-            return `${prefix} ${padded.substring(0,4)} ${padded.substring(4,8)}`.toUpperCase();
+            const padded = body.padEnd(12, '0');
+            return `${prefix} ${padded.substring(0,4)} ${padded.substring(4,8)} ${padded.substring(8,12)}`.toUpperCase();
         }
 
         // ─── Claim Discount ──────────────────────────────────────────

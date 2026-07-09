@@ -388,7 +388,7 @@
                                     <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
                                 </svg>
                             </div>
-                            <div class="card-front-number" id="prev-card-code">IVAD 0000 0000</div>
+                            <div class="card-front-number" id="prev-card-code">IVAD 0000 0000 0000</div>
                             <div class="card-front-bottom">
                                 <div>
                                     <div class="front-label">Titular</div>
@@ -658,7 +658,7 @@
                             <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
                         </svg>
                     </div>
-                    <div class="card-front-number" id="modal-card-code">IVAD 0000 0000 ...</div>
+                    <div class="card-front-number" id="modal-card-code">IVAD 0000 0000 0000</div>
                     <div class="card-front-bottom">
                         <div>
                             <div class="front-label">Titular</div>
@@ -772,18 +772,18 @@
         const parts = code.split('-');
         if (parts.length < 2) return code;
         const body = parts[1];
-        if (body.length <= 2) return parts[0] + '-••';
-        return parts[0] + '-' + '•'.repeat(body.length - 2) + body.slice(-2);
+        if (body.length <= 4) return parts[0] + '-••••';
+        return parts[0] + '-••••••••' + body.slice(-4);
     }
 
     function formatCardCode(code, mask = false) {
         const clean = code.replace(/[-\s]/g,'');
         let body = clean.toUpperCase().startsWith('IVAD') ? clean.substring(4) : clean;
-        const padded = body.padEnd(8,'0');
+        const padded = body.padEnd(12,'0');
         if (mask) {
-            return 'IVAD ' + padded.substring(0,4) + ' ••' + padded.substring(6,8);
+            return 'IVAD ' + padded.substring(0,4) + ' •••• ' + padded.substring(8,12);
         }
-        return 'IVAD ' + padded.substring(0,4) + ' ' + padded.substring(4,8);
+        return 'IVAD ' + padded.substring(0,4) + ' ' + padded.substring(4,8) + ' ' + padded.substring(8,12);
     }
 
     async function loadClients() {
