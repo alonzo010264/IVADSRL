@@ -3,118 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Tarjeta de Fidelización - IVAD</title>
+    <title>Mi Club IVAD - Panel de Fidelización</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #121417;
-            --card-dark: #1f2228;
+            --bg-body: #0e1117;
+            --bg-header: #0c151e;
+            --bg-section: #12161c;
+            --card-dark: #1a1f28;
+            --card-elevated: #1f2530;
             --accent-gold: #bfa687;
-            --accent-gold-hover: #a8906f;
-            --text-light: #f7fafc;
-            --text-muted: #a0aec0;
-            --border-color: #2d3139;
+            --accent-gold-light: #d4c0a8;
+            --text-light: #f0f4f8;
+            --text-muted: #7f8c9a;
+            --border-color: #252c38;
+            --nav-height: 68px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-dark);
+            background-color: var(--bg-body);
             color: var(--text-light);
             min-height: 100vh;
-            padding: 20px 10px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            overflow-x: hidden;
         }
 
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            z-index: 1;
-            opacity: 0.12;
-            pointer-events: none;
-        }
-
-        .orb-1 {
-            top: -10%;
-            left: -10%;
-            width: 400px;
-            height: 400px;
-            background-color: var(--accent-gold);
-        }
-
-        .orb-2 {
-            bottom: -10%;
-            right: -10%;
-            width: 550px;
-            height: 550px;
-            background-color: #313f4a;
-        }
-
-        .header-nav {
-            width: 100%;
-            max-width: 600px;
+        /* ===== HEADER ===== */
+        .client-header {
+            background-color: var(--bg-header);
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            z-index: 10;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .btn-back {
-            background: none;
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            color: var(--text-muted);
-            border-radius: 20px;
-            font-family: inherit;
-            font-size: 0.8rem;
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-brand-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--accent-gold), #8a6930);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            color: #121417;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .header-brand-text h1 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .header-brand-text p {
+            font-size: 0.62rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 1px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-client-name {
+            font-size: 0.72rem;
             font-weight: 600;
+            color: var(--text-muted);
+            text-align: right;
+            line-height: 1.3;
+            display: none;
+        }
+
+        @media (min-width: 480px) {
+            .header-client-name { display: block; }
+        }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 7px 14px;
+            color: var(--text-muted);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.72rem;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.25s;
+            gap: 6px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .btn-back:hover {
-            border-color: var(--accent-gold);
+        .btn-logout:hover {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .app-body {
+            flex: 1;
+            display: flex;
+            padding-bottom: var(--nav-height);
+            min-height: 0;
+        }
+
+        /* ===== SIDE NAV (desktop) ===== */
+        .side-nav {
+            width: 220px;
+            background: var(--bg-header);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 16px;
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            position: sticky;
+            top: 71px;
+            height: calc(100vh - 71px);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 900px) {
+            .side-nav { display: flex; }
+        }
+
+        .side-nav-label {
+            font-size: 0.62rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+            margin-top: 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: none;
+            background: none;
+            font-family: inherit;
+            text-align: left;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-light);
+        }
+
+        .nav-item.active {
+            background: rgba(191, 166, 135, 0.12);
+            color: var(--accent-gold);
+            border: 1px solid rgba(191, 166, 135, 0.2);
+        }
+
+        .nav-item.active i {
             color: var(--accent-gold);
         }
 
-        .main-wrapper {
+        /* ===== CONTENT AREA ===== */
+        .content-area {
+            flex: 1;
+            padding: 28px 20px;
+            overflow-y: auto;
+            max-width: 720px;
+            margin: 0 auto;
             width: 100%;
-            max-width: 600px;
+        }
+
+        /* Section visibility */
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: sectionIn 0.3s ease; }
+
+        @keyframes sectionIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SECTION TITLES ===== */
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
-            z-index: 10;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i { color: var(--accent-gold); }
+
+        .section-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        /* ===== PANEL CARD ===== */
+        .panel {
+            background: var(--card-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
         }
 
         /* ===== 3D FLIP CARD ===== */
         .card-container {
             perspective: 1000px;
             width: 100%;
-            max-width: 380px;
-            height: 240px;
-            margin: 0 auto 10px auto;
+            max-width: 420px;
+            height: 255px;
+            margin: 0 auto 28px auto;
         }
 
         .flip-card-inner {
             position: relative;
             width: 100%;
             height: 100%;
-            transition: transform 0.6s;
+            transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
             transform-style: preserve-3d;
             cursor: pointer;
         }
@@ -129,22 +282,32 @@
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: 20px;
-            padding: 22px 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
-            border: 1.5px solid rgba(191, 166, 135, 0.2);
-            color: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .flip-card-front {
+            background: linear-gradient(135deg, #1a2030 0%, #0e1520 50%, #1e1510 100%);
+            border: 1px solid rgba(191, 166, 135, 0.25);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+            padding: 22px 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
-        .flip-card-front {
-            background: linear-gradient(135deg, #12273d 0%, #091624 100%);
-            transform: rotateY(0deg);
-            -webkit-transform: rotateY(0deg);
+        .flip-card-back {
+            background: linear-gradient(135deg, #0a1520 0%, #141e28 100%);
+            border: 1px solid rgba(191, 166, 135, 0.2);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: rotateY(180deg);
+            padding: 22px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
+        /* Card Front */
         .card-front-top {
             display: flex;
             justify-content: space-between;
@@ -152,39 +315,35 @@
         }
 
         .card-front-logo h3 {
-            font-size: 1.15rem;
-            font-weight: 800;
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--accent-gold);
             letter-spacing: 2px;
-            color: #ffffff;
+            text-transform: uppercase;
         }
 
         .card-front-logo p {
-            font-size: 0.52rem;
-            color: var(--accent-gold);
-            letter-spacing: 1px;
+            font-size: 0.55rem;
+            color: rgba(191,166,135,0.65);
+            letter-spacing: 2.5px;
             text-transform: uppercase;
-            margin-top: 2px;
-            font-weight: 700;
+            margin-top: 1px;
         }
 
-        .card-front-nfc {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .card-front-nfc svg {
+            opacity: 0.7;
         }
 
         .card-front-chip {
-            margin: 8px 0;
-            display: inline-block;
+            margin: 10px 0 6px 0;
         }
 
         .card-front-number {
-            font-family: monospace;
-            font-size: 1.15rem;
+            font-size: 0.9rem;
             letter-spacing: 3px;
-            color: #ffffff;
-            text-shadow: -1px -1px 0px rgba(0,0,0,0.6), 1px 1px 0px rgba(255,255,255,0.2);
-            margin-bottom: 8px;
+            color: rgba(255,255,255,0.85);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
         }
 
         .card-front-bottom {
@@ -194,39 +353,32 @@
         }
 
         .front-label {
-            font-size: 0.52rem;
-            color: #7f8c8d;
-            letter-spacing: 0.5px;
+            font-size: 0.55rem;
+            color: rgba(255,255,255,0.4);
             text-transform: uppercase;
+            letter-spacing: 1.5px;
             margin-bottom: 2px;
         }
 
         .front-val {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 700;
-            color: #ffffff;
+            color: #fff;
+            letter-spacing: 0.5px;
         }
 
         .card-points-badge {
-            background: rgba(191, 166, 135, 0.15);
-            border: 1px solid rgba(191, 166, 135, 0.4);
+            background: rgba(191,166,135,0.15);
+            border: 1px solid rgba(191,166,135,0.3);
             color: var(--accent-gold);
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-size: 0.72rem;
-            font-weight: 700;
+            font-size: 0.58rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
             letter-spacing: 0.5px;
-            text-transform: uppercase;
         }
 
-        /* Back Styling */
-        .flip-card-back {
-            background: linear-gradient(135deg, #091624 0%, #12273d 100%);
-            transform: rotateY(180deg);
-            -webkit-transform: rotateY(180deg);
-            padding: 20px 25px;
-        }
-
+        /* Card Back */
         .card-back-inner {
             display: flex;
             height: 100%;
@@ -245,134 +397,113 @@
             height: 100px;
             justify-content: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            flex-shrink: 0;
         }
 
-        .back-qr-wrap img {
-            width: 72px;
-            height: 72px;
-            display: block;
-        }
+        .back-qr-wrap img { width: 72px; height: 72px; display: block; }
+        .back-qr-wrap span { font-size: 0.48rem; color: #121417; font-weight: 800; letter-spacing: 1px; margin-top: 3px; }
 
-        .back-qr-wrap span {
-            font-size: 0.48rem;
-            color: #121417;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-top: 3px;
-        }
-
-        .back-details {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            text-align: left;
-        }
-
-        .back-details h4 {
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: var(--accent-gold);
-            letter-spacing: 1px;
-        }
-
-        .back-details div {
-            font-size: 0.68rem;
-            color: rgba(255, 255, 255, 0.8);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .back-details div i {
-            color: var(--accent-gold);
-            width: 12px;
-        }
+        .back-details { display: flex; flex-direction: column; gap: 7px; }
+        .back-details h4 { font-size: 0.95rem; font-weight: 800; color: var(--accent-gold); letter-spacing: 1px; }
+        .back-details div { font-size: 0.68rem; color: rgba(255,255,255,0.75); display: flex; align-items: center; gap: 8px; }
+        .back-details div i { color: var(--accent-gold); width: 12px; }
 
         .card-back-footer {
-            font-size: 0.55rem;
-            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.52rem;
+            color: rgba(255,255,255,0.3);
             text-align: center;
             letter-spacing: 0.5px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 6px;
-            margin-top: 4px;
-        }
-            color: var(--text-muted);
-            text-align: right;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 8px;
         }
 
-        /* Ribbon navigation tabs */
-        .tab-ribbon {
-            display: flex;
-            background: rgba(31, 34, 40, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            padding: 4px;
-            z-index: 10;
-        }
-
-        .ribbon-btn {
-            flex: 1;
-            padding: 12px 10px;
-            background: none;
-            border: none;
+        /* Card hint */
+        .card-hint {
+            text-align: center;
+            font-size: 0.7rem;
             color: var(--text-muted);
-            font-family: inherit;
-            font-size: 0.82rem;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border-radius: 8px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            outline: none;
+            gap: 6px;
         }
 
-        .ribbon-btn.active {
-            background: var(--accent-gold);
-            color: #121417;
-            box-shadow: 0 4px 12px rgba(191, 166, 135, 0.2);
-        }
-
-        .tab-section {
-            display: none;
-            width: 100%;
-            animation: fadeInSection 0.4s ease;
-        }
-
-        .tab-section.active {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        @keyframes fadeInSection {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Discount Cards styling */
-        .discount-card {
+        /* ===== QR PANEL ===== */
+        .qr-panel {
             background: var(--card-dark);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
+            padding: 28px 24px;
+            text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            transition: all 0.3s ease;
+            align-items: center;
+        }
+
+        .qr-panel h3 {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+
+        .qr-panel p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+            max-width: 300px;
+            line-height: 1.5;
+        }
+
+        .qr-frame {
+            background: #fff;
+            padding: 14px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            margin-bottom: 18px;
+        }
+
+        .qr-frame img {
+            width: 150px;
+            height: 150px;
+            display: block;
+        }
+
+        .code-chip {
+            background: rgba(191,166,135,0.08);
+            border: 1px solid rgba(191,166,135,0.25);
+            padding: 9px 22px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.05rem;
+            letter-spacing: 2.5px;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        /* ===== DISCOUNT CARDS ===== */
+        .discounts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .discount-card {
+            background: var(--card-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: border-color 0.2s, transform 0.2s;
         }
 
         .discount-card:hover {
-            border-color: rgba(191, 166, 135, 0.4);
+            border-color: rgba(191,166,135,0.35);
             transform: translateY(-2px);
         }
 
@@ -383,56 +514,57 @@
         }
 
         .discount-badge {
-            background: rgba(191, 166, 135, 0.12);
+            background: rgba(191,166,135,0.1);
             color: var(--accent-gold);
-            border: 1px solid rgba(191, 166, 135, 0.3);
-            font-size: 0.72rem;
+            border: 1px solid rgba(191,166,135,0.25);
+            font-size: 0.65rem;
             font-weight: 800;
             padding: 4px 10px;
             border-radius: 20px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .discount-badge.claimed {
-            background: rgba(46, 125, 50, 0.15);
+            background: rgba(46,125,50,0.12);
             color: #4caf50;
-            border-color: rgba(46, 125, 50, 0.4);
+            border-color: rgba(46,125,50,0.35);
         }
 
         .discount-value {
-            font-size: 1.8rem;
+            font-size: 1.9rem;
             font-weight: 800;
-            color: #ffffff;
+            color: #fff;
             line-height: 1;
         }
 
         .discount-title {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            color: #ffffff;
+            color: #fff;
             margin-top: 2px;
         }
 
-        .discount-description {
-            font-size: 0.78rem;
+        .discount-desc {
+            font-size: 0.75rem;
             color: var(--text-muted);
-            line-height: 1.4;
+            line-height: 1.45;
         }
 
         .btn-claim {
             width: 100%;
             padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-            border: 1px solid var(--border-color);
+            background: rgba(191,166,135,0.08);
+            color: var(--accent-gold);
+            border: 1px solid rgba(191,166,135,0.3);
             border-radius: 8px;
             font-family: inherit;
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: all 0.25s ease;
+            transition: all 0.25s;
         }
 
         .btn-claim:hover {
@@ -443,396 +575,446 @@
 
         .btn-claim.claimed {
             background: #2e7d32;
-            color: #ffffff;
+            color: #fff;
             border-color: #2e7d32;
             cursor: default;
         }
 
-        /* Voucher / Code overlay inside claimed card */
-        .voucher-code-box {
+        .voucher-box {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(18, 20, 23, 0.85);
+            background: rgba(10,12,16,0.7);
             border: 1px dashed var(--accent-gold);
             border-radius: 10px;
-            padding: 15px;
-            margin-top: 5px;
+            padding: 16px;
             text-align: center;
             animation: expandVoucher 0.3s ease;
         }
 
         @keyframes expandVoucher {
             from { opacity: 0; max-height: 0; }
-            to { opacity: 1; max-height: 200px; }
+            to   { opacity: 1; max-height: 200px; }
         }
 
         .voucher-barcode {
-            font-family: 'Courier New', monospace; /* Barcode-like visual */
-            font-size: 2.2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 2rem;
             letter-spacing: 2px;
-            color: #ffffff;
-            margin-bottom: 5px;
+            color: #fff;
+            margin-bottom: 6px;
             font-weight: bold;
         }
 
-        .voucher-code-text {
-            font-size: 0.85rem;
+        .voucher-code {
+            font-size: 0.82rem;
             font-weight: 800;
             color: var(--accent-gold);
             font-family: monospace;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
 
-        .voucher-instructions {
-            font-size: 0.65rem;
+        .voucher-hint {
+            font-size: 0.63rem;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin-top: 5px;
         }
 
-        /* History Log */
-        .history-box {
-            background: var(--card-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 25px;
-        }
-
-        .history-box h3 {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
+        /* ===== HISTORY ===== */
         .history-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 250px;
-            overflow-y: auto;
-            padding-right: 5px;
         }
 
         .history-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(18, 20, 23, 0.3);
+            background: rgba(10,12,16,0.4);
             border: 1px solid var(--border-color);
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 0.82rem;
         }
 
-        .history-info div {
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 2px;
-        }
+        .history-info div { font-weight: 600; color: #fff; margin-bottom: 2px; }
+        .history-info span { font-size: 0.68rem; color: var(--text-muted); }
+        .history-pts { color: var(--accent-gold); font-weight: 700; font-size: 0.92rem; white-space: nowrap; }
 
-        .history-info span {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
-
-        .history-points {
-            color: var(--accent-gold);
-            font-weight: 700;
-            font-size: 0.95rem;
-        }
-
-        .empty-history {
+        .empty-state {
             text-align: center;
             color: var(--text-muted);
-            font-size: 0.85rem;
-            padding: 20px 0;
+            font-size: 0.82rem;
+            padding: 32px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Confetti Overlay */
+        .empty-state i { font-size: 2rem; opacity: 0.3; }
+
+        /* ===== BOTTOM NAV (mobile) ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: var(--bg-header);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: stretch;
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+        }
+
+        @media (min-width: 900px) {
+            .bottom-nav { display: none; }
+            .app-body { padding-bottom: 0; }
+        }
+
+        .bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: inherit;
+            color: var(--text-muted);
+            font-size: 0.58rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            padding: 0;
+            position: relative;
+        }
+
+        .bottom-nav-item i {
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--accent-gold);
+        }
+
+        .bottom-nav-item.active i {
+            color: var(--accent-gold);
+        }
+
+        .bottom-nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 3px;
+            background: var(--accent-gold);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* ===== CONFETTI ===== */
         .confetti-canvas {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             pointer-events: none;
-            z-index: 99;
+            z-index: 999;
             display: none;
         }
 
-        .claim-card {
-            background: linear-gradient(135deg, #1e3c2f 0%, #121417 100%);
-            border: 1px solid #2e7d32;
-            padding: 15px;
-            border-radius: 8px;
-            display: none;
-            align-items: center;
-            gap: 12px;
-            text-align: left;
-            margin-bottom: 18px;
-            animation: pulse-green 2s infinite;
-        }
-
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(46, 125, 50, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
-        }
-
-        .claim-card i {
-            font-size: 1.8rem;
-            color: #4caf50;
-        }
-
-        .claim-card div h4 {
-            margin: 0 0 2px 0;
-            color: #fff;
-            font-size: 0.9rem;
-        }
-
-        .claim-card div p {
-            margin: 0;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-        }
-
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
-            .loyalty-card {
-                padding: 20px;
-                aspect-ratio: auto;
-            }
+            .content-area { padding: 20px 16px; }
+            .card-container { height: 220px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Orbs -->
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-
     <canvas class="confetti-canvas" id="confetti"></canvas>
 
-    <div class="header-nav">
-        <button class="btn-back" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Salir</button>
-        <span style="font-size:0.78rem;font-weight:700;color:var(--accent-gold);text-transform:uppercase;letter-spacing:1px;">Mi Club IVAD</span>
-    </div>
-
-    <div class="main-wrapper">
-
-        <!-- Cinta de Opciones / Tab Navigation -->
-        <div class="tab-ribbon">
-            <button class="ribbon-btn active" id="btn-tab-card" onclick="switchSection('card')">
-                <i class="fas fa-id-card"></i> Tarjeta
+    <!-- HEADER -->
+    <header class="client-header">
+        <div class="header-brand">
+            <div class="header-brand-icon">IV</div>
+            <div class="header-brand-text">
+                <h1>IVAD Home &amp; Goods</h1>
+                <p>Club de Fidelización</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="header-client-name">
+                <span style="color:#fff;" id="header-client-name">—</span><br>
+                <span>Miembro activo</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Salir
             </button>
-            <button class="ribbon-btn" id="btn-tab-discounts" onclick="switchSection('discounts')">
+        </div>
+    </header>
+
+    <!-- APP BODY -->
+    <div class="app-body">
+
+        <!-- SIDE NAV (desktop only) -->
+        <nav class="side-nav">
+            <span class="side-nav-label">Mi Cuenta</span>
+            <button class="nav-item active" id="nav-card" onclick="switchView('card')">
+                <i class="fas fa-id-card"></i> Mi Tarjeta
+            </button>
+            <button class="nav-item" id="nav-discounts" onclick="switchView('discounts')">
                 <i class="fas fa-tags"></i> Descuentos
             </button>
-            <button class="ribbon-btn" id="btn-tab-history" onclick="switchSection('history')">
+            <button class="nav-item" id="nav-history" onclick="switchView('history')">
                 <i class="fas fa-history"></i> Historial
             </button>
-        </div>
+        </nav>
 
-        <!-- SECCIÓN TARJETA -->
-        <div class="tab-section active" id="section-card">
-            <!-- 3D Card Wrapper -->
-            <div class="card-container" id="preview-card-container">
-                <div class="flip-card-inner" onclick="toggleCardFlip()">
-                    
-                    <!-- Front Face -->
-                    <div class="flip-card-front">
-                        <div class="card-front-top">
-                            <div class="card-front-logo">
-                                <h3 id="client-biz-name">IVAD</h3>
-                                <p id="client-biz-slogan">HOME Y GOODS</p>
+        <!-- CONTENT AREA -->
+        <main class="content-area">
+
+            <!-- VIEW: MI TARJETA -->
+            <div class="view-section active" id="view-card">
+                <h2 class="section-title"><i class="fas fa-id-card"></i> Mi Tarjeta Digital</h2>
+                <p class="section-subtitle">Toca la tarjeta para ver el código QR al reverso. Muéstrala en caja al realizar tu pago.</p>
+
+                <!-- 3D Flip Card -->
+                <div class="card-container" id="preview-card-container">
+                    <div class="flip-card-inner" onclick="toggleCardFlip()">
+
+                        <!-- Front -->
+                        <div class="flip-card-front">
+                            <div class="card-front-top">
+                                <div class="card-front-logo">
+                                    <h3 id="client-biz-name">IVAD</h3>
+                                    <p id="client-biz-slogan">HOME Y GOODS</p>
+                                </div>
+                                <div class="card-front-nfc">
+                                    <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:var(--accent-gold);stroke-width:2.5;stroke-linecap:round;">
+                                        <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5"/>
+                                        <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6"/>
+                                        <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5"/>
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="card-front-nfc">
-                                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: none; stroke: var(--accent-gold); stroke-width: 2.5; stroke-linecap: round;">
-                                    <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5" />
-                                    <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6" />
-                                    <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5" />
+                            <div class="card-front-chip">
+                                <svg viewBox="0 0 100 80" style="width:44px;height:34px;display:block;border-radius:5px;">
+                                    <defs>
+                                        <linearGradient id="chip-g" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#f5d382"/>
+                                            <stop offset="50%" stop-color="#d4af37"/>
+                                            <stop offset="100%" stop-color="#aa8010"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <rect width="100" height="80" rx="10" fill="url(#chip-g)"/>
+                                    <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="25" y1="50" x2="25" y2="80" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="75" y1="0" x2="75" y2="30" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="75" y1="50" x2="75" y2="80" stroke="#5d4308" stroke-width="2"/>
+                                    <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
                                 </svg>
                             </div>
-                        </div>
-                        
-                        <div class="card-front-chip">
-                            <svg viewBox="0 0 100 80" style="width: 44px; height: 34px; display: block; border-radius: 5px;">
-                                <defs>
-                                    <linearGradient id="chip-gold-client" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#f5d382"/>
-                                        <stop offset="50%" stop-color="#d4af37"/>
-                                        <stop offset="100%" stop-color="#aa8010"/>
-                                    </linearGradient>
-                                </defs>
-                                <rect width="100" height="80" rx="10" fill="url(#chip-gold-client)" />
-                                <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="25" y1="50" x2="25" y2="80" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="75" y1="0" x2="75" y2="30" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="75" y1="50" x2="75" y2="80" stroke="#5d4308" stroke-width="2"/>
-                                <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
-                            </svg>
-                        </div>
-                        
-                        <div class="card-front-number" id="card-code-text">IVAD 0000 0000 ••••</div>
-                        
-                        <div class="card-front-bottom">
-                            <div>
-                                <div class="front-label">Titular</div>
-                                <div class="front-val" id="card-holder-name">Nombre de Cliente</div>
+                            <div class="card-front-number" id="card-code-text">IVAD 0000 0000 ••••</div>
+                            <div class="card-front-bottom">
+                                <div>
+                                    <div class="front-label">Titular</div>
+                                    <div class="front-val" id="card-holder-name">Nombre de Cliente</div>
+                                </div>
+                                <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
+                                    <span class="card-points-badge" id="card-points-text">0 / 10 PUNTOS</span>
+                                    <div class="front-val" id="card-member-date">--/--</div>
+                                </div>
                             </div>
-                            <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
-                                <span class="card-points-badge" id="card-points-text">0 / 10 PUNTOS</span>
-                                <div class="front-val" id="card-member-date">--/--/----</div>
+                        </div>
+
+                        <!-- Back -->
+                        <div class="flip-card-back">
+                            <div class="card-back-inner">
+                                <div class="back-qr-wrap">
+                                    <img id="client-qr-img" src="" alt="QR">
+                                    <span>ESCANEA</span>
+                                </div>
+                                <div class="back-details">
+                                    <h4 id="client-back-biz-title">IVAD</h4>
+                                    <div><i class="fas fa-phone-alt"></i><span id="client-back-phone">809-241-6555</span></div>
+                                    <div><i class="fas fa-globe"></i><span id="client-back-web">www.ivadsrl.com</span></div>
+                                    <div><i class="fas fa-map-marker-alt"></i><span id="client-back-address">Ave. 27 de febrero</span></div>
+                                </div>
                             </div>
+                            <div class="card-back-footer" id="client-back-footer-text">Personal e intransferible · Est. 1996</div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Back Face -->
-                    <div class="flip-card-back">
-                        <div class="card-back-inner">
-                            <div class="back-qr-wrap">
-                                <img id="client-qr-img" src="" alt="QR">
-                                <span>ESCANEA</span>
-                            </div>
-                            <div class="back-details">
-                                <h4 id="client-back-biz-title">IVAD</h4>
-                                <div><i class="fas fa-phone-alt"></i> <span id="client-back-phone">809-241-6555</span></div>
-                                <div><i class="fas fa-globe"></i> <span id="client-back-web">www.ivadsrl.com</span></div>
-                                <div><i class="fas fa-map-marker-alt"></i> <span id="client-back-address">Ave. 27 de febrero</span></div>
-                            </div>
-                        </div>
-                        <div class="card-back-footer" id="client-back-footer-text">
-                            Personal e intransferible - Est. 1996
-                        </div>
+                <!-- Card tap hint -->
+                <p class="card-hint"><i class="fas fa-hand-pointer" style="color:var(--accent-gold);"></i> Toca la tarjeta para voltearla y ver el QR</p>
+
+                <!-- QR Panel -->
+                <div class="qr-panel">
+                    <h3>Mi Código QR</h3>
+                    <p>Presenta este código al cajero para registrar tu compra y acumular puntos.</p>
+                    <div class="qr-frame">
+                        <img id="qr-image" src="" alt="Código QR">
                     </div>
-
+                    <div class="code-chip" id="code-display-text">IVAD-00000</div>
                 </div>
             </div>
 
-            <!-- QR Display -->
-            <div class="qr-box" style="background: var(--card-dark); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; text-align: center; display: flex; flex-direction: column; align-items: center; margin-top: 10px;">
-                <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Mi Código QR</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; max-width: 320px; line-height: 1.4;">Muestra este código al personal al realizar tu pago para identificarte en caja.</p>
-                <div class="qr-image-wrap" style="background: #ffffff; padding: 12px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 15px;">
-                    <img id="qr-image" src="" alt="Código QR" style="width: 140px; height: 140px; display: block;">
-                </div>
-                <div class="code-display" id="code-display-text" style="background: rgba(18, 20, 23, 0.6); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 6px; font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; color: var(--accent-gold); font-weight: bold;">IVAD-00000</div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN DESCUENTOS -->
-        <div class="tab-section" id="section-discounts">
-            <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;"><i class="fas fa-tags"></i> Descuentos Disponibles</h2>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 15px;">Pulsa en "Reclamar" para activar tu cupón digital y mostrar el código de barra en caja.</p>
-            
-            <div id="discounts-container" style="display: flex; flex-direction: column; gap: 15px;">
-                <!-- Card 1 -->
-                <div class="discount-card" id="disc-1">
-                    <div class="discount-header">
-                        <span class="discount-badge" id="badge-disc-1">Disponible</span>
-                        <i class="fas fa-percent" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
+            <!-- VIEW: DESCUENTOS -->
+            <div class="view-section" id="view-discounts">
+                <h2 class="section-title"><i class="fas fa-tags"></i> Descuentos Disponibles</h2>
+                <p class="section-subtitle">Pulsa <strong style="color:#fff;">Reclamar</strong> para activar tu cupón y mostrarlo en caja. Se resetea automáticamente.</p>
+                <div class="discounts-grid">
+                    <!-- Descuento 1 -->
+                    <div class="discount-card" id="disc-1">
+                        <div class="discount-header">
+                            <span class="discount-badge" id="badge-disc-1">Disponible</span>
+                            <i class="fas fa-percent" style="color:var(--accent-gold);font-size:1.1rem;"></i>
+                        </div>
+                        <div>
+                            <div class="discount-value">10% OFF</div>
+                            <div class="discount-title">Descuento en Vajilla</div>
+                            <div class="discount-desc">Aplica para platos, copas y bandejas de servicio seleccionadas. No acumulable con otras ofertas.</div>
+                        </div>
+                        <button class="btn-claim" id="btn-disc-1" onclick="claimDiscount('disc-1','IVAD-VAJ-10')">Reclamar Descuento</button>
+                        <div class="voucher-box" id="voucher-disc-1" style="display:none;">
+                            <div class="voucher-barcode">||| | | || ||| | |||</div>
+                            <div class="voucher-code">IVAD-VAJ-10</div>
+                            <div class="voucher-hint">Muestra este código al cajero para aplicar tu 10% de descuento.</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="discount-value">10% OFF</div>
-                        <div class="discount-title">Descuento Especial en Vajilla</div>
-                        <div class="discount-description">Aplica para platos, copas y bandejas de servicio seleccionadas. No acumulable con otras ofertas.</div>
+                    <!-- Descuento 2 -->
+                    <div class="discount-card" id="disc-2">
+                        <div class="discount-header">
+                            <span class="discount-badge" id="badge-disc-2">Disponible</span>
+                            <i class="fas fa-truck" style="color:var(--accent-gold);font-size:1.1rem;"></i>
+                        </div>
+                        <div>
+                            <div class="discount-value">ENVÍO GRATIS</div>
+                            <div class="discount-title">Gratis en Desechables</div>
+                            <div class="discount-desc">Válido en compras mayores a RD$ 3,000 en vasos, bandejas y pajillas.</div>
+                        </div>
+                        <button class="btn-claim" id="btn-disc-2" onclick="claimDiscount('disc-2','IVAD-ENV-FREE')">Reclamar Descuento</button>
+                        <div class="voucher-box" id="voucher-disc-2" style="display:none;">
+                            <div class="voucher-barcode">| ||| || | || ||| |</div>
+                            <div class="voucher-code">IVAD-ENV-FREE</div>
+                            <div class="voucher-hint">Muestra este código al cajero para aplicar tu envío gratis.</div>
+                        </div>
                     </div>
-                    <button class="btn-claim" id="btn-disc-1" onclick="claimDiscount('disc-1', '10% OFF Vajilla', 'IVAD-VAJ-10')">Reclamar Descuento</button>
-                    <div class="voucher-code-box" id="voucher-disc-1" style="display: none;">
-                        <div class="voucher-barcode">||| | | || ||| | |||</div>
-                        <div class="voucher-code-text">IVAD-VAJ-10</div>
-                        <div class="voucher-instructions">Muestra este código al cajero para aplicar tu 10% de descuento.</div>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="discount-card" id="disc-2">
-                    <div class="discount-header">
-                        <span class="discount-badge" id="badge-disc-2">Disponible</span>
-                        <i class="fas fa-truck" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
-                    </div>
-                    <div>
-                        <div class="discount-value">ENVÍO GRATIS</div>
-                        <div class="discount-title">Envío Gratis en Desechables</div>
-                        <div class="discount-description">Válido en compras mayores a RD$ 3,000 en toda la línea de vasos, bandejas y pajillas.</div>
-                    </div>
-                    <button class="btn-claim" id="btn-disc-2" onclick="claimDiscount('disc-2', 'Envío Gratis', 'IVAD-ENV-FREE')">Reclamar Descuento</button>
-                    <div class="voucher-code-box" id="voucher-disc-2" style="display: none;">
-                        <div class="voucher-barcode">| ||| || | || ||| |</div>
-                        <div class="voucher-code-text">IVAD-ENV-FREE</div>
-                        <div class="voucher-instructions">Muestra este código al cajero para aplicar tu envío gratis.</div>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="discount-card" id="disc-3">
-                    <div class="discount-header">
-                        <span class="discount-badge" id="badge-disc-3">Disponible</span>
-                        <i class="fas fa-gift" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
-                    </div>
-                    <div>
-                        <div class="discount-value">RD$ 500</div>
-                        <div class="discount-title">Crédito de Bienvenida</div>
-                        <div class="discount-description">RD$ 500 de regalo aplicables en tu próxima compra de cualquier artículo de catálogo.</div>
-                    </div>
-                    <button class="btn-claim" id="btn-disc-3" onclick="claimDiscount('disc-3', 'RD$ 500 Regalo', 'IVAD-BIEN-500')">Reclamar Descuento</button>
-                    <div class="voucher-code-box" id="voucher-disc-3" style="display: none;">
-                        <div class="voucher-barcode">|| | ||| || | | |||</div>
-                        <div class="voucher-code-text">IVAD-BIEN-500</div>
-                        <div class="voucher-instructions">Muestra este código al cajero para aplicar tus RD$ 500 de crédito.</div>
+                    <!-- Descuento 3 -->
+                    <div class="discount-card" id="disc-3">
+                        <div class="discount-header">
+                            <span class="discount-badge" id="badge-disc-3">Disponible</span>
+                            <i class="fas fa-gift" style="color:var(--accent-gold);font-size:1.1rem;"></i>
+                        </div>
+                        <div>
+                            <div class="discount-value">RD$ 500</div>
+                            <div class="discount-title">Crédito de Bienvenida</div>
+                            <div class="discount-desc">RD$ 500 de regalo en tu próxima compra de cualquier artículo de catálogo.</div>
+                        </div>
+                        <button class="btn-claim" id="btn-disc-3" onclick="claimDiscount('disc-3','IVAD-BIEN-500')">Reclamar Descuento</button>
+                        <div class="voucher-box" id="voucher-disc-3" style="display:none;">
+                            <div class="voucher-barcode">|| | ||| || | | |||</div>
+                            <div class="voucher-code">IVAD-BIEN-500</div>
+                            <div class="voucher-hint">Muestra este código al cajero para aplicar tus RD$ 500.</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- SECCIÓN HISTORIAL -->
-        <div class="tab-section" id="section-history">
-            <div class="history-box">
-                <h3>Historial de Puntos</h3>
+            <!-- VIEW: HISTORIAL -->
+            <div class="view-section" id="view-history">
+                <h2 class="section-title"><i class="fas fa-history"></i> Historial de Puntos</h2>
+                <p class="section-subtitle">Registro de tus compras y puntos acumulados en el club de fidelización.</p>
                 <div class="history-list" id="history-container">
-                    <!-- Transactions will be loaded dynamically -->
-                    <div class="empty-history">No se registran transacciones de puntos todavía.</div>
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        No se registran transacciones todavía.
+                    </div>
                 </div>
             </div>
-        </div>
 
+        </main>
     </div>
 
-    <!-- Supabase JS -->
+    <!-- BOTTOM NAV (mobile) -->
+    <nav class="bottom-nav">
+        <button class="bottom-nav-item active" id="bnav-card" onclick="switchView('card')">
+            <i class="fas fa-id-card"></i>
+            <span>Tarjeta</span>
+        </button>
+        <button class="bottom-nav-item" id="bnav-discounts" onclick="switchView('discounts')">
+            <i class="fas fa-tags"></i>
+            <span>Descuentos</span>
+        </button>
+        <button class="bottom-nav-item" id="bnav-history" onclick="switchView('history')">
+            <i class="fas fa-history"></i>
+            <span>Historial</span>
+        </button>
+    </nav>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-config.js"></script>
     <script>
         let clientData = null;
 
-        // Logout
+        // ─── Navigation ──────────────────────────────────────────────
+        function switchView(viewId) {
+            // Update side nav
+            document.querySelectorAll('.side-nav .nav-item').forEach(b => b.classList.remove('active'));
+            const sn = document.getElementById('nav-' + viewId);
+            if (sn) sn.classList.add('active');
+
+            // Update bottom nav
+            document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+            const bn = document.getElementById('bnav-' + viewId);
+            if (bn) bn.classList.add('active');
+
+            // Show correct section
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            const vs = document.getElementById('view-' + viewId);
+            if (vs) vs.classList.add('active');
+        }
+
+        // ─── Logout ──────────────────────────────────────────────────
         function logout() {
             localStorage.removeItem('ivad_loyalty_card');
             window.location.href = 'index.html';
         }
 
-        // ─── Tab Navigation ──────────────────────────────────────────
-        function switchSection(sectionId) {
-            // Update tab buttons
-            document.querySelectorAll('.ribbon-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.getElementById(`btn-tab-${sectionId}`);
-            if (activeBtn) activeBtn.classList.add('active');
+        // ─── Card Flip ───────────────────────────────────────────────
+        function toggleCardFlip() {
+            document.getElementById('preview-card-container').classList.toggle('flipped');
+        }
 
-            // Update sections
-            document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
-            const activeSection = document.getElementById(`section-${sectionId}`);
-            if (activeSection) activeSection.classList.add('active');
+        // ─── Format card code ────────────────────────────────────────
+        function formatCardCode(code) {
+            const clean = code.replace(/[-\s]/g, '');
+            let prefix = "IVAD";
+            let body = clean.toUpperCase().startsWith("IVAD") ? clean.substring(4) : clean;
+            const padded = body.padEnd(8, '0');
+            return `${prefix} ${padded.substring(0,4)} ${padded.substring(4,8)} ••••`.toUpperCase();
         }
 
         // ─── Claim Discount ──────────────────────────────────────────
-        function claimDiscount(cardId, name, code) {
-            const btn = document.getElementById(`btn-${cardId}`);
-            const badge = document.getElementById(`badge-${cardId}`);
-            const voucher = document.getElementById(`voucher-${cardId}`);
+        function claimDiscount(cardId, code) {
+            const btn     = document.getElementById('btn-' + cardId);
+            const badge   = document.getElementById('badge-' + cardId);
+            const voucher = document.getElementById('voucher-' + cardId);
 
-            if (btn.classList.contains('claimed')) return; // Already claimed
+            if (btn.classList.contains('claimed')) return;
 
             btn.classList.add('claimed');
             btn.textContent = '✓ Cupón Activo';
@@ -840,10 +1022,9 @@
             badge.classList.add('claimed');
             voucher.style.display = 'flex';
 
-            // Vibration feedback on mobile
             if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
 
-            // Auto-reset after 60 seconds so they can reuse if needed
+            // Auto-reset after 60 seconds
             setTimeout(() => {
                 btn.classList.remove('claimed');
                 btn.textContent = 'Reclamar Descuento';
@@ -853,7 +1034,7 @@
             }, 60000);
         }
 
-        // Fetch client transactions history
+        // ─── Fetch history ───────────────────────────────────────────
         async function fetchHistory(cardId) {
             const container = document.getElementById('history-container');
             if (typeof supabaseClient !== 'undefined' && supabaseClient) {
@@ -870,165 +1051,108 @@
                         container.innerHTML = '';
                         data.forEach(tx => {
                             const date = new Date(tx.created_at).toLocaleDateString('es-DO', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric'
+                                day: '2-digit', month: '2-digit', year: 'numeric'
                             });
                             const item = document.createElement('div');
                             item.className = 'history-item';
                             item.innerHTML = `
                                 <div class="history-info">
                                     <div>Compra registrada</div>
-                                    <span>Fecha: ${date} | Venta: RD$ ${Number(tx.sale_amount).toLocaleString('es-DO')}</span>
+                                    <span>${date} · RD$ ${Number(tx.sale_amount).toLocaleString('es-DO')}</span>
                                 </div>
-                                <div class="history-points">+${tx.points_added} Sello</div>
+                                <div class="history-pts">+${tx.points_added} pts</div>
                             `;
                             container.appendChild(item);
                         });
                     } else {
-                        container.innerHTML = '<div class="empty-history">No se registran transacciones de puntos todavía.</div>';
+                        container.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i>No se registran transacciones todavía.</div>';
                     }
                 } catch (err) {
                     console.error('Error fetching transactions:', err);
                 }
             } else {
-                // Mock history for simulation
+                // Mock for simulation mode
                 container.innerHTML = `
                     <div class="history-item">
                         <div class="history-info">
                             <div>Compra registrada</div>
-                            <span>Fecha: 08/07/2026 | Venta: RD$ 2,500</span>
+                            <span>08/07/2026 · RD$ 2,500</span>
                         </div>
-                        <div class="history-points">+1 Sello</div>
+                        <div class="history-pts">+1 pts</div>
                     </div>
                 `;
             }
         }
 
-        // Toggle Card 3D Flip
-        function toggleCardFlip(e) {
-            if (e) e.stopPropagation();
-            const container = document.getElementById('preview-card-container');
-            container.classList.toggle('flipped');
-        }
-
-        // Helper to format card codes into credit card blocks
-        function formatCardCode(code) {
-            const clean = code.replace(/[-\s]/g, '');
-            let prefix = "IVAD";
-            let body = clean;
-            if (clean.toUpperCase().startsWith("IVAD")) {
-                body = clean.substring(4);
-            }
-            const padded = body.padEnd(8, '0');
-            return `${prefix} ${padded.substring(0, 4)} ${padded.substring(4, 8)} ••••`.toUpperCase();
-        }
-
-        // Initialize Page
+        // ─── Init Page ───────────────────────────────────────────────
         async function initPage() {
             const stored = localStorage.getItem('ivad_loyalty_card');
-            if (!stored) {
-                window.location.href = 'index.html';
-                return;
-            }
+            if (!stored) { window.location.href = 'index.html'; return; }
 
             clientData = JSON.parse(stored);
 
-            // Fetch live card details from Supabase if online
+            // Fetch live data from Supabase if available
             if (typeof supabaseClient !== 'undefined' && supabaseClient && clientData.id !== 'mock-uuid') {
                 const { data, error } = await supabaseClient
                     .from('loyalty_cards')
                     .select('*')
                     .eq('id', clientData.id)
                     .single();
-
                 if (!error && data) {
                     clientData = data;
                     localStorage.setItem('ivad_loyalty_card', JSON.stringify(data));
                 }
             }
 
-            // Populate business settings details
-            let businessSettings = {
-                name: "IVAD HOME Y GOODS",
-                slogan: "Est. 1996",
-                phone: "809-241-6555",
-                web: "www.ivadsrl.com",
-                address: "Ave. 27 de febrero"
-            };
+            // Business settings
+            let biz = { name:"IVAD HOME Y GOODS", slogan:"Est. 1996", phone:"809-241-6555", web:"www.ivadsrl.com", address:"Ave. 27 de febrero" };
             const storedBiz = localStorage.getItem('ivad_loyalty_biz_settings');
-            if (storedBiz) {
-                businessSettings = JSON.parse(storedBiz);
-            }
+            if (storedBiz) biz = JSON.parse(storedBiz);
 
-            // Split name for front logo
-            const bizName = businessSettings.name || "IVAD";
-            const firstWord = bizName.split(' ')[0] || bizName;
-            const restOfName = bizName.split(' ').slice(1).join(' ') || businessSettings.slogan;
+            const firstName = (biz.name || 'IVAD').split(' ')[0];
+            const restName  = (biz.name || '').split(' ').slice(1).join(' ') || biz.slogan;
 
-            document.getElementById('client-biz-name').textContent = firstWord;
-            document.getElementById('client-biz-slogan').textContent = restOfName;
+            document.getElementById('client-biz-name').textContent    = firstName;
+            document.getElementById('client-biz-slogan').textContent  = restName;
+            document.getElementById('client-back-biz-title').textContent = biz.name;
+            document.getElementById('client-back-phone').textContent   = biz.phone;
+            document.getElementById('client-back-web').textContent     = biz.web;
+            document.getElementById('client-back-address').textContent  = biz.address;
+            document.getElementById('client-back-footer-text').textContent = `Personal e intransferible · ${biz.slogan}`;
 
-            // Fill card back details
-            document.getElementById('client-back-biz-title').textContent = businessSettings.name;
-            document.getElementById('client-back-phone').textContent = businessSettings.phone;
-            document.getElementById('client-back-web').textContent = businessSettings.web;
-            document.getElementById('client-back-address').textContent = businessSettings.address;
-            document.getElementById('client-back-footer-text').textContent = `Personal e intransferible - ${businessSettings.slogan}`;
-
-            // Populate view details
-            document.getElementById('card-holder-name').textContent = clientData.client_name;
-            document.getElementById('card-code-text').textContent = formatCardCode(clientData.card_code);
+            // Card data
+            document.getElementById('card-holder-name').textContent  = clientData.client_name;
+            document.getElementById('header-client-name').textContent = clientData.client_name;
+            document.getElementById('card-code-text').textContent    = formatCardCode(clientData.card_code);
             document.getElementById('code-display-text').textContent = clientData.card_code;
-            document.getElementById('card-points-text').textContent = `${clientData.current_points} / ${clientData.points_target} PUNTOS`;
+            document.getElementById('card-points-text').textContent  = `${clientData.current_points} / ${clientData.points_target} PTS`;
 
-            // Member since date formatting
-            const joinedDate = new Date(clientData.created_at || Date.now());
-            document.getElementById('card-member-date').textContent = joinedDate.toLocaleDateString('es-DO', {
-                month: '2-digit',
-                year: 'numeric'
-            });
+            const joined = new Date(clientData.created_at || Date.now());
+            document.getElementById('card-member-date').textContent = joined.toLocaleDateString('es-DO', { month:'2-digit', year:'numeric' });
 
-            // Generate QR Code Image URL
+            // QR Code
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(clientData.card_code)}&color=12-14-17`;
-            document.getElementById('qr-image').src = qrUrl;
+            document.getElementById('qr-image').src    = qrUrl;
             document.getElementById('client-qr-img').src = qrUrl;
 
-            // Points milestone check → confetti if target reached
-            if (clientData.current_points >= clientData.points_target) {
-                startConfetti();
-            }
+            // Confetti if milestone reached
+            if (clientData.current_points >= clientData.points_target) startConfetti();
 
-            // Load transaction history
             await fetchHistory(clientData.id);
 
-            // Enable Supabase Realtime Subscription for Live Updates!
+            // Supabase Realtime subscription
             if (typeof supabaseClient !== 'undefined' && supabaseClient && clientData.id !== 'mock-uuid') {
-                console.log("Subscribing to Realtime changes for card:", clientData.id);
                 supabaseClient
-                    .channel(`card-changes-${clientData.id}`)
-                    .on('postgres_changes', { 
-                        event: 'UPDATE', 
-                        schema: 'public', 
-                        table: 'loyalty_cards',
+                    .channel(`card-${clientData.id}`)
+                    .on('postgres_changes', {
+                        event: 'UPDATE', schema: 'public', table: 'loyalty_cards',
                         filter: `id=eq.${clientData.id}`
                     }, payload => {
-                        console.log('Realtime card update received!', payload.new);
                         clientData = payload.new;
                         localStorage.setItem('ivad_loyalty_card', JSON.stringify(clientData));
-                        
-                        // Update card points badge in real-time
-                        document.getElementById('card-points-text').textContent = `${clientData.current_points} / ${clientData.points_target} PUNTOS`;
-
-                        // Confetti on milestone
-                        if (clientData.current_points >= clientData.points_target) {
-                            startConfetti();
-                        }
-
-                        // Play sound or animation alert
+                        document.getElementById('card-points-text').textContent = `${clientData.current_points} / ${clientData.points_target} PTS`;
+                        if (clientData.current_points >= clientData.points_target) startConfetti();
                         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-
-                        // Refresh history log
                         fetchHistory(clientData.id);
                     })
                     .subscribe();
@@ -1037,70 +1161,39 @@
 
         window.addEventListener('DOMContentLoaded', initPage);
 
-        /* ── Simple Confetti Effect ───────────────────────────────── */
+        // ─── Confetti ────────────────────────────────────────────────
         let confettiInterval = null;
         function startConfetti() {
             const canvas = document.getElementById('confetti');
             const ctx = canvas.getContext('2d');
             canvas.style.display = 'block';
-            
-            let width = canvas.width = window.innerWidth;
-            let height = canvas.height = window.innerHeight;
-            
-            window.addEventListener('resize', () => {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
-            });
-
-            const colors = ['#bfa687', '#d4c0a8', '#f7fafc', '#313f4a'];
-            const confettiCount = 100;
-            const pieces = [];
-
-            for (let i = 0; i < confettiCount; i++) {
-                pieces.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height - height,
-                    r: Math.random() * 6 + 4,
-                    d: Math.random() * height,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    tilt: Math.random() * 10 - 5,
-                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
-                    tiltAngle: 0
-                });
-            }
-
+            let w = canvas.width  = window.innerWidth;
+            let h = canvas.height = window.innerHeight;
+            window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+            const colors = ['#bfa687','#d4c0a8','#f7fafc','#313f4a'];
+            const pieces = Array.from({length:100}, () => ({
+                x: Math.random()*w, y: Math.random()*h - h,
+                r: Math.random()*6+4, d: Math.random()*h,
+                color: colors[Math.floor(Math.random()*colors.length)],
+                tilt: Math.random()*10-5, tiltAngleIncremental: Math.random()*0.07+0.02, tiltAngle:0
+            }));
             function draw() {
-                ctx.clearRect(0, 0, width, height);
-                
-                pieces.forEach((p, index) => {
+                ctx.clearRect(0,0,w,h);
+                pieces.forEach((p,i) => {
                     p.tiltAngle += p.tiltAngleIncremental;
-                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.y += (Math.cos(p.d)+3+p.r/2)/2;
                     p.x += Math.sin(p.tiltAngle);
-                    p.tilt = Math.sin(p.tiltAngle - (index / 3)) * 15;
-
-                    if (p.y > height) {
-                        p.y = -20;
-                        p.x = Math.random() * width;
-                    }
-
-                    ctx.beginPath();
-                    ctx.lineWidth = p.r;
-                    ctx.strokeStyle = p.color;
-                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
-                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    p.tilt = Math.sin(p.tiltAngle-(i/3))*15;
+                    if (p.y > h) { p.y = -20; p.x = Math.random()*w; }
+                    ctx.beginPath(); ctx.lineWidth = p.r; ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x+p.tilt+p.r/2, p.y);
+                    ctx.lineTo(p.x+p.tilt, p.y+p.tilt+p.r/2);
                     ctx.stroke();
                 });
             }
-
             if (confettiInterval) clearInterval(confettiInterval);
             confettiInterval = setInterval(draw, 20);
-            
-            // Stop confetti after 7 seconds to prevent GPU drain
-            setTimeout(() => {
-                clearInterval(confettiInterval);
-                ctx.clearRect(0,0,width,height);
-                canvas.style.display = 'none';
-            }, 7000);
+            setTimeout(() => { clearInterval(confettiInterval); ctx.clearRect(0,0,w,h); canvas.style.display='none'; }, 7000);
         }
     </script>
 </body>
