@@ -1107,11 +1107,11 @@
                 } else {
                     card.classList.add('locked');
                     badge.classList.add('locked');
-                    badge.innerHTML = `🔒 Requiere ${r.req} pts`;
+                    badge.innerHTML = '<i class="fas fa-lock" style="font-size:0.75rem;margin-right:4px;"></i> Requiere ' + r.req + ' pts';
                     
                     btn.classList.add('locked');
                     btn.disabled = true;
-                    btn.innerHTML = `🔒 Bloqueado (Faltan ${r.req - points} pts)`;
+                    btn.innerHTML = '<i class="fas fa-lock" style="margin-right:6px;"></i> Bloqueado (Faltan ' + (r.req - points) + ' pts)';
                     btn.onclick = null;
                 }
             });

@@ -3,1012 +3,379 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrativo - Portal de Fidelización IVAD</title>
+    <title>Panel Administrativo — IVAD Fidelización</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-body: #f5f6f8;
-            --bg-header: #0c151e;
+            --bg-body: #f4f5f7;
+            --sidebar-bg: #0c151e;
+            --sidebar-width: 260px;
             --accent-gold: #bfa687;
             --accent-gold-dark: #a8906f;
             --text-dark: #121417;
             --text-muted: #7f8c8d;
             --border-color: #e2e8f0;
             --card-bg: #ffffff;
-            --button-dark: #1a2530;
-            --button-dark-hover: #111a22;
+            --btn-dark: #1a2530;
+            --btn-dark-hover: #0f1a24;
+            --success: #16a34a;
+            --danger: #dc2626;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg-body); color: var(--text-dark); min-height: 100vh; display: flex; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        /* SIDEBAR */
+        .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--sidebar-bg); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 200; box-shadow: 4px 0 20px rgba(0,0,0,0.2); transition: transform 0.3s ease; }
+        .sidebar-brand { padding: 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .sidebar-brand img { height: 42px; width: 42px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.05); padding: 4px; }
+        .sidebar-brand-text h1 { font-size: 0.92rem; font-weight: 800; letter-spacing: 1.5px; color: #fff; }
+        .sidebar-brand-text p { font-size: 0.6rem; color: var(--accent-gold); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; }
+        .sidebar-role-badge { margin: 14px 20px; background: rgba(191,166,135,0.12); border: 1px solid rgba(191,166,135,0.3); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar-nav { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 3px; }
+        .nav-section-label { font-size: 0.58rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 12px 8px 4px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 0.82rem; font-weight: 600; transition: all 0.2s; border: none; background: none; width: 100%; text-align: left; letter-spacing: 0.3px; }
+        .nav-item i { width: 18px; text-align: center; font-size: 0.88rem; flex-shrink: 0; }
+        .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+        .nav-item.active { background: rgba(191,166,135,0.15); color: var(--accent-gold); border: 1px solid rgba(191,166,135,0.2); }
+        .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+        .btn-logout { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.1); background: none; border-radius: 8px; color: rgba(255,255,255,0.45); font-family: inherit; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; }
+        .btn-logout:hover { border-color: var(--danger); color: #f87171; }
 
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        /* MAIN */
+        .main-content { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+        .topbar { background: #fff; border-bottom: 1px solid var(--border-color); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .topbar-title { font-size: 1.05rem; font-weight: 800; color: var(--text-dark); }
+        .topbar-right { display: flex; align-items: center; gap: 14px; }
+        .cards-badge { background: rgba(191,166,135,0.1); border: 1px solid rgba(191,166,135,0.3); color: var(--accent-gold-dark); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .hamburger { display: none; border: none; background: none; cursor: pointer; font-size: 1.2rem; color: var(--text-dark); padding: 4px; }
 
-        /* ===== HEADER ===== */
-        header.admin-header {
-            background-color: var(--bg-header);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            color: #ffffff;
-        }
+        /* SECTIONS */
+        .page-section { display: none; padding: 32px; flex-direction: column; gap: 28px; animation: sfade 0.25s ease; }
+        .page-section.active { display: flex; }
+        @keyframes sfade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .section-header h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
+        .section-header p { font-size: 0.85rem; color: var(--text-muted); }
 
-        header.admin-header .brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        /* PANEL CARDS */
+        .panel-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .panel-card h3 { font-size: 1rem; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+        .panel-card h3 i { color: var(--accent-gold); }
+        .panel-card .card-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 22px; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
 
-        header.admin-header .brand img {
-            height: 50px;
-            width: auto;
-            border-radius: 50%;
-        }
+        /* FORMS */
+        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .form-group label { font-size: 0.72rem; font-weight: 700; color: var(--text-dark); letter-spacing: 0.5px; text-transform: uppercase; }
+        .form-group input, .form-group select { padding: 11px 13px; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.88rem; color: var(--text-dark); background: #fff; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent-gold); box-shadow: 0 0 0 3px rgba(191,166,135,0.12); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .btn-primary { width: 100%; padding: 13px; background: var(--btn-dark); color: #fff; border: none; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 0.84rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; margin-top: 8px; }
+        .btn-primary:hover { background: var(--btn-dark-hover); }
+        .btn-secondary { padding: 10px 18px; background: transparent; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.8rem; font-weight: 700; color: var(--text-dark); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .btn-secondary:hover { border-color: var(--accent-gold); color: var(--accent-gold-dark); }
+        .btn-gold { background: linear-gradient(135deg,#bfa687,#a8906f); color: #fff; border: none; }
+        .btn-gold:hover { background: linear-gradient(135deg,#a8906f,#956f4f); }
 
-        header.admin-header .brand-text h1 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin: 0;
-        }
+        /* POINTS PREVIEW */
+        .pts-preview { display: none; margin: 10px 0 16px; padding: 14px 16px; background: rgba(191,166,135,0.08); border-left: 4px solid var(--accent-gold); border-radius: 6px; }
+        .pts-preview .pv { font-size: 1.2rem; font-weight: 800; color: var(--accent-gold-dark); }
+        .pts-preview .pl { font-size: 0.78rem; font-weight: 700; color: var(--text-dark); }
+        .pts-preview .pf { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
 
-        header.admin-header .brand-text p {
-            font-size: 0.68rem;
-            color: var(--accent-gold);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-top: 2px;
-        }
+        /* STAT CARDS */
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .stat-icon { width: 42px; height: 42px; border-radius: 10px; background: rgba(191,166,135,0.12); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--accent-gold-dark); margin-bottom: 10px; }
+        .stat-value { font-size: 2rem; font-weight: 800; color: var(--text-dark); line-height: 1; }
+        .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
 
-        header.admin-header .header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+        /* CLIENT GRID */
+        .clients-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 20px; }
+        .client-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); transition: box-shadow 0.2s; }
+        .client-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+        .client-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .client-card-top h4 { font-size: 1rem; font-weight: 700; color: var(--btn-dark); }
+        .btn-trash { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 4px; transition: color 0.2s; }
+        .btn-trash:hover { color: var(--danger); }
+        .client-meta { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 14px; display: flex; flex-direction: column; gap: 3px; }
+        .client-meta .code { font-family: monospace; font-weight: 700; font-size: 0.8rem; color: var(--text-dark); }
+        .pts-adjust-box { background: #f7f6f4; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .pts-display { text-align: center; }
+        .pts-display strong { font-size: 1.5rem; font-weight: 800; color: var(--accent-gold-dark); line-height: 1; display: block; }
+        .pts-display span { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.5px; color: var(--text-muted); text-transform: uppercase; }
+        .btn-adj { width: 36px; height: 36px; border-radius: 50%; background: #fff; border: 1.5px solid var(--border-color); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.2s; color: var(--text-muted); }
+        .btn-adj-plus { border-color: var(--accent-gold); color: var(--accent-gold-dark); }
+        .btn-adj-plus:hover { background: rgba(191,166,135,0.1); transform: scale(1.05); }
+        .btn-adj-minus:hover { border-color: var(--danger); color: var(--danger); background: #fff5f5; }
+        .btn-view { width: 100%; padding: 9px; border: 1.5px solid var(--border-color); border-radius: 8px; background: #fff; font-family: inherit; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: all 0.2s; }
+        .btn-view:hover { border-color: var(--accent-gold); color: var(--accent-gold-dark); }
 
-        .active-cards-badge {
-            background: rgba(191, 166, 135, 0.12);
-            border: 1px solid var(--accent-gold);
-            color: var(--accent-gold);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        /* SEARCH */
+        .search-wrap { position: relative; }
+        .search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.88rem; pointer-events: none; }
+        .search-wrap input { padding-left: 36px !important; }
 
-        .btn-exit {
-            background: none;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 18px;
-            color: #ffffff;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 0.78rem;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.25s;
-        }
+        /* 3D CARD */
+        .card-container { perspective: 1000px; width: 340px; height: 215px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; }
+        .card-container.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 16px; padding: 22px; box-shadow: 0 12px 30px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
+        .flip-card-front { background: linear-gradient(135deg,#12273d 0%,#091624 100%); transform: rotateY(0deg); }
+        .flip-card-back { background: linear-gradient(135deg,#091624 0%,#12273d 100%); transform: rotateY(180deg); padding: 18px 22px; }
+        .card-front-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .card-front-logo h3 { font-size: 1rem; font-weight: 800; letter-spacing: 2px; }
+        .card-front-logo p { font-size: 0.5rem; color: var(--accent-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 1px; font-weight: 700; }
+        .card-front-number { font-family: monospace; font-size: 1rem; letter-spacing: 2.5px; margin-bottom: 10px; }
+        .card-front-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+        .front-label { font-size: 0.48rem; color: #7f8c8d; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
+        .front-val { font-size: 0.8rem; font-weight: 700; }
+        .card-chip { margin: 12px 0; }
+        .card-back-inner { display: flex; height: 100%; align-items: center; gap: 18px; }
+        .back-qr-wrap { display: flex; flex-direction: column; align-items: center; background: #fff; padding: 6px; border-radius: 8px; width: 90px; flex-shrink: 0; }
+        .back-qr-wrap img { width: 72px; height: 72px; display: block; }
+        .back-qr-wrap span { font-size: 0.5rem; font-weight: 800; color: var(--accent-gold-dark); letter-spacing: 1px; margin-top: 4px; }
+        .back-details { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 7px; font-size: 0.7rem; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 16px; }
+        .back-details h4 { color: var(--accent-gold); font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 2px; }
+        .back-details div { display: flex; align-items: center; gap: 7px; color: rgba(255,255,255,0.8); }
+        .back-details div i { color: var(--accent-gold); width: 11px; text-align: center; }
+        .card-back-footer { font-size: 0.5rem; color: #7f8c8d; text-align: center; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 5px; }
 
-        .btn-exit:hover {
-            border-color: #c0392b;
-            color: #c0392b;
-            background-color: rgba(192, 57, 43, 0.05);
-        }
+        /* REWARDS CONFIG */
+        .reward-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+        .reward-row:last-child { border-bottom: none; }
+        .reward-info { display: flex; align-items: center; gap: 14px; }
+        .reward-icon-box { width: 42px; height: 42px; border-radius: 10px; background: rgba(191,166,135,0.1); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--accent-gold-dark); }
+        .reward-name { font-size: 0.9rem; font-weight: 700; color: var(--text-dark); }
+        .reward-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+        .reward-pts-ctrl { display: flex; align-items: center; gap: 8px; }
+        .reward-pts-ctrl input { width: 80px; padding: 8px 10px; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight: 700; color: var(--accent-gold-dark); text-align: center; outline: none; }
+        .reward-pts-ctrl input:focus { border-color: var(--accent-gold); }
+        .reward-pts-ctrl span { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
 
-        /* ===== LAYOUT ===== */
-        .admin-container {
-            max-width: 1280px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
+        /* MODALS */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 500; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: #fff; border-radius: 16px; max-width: 460px; width: 100%; padding: 32px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: mpop 0.25s ease; }
+        @keyframes mpop { from { opacity:0; transform:scale(0.93); } to { opacity:1; transform:scale(1); } }
+        .modal-box .modal-icon { font-size: 3rem; margin-bottom: 12px; }
+        .modal-box h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+        .modal-box p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+        .success-green { color: #16a34a; }
+        .info-notice { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 14px 16px; font-size: 0.82rem; color: #166534; margin-bottom: 18px; text-align: left; display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+        .info-notice i { margin-top: 2px; font-size: 0.9rem; flex-shrink: 0; }
+        .card-modal-box { background: transparent; max-width: 400px; width: 100%; display: flex; flex-direction: column; gap: 16px; animation: mpop 0.25s ease; }
+        .card-modal-header { text-align: left; }
+        .card-modal-header h3 { font-size: 1.4rem; color: #fff; font-weight: 800; margin-bottom: 3px; }
+        .card-modal-header p { font-size: 0.84rem; color: var(--accent-gold); font-weight: 600; }
+        .card-modal-footer { font-size: 0.68rem; color: rgba(255,255,255,0.35); text-align: center; margin-top: 8px; }
+        .modal-txn-list { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .txn-row { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; }
+        .txn-title { font-weight: 700; color: #fff; display: block; margin-bottom: 2px; }
+        .txn-date { font-size: 0.67rem; color: rgba(255,255,255,0.4); }
+        .txn-pts { font-weight: 800; color: var(--accent-gold); font-size: 0.88rem; }
 
-        .forms-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: start;
-        }
+        /* ALERTS */
+        .alert-warn { background: #fef9c3; border: 1px solid #fef08a; color: #854d0e; padding: 14px 18px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 12px; line-height: 1.4; }
+        .alert-warn i { font-size: 1.1rem; color: #ca8a04; flex-shrink: 0; }
+
+        /* BOTTOM NAV */
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--sidebar-bg); border-top: 1px solid rgba(255,255,255,0.08); z-index: 150; padding: 8px 0; }
+        .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
+        .bnav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 12px; border-radius: 8px; background: none; border: none; color: rgba(255,255,255,0.4); font-family: inherit; transition: all 0.2s; }
+        .bnav-item i { font-size: 1.1rem; }
+        .bnav-item span { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.5px; }
+        .bnav-item.active { color: var(--accent-gold); }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 190; }
 
         @media (max-width: 900px) {
-            .forms-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .left-column {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        /* ===== CARDS / PANELS ===== */
-        .panel-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-        }
-
-        .panel-card h2 {
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: var(--text-dark);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .panel-card h2 i {
-            color: var(--accent-gold);
-        }
-
-        .panel-card .subtitle {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 25px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        @media (max-width: 480px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input {
-            padding: 12px 14px;
-            border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 0.88rem;
-            color: var(--text-dark);
-            background-color: #ffffff;
-            outline: none;
-            transition: all 0.25s;
-        }
-
-        .form-group input:focus {
-            border-color: var(--accent-gold);
-            box-shadow: 0 0 0 3px rgba(191, 166, 135, 0.15);
-        }
-
-        /* File Upload */
-        .file-upload-wrap {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 5px;
-        }
-
-        .logo-preview-box {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            background-color: #f0f2f5;
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            overflow: hidden;
-        }
-
-        .logo-preview-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .btn-upload {
-            padding: 10px 18px;
-            border: 1.5px solid var(--border-color);
-            background: #ffffff;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-dark);
-            transition: all 0.25s;
-        }
-
-        .btn-upload:hover {
-            border-color: var(--accent-gold);
-            color: var(--accent-gold);
-        }
-
-        .btn-blue {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--button-dark);
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background-color 0.25s;
-            margin-top: 10px;
-        }
-
-        .btn-blue:hover {
-            background-color: var(--button-dark-hover);
-        }
-
-        /* ===== PREVIEW PANEL ===== */
-        .preview-column {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            position: sticky;
-            top: 40px;
-        }
-
-        .preview-header-row {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 380px;
-        }
-
-        .preview-title {
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .btn-flip {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-family: inherit;
-            font-size: 0.75rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-dark);
-            transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .btn-flip:hover {
-            border-color: var(--accent-gold);
-            color: var(--accent-gold);
-        }
-
-        /* ===== 3D FLIP CARD ===== */
-        .card-container {
-            perspective: 1000px;
-            width: 380px;
-            height: 240px;
-        }
-
-        .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            cursor: pointer;
-        }
-
-        .card-container.flipped .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .flip-card-front, .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            border-radius: 18px;
-            padding: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .flip-card-front {
-            background: linear-gradient(135deg, #12273d 0%, #091624 100%);
-            transform: rotateY(0deg);
-            -webkit-transform: rotateY(0deg);
-        }
-
-        .card-front-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .card-front-logo h3 {
-            font-size: 1.15rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: #ffffff;
-        }
-
-        .card-front-logo p {
-            font-size: 0.52rem;
-            color: var(--accent-gold);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-top: 2px;
-            font-weight: 700;
-        }
-
-        .card-front-nfc {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card-front-chip {
-            margin: 15px 0;
-            display: inline-block;
-        }
-
-        .card-front-number {
-            font-family: monospace;
-            font-size: 1.15rem;
-            letter-spacing: 3px;
-            color: #ffffff;
-            text-shadow: -1px -1px 0px rgba(0,0,0,0.6), 1px 1px 0px rgba(255,255,255,0.2);
-            margin-bottom: 12px;
-        }
-
-        .card-front-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .front-label {
-            font-size: 0.52rem;
-            color: #7f8c8d;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-        }
-
-        .front-val {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        /* Back Styling */
-        .flip-card-back {
-            background: linear-gradient(135deg, #091624 0%, #12273d 100%);
-            transform: rotateY(180deg);
-            -webkit-transform: rotateY(180deg);
-            padding: 20px 25px;
-        }
-
-        .card-back-inner {
-            display: flex;
-            height: 100%;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .back-qr-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #ffffff;
-            padding: 8px;
-            border-radius: 10px;
-            width: 100px;
-            flex-shrink: 0;
-        }
-
-        .back-qr-wrap img {
-            width: 80px;
-            height: 80px;
-            display: block;
-        }
-
-        .back-qr-wrap span {
-            font-size: 0.55rem;
-            font-weight: 800;
-            color: var(--accent-gold-dark);
-            letter-spacing: 1px;
-            margin-top: 4px;
-        }
-
-        .back-details {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.72rem;
-            color: #ecf0f1;
-            border-left: 1px solid rgba(255,255,255,0.1);
-            padding-left: 18px;
-        }
-
-        .back-details h4 {
-            color: var(--accent-gold);
-            font-size: 0.85rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
-        }
-
-        .back-details div {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: rgba(255,255,255,0.85);
-        }
-
-        .back-details div i {
-            color: var(--accent-gold);
-            width: 12px;
-            text-align: center;
-        }
-
-        .card-back-footer {
-            font-size: 0.55rem;
-            color: #7f8c8d;
-            text-align: center;
-            width: 100%;
-            margin-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding-top: 6px;
-        }
-
-        /* ===== SAVED CARDS GRID ===== */
-        .saved-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .saved-section h2 {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--text-dark);
-        }
-
-        .saved-section p {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            margin-top: -15px;
-            margin-bottom: 10px;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .saved-client-card {
-            background-color: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-            position: relative;
-            transition: transform 0.25s, box-shadow 0.25s;
-        }
-
-        .saved-client-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-        }
-
-        .saved-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-
-        .saved-card-header h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--button-dark);
-        }
-
-        .saved-card-header .btn-trash {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: color 0.2s;
-        }
-
-        .saved-card-header .btn-trash:hover {
-            color: #c0392b;
-        }
-
-        .saved-card-meta {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .saved-card-meta span {
-            font-family: monospace;
-            font-weight: bold;
-            color: var(--text-dark);
-        }
-
-        /* Points Adjustment Box */
-        .pts-adjust-box {
-            background-color: #f7f6f4;
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .pts-adjust-display {
-            text-align: center;
-        }
-
-        .pts-adjust-display strong {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--accent-gold-dark);
-            line-height: 1;
-            display: block;
-        }
-
-        .pts-adjust-display span {
-            font-size: 0.58rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .btn-adjust {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-            outline: none;
-        }
-
-        .btn-adjust-minus {
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-        }
-
-        .btn-adjust-minus:hover {
-            border-color: #c0392b;
-            color: #c0392b;
-            background-color: #fff5f5;
-        }
-
-        .btn-adjust-plus {
-            border: 1px solid var(--accent-gold);
-            color: var(--accent-gold-dark);
-        }
-
-        .btn-adjust-plus:hover {
-            background-color: rgba(191,166,135,0.08);
-            transform: scale(1.05);
-        }
-
-        .btn-view-card {
-            width: 100%;
-            padding: 10px;
-            border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            background: #ffffff;
-            font-family: inherit;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-view-card:hover {
-            border-color: var(--accent-gold);
-            color: var(--accent-gold-dark);
-            background-color: #fafbfc;
-        }
-
-        /* Credentials Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(8px);
-            z-index: 100;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background-color: #ffffff;
-            border-radius: 16px;
-            max-width: 480px;
-            width: 100%;
-            padding: 35px;
-            text-align: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-            color: var(--text-dark);
-        }
-
-        .modal-content i.success-icon {
-            font-size: 2.8rem;
-            color: #4caf50;
-            margin-bottom: 15px;
-        }
-
-        .modal-content h3 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-
-        .modal-content p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        .modal-credentials {
-            background-color: #f7f6f4;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px 20px;
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        .modal-credentials div {
-            margin-bottom: 6px;
-            font-size: 0.85rem;
-            color: var(--text-dark);
-        }
-
-        .modal-credentials div strong {
-            font-family: monospace;
-            font-size: 0.95rem;
-            color: var(--accent-gold-dark);
-        }
-
-        .btn-modal-close {
-            background: var(--button-dark);
-            color: #ffffff;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-family: inherit;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-            width: 100%;
-            transition: background 0.25s;
-        }
-
-        .btn-modal-close:hover {
-            background: var(--button-dark-hover);
-        }
-
-        /* ===== CARD DETAIL MODAL ===== */
-        .card-modal-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            width: 380px; /* Exact match with the 3D card width */
-            animation: modalFadeIn 0.3s ease;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .card-modal-header {
-            width: 100%;
-            text-align: left;
-            margin-bottom: 5px;
-        }
-
-        .card-modal-header h3 {
-            font-size: 1.5rem;
-            color: #ffffff;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .card-modal-header p {
-            font-size: 0.88rem;
-            color: var(--accent-gold);
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .card-modal-footer {
-            font-size: 0.72rem;
-            color: rgba(255, 255, 255, 0.45);
-            text-align: center;
-            margin-top: 10px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .main-content { margin-left: 0; }
+            .bottom-nav { display: block; }
+            .hamburger { display: block; }
+            .page-section { padding: 20px 16px 90px; }
+            .two-col { grid-template-columns: 1fr; }
+            .three-col { grid-template-columns: 1fr 1fr; }
+            .card-container { width: 100%; max-width: 340px; }
+        }
+        @media (max-width: 540px) {
+            .three-col { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .clients-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <header class="admin-header">
-        <div class="brand">
-            <img src="../logo_transparent.png" alt="IVAD">
-            <div class="brand-text">
-                <h1 id="header-business-name">IVAD HOME Y GOODS</h1>
-                <p id="header-slogan">IVAD HOME Y GOODS - Est. 1996</p>
-            </div>
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <img src="../logo_transparent.png" alt="IVAD">
+        <div class="sidebar-brand-text">
+            <h1>IVAD</h1>
+            <p>Panel Administrativo</p>
         </div>
-        <div class="header-right">
-            <div class="active-cards-badge">
+    </div>
+    <div class="sidebar-role-badge">
+        <i class="fas fa-shield-alt"></i> Administrador
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">General</div>
+        <button class="nav-item active" data-section="dashboard" onclick="showSection('dashboard')">
+            <i class="fas fa-chart-bar"></i> Panel Principal
+        </button>
+        <button class="nav-item" data-section="crear-tarjeta" onclick="showSection('crear-tarjeta')">
+            <i class="fas fa-id-card"></i> Crear Tarjeta
+        </button>
+        <div class="nav-section-label">Operaciones</div>
+        <button class="nav-item" data-section="registrar-venta" onclick="showSection('registrar-venta')">
+            <i class="fas fa-receipt"></i> Registrar Venta
+        </button>
+        <button class="nav-item" data-section="ver-clientes" onclick="showSection('ver-clientes')">
+            <i class="fas fa-users"></i> Ver Clientes
+        </button>
+        <div class="nav-section-label">Configuracion</div>
+        <button class="nav-item" data-section="configuracion" onclick="showSection('configuracion')">
+            <i class="fas fa-sliders-h"></i> Configuracion
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <button class="btn-logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Cerrar sesion
+        </button>
+    </div>
+</aside>
+
+<!-- Main -->
+<div class="main-content">
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <span class="topbar-title" id="topbar-title">Panel Principal</span>
+        </div>
+        <div class="topbar-right">
+            <div class="cards-badge">
                 <i class="fas fa-id-card"></i>
-                <span id="active-cards-count">0 tarjetas activas</span>
+                <span id="active-cards-count">0 tarjetas</span>
             </div>
-            <button class="btn-exit" onclick="logout()">Salir</button>
         </div>
-    </header>
+    </div>
 
-    <div class="admin-container">
-        
-        <!-- Forms and Preview Row -->
-        <div class="forms-grid">
-            
-            <div class="left-column">
-                
-                <!-- Datos del Negocio Card -->
-                <div class="panel-card">
-                    <h2><i class="fas fa-store"></i> Datos del negocio</h2>
-                    <div class="subtitle">Personaliza el nombre, logo y contacto que aparecen en todas las tarjetas.</div>
-                    
-                    <form id="business-settings-form" onsubmit="saveBusinessSettings(event)">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="biz-name">Nombre del negocio</label>
-                                <input type="text" id="biz-name" value="IVAD HOME Y GOODS" oninput="updateCardPreview()" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="biz-slogan">Eslogan / año</label>
-                                <input type="text" id="biz-slogan" value="Est. 1996" oninput="updateCardPreview()" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="biz-phone">Teléfono</label>
-                                <input type="text" id="biz-phone" value="809-241-6555" oninput="updateCardPreview()">
-                            </div>
-                            <div class="form-group">
-                                <label for="biz-web">Sitio web</label>
-                                <input type="text" id="biz-web" value="www.ivadsrl.com" oninput="updateCardPreview()">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="biz-address">Dirección</label>
-                            <input type="text" id="biz-address" value="Ave. 27 de febrero" oninput="updateCardPreview()">
-                        </div>
-                        <div class="form-group">
-                            <label>Logo</label>
-                            <div class="file-upload-wrap">
-                                <div class="logo-preview-box">
-                                    <img id="biz-logo-img" src="../logo_transparent.png" alt="Logo">
-                                </div>
-                                <button type="button" class="btn-upload" onclick="alert('Funcionalidad de subida simulada. Usando el logotipo premium de IVAD.')">
-                                    <i class="fas fa-upload"></i> Subir logo
-                                </button>
-                            </div>
-                            <span style="font-size:0.65rem;color:var(--text-muted);margin-top:4px;">PNG, JPG, SVG o WEBP · máx. 500 KB</span>
-                        </div>
-                        <button type="submit" class="btn-blue">
-                            <i class="far fa-save"></i> Guardar datos del negocio
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Crear Tarjeta Card -->
-                <div class="panel-card">
-                    <h2><i class="fas fa-id-card"></i> Crear tarjeta de fidelización</h2>
-                    <div class="subtitle">Completa los datos del cliente y observa la tarjeta en tiempo real.</div>
-                    
-                    <form id="create-card-form" onsubmit="createCard(event)">
-                        <div class="form-group">
-                            <label for="client-name">Nombre del cliente *</label>
-                            <input type="text" id="client-name" placeholder="Ej. Alfredo Torres" oninput="updateCardPreview()" required>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="client-phone">Teléfono</label>
-                                <input type="text" id="client-phone" placeholder="809-000-0000" oninput="updateCardPreview()">
-                            </div>
-                            <div class="form-group">
-                                <label for="client-email">Correo *</label>
-                                <input type="email" id="client-email" placeholder="cliente@correo.com" oninput="updateCardPreview()" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="client-since">Cliente desde</label>
-                                <input type="text" id="client-since" value="julio de 2026" oninput="updateCardPreview()">
-                            </div>
-                            <div class="form-group">
-                                <label for="client-init-points">Puntos iniciales</label>
-                                <input type="number" id="client-init-points" value="0" min="0" max="10" oninput="updateCardPreview()">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-blue">
-                            <i class="fas fa-plus"></i> Guardar y generar tarjeta
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Registrar Venta Card -->
-                <div class="panel-card">
-                    <h2><i class="fas fa-receipt"></i> Registrar venta (Otorgar puntos)</h2>
-                    <div class="subtitle">Ingresa el monto de la compra y el número de factura para sumar puntos automáticamente (RD$ 500 = 3 puntos).</div>
-                    
-                    <form id="register-sale-form" onsubmit="registerSalePoints(event)">
-                        <div class="form-group">
-                            <label for="sale-client-id">Seleccionar cliente *</label>
-                            <select id="sale-client-id" onchange="calculatePointsPreview()" required style="padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.88rem; color: var(--text-dark); background-color: #ffffff; outline: none; transition: all 0.25s; width: 100%;">
-                                <option value="">Selecciona un cliente...</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="sale-invoice">Número de factura *</label>
-                                <input type="text" id="sale-invoice" placeholder="Ej. F-0001" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="sale-amount">Monto total (RD$) *</label>
-                                <input type="number" id="sale-amount" placeholder="Ej. 1500" min="0" oninput="calculatePointsPreview()" required>
-                            </div>
-                        </div>
-                        
-                        <!-- Puntos Preview -->
-                        <div id="points-preview-box" style="margin-top: 10px; margin-bottom: 20px; padding: 14px 18px; background-color: rgba(191, 166, 135, 0.08); border-left: 4px solid var(--accent-gold); border-radius: 6px; font-size: 0.82rem; display: none;">
-                            <span style="color: var(--text-dark); font-weight: 700;">Puntos a otorgar: </span>
-                            <span id="points-preview-val" style="color: var(--accent-gold-dark); font-weight: 800; font-size: 1.1rem; margin-left: 4px;">+0 pts</span>
-                            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 5px;" id="points-formula-explanation">Fórmula: RD$ 0 / 500 * 3 = 0 puntos</div>
-                        </div>
-                        
-                        <button type="submit" class="btn-blue">
-                            <i class="fas fa-check"></i> Registrar y otorgar puntos
-                        </button>
-                    </form>
-                </div>
-
+    <!-- SECTION: Dashboard -->
+    <section class="page-section active" id="section-dashboard">
+        <div class="section-header">
+            <h2>Panel Principal</h2>
+            <p>Resumen del programa de fidelizacion IVAD.</p>
+        </div>
+        <div class="three-col">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-value" id="stat-total-clients">0</div>
+                <div class="stat-label">Clientes Registrados</div>
             </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                <div class="stat-value" id="stat-total-points">0</div>
+                <div class="stat-label">Puntos Emitidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-receipt"></i></div>
+                <div class="stat-value" id="stat-total-sales">RD$ 0</div>
+                <div class="stat-label">Ventas Registradas</div>
+            </div>
+        </div>
+        <div class="panel-card">
+            <h3><i class="fas fa-clock"></i> Ultimos Clientes Registrados</h3>
+            <div class="card-sub">Los 5 clientes mas recientes del programa.</div>
+            <div id="recent-clients-list" style="display:flex;flex-direction:column;gap:10px;">
+                <div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px 0;">Cargando...</div>
+            </div>
+        </div>
+        <div id="sim-warning-container"></div>
+    </section>
 
-            <!-- Card 3D Preview Column -->
-            <div class="preview-column">
-                <div class="preview-header-row">
-                    <span class="preview-title">Vista Previa</span>
-                    <button class="btn-flip" onclick="toggleCardFlip()"><i class="fas fa-sync-alt"></i> Voltear tarjeta</button>
+    <!-- SECTION: Crear Tarjeta -->
+    <section class="page-section" id="section-crear-tarjeta">
+        <div class="section-header">
+            <h2>Crear Tarjeta de Fidelizacion</h2>
+            <p>Completa los datos del cliente. Las credenciales se enviaran automaticamente por correo.</p>
+        </div>
+        <div class="two-col">
+            <div class="panel-card">
+                <h3><i class="fas fa-user-plus"></i> Datos del Cliente</h3>
+                <div class="card-sub">Todos los campos con * son obligatorios.</div>
+                <form id="create-card-form" onsubmit="createCard(event)">
+                    <div class="form-group">
+                        <label for="client-name">Nombre completo *</label>
+                        <input type="text" id="client-name" placeholder="Ej. Maria Torres" oninput="updateCardPreview()" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="client-cedula">Cedula / Identificacion *</label>
+                            <input type="text" id="client-cedula" placeholder="001-1234567-8" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="client-phone">Telefono</label>
+                            <input type="text" id="client-phone" placeholder="809-000-0000">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="client-email">Correo electronico * <span style="font-weight:400;color:var(--text-muted);text-transform:none;">(recibira sus credenciales)</span></label>
+                        <input type="email" id="client-email" placeholder="cliente@correo.com" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="client-since">Cliente desde</label>
+                            <input type="text" id="client-since" value="julio de 2026" oninput="updateCardPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label for="client-init-points">Puntos iniciales</label>
+                            <input type="number" id="client-init-points" value="0" min="0" max="100">
+                        </div>
+                    </div>
+                    <div class="info-notice">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <span>Las credenciales se enviaran al correo del cliente desde <strong>fidelizacion@ivadsrl.com</strong>. No se mostraran en pantalla por seguridad.</span>
+                    </div>
+                    <button type="submit" class="btn-primary btn-gold">
+                        <i class="fas fa-paper-plane"></i> Crear tarjeta y enviar credenciales
+                    </button>
+                </form>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:16px;position:sticky;top:80px;">
+                <div style="width:100%;max-width:340px;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:0.72rem;font-weight:700;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;">Vista Previa</span>
+                    <button class="btn-secondary" onclick="toggleCardFlip()" style="padding:6px 12px;font-size:0.72rem;">
+                        <i class="fas fa-sync-alt"></i> Voltear
+                    </button>
                 </div>
-                
-                <!-- 3D Card Wrapper -->
                 <div class="card-container" id="preview-card-container">
-                    <div class="flip-card-inner" onclick="toggleCardFlip()">
-                        
-                        <!-- Front Face -->
+                    <div class="flip-card-inner">
                         <div class="flip-card-front">
                             <div class="card-front-top">
                                 <div class="card-front-logo">
                                     <h3 id="prev-biz-name-label">IVAD</h3>
                                     <p id="prev-biz-slogan-label">HOME Y GOODS</p>
                                 </div>
-                                <div class="card-front-nfc">
-                                    <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: none; stroke: var(--accent-gold); stroke-width: 2.5; stroke-linecap: round;">
-                                        <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5" />
-                                        <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6" />
-                                        <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5" />
+                                <div>
+                                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:var(--accent-gold);stroke-width:2.5;stroke-linecap:round;">
+                                        <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5"/>
+                                        <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6"/>
+                                        <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5"/>
                                     </svg>
                                 </div>
                             </div>
-                            
-                            <div class="card-front-chip">
-                                <svg viewBox="0 0 100 80" style="width: 44px; height: 34px; display: block; border-radius: 5px;">
-                                    <defs>
-                                        <linearGradient id="chip-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" stop-color="#f5d382"/>
-                                            <stop offset="50%" stop-color="#d4af37"/>
-                                            <stop offset="100%" stop-color="#aa8010"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <rect width="100" height="80" rx="10" fill="url(#chip-gold)" />
+                            <div class="card-chip">
+                                <svg viewBox="0 0 100 80" style="width:38px;height:28px;display:block;border-radius:4px;">
+                                    <defs><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5d382"/><stop offset="50%" stop-color="#d4af37"/><stop offset="100%" stop-color="#aa8010"/></linearGradient></defs>
+                                    <rect width="100" height="80" rx="10" fill="url(#cg)"/>
                                     <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
                                     <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
                                     <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
@@ -1018,22 +385,18 @@
                                     <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
                                 </svg>
                             </div>
-                            
-                            <div class="card-front-number" id="prev-card-code">IVAD 0000 0000 0000</div>
-                            
+                            <div class="card-front-number" id="prev-card-code">IVAD 0000 0000 ...</div>
                             <div class="card-front-bottom">
                                 <div>
                                     <div class="front-label">Titular</div>
                                     <div class="front-val" id="prev-card-holder">Nombre del cliente</div>
                                 </div>
-                                <div style="text-align: right;">
+                                <div style="text-align:right;">
                                     <div class="front-label">Desde</div>
                                     <div class="front-val" id="prev-card-since">07/2026</div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Back Face -->
                         <div class="flip-card-back">
                             <div class="card-back-inner">
                                 <div class="back-qr-wrap">
@@ -1047,844 +410,648 @@
                                     <div><i class="fas fa-map-marker-alt"></i> <span id="prev-back-address">Ave. 27 de febrero</span></div>
                                 </div>
                             </div>
-                            <div class="card-back-footer" id="prev-back-footer-text">
-                                Personal e intransferible - Est. 1996
-                            </div>
+                            <div class="card-back-footer" id="prev-back-footer">Personal e intransferible - Est. 1996</div>
                         </div>
-
                     </div>
                 </div>
-                
+                <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;">Haz clic en la tarjeta para voltearla</p>
             </div>
-
         </div>
+    </section>
 
-        <!-- Saved Cards Section -->
-        <div class="saved-section">
-            <h2>Tarjetas guardadas</h2>
-            <p>Consulta los puntos de cada tarjeta, súmalos o canjéalos.</p>
-            
-            <div class="cards-grid" id="saved-cards-container">
-                <!-- Cards will load dynamically -->
-                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;">
-                    Cargando tarjetas de fidelización guardadas...
+    <!-- SECTION: Registrar Venta -->
+    <section class="page-section" id="section-registrar-venta">
+        <div class="section-header">
+            <h2>Registrar Venta</h2>
+            <p>Busca al cliente por correo, cedula o codigo de tarjeta. Por cada RD$ 500 se otorgan 3 puntos.</p>
+        </div>
+        <div class="two-col">
+            <div class="panel-card">
+                <h3><i class="fas fa-search"></i> Buscar Cliente</h3>
+                <div class="card-sub">Escribe el correo, codigo IVAD-XXXXX o numero de cedula. Tambien puedes usar un escaner de codigos.</div>
+                <div class="form-group search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="client-search-input" placeholder="Buscar por correo, cedula o codigo..." oninput="searchClient(this.value)">
+                </div>
+                <div id="client-search-results" style="display:none;background:#f7f6f4;border-radius:10px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border-color);"></div>
+                <div id="selected-client-banner" style="display:none;background:rgba(191,166,135,0.08);border:1px solid rgba(191,166,135,0.3);border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+                    <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Cliente seleccionado</div>
+                    <div style="font-size:1rem;font-weight:800;color:var(--btn-dark);" id="sel-name">-</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);" id="sel-code">-</div>
+                    <div style="font-size:0.8rem;font-weight:600;color:var(--accent-gold-dark);margin-top:4px;" id="sel-pts">-</div>
+                </div>
+                <form id="register-sale-form" onsubmit="registerSalePoints(event)">
+                    <input type="hidden" id="sale-client-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sale-invoice">Numero de factura *</label>
+                            <input type="text" id="sale-invoice" placeholder="Ej. F-0001" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sale-amount">Monto total (RD$) *</label>
+                            <input type="number" id="sale-amount" placeholder="Ej. 1500" min="0" oninput="calculatePointsPreview()" required>
+                        </div>
+                    </div>
+                    <div class="pts-preview" id="points-preview-box">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span class="pl">Puntos a otorgar:</span>
+                            <span class="pv" id="points-preview-val">+0 pts</span>
+                        </div>
+                        <div class="pf" id="points-formula"></div>
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Registrar y otorgar puntos
+                    </button>
+                </form>
+            </div>
+            <div class="panel-card">
+                <h3><i class="fas fa-qrcode"></i> Escanear Codigo QR</h3>
+                <div class="card-sub">El escaner detectara el codigo automaticamente cuando el campo de busqueda este activo.</div>
+                <div style="background:#f7f6f4;border-radius:12px;padding:24px;text-align:center;border:2px dashed var(--border-color);">
+                    <div style="font-size:3rem;color:var(--border-color);margin-bottom:12px;"><i class="fas fa-qrcode"></i></div>
+                    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px;">Activa el campo de busqueda y apunta el escaner al QR de la tarjeta del cliente.</p>
+                    <button class="btn-secondary" onclick="document.getElementById('client-search-input').focus(); document.getElementById('client-search-input').select();">
+                        <i class="fas fa-crosshairs"></i> Activar campo de busqueda
+                    </button>
+                </div>
+                <div style="margin-top:20px;">
+                    <h3 style="margin-bottom:8px;"><i class="fas fa-history"></i> Ultima venta registrada</h3>
+                    <div id="last-sale-info" style="font-size:0.82rem;color:var(--text-muted);">Ninguna venta registrada en esta sesion.</div>
                 </div>
             </div>
         </div>
+    </section>
 
-    </div>
-
-    <!-- Credentials Modal -->
-    <div class="modal-overlay" id="creds-modal">
-        <div class="modal-content">
-            <i class="fas fa-check-circle success-icon"></i>
-            <h3>¡Tarjeta Creada con Éxito!</h3>
-            <p>Se han generado las credenciales de acceso para el cliente. El sistema le ha enviado un correo automáticamente. Aquí tienes una copia por si deseas anotarlas:</p>
-            
-            <div class="modal-credentials">
-                <div>Código de Tarjeta: <strong id="m-code">IVAD-XXXXX</strong></div>
-                <div>Contraseña Temporal: <strong id="m-pass">XXXXXX</strong></div>
-                <div>Correo: <span id="m-email" style="font-weight: 600;">cliente@correo.com</span></div>
-            </div>
-
-            <button class="btn-modal-close" onclick="closeModal()">Entendido</button>
+    <!-- SECTION: Ver Clientes -->
+    <section class="page-section" id="section-ver-clientes">
+        <div class="section-header">
+            <h2>Ver Clientes</h2>
+            <p>Lista completa de clientes con tarjeta activa.</p>
         </div>
-    </div>
-
-    <!-- Card Detail Modal Overlay -->
-    <div class="modal-overlay" id="card-modal" onclick="closeCardModal(event)">
-        <div class="card-modal-content" onclick="event.stopPropagation()">
-            <!-- Header: Name, Code & Points -->
-            <div class="card-modal-header">
-                <h3 id="modal-client-name">Alonzo</h3>
-                <p id="modal-client-subtitle">IVAD-693886E7 - 0 puntos</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+            <div class="form-group search-wrap" style="margin:0;flex:1;min-width:220px;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="clients-filter" placeholder="Filtrar por nombre, codigo, cedula o correo..." oninput="filterClients(this.value)">
             </div>
-            
-            <!-- 3D Card Wrapper -->
-            <div class="card-container" id="modal-card-container">
-                <div class="flip-card-inner" onclick="toggleModalCardFlip()">
-                    
-                    <!-- Front Face -->
-                    <div class="flip-card-front">
-                        <div class="card-front-top">
-                            <div class="card-front-logo">
-                                <h3 id="modal-biz-name-label">IVAD</h3>
-                                <p id="modal-biz-slogan-label">HOME Y GOODS</p>
-                            </div>
-                            <div class="card-front-nfc">
-                                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: none; stroke: var(--accent-gold); stroke-width: 2.5; stroke-linecap: round;">
-                                    <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5" />
-                                    <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6" />
-                                    <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5" />
-                                </svg>
-                            </div>
+            <button class="btn-secondary" onclick="loadClients()">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+        </div>
+        <div class="clients-grid" id="saved-cards-container">
+            <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">Cargando tarjetas...</div>
+        </div>
+    </section>
+
+    <!-- SECTION: Configuracion -->
+    <section class="page-section" id="section-configuracion">
+        <div class="section-header">
+            <h2>Configuracion</h2>
+            <p>Personaliza los parametros del programa de fidelizacion.</p>
+        </div>
+        <div class="two-col">
+            <div class="panel-card">
+                <h3><i class="fas fa-gift"></i> Requisitos de Recompensas</h3>
+                <div class="card-sub">Define cuantos puntos necesita el cliente para desbloquear cada beneficio.</div>
+                <div class="reward-row">
+                    <div class="reward-info">
+                        <div class="reward-icon-box"><i class="fas fa-truck"></i></div>
+                        <div>
+                            <div class="reward-name">Envio Gratis</div>
+                            <div class="reward-desc">El cliente recibe envio sin costo</div>
                         </div>
-                        
-                        <div class="card-front-chip">
-                            <svg viewBox="0 0 100 80" style="width: 44px; height: 34px; display: block; border-radius: 5px;">
-                                <defs>
-                                    <linearGradient id="chip-gold-modal" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#f5d382"/>
-                                        <stop offset="50%" stop-color="#d4af37"/>
-                                        <stop offset="100%" stop-color="#aa8010"/>
-                                    </linearGradient>
-                                </defs>
-                                <rect width="100" height="80" rx="10" fill="url(#chip-gold-modal)" />
-                                <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="25" y1="50" x2="25" y2="80" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="75" y1="0" x2="75" y2="30" stroke="#5d4308" stroke-width="2"/>
-                                <line x1="75" y1="50" x2="75" y2="80" stroke="#5d4308" stroke-width="2"/>
-                                <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
+                    </div>
+                    <div class="reward-pts-ctrl">
+                        <input type="number" id="cfg-pts-envio" value="20" min="1" max="500">
+                        <span>puntos</span>
+                    </div>
+                </div>
+                <div class="reward-row">
+                    <div class="reward-info">
+                        <div class="reward-icon-box"><i class="fas fa-tag"></i></div>
+                        <div>
+                            <div class="reward-name">10% OFF Vajilla</div>
+                            <div class="reward-desc">Descuento en vajillas y menaje</div>
+                        </div>
+                    </div>
+                    <div class="reward-pts-ctrl">
+                        <input type="number" id="cfg-pts-vajilla" value="30" min="1" max="500">
+                        <span>puntos</span>
+                    </div>
+                </div>
+                <div class="reward-row">
+                    <div class="reward-info">
+                        <div class="reward-icon-box"><i class="fas fa-coins"></i></div>
+                        <div>
+                            <div class="reward-name">RD$ 500 de Credito</div>
+                            <div class="reward-desc">Credito aplicable en proxima compra</div>
+                        </div>
+                    </div>
+                    <div class="reward-pts-ctrl">
+                        <input type="number" id="cfg-pts-credito" value="50" min="1" max="500">
+                        <span>puntos</span>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="saveRewardConfig()" style="margin-top:20px;">
+                    <i class="far fa-save"></i> Guardar configuracion
+                </button>
+            </div>
+            <div class="panel-card">
+                <h3><i class="fas fa-store"></i> Datos del Negocio</h3>
+                <div class="card-sub">Informacion que aparece en las tarjetas y correos.</div>
+                <form id="business-settings-form" onsubmit="saveBusinessSettings(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="biz-name">Nombre del negocio</label>
+                            <input type="text" id="biz-name" value="IVAD HOME Y GOODS" oninput="updateCardPreview()" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="biz-slogan">Eslogan / Ano</label>
+                            <input type="text" id="biz-slogan" value="Est. 1996" oninput="updateCardPreview()">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="biz-phone">Telefono</label>
+                            <input type="text" id="biz-phone" value="809-241-6555" oninput="updateCardPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label for="biz-web">Sitio web</label>
+                            <input type="text" id="biz-web" value="www.ivadsrl.com" oninput="updateCardPreview()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="biz-address">Direccion</label>
+                        <input type="text" id="biz-address" value="Ave. 27 de febrero" oninput="updateCardPreview()">
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="far fa-save"></i> Guardar datos
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+        <button class="bnav-item active" data-section="dashboard" onclick="showSection('dashboard')"><i class="fas fa-chart-bar"></i><span>Inicio</span></button>
+        <button class="bnav-item" data-section="crear-tarjeta" onclick="showSection('crear-tarjeta')"><i class="fas fa-id-card"></i><span>Crear</span></button>
+        <button class="bnav-item" data-section="registrar-venta" onclick="showSection('registrar-venta')"><i class="fas fa-receipt"></i><span>Venta</span></button>
+        <button class="bnav-item" data-section="ver-clientes" onclick="showSection('ver-clientes')"><i class="fas fa-users"></i><span>Clientes</span></button>
+        <button class="bnav-item" data-section="configuracion" onclick="showSection('configuracion')"><i class="fas fa-cog"></i><span>Config</span></button>
+    </div>
+</nav>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="success-modal">
+    <div class="modal-box">
+        <div class="modal-icon success-green"><i class="fas fa-check-circle"></i></div>
+        <h3>Tarjeta Creada</h3>
+        <p>La tarjeta de fidelizacion ha sido generada correctamente.</p>
+        <div class="info-notice">
+            <i class="fas fa-envelope-circle-check"></i>
+            <span>Las credenciales de acceso fueron enviadas directamente al correo del cliente desde <strong>fidelizacion@ivadsrl.com</strong>. No se muestran en pantalla por seguridad del cliente.</span>
+        </div>
+        <button class="btn-primary" onclick="closeSuccessModal()">
+            <i class="fas fa-check"></i> Entendido
+        </button>
+    </div>
+</div>
+
+<!-- Card Detail Modal -->
+<div class="modal-overlay" id="card-modal" onclick="closeCardModal(event)">
+    <div class="card-modal-box" onclick="event.stopPropagation()">
+        <div class="card-modal-header">
+            <h3 id="modal-client-name">Cliente</h3>
+            <p id="modal-client-subtitle">IVAD-XXXXX - 0 puntos</p>
+        </div>
+        <div class="card-container" id="modal-card-container">
+            <div class="flip-card-inner" onclick="toggleModalCardFlip()">
+                <div class="flip-card-front">
+                    <div class="card-front-top">
+                        <div class="card-front-logo">
+                            <h3 id="modal-biz-name-label">IVAD</h3>
+                            <p id="modal-biz-slogan-label">HOME Y GOODS</p>
+                        </div>
+                        <div>
+                            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:var(--accent-gold);stroke-width:2.5;stroke-linecap:round;">
+                                <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5"/>
+                                <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6"/>
+                                <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5"/>
                             </svg>
                         </div>
-                        
-                        <div class="card-front-number" id="modal-card-code">IVAD 6938 86E7 0000</div>
-                        
-                        <div class="card-front-bottom">
-                            <div>
-                                <div class="front-label">Titular</div>
-                                <div class="front-val" id="modal-card-holder">Alonzo</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div class="front-label">Desde</div>
-                                <div class="front-val" id="modal-card-since">07/2026</div>
-                            </div>
+                    </div>
+                    <div class="card-chip">
+                        <svg viewBox="0 0 100 80" style="width:38px;height:28px;display:block;border-radius:4px;">
+                            <defs><linearGradient id="cgm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5d382"/><stop offset="50%" stop-color="#d4af37"/><stop offset="100%" stop-color="#aa8010"/></linearGradient></defs>
+                            <rect width="100" height="80" rx="10" fill="url(#cgm)"/>
+                            <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="25" y1="50" x2="25" y2="80" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="75" y1="0" x2="75" y2="30" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="75" y1="50" x2="75" y2="80" stroke="#5d4308" stroke-width="2"/>
+                            <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-front-number" id="modal-card-code">IVAD 0000 0000 ...</div>
+                    <div class="card-front-bottom">
+                        <div>
+                            <div class="front-label">Titular</div>
+                            <div class="front-val" id="modal-card-holder">-</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="front-label">Desde</div>
+                            <div class="front-val" id="modal-card-since">-</div>
                         </div>
                     </div>
-
-                    <!-- Back Face -->
-                    <div class="flip-card-back">
-                        <div class="card-back-inner">
-                            <div class="back-qr-wrap">
-                                <img id="modal-qr-img" src="" alt="QR">
-                                <span>ESCANEA</span>
-                            </div>
-                            <div class="back-details">
-                                <h4 id="modal-back-biz-title">IVAD</h4>
-                                <div><i class="fas fa-phone-alt"></i> <span id="modal-back-phone">809-241-6555</span></div>
-                                <div><i class="fas fa-globe"></i> <span id="modal-back-web">www.ivadsrl.com</span></div>
-                                <div><i class="fas fa-map-marker-alt"></i> <span id="modal-back-address">Ave. 27 de febrero</span></div>
-                            </div>
+                </div>
+                <div class="flip-card-back">
+                    <div class="card-back-inner">
+                        <div class="back-qr-wrap">
+                            <img id="modal-qr-img" src="" alt="QR">
+                            <span>ESCANEA</span>
                         </div>
-                        <div class="card-back-footer" id="modal-back-footer-text">
-                            Personal e intransferible - Est. 1996
+                        <div class="back-details">
+                            <h4 id="modal-back-biz-title">IVAD</h4>
+                            <div><i class="fas fa-phone-alt"></i> <span id="modal-back-phone">809-241-6555</span></div>
+                            <div><i class="fas fa-globe"></i> <span id="modal-back-web">www.ivadsrl.com</span></div>
+                            <div><i class="fas fa-map-marker-alt"></i> <span id="modal-back-address">Ave. 27 de febrero</span></div>
                         </div>
                     </div>
-
+                    <div class="card-back-footer" id="modal-back-footer">Personal e intransferible - Est. 1996</div>
                 </div>
-            </div>
-            
-            <!-- Transaction History Inside Modal -->
-            <div style="margin-top: 24px; text-align: left;">
-                <h4 style="font-size: 0.95rem; font-weight: 700; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 12px;"><i class="fas fa-history" style="color: var(--accent-gold); margin-right: 6px;"></i> Historial de Facturas</h4>
-                <div id="modal-transactions-container" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
-                    <div style="font-size: 0.78rem; color: rgba(255,255,255,0.45); text-align: center; padding: 15px 0;">Cargando historial de compras...</div>
-                </div>
-            </div>
-
-            <!-- Bottom Text -->
-            <div class="card-modal-footer" style="margin-top: 20px;">
-                Toca la tarjeta para voltearla · Haz clic fuera para cerrar
             </div>
         </div>
+        <div>
+            <h4 style="font-size:0.88rem;font-weight:700;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:8px;margin-bottom:12px;">
+                <i class="fas fa-history" style="color:var(--accent-gold);margin-right:6px;"></i> Historial de Facturas
+            </h4>
+            <div class="modal-txn-list" id="modal-transactions-container">
+                <div style="font-size:0.76rem;color:rgba(255,255,255,0.35);text-align:center;padding:14px 0;">Cargando...</div>
+            </div>
+        </div>
+        <div class="card-modal-footer">Toca la tarjeta para voltearla - Clic fuera para cerrar</div>
     </div>
+</div>
 
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-config.js"></script>
-    <script>
-        let allCards = [];
-        let businessSettings = {
-            name: "IVAD HOME Y GOODS",
-            slogan: "Est. 1996",
-            phone: "809-241-6555",
-            web: "www.ivadsrl.com",
-            address: "Ave. 27 de febrero"
-        };
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
+<script>
+    let allCards = [];
+    let isSimulationMode = false;
+    let businessSettings = { name:'IVAD HOME Y GOODS', slogan:'Est. 1996', phone:'809-241-6555', web:'www.ivadsrl.com', address:'Ave. 27 de febrero' };
 
-        function logout() {
-            localStorage.removeItem('ivad_loyalty_admin');
-            window.location.href = 'index.html';
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('ivad_loyalty_admin') !== 'true') { window.location.href = 'index.html'; return; }
+        const storedBiz = localStorage.getItem('ivad_loyalty_biz_settings');
+        if (storedBiz) businessSettings = JSON.parse(storedBiz);
+        document.getElementById('biz-name').value = businessSettings.name;
+        document.getElementById('biz-slogan').value = businessSettings.slogan;
+        document.getElementById('biz-phone').value = businessSettings.phone;
+        document.getElementById('biz-web').value = businessSettings.web;
+        document.getElementById('biz-address').value = businessSettings.address;
+        const storedRewards = localStorage.getItem('ivad_reward_config');
+        if (storedRewards) {
+            const rc = JSON.parse(storedRewards);
+            document.getElementById('cfg-pts-envio').value = rc.envio || 20;
+            document.getElementById('cfg-pts-vajilla').value = rc.vajilla || 30;
+            document.getElementById('cfg-pts-credito').value = rc.credito || 50;
         }
+        updateCardPreview();
+        loadClients();
+    });
 
-        // Initialize Settings & Cards
-        window.addEventListener('DOMContentLoaded', () => {
-            const adminSession = localStorage.getItem('ivad_loyalty_admin');
-            if (adminSession !== 'true') {
-                window.location.href = 'index.html';
-                return;
-            }
+    const sectionTitles = { 'dashboard':'Panel Principal', 'crear-tarjeta':'Crear Tarjeta', 'registrar-venta':'Registrar Venta', 'ver-clientes':'Ver Clientes', 'configuracion':'Configuracion' };
 
-            // Load business settings from local storage if available
-            const storedBiz = localStorage.getItem('ivad_loyalty_biz_settings');
-            if (storedBiz) {
-                businessSettings = JSON.parse(storedBiz);
-            }
+    function showSection(name) {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-' + name).classList.add('active');
+        document.querySelectorAll('.nav-item, .bnav-item').forEach(b => b.classList.toggle('active', b.dataset.section === name));
+        document.getElementById('topbar-title').textContent = sectionTitles[name] || name;
+        closeSidebar();
+    }
 
-            // Populate settings inputs
-            document.getElementById('biz-name').value = businessSettings.name;
-            document.getElementById('biz-slogan').value = businessSettings.slogan;
-            document.getElementById('biz-phone').value = businessSettings.phone;
-            document.getElementById('biz-web').value = businessSettings.web;
-            document.getElementById('biz-address').value = businessSettings.address;
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebar-overlay').classList.toggle('open');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebar-overlay').classList.remove('open');
+    }
+    function logout() { localStorage.removeItem('ivad_loyalty_admin'); window.location.href = 'index.html'; }
 
-            updateCardPreview();
-            loadClients();
-        });
+    function updateCardPreview() {
+        const biz = document.getElementById('biz-name')?.value?.trim() || businessSettings.name;
+        const slogan = document.getElementById('biz-slogan')?.value?.trim() || businessSettings.slogan;
+        const phone = document.getElementById('biz-phone')?.value?.trim() || businessSettings.phone;
+        const web = document.getElementById('biz-web')?.value?.trim() || businessSettings.web;
+        const addr = document.getElementById('biz-address')?.value?.trim() || businessSettings.address;
+        const name = document.getElementById('client-name')?.value?.trim() || 'Nombre del cliente';
+        const el = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+        el('prev-biz-name-label', biz.split(' ')[0] || biz);
+        el('prev-biz-slogan-label', biz.split(' ').slice(1).join(' ') || slogan);
+        el('prev-card-holder', name);
+        el('prev-back-biz-title', biz);
+        el('prev-back-phone', phone);
+        el('prev-back-web', web);
+        el('prev-back-address', addr);
+        el('prev-back-footer', 'Personal e intransferible - ' + slogan);
+    }
 
-        // Toggle Card 3D Flip
-        function toggleCardFlip(e) {
-            if (e) e.stopPropagation();
-            const container = document.getElementById('preview-card-container');
-            container.classList.toggle('flipped');
+    function toggleCardFlip() { document.getElementById('preview-card-container').classList.toggle('flipped'); }
+    function toggleModalCardFlip() { document.getElementById('modal-card-container').classList.toggle('flipped'); }
+    function formatCardCode(code) {
+        const clean = code.replace(/[-\s]/g,'');
+        let body = clean.toUpperCase().startsWith('IVAD') ? clean.substring(4) : clean;
+        const padded = body.padEnd(8,'0');
+        return 'IVAD ' + padded.substring(0,4) + ' ' + padded.substring(4,8) + ' ...';
+    }
+
+    async function loadClients() {
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient.from('loyalty_cards').select('*').order('created_at', { ascending: false });
+                if (error) { isSimulationMode = true; loadSimulationCards(); return; }
+                isSimulationMode = false;
+                allCards = data || [];
+                renderDashboardStats(allCards);
+                renderClientsCards(allCards);
+                renderRecentClients(allCards);
+            } catch (_) { isSimulationMode = true; loadSimulationCards(); }
+        } else { isSimulationMode = true; loadSimulationCards(); }
+    }
+
+    function loadSimulationCards() {
+        const stored = localStorage.getItem('ivad_loyalty_cards_simulated');
+        allCards = stored ? JSON.parse(stored) : [{ id:'mock-uuid-alonzo', card_code:'IVAD-AUGGX', client_name:'Alonzo', client_email:'alonzo@correo.com', client_phone:'809-241-6555', client_cedula:'001-0000000-0', current_points:50, points_target:50, temp_password:'pwd-alonzo', created_at: new Date('2026-07-01').getTime() }];
+        if (!stored) localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+        renderDashboardStats(allCards);
+        renderClientsCards(allCards);
+        renderRecentClients(allCards);
+        const simContainer = document.getElementById('sim-warning-container');
+        if (simContainer && !simContainer.querySelector('.alert-warn')) {
+            simContainer.innerHTML = '<div class="alert-warn"><i class="fas fa-exclamation-triangle"></i><span><strong>Modo Simulacion:</strong> Supabase no conectado o tablas no creadas. Ejecuta <code>loyalty_schema.sql</code> en tu proyecto de Supabase para activar el modo en vivo.</span></div>';
         }
+    }
 
-        // Toggle Modal Card 3D Flip
-        function toggleModalCardFlip() {
-            const container = document.getElementById('modal-card-container');
-            container.classList.toggle('flipped');
+    async function renderDashboardStats(cards) {
+        document.getElementById('stat-total-clients').textContent = cards.length;
+        document.getElementById('active-cards-count').textContent = cards.length + ' tarjeta' + (cards.length !== 1 ? 's' : '');
+        const totalPoints = cards.reduce((s,c) => s + (c.current_points || 0), 0);
+        document.getElementById('stat-total-points').textContent = totalPoints;
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { data } = await supabaseClient.from('loyalty_transactions').select('sale_amount');
+                const total = (data || []).reduce((s,r) => s + parseFloat(r.sale_amount || 0), 0);
+                document.getElementById('stat-total-sales').textContent = 'RD$ ' + total.toLocaleString('es-DO');
+            } catch (_) {}
         }
+    }
 
-        // Open Card detail modal
-        async function openCardModal(cardId) {
-            const card = allCards.find(c => c.id === cardId);
-            if (!card) return;
+    function renderRecentClients(cards) {
+        const el = document.getElementById('recent-clients-list');
+        const recent = cards.slice(0,5);
+        if (!recent.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px 0;">Sin clientes registrados aun.</div>'; return; }
+        el.innerHTML = recent.map(c => {
+            const d = new Date(c.created_at || Date.now()).toLocaleDateString('es-DO', { day:'2-digit', month:'short', year:'numeric' });
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f7f6f4;border-radius:8px;"><div><div style="font-size:0.88rem;font-weight:700;color:var(--text-dark);">' + c.client_name + '</div><div style="font-size:0.7rem;color:var(--text-muted);font-family:monospace;">' + c.card_code + ' - ' + d + '</div></div><div style="font-size:0.82rem;font-weight:700;color:var(--accent-gold-dark);">' + c.current_points + ' pts</div></div>';
+        }).join('');
+    }
 
-            // Fill header info
-            document.getElementById('modal-client-name').textContent = card.client_name;
-            document.getElementById('modal-client-subtitle').textContent = `${card.card_code} - ${card.current_points} punto${card.current_points !== 1 ? 's' : ''}`;
-
-            // Fill card front
-            document.getElementById('modal-card-holder').textContent = card.client_name;
-            
+    function renderClientsCards(cards) {
+        const container = document.getElementById('saved-cards-container');
+        if (!cards.length) { container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">No hay clientes registrados.</div>'; return; }
+        container.innerHTML = cards.map(card => {
             const date = new Date(card.created_at || Date.now());
-            const sinceStr = `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
-            document.getElementById('modal-card-since').textContent = sinceStr;
-            document.getElementById('modal-card-code').textContent = formatCardCode(card.card_code);
+            const since = String(date.getMonth()+1).padStart(2,'0') + '/' + date.getFullYear();
+            return '<div class="client-card"><div class="client-card-top"><h4>' + card.client_name + '</h4><button class="btn-trash" onclick="deleteCard('' + card.id + '','' + card.client_name.replace(/'/g,"\'") + '')" title="Eliminar"><i class="far fa-trash-alt"></i></button></div><div class="client-meta"><span class="code">' + card.card_code + '</span>' + (card.client_cedula ? '<span><i class="fas fa-id-card" style="color:var(--text-muted);margin-right:4px;font-size:0.7rem;"></i>' + card.client_cedula + '</span>' : '') + '<span>desde ' + since + '</span></div><div class="pts-adjust-box"><button class="btn-adj" onclick="adjustPointsDirectly('' + card.id + '',-1)"><i class="fas fa-minus"></i></button><div class="pts-display"><strong id="pts-count-' + card.id + '">' + card.current_points + '</strong><span>Puntos</span></div><button class="btn-adj btn-adj-plus" onclick="adjustPointsDirectly('' + card.id + '',1)"><i class="fas fa-plus"></i></button></div><button class="btn-view" onclick="openCardModal('' + card.id + '')"><i class="far fa-eye"></i> Ver tarjeta</button></div>';
+        }).join('');
+    }
 
-            // Split business name for the card front logo
-            const bizName = businessSettings.name || "IVAD";
-            const firstWord = bizName.split(' ')[0] || bizName;
-            const restOfName = bizName.split(' ').slice(1).join(' ') || businessSettings.slogan;
+    function filterClients(q) {
+        const ql = q.toLowerCase();
+        const filtered = ql ? allCards.filter(c => c.client_name.toLowerCase().includes(ql) || c.card_code.toLowerCase().includes(ql) || (c.client_cedula||'').toLowerCase().includes(ql) || (c.client_email||'').toLowerCase().includes(ql)) : allCards;
+        renderClientsCards(filtered);
+    }
 
-            document.getElementById('modal-biz-name-label').textContent = firstWord;
-            document.getElementById('modal-biz-slogan-label').textContent = restOfName;
+    function searchClient(query) {
+        const resultsBox = document.getElementById('client-search-results');
+        const q = query.trim().toLowerCase();
+        if (!q) { resultsBox.style.display='none'; clearSelectedClient(); return; }
+        const matches = allCards.filter(c => c.client_name.toLowerCase().includes(q) || c.card_code.toLowerCase().includes(q) || (c.client_cedula||'').toLowerCase().includes(q) || (c.client_email||'').toLowerCase().includes(q)).slice(0,6);
+        if (!matches.length) { resultsBox.style.display='block'; resultsBox.innerHTML='<div style="padding:14px 16px;font-size:0.82rem;color:var(--text-muted);">No se encontro ningun cliente.</div>'; return; }
+        resultsBox.style.display='block';
+        resultsBox.innerHTML = matches.map(c => '<div onclick="selectClient('' + c.id + '')" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-color);" onmouseover="this.style.background='rgba(191,166,135,0.08)'" onmouseout="this.style.background='transparent'"><div style="font-size:0.88rem;font-weight:700;color:var(--text-dark);">' + c.client_name + '</div><div style="font-size:0.72rem;color:var(--text-muted);font-family:monospace;">' + c.card_code + ' - ' + (c.client_email||'') + '</div></div>').join('');
+    }
 
-            // Fill card back details using businessSettings and specific IDs
-            document.getElementById('modal-back-biz-title').textContent = businessSettings.name;
-            document.getElementById('modal-back-phone').textContent = businessSettings.phone;
-            document.getElementById('modal-back-web').textContent = businessSettings.web;
-            document.getElementById('modal-back-address').textContent = businessSettings.address;
-            document.getElementById('modal-back-footer-text').textContent = `Personal e intransferible - ${businessSettings.slogan}`;
+    function selectClient(cardId) {
+        const card = allCards.find(c => c.id === cardId);
+        if (!card) return;
+        document.getElementById('sale-client-id').value = cardId;
+        document.getElementById('client-search-input').value = card.client_name;
+        document.getElementById('client-search-results').style.display = 'none';
+        document.getElementById('selected-client-banner').style.display = 'block';
+        document.getElementById('sel-name').textContent = card.client_name;
+        document.getElementById('sel-code').textContent = card.card_code + ' - ' + (card.client_email||'');
+        document.getElementById('sel-pts').textContent = card.current_points + ' puntos actuales';
+    }
 
-            // QR Code URL
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(card.card_code)}&color=12-14-17`;
-            document.getElementById('modal-qr-img').src = qrUrl;
+    function clearSelectedClient() {
+        document.getElementById('sale-client-id').value = '';
+        document.getElementById('selected-client-banner').style.display = 'none';
+    }
 
-            // Reset flipped state
-            document.getElementById('modal-card-container').classList.remove('flipped');
+    function calculatePointsPreview() {
+        const amount = parseFloat(document.getElementById('sale-amount').value) || 0;
+        const points = Math.floor(amount / 500) * 3;
+        const box = document.getElementById('points-preview-box');
+        if (amount >= 500) {
+            box.style.display = 'block';
+            document.getElementById('points-preview-val').textContent = '+' + points + ' pts';
+            document.getElementById('points-formula').textContent = 'RD$ ' + amount.toLocaleString('es-DO') + ' / 500 x 3 = ' + points + ' puntos';
+        } else if (amount > 0) {
+            box.style.display = 'block';
+            document.getElementById('points-preview-val').textContent = '+0 pts';
+            document.getElementById('points-formula').textContent = 'Minimo RD$ 500 para acumular puntos.';
+        } else { box.style.display = 'none'; }
+    }
 
-            // Load transactions history log inside the modal
-            await loadModalTransactions(cardId);
-
-            // Show Modal
-            document.getElementById('card-modal').style.display = 'flex';
-        }
-
-        // Load card transactions for detail view
-        async function loadModalTransactions(cardId) {
-            const container = document.getElementById('modal-transactions-container');
-            container.innerHTML = '<div style="font-size: 0.78rem; color: rgba(255,255,255,0.45); text-align: center; padding: 15px 0;">Cargando historial de compras...</div>';
-            
-            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('loyalty_transactions')
-                        .select('*')
-                        .eq('card_id', cardId)
-                        .order('created_at', { ascending: false });
-
-                    if (error) throw error;
-                    renderModalTransactions(data, container);
-                } catch (err) {
-                    console.error('Error fetching modal transactions:', err);
-                    container.innerHTML = '<div style="font-size: 0.78rem; color: #f87171; text-align: center; padding: 15px 0;">Error al cargar historial.</div>';
-                }
-            } else {
-                // Mock history for simulation
-                const storedTxs = localStorage.getItem(`ivad_txs_simulated_${cardId}`);
-                const txs = storedTxs ? JSON.parse(storedTxs) : [];
-                renderModalTransactions(txs, container);
-            }
-        }
-
-        function renderModalTransactions(txs, container) {
-            if (!txs || txs.length === 0) {
-                container.innerHTML = '<div style="font-size: 0.78rem; color: rgba(255,255,255,0.4); text-align: center; padding: 15px 0;">No se registran compras todavía.</div>';
-                return;
-            }
-
-            container.innerHTML = '';
-            txs.forEach(tx => {
-                const date = new Date(tx.created_at).toLocaleDateString('es-DO', {
-                    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                });
-                const inv = tx.invoice_number ? `Factura ${tx.invoice_number}` : 'Registro manual';
-                const div = document.createElement('div');
-                div.style.background = 'rgba(255, 255, 255, 0.03)';
-                div.style.border = '1px solid rgba(255, 255, 255, 0.08)';
-                div.style.borderRadius = '8px';
-                div.style.padding = '10px 12px';
-                div.style.display = 'flex';
-                div.style.justifyContent = 'space-between';
-                div.style.alignItems = 'center';
-                div.style.fontSize = '0.78rem';
-                
-                div.innerHTML = `
-                    <div>
-                        <div style="font-weight: 700; color: #fff; margin-bottom: 2px;">${inv}</div>
-                        <div style="color: rgba(255,255,255,0.45); font-size: 0.7rem;">${date} · RD$ ${Number(tx.sale_amount).toLocaleString('es-DO')}</div>
-                    </div>
-                    <div style="color: var(--accent-gold); font-weight: 800;">+${tx.points_added} pts</div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // Close Card detail modal
-        function closeCardModal(e) {
-            document.getElementById('card-modal').style.display = 'none';
-        }
-
-        // Update Card Preview Live from inputs
-        function updateCardPreview() {
-            // Business Settings values
-            const bizName = document.getElementById('biz-name').value.trim() || "IVAD";
-            const bizSlogan = document.getElementById('biz-slogan').value.trim() || "HOME Y GOODS";
-            const bizPhone = document.getElementById('biz-phone').value.trim() || "809-241-6555";
-            const bizWeb = document.getElementById('biz-web').value.trim() || "www.ivadsrl.com";
-            const bizAddress = document.getElementById('biz-address').value.trim() || "Ave. 27 de febrero";
-
-            // Headers & Brand Labels
-            document.getElementById('header-business-name').textContent = bizName.toUpperCase();
-            document.getElementById('header-slogan').textContent = `${bizName.toUpperCase()} - ${bizSlogan}`;
-            
-            // Front Card labels
-            document.getElementById('prev-biz-name-label').textContent = bizName.split(' ')[0] || bizName;
-            document.getElementById('prev-biz-slogan-label').textContent = bizName.split(' ').slice(1).join(' ') || bizSlogan;
-
-            // Back Card labels
-            document.getElementById('prev-back-biz-title').textContent = bizName;
-            document.getElementById('prev-back-phone').textContent = bizPhone;
-            document.getElementById('prev-back-web').textContent = bizWeb;
-            document.getElementById('prev-back-address').textContent = bizAddress;
-            document.getElementById('prev-back-footer-text').textContent = `Personal e intransferible - ${bizSlogan}`;
-
-            // Client Input values
-            const clientName = document.getElementById('client-name').value.trim() || "Nombre del cliente";
-            const clientSince = document.getElementById('client-since').value.trim() || "julio de 2026";
-            
-            document.getElementById('prev-card-holder').textContent = clientName;
-            document.getElementById('prev-card-since').textContent = clientSince;
-            
-            // Format card code preview dynamically (using dummy preview code)
-            document.getElementById('prev-card-code').textContent = "IVAD 0000 0000 ••••";
-        }
-
-        // Helper to format card codes into credit card blocks
-        function formatCardCode(code) {
-            const clean = code.replace(/[-\s]/g, '');
-            let prefix = "IVAD";
-            let body = clean;
-            if (clean.toUpperCase().startsWith("IVAD")) {
-                body = clean.substring(4);
-            }
-            const padded = body.padEnd(8, '0');
-            return `${prefix} ${padded.substring(0, 4)} ${padded.substring(4, 8)} ••••`.toUpperCase();
-        }
-
-        // Save Business settings locally
-        function saveBusinessSettings(e) {
-            e.preventDefault();
-            businessSettings.name = document.getElementById('biz-name').value.trim();
-            businessSettings.slogan = document.getElementById('biz-slogan').value.trim();
-            businessSettings.phone = document.getElementById('biz-phone').value.trim();
-            businessSettings.web = document.getElementById('biz-web').value.trim();
-            businessSettings.address = document.getElementById('biz-address').value.trim();
-
-            localStorage.setItem('ivad_loyalty_biz_settings', JSON.stringify(businessSettings));
-            alert('¡Datos del negocio guardados correctamente!');
-            updateCardPreview();
-        }
-
-        let isSimulationMode = false;
-
-        // Load clients from Supabase
-        async function loadClients() {
-            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('loyalty_cards')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-
-                    if (error) {
-                        console.warn("Table relation not found or db error, falling back to local simulation:", error);
-                        isSimulationMode = true;
-                        loadSimulationCards();
-                        return;
-                    }
-
-                    isSimulationMode = false;
-                    allCards = data || [];
-                    renderClientsCards(allCards);
-                    populateClientSelect(allCards);
-                } catch (err) {
-                    console.error('Error loading cards, falling back to local simulation:', err);
-                    isSimulationMode = true;
-                    loadSimulationCards();
-                }
-            } else {
-                isSimulationMode = true;
-                loadSimulationCards();
-            }
-        }
-
-        // Load mock simulation cards from localStorage
-        function loadSimulationCards() {
-            const stored = localStorage.getItem('ivad_loyalty_cards_simulated');
-            if (stored) {
-                allCards = JSON.parse(stored);
-            } else {
-                // Initialize with Alonzo card from screenshot
-                allCards = [
-                    { 
-                        id: 'mock-uuid-alonzo', 
-                        card_code: 'IVAD-693886E7', 
-                        client_name: 'Alonzo', 
-                        client_email: 'alonzo@correo.com', 
-                        client_phone: '809-241-6555', 
-                        current_points: 0, 
-                        points_target: 50, 
-                        temp_password: 'pwd-alonzo', 
-                        created_at: new Date('2026-07-01').getTime()
-                    }
-                ];
-                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
-            }
-            renderClientsCards(allCards);
-            populateClientSelect(allCards);
-
-            // Append warning notice
-            const container = document.getElementById('saved-cards-container');
-            const notice = document.createElement('div');
-            notice.style.gridColumn = '1 / -1';
-            notice.style.backgroundColor = '#fef9c3';
-            notice.style.border = '1px solid #fef08a';
-            notice.style.color = '#854d0e';
-            notice.style.padding = '14px 18px';
-            notice.style.borderRadius = '10px';
-            notice.style.fontSize = '0.78rem';
-            notice.style.fontWeight = '600';
-            notice.style.display = 'flex';
-            notice.style.alignItems = 'center';
-            notice.style.gap = '12px';
-            notice.style.marginTop = '15px';
-            notice.style.lineHeight = '1.4';
-            notice.innerHTML = `
-                <i class="fas fa-exclamation-triangle" style="font-size: 1.1rem; color: #ca8a04;"></i>
-                <span><strong>Modo de Simulación Activo:</strong> Base de datos de Supabase no conectada o tablas no creadas en el SQL Editor. 
-                Ejecuta el script SQL del archivo <code>loyalty_schema.sql</code> en tu proyecto de Supabase para activar el modo en vivo. 
-                Los cambios actuales se guardarán temporalmente en tu navegador.</span>
-            `;
-            container.appendChild(notice);
-        }
-
-        // Populate client dropdown select list
-        function populateClientSelect(cards) {
-            const select = document.getElementById('sale-client-id');
-            select.innerHTML = '<option value="">Selecciona un cliente...</option>';
-            
-            cards.forEach(card => {
-                const opt = document.createElement('option');
-                opt.value = card.id;
-                opt.textContent = `${card.client_name} (${card.card_code})`;
-                select.appendChild(opt);
-            });
-        }
-
-        // Render Clients Cards Grid
-        function renderClientsCards(cards) {
-            const container = document.getElementById('saved-cards-container');
-            container.innerHTML = '';
-
-            document.getElementById('active-cards-count').textContent = `${cards.length} tarjeta${cards.length !== 1 ? 's' : ''} activa${cards.length !== 1 ? 's' : ''}`;
-
-            if (cards.length === 0) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;">No hay tarjetas de fidelización guardadas.</div>';
-                return;
-            }
-
-            cards.forEach(card => {
-                const date = new Date(card.created_at || Date.now());
-                const sinceStr = `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
-                
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'saved-client-card';
-                cardDiv.innerHTML = `
-                    <div class="saved-card-header">
-                        <h3>${card.client_name}</h3>
-                        <button class="btn-trash" onclick="deleteCard('${card.id}', '${card.client_name}')" title="Eliminar tarjeta">
-                            <i class="far fa-trash-alt"></i>
-                        </button>
-                    </div>
-                    <div class="saved-card-meta">
-                        <span>${card.card_code}</span> · desde ${sinceStr}
-                    </div>
-                    
-                    <div class="pts-adjust-box">
-                        <button class="btn-adjust btn-adjust-minus" onclick="adjustPointsDirectly('${card.id}', -1)" title="Restar punto">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <div class="pts-adjust-display">
-                            <strong id="pts-count-${card.id}">${card.current_points}</strong>
-                            <span>Puntos</span>
-                        </div>
-                        <button class="btn-adjust btn-adjust-plus" onclick="adjustPointsDirectly('${card.id}', 1)" title="Sumar punto">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    
-                    <button class="btn-view-card" onclick="openCardModal('${card.id}')">
-                        <i class="far fa-eye"></i> Ver tarjeta
-                    </button>
-                `;
-                container.appendChild(cardDiv);
-            });
-        }
-
-        // Adjust points preview calculation
-        function calculatePointsPreview() {
-            const amountInput = document.getElementById('sale-amount');
-            const amount = parseFloat(amountInput.value) || 0;
-            const points = Math.floor(amount / 500) * 3;
-            
-            const previewBox = document.getElementById('points-preview-box');
-            const previewVal = document.getElementById('points-preview-val');
-            const previewExpl = document.getElementById('points-formula-explanation');
-            
-            if (amount >= 500) {
-                previewBox.style.display = 'block';
-                previewVal.textContent = `+${points} pts`;
-                previewExpl.textContent = `Fórmula: RD$ ${amount.toLocaleString('es-DO')} ÷ 500 × 3 = ${points} puntos`;
-            } else if (amount > 0) {
-                previewBox.style.display = 'block';
-                previewVal.textContent = `+0 pts`;
-                previewExpl.textContent = `El monto mínimo para acumular puntos es RD$ 500.`;
-            } else {
-                previewBox.style.display = 'none';
-            }
-        }
-
-        // Register sale invoice and award points
-        async function registerSalePoints(e) {
-            e.preventDefault();
-            const cardId = document.getElementById('sale-client-id').value;
-            const invoice = document.getElementById('sale-invoice').value.trim();
-            const amount = parseFloat(document.getElementById('sale-amount').value) || 0;
-            
-            const card = allCards.find(c => c.id === cardId);
-            if (!card) { alert('Cliente no encontrado.'); return; }
-
-            const pointsEarned = Math.floor(amount / 500) * 3;
-            if (pointsEarned <= 0 && amount < 500) {
-                alert('El monto es insuficiente para otorgar puntos (mínimo RD$ 500).');
-                return;
-            }
-
-            const newPoints = card.current_points + pointsEarned;
-
-            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
-                try {
-                    // Update card points
-                    const { error: cardErr } = await supabaseClient
-                        .from('loyalty_cards')
-                        .update({ current_points: newPoints })
-                        .eq('id', cardId);
-
-                    if (cardErr) throw cardErr;
-
-                    // Insert transaction record
-                    const { error: txErr } = await supabaseClient
-                        .from('loyalty_transactions')
-                        .insert([{
-                            card_id: cardId,
-                            sale_amount: amount,
-                            points_added: pointsEarned,
-                            invoice_number: invoice,
-                            notes: `Venta registrada con factura ${invoice}`
-                        }]);
-
-                    if (txErr) throw txErr;
-
-                    alert(`¡Puntos otorgados con éxito! +${pointsEarned} puntos a la cuenta de ${card.client_name}`);
-                    
-                    // Reset sale form
-                    document.getElementById('register-sale-form').reset();
-                    document.getElementById('points-preview-box').style.display = 'none';
-                    
-                    loadClients();
-                } catch (err) {
-                    alert('Error de base de datos: ' + err.message);
-                }
-            } else {
-                // Mock local simulation transaction
-                card.current_points = newPoints;
-                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
-
-                // Save mock transaction history for modal preview
-                const storedTxs = localStorage.getItem(`ivad_txs_simulated_${cardId}`);
-                const txs = storedTxs ? JSON.parse(storedTxs) : [];
-                txs.unshift({
-                    created_at: new Date().toISOString(),
-                    sale_amount: amount,
-                    points_added: pointsEarned,
-                    invoice_number: invoice,
-                    notes: `Venta registrada con factura ${invoice}`
-                });
-                localStorage.setItem(`ivad_txs_simulated_${cardId}`, JSON.stringify(txs));
-
-                alert(`[Simulación] Puntos otorgados con éxito: +${pointsEarned} pts`);
+    async function registerSalePoints(e) {
+        e.preventDefault();
+        const cardId = document.getElementById('sale-client-id').value;
+        const invoice = document.getElementById('sale-invoice').value.trim();
+        const amount = parseFloat(document.getElementById('sale-amount').value) || 0;
+        if (!cardId) { alert('Por favor selecciona un cliente primero.'); return; }
+        const card = allCards.find(c => c.id === cardId);
+        if (!card) { alert('Cliente no encontrado.'); return; }
+        const pointsEarned = Math.floor(amount / 500) * 3;
+        if (amount < 500) { alert('El monto minimo para otorgar puntos es RD$ 500.'); return; }
+        const newPoints = card.current_points + pointsEarned;
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { error: ce } = await supabaseClient.from('loyalty_cards').update({ current_points: newPoints }).eq('id', cardId);
+                if (ce) throw ce;
+                const { error: te } = await supabaseClient.from('loyalty_transactions').insert([{ card_id: cardId, sale_amount: amount, points_added: pointsEarned, invoice_number: invoice, notes: 'Venta registrada. Factura ' + invoice }]);
+                if (te) throw te;
+                showLastSale(card.client_name, invoice, amount, pointsEarned);
                 document.getElementById('register-sale-form').reset();
                 document.getElementById('points-preview-box').style.display = 'none';
-                loadSimulationCards();
-            }
+                clearSelectedClient();
+                loadClients();
+            } catch (err) { alert('Error: ' + err.message); }
+        } else {
+            card.current_points = newPoints;
+            localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+            const stored = localStorage.getItem('ivad_txs_simulated_' + cardId);
+            const txs = stored ? JSON.parse(stored) : [];
+            txs.unshift({ created_at: new Date().toISOString(), sale_amount: amount, points_added: pointsEarned, invoice_number: invoice });
+            localStorage.setItem('ivad_txs_simulated_' + cardId, JSON.stringify(txs));
+            showLastSale(card.client_name, invoice, amount, pointsEarned);
+            document.getElementById('register-sale-form').reset();
+            document.getElementById('points-preview-box').style.display = 'none';
+            clearSelectedClient();
+            loadSimulationCards();
         }
+    }
 
-        // Adjust points +/- 1 directly (manual override)
-        async function adjustPointsDirectly(cardId, amount) {
-            const card = allCards.find(c => c.id === cardId);
-            if (!card) return;
+    function showLastSale(name, invoice, amount, pts) {
+        document.getElementById('last-sale-info').innerHTML = '<div style="background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.2);border-radius:8px;padding:12px 14px;margin-top:6px;"><div style="font-weight:700;color:#15803d;font-size:0.85rem;margin-bottom:4px;"><i class="fas fa-check-circle" style="margin-right:6px;"></i> +' + pts + ' pts otorgados a ' + name + '</div><div style="font-size:0.75rem;color:var(--text-muted);">Factura ' + invoice + ' - RD$ ' + Number(amount).toLocaleString('es-DO') + '</div></div>';
+    }
 
-            const newPoints = Math.max(0, card.current_points + amount);
-
-            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
-                try {
-                    const { error } = await supabaseClient
-                        .from('loyalty_cards')
-                        .update({ current_points: newPoints })
-                        .eq('id', cardId);
-
-                    if (error) {
-                        alert('Error al ajustar puntos: ' + error.message);
-                    } else {
-                        // Insert Transaction Log
-                        await supabaseClient
-                            .from('loyalty_transactions')
-                            .insert([{
-                                card_id: cardId,
-                                sale_amount: 0,
-                                points_added: amount,
-                                notes: amount >= 1 ? 'Ajuste manual sumado' : 'Ajuste manual restado'
-                            }]);
-
-                        card.current_points = newPoints;
-                        document.getElementById(`pts-count-${cardId}`).textContent = newPoints;
-                        
-                        const previewCodeText = document.getElementById('prev-card-code').textContent;
-                        if (previewCodeText.includes(card.card_code.replace(/-/g, ' '))) {
-                            viewClientCardInPreview(cardId);
-                        }
-                    }
-                } catch (err) {
-                    console.error('Error:', err);
-                }
-            } else {
-                // Mock local adjustment
+    async function adjustPointsDirectly(cardId, delta) {
+        const card = allCards.find(c => c.id === cardId);
+        if (!card) return;
+        const newPoints = Math.max(0, card.current_points + delta);
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { error } = await supabaseClient.from('loyalty_cards').update({ current_points: newPoints }).eq('id', cardId);
+                if (error) { alert('Error: ' + error.message); return; }
+                await supabaseClient.from('loyalty_transactions').insert([{ card_id: cardId, sale_amount: 0, points_added: delta, notes: delta >= 1 ? 'Ajuste manual (+)' : 'Ajuste manual (-)' }]);
                 card.current_points = newPoints;
-                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
-                document.getElementById(`pts-count-${cardId}`).textContent = newPoints;
-                
-                // Save mock transaction history for modal preview
-                const storedTxs = localStorage.getItem(`ivad_txs_simulated_${cardId}`);
-                const txs = storedTxs ? JSON.parse(storedTxs) : [];
-                txs.unshift({
-                    created_at: new Date().toISOString(),
-                    sale_amount: 0,
-                    points_added: amount,
-                    notes: amount >= 1 ? 'Ajuste manual sumado' : 'Ajuste manual restado'
-                });
-                localStorage.setItem(`ivad_txs_simulated_${cardId}`, JSON.stringify(txs));
-
-                const previewCodeText = document.getElementById('prev-card-code').textContent;
-                if (previewCodeText.includes(card.card_code.replace(/-/g, ' '))) {
-                    viewClientCardInPreview(cardId);
-                }
-            }
+                document.getElementById('pts-count-' + cardId).textContent = newPoints;
+            } catch (err) { console.error(err); }
+        } else {
+            card.current_points = newPoints;
+            localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+            document.getElementById('pts-count-' + cardId).textContent = newPoints;
+            const stored = localStorage.getItem('ivad_txs_simulated_' + cardId);
+            const txs = stored ? JSON.parse(stored) : [];
+            txs.unshift({ created_at: new Date().toISOString(), sale_amount: 0, points_added: delta, invoice_number: null, notes: delta >= 1 ? 'Ajuste manual (+)' : 'Ajuste manual (-)' });
+            localStorage.setItem('ivad_txs_simulated_' + cardId, JSON.stringify(txs));
         }
+    }
 
-        // Load specific client card into the 3D preview card
-        function viewClientCardInPreview(cardId) {
-            const card = allCards.find(c => c.id === cardId);
-            if (!card) return;
-
-            // Update Card Front
-            document.getElementById('prev-card-holder').textContent = card.client_name;
-            document.getElementById('prev-card-since').textContent = new Date(card.created_at || Date.now()).toLocaleDateString('es-DO', {
-                month: '2-digit',
-                year: 'numeric'
-            });
-
-            // Format card code to blocks of four
-            document.getElementById('prev-card-code').textContent = formatCardCode(card.card_code);
-
-            // Generate QR Code for this card code
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(card.card_code)}&color=12-14-17`;
-            document.getElementById('prev-qr-img').src = qrUrl;
-
-            // Optional: Scroll to preview on mobile
-            window.scrollTo({
-                top: document.getElementById('preview-card-container').offsetTop - 20,
-                behavior: 'smooth'
-            });
-        }
-
-        // Create Card
-        async function createCard(e) {
-            e.preventDefault();
-            const name = document.getElementById('client-name').value.trim();
-            const email = document.getElementById('client-email').value.trim();
-            const phone = document.getElementById('client-phone').value.trim();
-            const since = document.getElementById('client-since').value.trim();
-            const initPoints = parseInt(document.getElementById('client-init-points').value) || 0;
-
-            const randomCode = 'IVAD-' + Math.random().toString(36).substring(2, 7).toUpperCase();
-            const randomPass = Math.random().toString(36).substring(2, 8); // 6 character password
-
-            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('loyalty_cards')
-                        .insert([{
-                            card_code: randomCode,
-                            client_name: name,
-                            client_email: email,
-                            client_phone: phone,
-                            temp_password: randomPass,
-                            current_points: initPoints
-                        }])
-                        .select()
-                        .single();
-
-                    if (error) {
-                        alert('Error al crear tarjeta: ' + error.message);
-                    } else {
-                        // Send Email via Vercel serverless function
-                        fetch('/api/send-loyalty-email', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                client_name: name,
-                                client_email: email,
-                                card_code: randomCode,
-                                temp_password: randomPass,
-                                card_id: data.id
-                            })
-                        }).then(res => {
-                            if (!res.ok) console.warn('Error dispatching credentials email');
-                        }).catch(err => {
-                            console.error('Email error:', err);
-                        });
-
-                        // Show Modal
-                        document.getElementById('m-code').textContent = randomCode;
-                        document.getElementById('m-pass').textContent = randomPass;
-                        document.getElementById('m-email').textContent = email;
-                        document.getElementById('creds-modal').style.display = 'flex';
-
-                        // Reset form & reload cards
-                        document.getElementById('create-card-form').reset();
-                        document.getElementById('client-since').value = "julio de 2026";
-                        document.getElementById('client-init-points').value = "0";
-                        loadClients();
-                    }
-                } catch (err) {
-                    alert('Error de red al crear la tarjeta.');
-                }
-            } else {
-                // Mock local simulation insert
-                const mockNewCard = {
-                    id: 'mock-uuid-' + Date.now(),
-                    card_code: randomCode,
-                    client_name: name,
-                    client_email: email,
-                    client_phone: phone,
-                    current_points: initPoints,
-                    points_target: 50,
-                    temp_password: randomPass,
-                    created_at: Date.now()
-                };
-                allCards.unshift(mockNewCard);
-                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
-
-                // Save mock initial transaction if points > 0
-                if (initPoints > 0) {
-                    localStorage.setItem(`ivad_txs_simulated_${mockNewCard.id}`, JSON.stringify([{
-                        created_at: new Date().toISOString(),
-                        sale_amount: 0,
-                        points_added: initPoints,
-                        invoice_number: null,
-                        notes: 'Saldo de puntos inicial'
-                    }]));
-                }
-
-                // Show Modal
-                document.getElementById('m-code').textContent = randomCode;
-                document.getElementById('m-pass').textContent = randomPass;
-                document.getElementById('m-email').textContent = email;
-                document.getElementById('creds-modal').style.display = 'flex';
-
+    async function createCard(e) {
+        e.preventDefault();
+        const name = document.getElementById('client-name').value.trim();
+        const email = document.getElementById('client-email').value.trim();
+        const phone = document.getElementById('client-phone').value.trim();
+        const cedula = document.getElementById('client-cedula').value.trim();
+        const initPoints = parseInt(document.getElementById('client-init-points').value) || 0;
+        const randomCode = 'IVAD-' + Math.random().toString(36).substring(2,7).toUpperCase();
+        const randomPass = Math.random().toString(36).substring(2,8);
+        const btn = e.target.querySelector('button[type=submit]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient.from('loyalty_cards').insert([{ card_code: randomCode, client_name: name, client_email: email, client_phone: phone, client_cedula: cedula, temp_password: randomPass, current_points: initPoints, points_target: 50 }]).select().single();
+                if (error) { alert('Error al crear tarjeta: ' + error.message); btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Crear tarjeta y enviar credenciales'; return; }
+                fetch('/api/send-loyalty-email', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ client_name:name, client_email:email, card_code:randomCode, temp_password:randomPass, card_id:data.id }) }).catch(err => console.error('Email error:', err));
                 document.getElementById('create-card-form').reset();
-                document.getElementById('client-since').value = "julio de 2026";
-                document.getElementById('client-init-points').value = "0";
-                loadSimulationCards();
-            }
+                document.getElementById('client-since').value = 'julio de 2026';
+                loadClients();
+                document.getElementById('success-modal').classList.add('open');
+            } catch (err) { alert('Error de red: ' + err.message); }
+        } else {
+            const mockCard = { id:'mock-uuid-'+Date.now(), card_code:randomCode, client_name:name, client_email:email, client_phone:phone, client_cedula:cedula, current_points:initPoints, points_target:50, temp_password:randomPass, created_at:Date.now() };
+            allCards.unshift(mockCard);
+            localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+            document.getElementById('create-card-form').reset();
+            document.getElementById('client-since').value = 'julio de 2026';
+            loadSimulationCards();
+            document.getElementById('success-modal').classList.add('open');
         }
+        btn.disabled=false;
+        btn.innerHTML='<i class="fas fa-paper-plane"></i> Crear tarjeta y enviar credenciales';
+    }
 
-        // Delete Card
-        async function deleteCard(cardId, name) {
-            if (!confirm(`¿Estás seguro de que deseas eliminar la tarjeta de fidelización de ${name}? Esta acción borrará todo su historial y es irreversible.`)) return;
-
-            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
-                try {
-                    const { error } = await supabaseClient
-                        .from('loyalty_cards')
-                        .delete()
-                        .eq('id', cardId);
-
-                    if (error) {
-                        alert('Error al eliminar tarjeta: ' + error.message);
-                    } else {
-                        loadClients();
-                    }
-                } catch (err) {
-                    console.error('Delete error:', err);
-                }
-            } else {
-                allCards = allCards.filter(c => c.id !== cardId);
-                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
-                localStorage.removeItem(`ivad_txs_simulated_${cardId}`);
-                loadSimulationCards();
-            }
+    async function deleteCard(cardId, name) {
+        if (!confirm('Eliminar la tarjeta de ' + name + '? Esta accion es irreversible.')) return;
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            const { error } = await supabaseClient.from('loyalty_cards').delete().eq('id', cardId);
+            if (error) alert('Error al eliminar: ' + error.message);
+            else loadClients();
+        } else {
+            allCards = allCards.filter(c => c.id !== cardId);
+            localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+            localStorage.removeItem('ivad_txs_simulated_' + cardId);
+            loadSimulationCards();
         }
+    }
 
-        function closeModal() {
-            document.getElementById('creds-modal').style.display = 'none';
-        }
-    </script>
+    async function openCardModal(cardId) {
+        const card = allCards.find(c => c.id === cardId);
+        if (!card) return;
+        const date = new Date(card.created_at || Date.now());
+        const since = String(date.getMonth()+1).padStart(2,'0') + '/' + date.getFullYear();
+        const el = (id,v) => { const e = document.getElementById(id); if (e) e.textContent=v; };
+        el('modal-client-name', card.client_name);
+        el('modal-client-subtitle', card.card_code + ' - ' + card.current_points + ' puntos');
+        el('modal-card-holder', card.client_name);
+        el('modal-card-since', since);
+        el('modal-card-code', formatCardCode(card.card_code));
+        el('modal-biz-name-label', businessSettings.name.split(' ')[0]);
+        el('modal-biz-slogan-label', businessSettings.name.split(' ').slice(1).join(' ') || businessSettings.slogan);
+        el('modal-back-biz-title', businessSettings.name);
+        el('modal-back-phone', businessSettings.phone);
+        el('modal-back-web', businessSettings.web);
+        el('modal-back-address', businessSettings.address);
+        el('modal-back-footer', 'Personal e intransferible - ' + businessSettings.slogan);
+        document.getElementById('modal-qr-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=' + encodeURIComponent(card.card_code) + '&color=12-14-17';
+        document.getElementById('modal-card-container').classList.remove('flipped');
+        await loadModalTransactions(cardId);
+        document.getElementById('card-modal').classList.add('open');
+    }
+
+    async function loadModalTransactions(cardId) {
+        const container = document.getElementById('modal-transactions-container');
+        container.innerHTML = '<div style="font-size:0.76rem;color:rgba(255,255,255,0.35);text-align:center;padding:14px 0;">Cargando historial...</div>';
+        let txs = [];
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try { const { data } = await supabaseClient.from('loyalty_transactions').select('*').eq('card_id', cardId).order('created_at',{ascending:false}); txs = data || []; } catch (_) {}
+        } else { const stored = localStorage.getItem('ivad_txs_simulated_' + cardId); txs = stored ? JSON.parse(stored) : []; }
+        if (!txs.length) { container.innerHTML = '<div style="font-size:0.76rem;color:rgba(255,255,255,0.35);text-align:center;padding:14px 0;">Sin compras registradas aun.</div>'; return; }
+        container.innerHTML = txs.map(tx => {
+            const d = new Date(tx.created_at).toLocaleDateString('es-DO',{day:'2-digit',month:'2-digit',year:'numeric'});
+            const inv = tx.invoice_number ? 'Factura ' + tx.invoice_number : (tx.notes || 'Registro manual');
+            return '<div class="txn-row"><div><span class="txn-title">' + inv + '</span><span class="txn-date">' + d + ' - RD$ ' + Number(tx.sale_amount||0).toLocaleString('es-DO') + '</span></div><span class="txn-pts">+' + tx.points_added + ' pts</span></div>';
+        }).join('');
+    }
+
+    function closeCardModal(e) { document.getElementById('card-modal').classList.remove('open'); }
+    function closeSuccessModal() { document.getElementById('success-modal').classList.remove('open'); }
+
+    function saveBusinessSettings(e) {
+        e.preventDefault();
+        businessSettings.name = document.getElementById('biz-name').value.trim();
+        businessSettings.slogan = document.getElementById('biz-slogan').value.trim();
+        businessSettings.phone = document.getElementById('biz-phone').value.trim();
+        businessSettings.web = document.getElementById('biz-web').value.trim();
+        businessSettings.address = document.getElementById('biz-address').value.trim();
+        localStorage.setItem('ivad_loyalty_biz_settings', JSON.stringify(businessSettings));
+        alert('Datos del negocio guardados correctamente.');
+        updateCardPreview();
+    }
+
+    function saveRewardConfig() {
+        const config = { envio: parseInt(document.getElementById('cfg-pts-envio').value)||20, vajilla: parseInt(document.getElementById('cfg-pts-vajilla').value)||30, credito: parseInt(document.getElementById('cfg-pts-credito').value)||50 };
+        localStorage.setItem('ivad_reward_config', JSON.stringify(config));
+        alert('Configuracion de recompensas guardada. Los umbrales se aplicaran en el panel del cliente al recargar.');
+    }
+</script>
 </body>
 </html>

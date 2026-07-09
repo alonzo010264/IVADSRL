@@ -13,11 +13,15 @@ create table if not exists loyalty_cards (
   client_name      text        not null,
   client_email     text        unique not null,
   client_phone     text,
+  client_cedula    text,                                 -- Cedula o identificacion del cliente
   current_points   integer     default 0,
   points_target    integer     default 50,               -- Puntos para completar la tarjeta (Meta de Recompensas)
   temp_password    text        not null,                 -- Clave de acceso del cliente
   status           text        default 'activo'          -- activo | suspendido | completado
 );
+
+-- Si ya tienes la tabla creada, agrega la columna con:
+-- alter table loyalty_cards add column if not exists client_cedula text;
 
 -- ─── 2. CREDENCIALES DE ACCESO ───────────────────────────────────────────
 -- Registra usuario y clave de cada cliente para su panel

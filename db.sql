@@ -84,11 +84,15 @@ create table if not exists loyalty_cards (
   client_name text not null,
   client_email text unique not null,
   client_phone text,
+  client_cedula text,
   current_points integer default 0,
   points_target integer default 50,
   temp_password text not null,
   status text default 'activo'
 );
+
+-- Si ya tienes la tabla, agrega la columna cedula con:
+-- alter table loyalty_cards add column if not exists client_cedula text;
 
 -- Tabla de Credenciales de Acceso
 create table if not exists loyalty_credentials (
