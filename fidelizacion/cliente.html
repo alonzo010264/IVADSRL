@@ -573,6 +573,35 @@
             cursor: default;
         }
 
+        .discount-card.locked {
+            opacity: 0.65;
+            border-color: var(--border-color);
+        }
+
+        .discount-card.locked:hover {
+            transform: none;
+            border-color: var(--border-color);
+        }
+
+        .discount-badge.locked {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-claim.locked {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border-color: rgba(255, 255, 255, 0.06);
+            cursor: not-allowed;
+        }
+
+        .btn-claim.locked:hover {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
         .voucher-box {
             display: flex;
             flex-direction: column;
@@ -825,7 +854,7 @@
                                     <div class="front-val" id="card-holder-name">Nombre de Cliente</div>
                                 </div>
                                 <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
-                                    <span class="card-points-badge" id="card-points-text">0 / 10 PUNTOS</span>
+                                    <span class="card-points-badge" style="border-color: rgba(255,255,255,0.15); color: #fff;">CLUB IVAD</span>
                                     <div class="front-val" id="card-member-date">--/--</div>
                                 </div>
                             </div>
@@ -851,7 +880,22 @@
                 </div>
 
                 <!-- Card tap hint -->
-                <p class="card-hint"><i class="fas fa-hand-pointer" style="color:var(--accent-gold);"></i> Toca la tarjeta para voltearla y ver el QR</p>
+                <p class="card-hint" style="margin-bottom: 28px;"><i class="fas fa-hand-pointer" style="color:var(--accent-gold);"></i> Toca la tarjeta para voltearla y ver el QR</p>
+
+                <!-- Mi Progreso Panel -->
+                <div class="panel" style="background: var(--card-dark); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; margin-bottom: 28px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 0.85rem; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1px;"><i class="fas fa-tasks" style="color: var(--accent-gold); margin-right: 8px;"></i> Mi Progreso</span>
+                        <span id="progress-points-display" style="font-size: 0.95rem; font-weight: 800; color: var(--accent-gold);">0 Puntos</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.06); height: 12px; border-radius: 6px; overflow: hidden; width: 100%; border: 1px solid var(--border-color);">
+                        <div id="progress-bar-fill" style="background: linear-gradient(90deg, var(--accent-gold) 0%, var(--accent-gold-light) 100%); height: 100%; width: 0%; transition: width 0.6s ease; box-shadow: 0 0 10px rgba(191,166,135,0.4);"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.72rem; color: var(--text-muted);">
+                        <span>Meta de Recompensas: 50 puntos</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                </div>
 
                 <!-- QR Panel -->
                 <div class="qr-panel">
@@ -1027,6 +1071,52 @@
             }, 60000);
         }
 
+        // ─── Update Progress and Lock/Unlock Discounts ────────────────
+        function updateProgressAndDiscounts(points) {
+            // Target points (max reward threshold)
+            const target = 50;
+            const percent = Math.min(100, Math.round((points / target) * 100));
+            
+            document.getElementById('progress-points-display').textContent = `${points} Punto${points !== 1 ? 's' : ''}`;
+            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+            document.getElementById('progress-percent').textContent = `${percent}%`;
+
+            // Discounts required points definition
+            const rewards = [
+                { id: 'disc-1', req: 30, code: 'IVAD-VAJ-10' },
+                { id: 'disc-2', req: 20, code: 'IVAD-ENV-FREE' },
+                { id: 'disc-3', req: 50, code: 'IVAD-BIEN-500' }
+            ];
+
+            rewards.forEach(r => {
+                const card = document.getElementById(r.id);
+                const btn = document.getElementById('btn-' + r.id);
+                const badge = document.getElementById('badge-' + r.id);
+                
+                if (points >= r.req) {
+                    card.classList.remove('locked');
+                    badge.classList.remove('locked');
+                    
+                    if (!btn.classList.contains('claimed')) {
+                        badge.innerHTML = 'Disponible';
+                        btn.classList.remove('locked');
+                        btn.disabled = false;
+                        btn.innerHTML = 'Reclamar Descuento';
+                        btn.onclick = () => claimDiscount(r.id, r.code);
+                    }
+                } else {
+                    card.classList.add('locked');
+                    badge.classList.add('locked');
+                    badge.innerHTML = `🔒 Requiere ${r.req} pts`;
+                    
+                    btn.classList.add('locked');
+                    btn.disabled = true;
+                    btn.innerHTML = `🔒 Bloqueado (Faltan ${r.req - points} pts)`;
+                    btn.onclick = null;
+                }
+            });
+        }
+
         // ─── Fetch history ───────────────────────────────────────────
         async function fetchHistory(cardId) {
             const container = document.getElementById('history-container');
@@ -1048,10 +1138,13 @@
                             });
                             const item = document.createElement('div');
                             item.className = 'history-item';
+                            const invStr = tx.invoice_number ? ` · Factura ${tx.invoice_number}` : '';
+                            const notesStr = tx.notes ? `<div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 5px;">Nota: ${tx.notes}</div>` : '';
                             item.innerHTML = `
                                 <div class="history-info">
-                                    <div>Compra registrada</div>
+                                    <div>Compra registrada${invStr}</div>
                                     <span>${date} · RD$ ${Number(tx.sale_amount).toLocaleString('es-DO')}</span>
+                                    ${notesStr}
                                 </div>
                                 <div class="history-pts">+${tx.points_added} pts</div>
                             `;
@@ -1068,10 +1161,10 @@
                 container.innerHTML = `
                     <div class="history-item">
                         <div class="history-info">
-                            <div>Compra registrada</div>
+                            <div>Compra registrada · Factura F-2026-01</div>
                             <span>08/07/2026 · RD$ 2,500</span>
                         </div>
-                        <div class="history-pts">+1 pts</div>
+                        <div class="history-pts">+15 pts</div>
                     </div>
                 `;
             }
@@ -1118,7 +1211,6 @@
             document.getElementById('header-client-name').textContent = clientData.client_name;
             document.getElementById('card-code-text').textContent    = formatCardCode(clientData.card_code);
             document.getElementById('code-display-text').textContent = clientData.card_code;
-            document.getElementById('card-points-text').textContent  = `${clientData.current_points} / ${clientData.points_target} PTS`;
 
             const joined = new Date(clientData.created_at || Date.now());
             document.getElementById('card-member-date').textContent = joined.toLocaleDateString('es-DO', { month:'2-digit', year:'numeric' });
@@ -1127,6 +1219,9 @@
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(clientData.card_code)}&color=12-14-17`;
             document.getElementById('qr-image').src    = qrUrl;
             document.getElementById('client-qr-img').src = qrUrl;
+
+            // Update progress panel and lock discounts
+            updateProgressAndDiscounts(clientData.current_points);
 
             // Confetti if milestone reached
             if (clientData.current_points >= clientData.points_target) startConfetti();
@@ -1143,7 +1238,7 @@
                     }, payload => {
                         clientData = payload.new;
                         localStorage.setItem('ivad_loyalty_card', JSON.stringify(clientData));
-                        document.getElementById('card-points-text').textContent = `${clientData.current_points} / ${clientData.points_target} PTS`;
+                        updateProgressAndDiscounts(clientData.current_points);
                         if (clientData.current_points >= clientData.points_target) startConfetti();
                         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                         fetchHistory(clientData.id);

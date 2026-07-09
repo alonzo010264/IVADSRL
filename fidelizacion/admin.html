@@ -934,6 +934,42 @@
                     </form>
                 </div>
 
+                <!-- Registrar Venta Card -->
+                <div class="panel-card">
+                    <h2><i class="fas fa-receipt"></i> Registrar venta (Otorgar puntos)</h2>
+                    <div class="subtitle">Ingresa el monto de la compra y el número de factura para sumar puntos automáticamente (RD$ 500 = 3 puntos).</div>
+                    
+                    <form id="register-sale-form" onsubmit="registerSalePoints(event)">
+                        <div class="form-group">
+                            <label for="sale-client-id">Seleccionar cliente *</label>
+                            <select id="sale-client-id" onchange="calculatePointsPreview()" required style="padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.88rem; color: var(--text-dark); background-color: #ffffff; outline: none; transition: all 0.25s; width: 100%;">
+                                <option value="">Selecciona un cliente...</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="sale-invoice">Número de factura *</label>
+                                <input type="text" id="sale-invoice" placeholder="Ej. F-0001" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sale-amount">Monto total (RD$) *</label>
+                                <input type="number" id="sale-amount" placeholder="Ej. 1500" min="0" oninput="calculatePointsPreview()" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Puntos Preview -->
+                        <div id="points-preview-box" style="margin-top: 10px; margin-bottom: 20px; padding: 14px 18px; background-color: rgba(191, 166, 135, 0.08); border-left: 4px solid var(--accent-gold); border-radius: 6px; font-size: 0.82rem; display: none;">
+                            <span style="color: var(--text-dark); font-weight: 700;">Puntos a otorgar: </span>
+                            <span id="points-preview-val" style="color: var(--accent-gold-dark); font-weight: 800; font-size: 1.1rem; margin-left: 4px;">+0 pts</span>
+                            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 5px;" id="points-formula-explanation">Fórmula: RD$ 0 / 500 * 3 = 0 puntos</div>
+                        </div>
+                        
+                        <button type="submit" class="btn-blue">
+                            <i class="fas fa-check"></i> Registrar y otorgar puntos
+                        </button>
+                    </form>
+                </div>
+
             </div>
 
             <!-- Card 3D Preview Column -->
@@ -1140,8 +1176,16 @@
                 </div>
             </div>
             
+            <!-- Transaction History Inside Modal -->
+            <div style="margin-top: 24px; text-align: left;">
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 12px;"><i class="fas fa-history" style="color: var(--accent-gold); margin-right: 6px;"></i> Historial de Facturas</h4>
+                <div id="modal-transactions-container" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+                    <div style="font-size: 0.78rem; color: rgba(255,255,255,0.45); text-align: center; padding: 15px 0;">Cargando historial de compras...</div>
+                </div>
+            </div>
+
             <!-- Bottom Text -->
-            <div class="card-modal-footer">
+            <div class="card-modal-footer" style="margin-top: 20px;">
                 Toca la tarjeta para voltearla · Haz clic fuera para cerrar
             </div>
         </div>
@@ -1204,7 +1248,7 @@
         }
 
         // Open Card detail modal
-        function openCardModal(cardId) {
+        async function openCardModal(cardId) {
             const card = allCards.find(c => c.id === cardId);
             if (!card) return;
 
@@ -1242,8 +1286,71 @@
             // Reset flipped state
             document.getElementById('modal-card-container').classList.remove('flipped');
 
+            // Load transactions history log inside the modal
+            await loadModalTransactions(cardId);
+
             // Show Modal
             document.getElementById('card-modal').style.display = 'flex';
+        }
+
+        // Load card transactions for detail view
+        async function loadModalTransactions(cardId) {
+            const container = document.getElementById('modal-transactions-container');
+            container.innerHTML = '<div style="font-size: 0.78rem; color: rgba(255,255,255,0.45); text-align: center; padding: 15px 0;">Cargando historial de compras...</div>';
+            
+            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('loyalty_transactions')
+                        .select('*')
+                        .eq('card_id', cardId)
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+                    renderModalTransactions(data, container);
+                } catch (err) {
+                    console.error('Error fetching modal transactions:', err);
+                    container.innerHTML = '<div style="font-size: 0.78rem; color: #f87171; text-align: center; padding: 15px 0;">Error al cargar historial.</div>';
+                }
+            } else {
+                // Mock history for simulation
+                const storedTxs = localStorage.getItem(`ivad_txs_simulated_${cardId}`);
+                const txs = storedTxs ? JSON.parse(storedTxs) : [];
+                renderModalTransactions(txs, container);
+            }
+        }
+
+        function renderModalTransactions(txs, container) {
+            if (!txs || txs.length === 0) {
+                container.innerHTML = '<div style="font-size: 0.78rem; color: rgba(255,255,255,0.4); text-align: center; padding: 15px 0;">No se registran compras todavía.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            txs.forEach(tx => {
+                const date = new Date(tx.created_at).toLocaleDateString('es-DO', {
+                    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                const inv = tx.invoice_number ? `Factura ${tx.invoice_number}` : 'Registro manual';
+                const div = document.createElement('div');
+                div.style.background = 'rgba(255, 255, 255, 0.03)';
+                div.style.border = '1px solid rgba(255, 255, 255, 0.08)';
+                div.style.borderRadius = '8px';
+                div.style.padding = '10px 12px';
+                div.style.display = 'flex';
+                div.style.justifyContent = 'space-between';
+                div.style.alignItems = 'center';
+                div.style.fontSize = '0.78rem';
+                
+                div.innerHTML = `
+                    <div>
+                        <div style="font-weight: 700; color: #fff; margin-bottom: 2px;">${inv}</div>
+                        <div style="color: rgba(255,255,255,0.45); font-size: 0.7rem;">${date} · RD$ ${Number(tx.sale_amount).toLocaleString('es-DO')}</div>
+                    </div>
+                    <div style="color: var(--accent-gold); font-weight: 800;">+${tx.points_added} pts</div>
+                `;
+                container.appendChild(div);
+            });
         }
 
         // Close Card detail modal
@@ -1316,8 +1423,6 @@
 
         // Load clients from Supabase
         async function loadClients() {
-            const container = document.getElementById('saved-cards-container');
-            
             if (typeof supabaseClient !== 'undefined' && supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient
@@ -1335,6 +1440,7 @@
                     isSimulationMode = false;
                     allCards = data || [];
                     renderClientsCards(allCards);
+                    populateClientSelect(allCards);
                 } catch (err) {
                     console.error('Error loading cards, falling back to local simulation:', err);
                     isSimulationMode = true;
@@ -1361,7 +1467,7 @@
                         client_email: 'alonzo@correo.com', 
                         client_phone: '809-241-6555', 
                         current_points: 0, 
-                        points_target: 10, 
+                        points_target: 50, 
                         temp_password: 'pwd-alonzo', 
                         created_at: new Date('2026-07-01').getTime()
                     }
@@ -1369,6 +1475,7 @@
                 localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
             }
             renderClientsCards(allCards);
+            populateClientSelect(allCards);
 
             // Append warning notice
             const container = document.getElementById('saved-cards-container');
@@ -1389,10 +1496,23 @@
             notice.innerHTML = `
                 <i class="fas fa-exclamation-triangle" style="font-size: 1.1rem; color: #ca8a04;"></i>
                 <span><strong>Modo de Simulación Activo:</strong> Base de datos de Supabase no conectada o tablas no creadas en el SQL Editor. 
-                Ejecuta el script SQL del archivo <code>db.sql</code> en tu proyecto de Supabase para activar el modo en vivo. 
+                Ejecuta el script SQL del archivo <code>loyalty_schema.sql</code> en tu proyecto de Supabase para activar el modo en vivo. 
                 Los cambios actuales se guardarán temporalmente en tu navegador.</span>
             `;
             container.appendChild(notice);
+        }
+
+        // Populate client dropdown select list
+        function populateClientSelect(cards) {
+            const select = document.getElementById('sale-client-id');
+            select.innerHTML = '<option value="">Selecciona un cliente...</option>';
+            
+            cards.forEach(card => {
+                const opt = document.createElement('option');
+                opt.value = card.id;
+                opt.textContent = `${card.client_name} (${card.card_code})`;
+                select.appendChild(opt);
+            });
         }
 
         // Render Clients Cards Grid
@@ -1425,14 +1545,14 @@
                     </div>
                     
                     <div class="pts-adjust-box">
-                        <button class="btn-adjust btn-adjust-minus" onclick="adjustPoints('${card.id}', -1)" title="Restar punto">
+                        <button class="btn-adjust btn-adjust-minus" onclick="adjustPointsDirectly('${card.id}', -1)" title="Restar punto">
                             <i class="fas fa-minus"></i>
                         </button>
                         <div class="pts-adjust-display">
                             <strong id="pts-count-${card.id}">${card.current_points}</strong>
                             <span>Puntos</span>
                         </div>
-                        <button class="btn-adjust btn-adjust-plus" onclick="adjustPoints('${card.id}', 1)" title="Sumar punto">
+                        <button class="btn-adjust btn-adjust-plus" onclick="adjustPointsDirectly('${card.id}', 1)" title="Sumar punto">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
@@ -1445,13 +1565,110 @@
             });
         }
 
-        // Adjust points +/- 1 directly
-        async function adjustPoints(cardId, amount) {
+        // Adjust points preview calculation
+        function calculatePointsPreview() {
+            const amountInput = document.getElementById('sale-amount');
+            const amount = parseFloat(amountInput.value) || 0;
+            const points = Math.floor(amount / 500) * 3;
+            
+            const previewBox = document.getElementById('points-preview-box');
+            const previewVal = document.getElementById('points-preview-val');
+            const previewExpl = document.getElementById('points-formula-explanation');
+            
+            if (amount >= 500) {
+                previewBox.style.display = 'block';
+                previewVal.textContent = `+${points} pts`;
+                previewExpl.textContent = `Fórmula: RD$ ${amount.toLocaleString('es-DO')} ÷ 500 × 3 = ${points} puntos`;
+            } else if (amount > 0) {
+                previewBox.style.display = 'block';
+                previewVal.textContent = `+0 pts`;
+                previewExpl.textContent = `El monto mínimo para acumular puntos es RD$ 500.`;
+            } else {
+                previewBox.style.display = 'none';
+            }
+        }
+
+        // Register sale invoice and award points
+        async function registerSalePoints(e) {
+            e.preventDefault();
+            const cardId = document.getElementById('sale-client-id').value;
+            const invoice = document.getElementById('sale-invoice').value.trim();
+            const amount = parseFloat(document.getElementById('sale-amount').value) || 0;
+            
+            const card = allCards.find(c => c.id === cardId);
+            if (!card) { alert('Cliente no encontrado.'); return; }
+
+            const pointsEarned = Math.floor(amount / 500) * 3;
+            if (pointsEarned <= 0 && amount < 500) {
+                alert('El monto es insuficiente para otorgar puntos (mínimo RD$ 500).');
+                return;
+            }
+
+            const newPoints = card.current_points + pointsEarned;
+
+            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+                try {
+                    // Update card points
+                    const { error: cardErr } = await supabaseClient
+                        .from('loyalty_cards')
+                        .update({ current_points: newPoints })
+                        .eq('id', cardId);
+
+                    if (cardErr) throw cardErr;
+
+                    // Insert transaction record
+                    const { error: txErr } = await supabaseClient
+                        .from('loyalty_transactions')
+                        .insert([{
+                            card_id: cardId,
+                            sale_amount: amount,
+                            points_added: pointsEarned,
+                            invoice_number: invoice,
+                            notes: `Venta registrada con factura ${invoice}`
+                        }]);
+
+                    if (txErr) throw txErr;
+
+                    alert(`¡Puntos otorgados con éxito! +${pointsEarned} puntos a la cuenta de ${card.client_name}`);
+                    
+                    // Reset sale form
+                    document.getElementById('register-sale-form').reset();
+                    document.getElementById('points-preview-box').style.display = 'none';
+                    
+                    loadClients();
+                } catch (err) {
+                    alert('Error de base de datos: ' + err.message);
+                }
+            } else {
+                // Mock local simulation transaction
+                card.current_points = newPoints;
+                localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+
+                // Save mock transaction history for modal preview
+                const storedTxs = localStorage.getItem(`ivad_txs_simulated_${cardId}`);
+                const txs = storedTxs ? JSON.parse(storedTxs) : [];
+                txs.unshift({
+                    created_at: new Date().toISOString(),
+                    sale_amount: amount,
+                    points_added: pointsEarned,
+                    invoice_number: invoice,
+                    notes: `Venta registrada con factura ${invoice}`
+                });
+                localStorage.setItem(`ivad_txs_simulated_${cardId}`, JSON.stringify(txs));
+
+                alert(`[Simulación] Puntos otorgados con éxito: +${pointsEarned} pts`);
+                document.getElementById('register-sale-form').reset();
+                document.getElementById('points-preview-box').style.display = 'none';
+                loadSimulationCards();
+            }
+        }
+
+        // Adjust points +/- 1 directly (manual override)
+        async function adjustPointsDirectly(cardId, amount) {
             const card = allCards.find(c => c.id === cardId);
             if (!card) return;
 
-            const newPoints = Math.max(0, Math.min(card.points_target, card.current_points + amount));
-            if (newPoints === card.current_points) return; // No change
+            const newPoints = Math.max(0, card.current_points + amount);
 
             if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
                 try {
@@ -1468,15 +1685,14 @@
                             .from('loyalty_transactions')
                             .insert([{
                                 card_id: cardId,
-                                sale_amount: amount >= 1 ? 1000 : 0, // simple dummy amount
+                                sale_amount: 0,
                                 points_added: amount,
-                                notes: amount >= 1 ? 'Punto sumado desde panel' : 'Punto restado desde panel'
+                                notes: amount >= 1 ? 'Ajuste manual sumado' : 'Ajuste manual restado'
                             }]);
 
                         card.current_points = newPoints;
                         document.getElementById(`pts-count-${cardId}`).textContent = newPoints;
                         
-                        // Check if loaded in preview and update
                         const previewCodeText = document.getElementById('prev-card-code').textContent;
                         if (previewCodeText.includes(card.card_code.replace(/-/g, ' '))) {
                             viewClientCardInPreview(cardId);
@@ -1491,6 +1707,17 @@
                 localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
                 document.getElementById(`pts-count-${cardId}`).textContent = newPoints;
                 
+                // Save mock transaction history for modal preview
+                const storedTxs = localStorage.getItem(`ivad_txs_simulated_${cardId}`);
+                const txs = storedTxs ? JSON.parse(storedTxs) : [];
+                txs.unshift({
+                    created_at: new Date().toISOString(),
+                    sale_amount: 0,
+                    points_added: amount,
+                    notes: amount >= 1 ? 'Ajuste manual sumado' : 'Ajuste manual restado'
+                });
+                localStorage.setItem(`ivad_txs_simulated_${cardId}`, JSON.stringify(txs));
+
                 const previewCodeText = document.getElementById('prev-card-code').textContent;
                 if (previewCodeText.includes(card.card_code.replace(/-/g, ' '))) {
                     viewClientCardInPreview(cardId);
@@ -1564,7 +1791,8 @@
                                 client_name: name,
                                 client_email: email,
                                 card_code: randomCode,
-                                temp_password: randomPass
+                                temp_password: randomPass,
+                                card_id: data.id
                             })
                         }).then(res => {
                             if (!res.ok) console.warn('Error dispatching credentials email');
@@ -1596,12 +1824,23 @@
                     client_email: email,
                     client_phone: phone,
                     current_points: initPoints,
-                    points_target: 10,
+                    points_target: 50,
                     temp_password: randomPass,
                     created_at: Date.now()
                 };
                 allCards.unshift(mockNewCard);
                 localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+
+                // Save mock initial transaction if points > 0
+                if (initPoints > 0) {
+                    localStorage.setItem(`ivad_txs_simulated_${mockNewCard.id}`, JSON.stringify([{
+                        created_at: new Date().toISOString(),
+                        sale_amount: 0,
+                        points_added: initPoints,
+                        invoice_number: null,
+                        notes: 'Saldo de puntos inicial'
+                    }]));
+                }
 
                 // Show Modal
                 document.getElementById('m-code').textContent = randomCode;
@@ -1638,6 +1877,7 @@
             } else {
                 allCards = allCards.filter(c => c.id !== cardId);
                 localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+                localStorage.removeItem(`ivad_txs_simulated_${cardId}`);
                 loadSimulationCards();
             }
         }
