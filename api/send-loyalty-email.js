@@ -1,5 +1,11 @@
 // Vercel Serverless Function to send Loyalty Credentials using Resend API
+// AND save credentials to Supabase loyalty_credentials table
 // Endpoint: /api/send-loyalty-email
+
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL  = process.env.SUPABASE_URL  || "https://rbtdahmhaksdvupsmkma.supabase.co";
+const SUPABASE_KEY  = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || "";
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -19,13 +25,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { client_name, client_email, card_code, temp_password } = req.body;
+  const { client_name, client_email, card_code, temp_password, card_id } = req.body;
 
   if (!client_name || !client_email || !card_code || !temp_password) {
     return res.status(400).json({ error: 'Missing required parameters' });
   }
 
   const resendApiKey = process.env.RESEND_API_KEY || "re_ENozXFAk_4NkvyYsRjcRHE3CCRFQtJjma";
+
 
   const host = req.headers.host || 'ivadsrl.com';
   const loginUrl = `https://${host}/fidelizacion/index.html`;
@@ -173,7 +180,39 @@ export default async function handler(req, res) {
     </html>
   `;
 
+  // ─── Guardar credenciales en Supabase ──────────────────────────────────
+  let supabaseResult = null;
   try {
+    if (SUPABASE_URL && SUPABASE_KEY) {
+      const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      // Upsert: si el correo ya existe, actualiza la clave
+      const { data, error } = await sb
+        .from('loyalty_credentials')
+        .upsert({
+          card_id:      card_id || null,
+          client_email: client_email,
+          temp_password: temp_password,
+          email_sent:   false           // se actualizará a true si Resend responde OK
+        }, { onConflict: 'client_email' })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase upsert error:', error);
+      } else {
+        supabaseResult = data;
+        console.log('Credenciales guardadas en Supabase:', data.id);
+      }
+    }
+  } catch (sbErr) {
+    console.error('Supabase connection error:', sbErr);
+    // No bloqueamos el envío de correo si Supabase falla
+  }
+
+  // ─── Enviar correo con Resend ───────────────────────────────────────────
+  try {
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -194,7 +233,19 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data });
     }
 
+    // Marcar email como enviado en Supabase
+    if (supabaseResult && SUPABASE_KEY) {
+      try {
+        const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+        await sb
+          .from('loyalty_credentials')
+          .update({ email_sent: true, email_sent_at: new Date().toISOString() })
+          .eq('id', supabaseResult.id);
+      } catch (_) {}
+    }
+
     return res.status(200).json({ success: true, data });
+
   } catch (error) {
     console.error('Exception sending loyalty credentials email:', error);
     return res.status(500).json({ error: error.message });
