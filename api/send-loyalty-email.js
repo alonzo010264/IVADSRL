@@ -181,7 +181,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${resendApiKey}`
       },
       body: JSON.stringify({
-        from: 'Fidelizacion IVAD <facturacion@ivadsrl.com>',
+        from: 'Fidelizacion IVAD <fidelizacion@ivadsrl.com>',
         to: [client_email],
         subject: `Tu Tarjeta de Fidelizacion Digital IVAD - ${card_code}`,
         html: htmlContent
