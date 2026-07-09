@@ -1172,6 +1172,11 @@
 
         // ─── Init Page ───────────────────────────────────────────────
         async function initPage() {
+            if (localStorage.getItem('ivad_loyalty_card')?.includes('IVAD-AUGGX')) {
+                localStorage.removeItem('ivad_loyalty_card');
+                window.location.href = 'index.html';
+                return;
+            }
             const stored = localStorage.getItem('ivad_loyalty_card');
             if (!stored) { window.location.href = 'index.html'; return; }
 

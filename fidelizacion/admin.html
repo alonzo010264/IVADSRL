@@ -707,6 +707,10 @@
     let businessSettings = { name:'IVAD HOME Y GOODS', slogan:'Est. 1996', phone:'809-241-6555', web:'www.ivadsrl.com', address:'Ave. 27 de febrero' };
 
     window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('ivad_loyalty_cards_simulated')?.includes('IVAD-AUGGX')) {
+            localStorage.removeItem('ivad_loyalty_cards_simulated');
+            localStorage.removeItem('ivad_loyalty_card');
+        }
         if (localStorage.getItem('ivad_loyalty_admin') !== 'true') { window.location.href = 'index.html'; return; }
         const storedBiz = localStorage.getItem('ivad_loyalty_biz_settings');
         if (storedBiz) businessSettings = JSON.parse(storedBiz);
@@ -802,7 +806,7 @@
 
     function loadSimulationCards() {
         const stored = localStorage.getItem('ivad_loyalty_cards_simulated');
-        allCards = stored ? JSON.parse(stored) : [{ id:'mock-uuid-alonzo', card_code:'IVAD-AUGGX', client_name:'Alonzo', client_email:'alonzo@correo.com', client_phone:'809-241-6555', client_cedula:'001-0000000-0', current_points:50, points_target:50, temp_password:'pwd-alonzo', created_at: new Date('2026-07-01').getTime() }];
+        allCards = stored ? JSON.parse(stored) : [{ id:'mock-uuid-alonzo', card_code:'IVAD-991234567890', client_name:'Alonzo', client_email:'alonzo@correo.com', client_phone:'809-241-6555', client_cedula:'001-0000000-0', current_points:50, points_target:50, temp_password:'pwd-alonzo', created_at: new Date('2026-07-01').getTime() }];
         if (!stored) localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
         renderDashboardStats(allCards);
         renderClientsCards(allCards);
@@ -967,7 +971,7 @@
         const phone = document.getElementById('client-phone').value.trim();
         const cedula = document.getElementById('client-cedula').value.trim();
         const initPoints = parseInt(document.getElementById('client-init-points').value) || 0;
-        const randomCode = 'IVAD-' + Math.floor(10000000 + Math.random() * 90000000);
+        const randomCode = 'IVAD-99' + Math.floor(1000000000 + Math.random() * 9000000000);
         const randomPass = Math.random().toString(36).substring(2,8);
         const btn = e.target.querySelector('button[type=submit]');
         btn.disabled = true;
