@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo — IVAD Fidelización</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-body: #f4f5f7;
+            --sidebar-bg: #0c151e;
+            --sidebar-width: 260px;
+            --accent-gold: #bfa687;
+            --accent-gold-dark: #a8906f;
+            --text-dark: #121417;
+            --text-muted: #7f8c8d;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --btn-dark: #1a2530;
+            --btn-dark-hover: #0f1a24;
+            --success: #16a34a;
+            --danger: #dc2626;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg-body); color: var(--text-dark); min-height: 100vh; display: flex; }
+
+        /* SIDEBAR */
+        .sidebar { width: var(--sidebar-width); min-height: 100vh; background: var(--sidebar-bg); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 200; box-shadow: 4px 0 20px rgba(0,0,0,0.2); transition: transform 0.3s ease; }
+        .sidebar-brand { padding: 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .sidebar-brand img { height: 42px; width: 42px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.05); padding: 4px; }
+        .sidebar-brand-text h1 { font-size: 0.92rem; font-weight: 800; letter-spacing: 1.5px; color: #fff; }
+        .sidebar-brand-text p { font-size: 0.6rem; color: var(--accent-gold); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; }
+        .sidebar-role-badge { margin: 14px 20px; background: rgba(191,166,135,0.12); border: 1px solid rgba(191,166,135,0.3); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar-nav { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 3px; }
+        .nav-section-label { font-size: 0.58rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 12px 8px 4px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 0.82rem; font-weight: 600; transition: all 0.2s; border: none; background: none; width: 100%; text-align: left; letter-spacing: 0.3px; }
+        .nav-item i { width: 18px; text-align: center; font-size: 0.88rem; flex-shrink: 0; }
+        .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+        .nav-item.active { background: rgba(191,166,135,0.15); color: var(--accent-gold); border: 1px solid rgba(191,166,135,0.2); }
+        .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+        .btn-logout { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.1); background: none; border-radius: 8px; color: rgba(255,255,255,0.45); font-family: inherit; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; }
+        .btn-logout:hover { border-color: var(--danger); color: #f87171; }
+
+        /* MAIN */
+        .main-content { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+        .topbar { background: #fff; border-bottom: 1px solid var(--border-color); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .topbar-title { font-size: 1.05rem; font-weight: 800; color: var(--text-dark); }
+        .topbar-right { display: flex; align-items: center; gap: 14px; }
+        .cards-badge { background: rgba(191,166,135,0.1); border: 1px solid rgba(191,166,135,0.3); color: var(--accent-gold-dark); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .hamburger { display: none; border: none; background: none; cursor: pointer; font-size: 1.2rem; color: var(--text-dark); padding: 4px; }
+
+        /* SECTIONS */
+        .page-section { display: none; padding: 32px; flex-direction: column; gap: 28px; }
+        .page-section.active { display: flex; animation: sfade 0.25s ease; }
+        @keyframes sfade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .section-header h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
+        .section-header p { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* PANEL CARDS */
+        .panel-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .panel-card h3 { font-size: 1rem; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+        .panel-card h3 i { color: var(--accent-gold); }
+        .panel-card .card-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 22px; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+        .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+
+        /* FORMS */
+        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .form-group label { font-size: 0.72rem; font-weight: 700; color: var(--text-dark); letter-spacing: 0.5px; text-transform: uppercase; }
+        .form-group input, .form-group select { padding: 11px 13px; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.88rem; color: var(--text-dark); background: #fff; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent-gold); box-shadow: 0 0 0 3px rgba(191,166,135,0.12); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .btn-primary { width: 100%; padding: 13px; background: var(--btn-dark); color: #fff; border: none; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 0.84rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; margin-top: 8px; }
+        .btn-primary:hover { background: var(--btn-dark-hover); }
+        .btn-secondary { padding: 10px 18px; background: transparent; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.8rem; font-weight: 700; color: var(--text-dark); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .btn-secondary:hover { border-color: var(--accent-gold); color: var(--accent-gold-dark); }
+        .btn-gold { background: linear-gradient(135deg,#bfa687,#a8906f); color: #fff; border: none; }
+        .btn-gold:hover { background: linear-gradient(135deg,#a8906f,#956f4f); }
+
+        /* POINTS PREVIEW */
+        .pts-preview { display: none; margin: 10px 0 16px; padding: 14px 16px; background: rgba(191,166,135,0.08); border-left: 4px solid var(--accent-gold); border-radius: 6px; }
+        .pts-preview .pv { font-size: 1.2rem; font-weight: 800; color: var(--accent-gold-dark); }
+        .pts-preview .pl { font-size: 0.78rem; font-weight: 700; color: var(--text-dark); }
+        .pts-preview .pf { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+
+        /* STAT CARDS */
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .stat-icon { width: 42px; height: 42px; border-radius: 10px; background: rgba(191,166,135,0.12); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--accent-gold-dark); margin-bottom: 10px; }
+        .stat-value { font-size: 2rem; font-weight: 800; color: var(--text-dark); line-height: 1; }
+        .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+        /* CLIENT GRID */
+        .clients-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 20px; }
+        .client-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); transition: box-shadow 0.2s; }
+        .client-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+        .client-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .client-card-top h4 { font-size: 1rem; font-weight: 700; color: var(--btn-dark); }
+        .btn-trash { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 4px; transition: color 0.2s; }
+        .btn-trash:hover { color: var(--danger); }
+        .client-meta { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 14px; display: flex; flex-direction: column; gap: 3px; }
+        .client-meta .code { font-family: monospace; font-weight: 700; font-size: 0.8rem; color: var(--text-dark); }
+        .pts-adjust-box { background: #f7f6f4; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .pts-display { text-align: center; }
+        .pts-display strong { font-size: 1.5rem; font-weight: 800; color: var(--accent-gold-dark); line-height: 1; display: block; }
+        .pts-display span { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.5px; color: var(--text-muted); text-transform: uppercase; }
+        .btn-adj { width: 36px; height: 36px; border-radius: 50%; background: #fff; border: 1.5px solid var(--border-color); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.2s; color: var(--text-muted); }
+        .btn-adj-plus { border-color: var(--accent-gold); color: var(--accent-gold-dark); }
+        .btn-adj-plus:hover { background: rgba(191,166,135,0.1); transform: scale(1.05); }
+        .btn-adj-minus:hover { border-color: var(--danger); color: var(--danger); background: #fff5f5; }
+        .btn-view { width: 100%; padding: 9px; border: 1.5px solid var(--border-color); border-radius: 8px; background: #fff; font-family: inherit; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: all 0.2s; }
+        .btn-view:hover { border-color: var(--accent-gold); color: var(--accent-gold-dark); }
+
+        /* SEARCH */
+        .search-wrap { position: relative; }
+        .search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.88rem; pointer-events: none; }
+        .search-wrap input { padding-left: 36px !important; }
+
+        /* 3D CARD */
+        .card-container { perspective: 1200px; width: 340px; height: 215px; flex-shrink: 0; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(.4,0,.2,1); transform-style: preserve-3d; cursor: pointer; }
+        .card-container.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 16px; padding: 22px; box-shadow: 0 12px 40px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.08); color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
+        .flip-card-front { background: linear-gradient(135deg,#12273d 0%,#091624 100%); transform: rotateY(0deg); }
+        .flip-card-back { background: linear-gradient(135deg,#091624 0%,#12273d 100%); transform: rotateY(180deg); padding: 18px 22px; }
+        .card-front-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .card-front-logo h3 { font-size: 1.3rem !important; font-weight: 900 !important; color: var(--accent-gold) !important; letter-spacing: 2px !important; text-transform: uppercase !important; }
+        .card-front-logo p { font-size: 0.55rem !important; color: rgba(191,166,135,0.65) !important; letter-spacing: 2.5px !important; text-transform: uppercase !important; margin-top: 1px !important; font-weight: 700 !important; }
+        .card-front-number { font-family: monospace; font-size: 1rem; letter-spacing: 2.5px; margin-bottom: 10px; }
+        .card-front-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+        .front-label { font-size: 0.48rem; color: #7f8c8d; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
+        .front-val { font-size: 0.8rem; font-weight: 700; }
+        .card-chip { margin: 12px 0; }
+        .card-back-inner { display: flex; height: 100%; align-items: center; gap: 18px; }
+        .back-qr-wrap { display: flex; flex-direction: column; align-items: center; background: #fff; padding: 6px; border-radius: 8px; width: 90px; flex-shrink: 0; }
+        .back-qr-wrap img { width: 72px; height: 72px; display: block; }
+        .back-qr-wrap span { font-size: 0.5rem; font-weight: 800; color: var(--accent-gold-dark); letter-spacing: 1px; margin-top: 4px; }
+        .back-details { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 7px; font-size: 0.7rem; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 16px; }
+        .back-details h4 { color: var(--accent-gold); font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 2px; }
+        .back-details div { display: flex; align-items: center; gap: 7px; color: rgba(255,255,255,0.8); }
+        .back-details div i { color: var(--accent-gold); width: 11px; text-align: center; }
+        .card-back-footer { font-size: 0.5rem; color: #7f8c8d; text-align: center; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 5px; }
+
+        /* REWARDS CONFIG */
+        .reward-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+        .reward-row:last-child { border-bottom: none; }
+        .reward-info { display: flex; align-items: center; gap: 14px; }
+        .reward-icon-box { width: 42px; height: 42px; border-radius: 10px; background: rgba(191,166,135,0.1); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--accent-gold-dark); }
+        .reward-name { font-size: 0.9rem; font-weight: 700; color: var(--text-dark); }
+        .reward-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+        .reward-pts-ctrl { display: flex; align-items: center; gap: 8px; }
+        .reward-pts-ctrl input { width: 80px; padding: 8px 10px; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.85rem; font-weight: 700; color: var(--accent-gold-dark); text-align: center; outline: none; }
+        .reward-pts-ctrl input:focus { border-color: var(--accent-gold); }
+        .reward-pts-ctrl span { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+
+        /* MODALS */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 500; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: #fff; border-radius: 16px; max-width: 460px; width: 100%; padding: 32px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: mpop 0.25s ease; }
+        @keyframes mpop { from { opacity:0; transform:scale(0.93); } to { opacity:1; transform:scale(1); } }
+        .modal-box .modal-icon { font-size: 3rem; margin-bottom: 12px; }
+        .modal-box h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+        .modal-box p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+        .success-green { color: #16a34a; }
+        .info-notice { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 14px 16px; font-size: 0.82rem; color: #166534; margin-bottom: 18px; text-align: left; display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+        .info-notice i { margin-top: 2px; font-size: 0.9rem; flex-shrink: 0; }
+        .card-modal-box { background: transparent; max-width: 400px; width: 100%; display: flex; flex-direction: column; gap: 16px; animation: mpop 0.25s ease; }
+        .card-modal-header { text-align: left; }
+        .card-modal-header h3 { font-size: 1.4rem; color: #fff; font-weight: 800; margin-bottom: 3px; }
+        .card-modal-header p { font-size: 0.84rem; color: var(--accent-gold); font-weight: 600; }
+        .card-modal-footer { font-size: 0.68rem; color: rgba(255,255,255,0.35); text-align: center; margin-top: 8px; }
+        .modal-txn-list { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .txn-row { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; }
+        .txn-title { font-weight: 700; color: #fff; display: block; margin-bottom: 2px; }
+        .txn-date { font-size: 0.67rem; color: rgba(255,255,255,0.4); }
+        .txn-pts { font-weight: 800; color: var(--accent-gold); font-size: 0.88rem; }
+
+        /* ALERTS */
+        .alert-warn { background: #fef9c3; border: 1px solid #fef08a; color: #854d0e; padding: 14px 18px; border-radius: 10px; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 12px; line-height: 1.4; }
+        .alert-warn i { font-size: 1.1rem; color: #ca8a04; flex-shrink: 0; }
+
+        /* BOTTOM NAV */
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--sidebar-bg); border-top: 1px solid rgba(255,255,255,0.08); z-index: 150; padding: 8px 0; }
+        .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
+        .bnav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 12px; border-radius: 8px; background: none; border: none; color: rgba(255,255,255,0.4); font-family: inherit; transition: all 0.2s; }
+        .bnav-item i { font-size: 1.1rem; }
+        .bnav-item span { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.5px; }
+        .bnav-item.active { color: var(--accent-gold); }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 190; }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .main-content { margin-left: 0; }
+            .bottom-nav { display: block; }
+            .hamburger { display: block; }
+            .page-section { padding: 20px 16px 90px; }
+            .two-col { grid-template-columns: 1fr; }
+            .three-col { grid-template-columns: 1fr 1fr; }
+            .card-container { width: 100%; max-width: 340px; }
+        }
+        @media (max-width: 540px) {
+            .three-col { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .clients-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <img src="https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/logo_transparent.png" alt="IVAD">
+        <div class="sidebar-brand-text">
+            <h1>IVAD</h1>
+            <p>Panel Administrativo</p>
+        </div>
+    </div>
+    <div class="sidebar-role-badge">
+        <i class="fas fa-shield-alt"></i> Administrador
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">General</div>
+        <button class="nav-item active" data-section="dashboard" onclick="showSection('dashboard')">
+            <i class="fas fa-chart-bar"></i> Panel Principal
+        </button>
+        <button class="nav-item" data-section="crear-tarjeta" onclick="showSection('crear-tarjeta')">
+            <i class="fas fa-user-plus"></i> Registrar Socio
+        </button>
+        <div class="nav-section-label">Operaciones</div>
+        <button class="nav-item" data-section="registrar-venta" onclick="showSection('registrar-venta')">
+            <i class="fas fa-receipt"></i> Registrar Venta
+        </button>
+        <button class="nav-item" data-section="ver-clientes" onclick="showSection('ver-clientes')">
+            <i class="fas fa-users"></i> Ver Clientes
+        </button>
+        <div class="nav-section-label">Configuracion</div>
+        <button class="nav-item" data-section="configuracion" onclick="showSection('configuracion')">
+            <i class="fas fa-sliders-h"></i> Configuracion
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <button class="btn-logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Cerrar sesion
+        </button>
+    </div>
+</aside>
+
+<!-- Main -->
+<div class="main-content">
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <span class="topbar-title" id="topbar-title">Panel Principal</span>
+        </div>
+        <div class="topbar-right">
+            <div class="cards-badge">
+                <i class="fas fa-id-card"></i>
+                <span id="active-cards-count">0 tarjetas</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION: Dashboard -->
+    <section class="page-section active" id="section-dashboard">
+        <div class="section-header">
+            <h2>Panel Principal</h2>
+            <p>Resumen del programa de fidelizacion IVAD.</p>
+        </div>
+        <div class="three-col">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-value" id="stat-total-clients">0</div>
+                <div class="stat-label">Clientes Registrados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                <div class="stat-value" id="stat-total-points">0</div>
+                <div class="stat-label">Puntos Emitidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-receipt"></i></div>
+                <div class="stat-value" id="stat-total-sales">RD$ 0</div>
+                <div class="stat-label">Ventas Registradas</div>
+            </div>
+        </div>
+        <div class="panel-card">
+            <h3><i class="fas fa-clock"></i> Ultimos Clientes Registrados</h3>
+            <div class="card-sub">Los 5 clientes mas recientes del programa.</div>
+            <div id="recent-clients-list" style="display:flex;flex-direction:column;gap:10px;">
+                <div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px 0;">Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Historial de Transacciones Recientes (Visible para Admin y Gerencia) -->
+        <div class="panel-card" id="recent-transactions-card" style="display: none; margin-top: 24px;">
+            <h3><i class="fas fa-history"></i> Flujo de Puntos en Tiempo Real</h3>
+            <div class="card-sub">Historial de las últimas ventas y puntos emitidos en vivo.</div>
+            <div id="recent-transactions-list" style="display:flex;flex-direction:column;gap:10px; margin-top: 14px;">
+                <div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px 0;">Cargando transacciones...</div>
+            </div>
+        </div>
+        
+        <!-- Bloque de Solicitudes de Eliminación (Visible solo para administradores) -->
+        <div class="panel-card" id="deletion-requests-card" style="display: none; margin-top: 24px;">
+            <h3 style="color: #e74c3c;"><i class="fas fa-exclamation-triangle"></i> Solicitudes de Eliminación Pendientes</h3>
+            <div class="card-sub">Estas solicitudes fueron enviadas por cajeros para revocar el acceso de socios. Elige si aprobar o rechazar.</div>
+            <div id="deletion-requests-list" style="display:flex;flex-direction:column;gap:12px; margin-top: 14px;">
+                <div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px 0;">No hay solicitudes pendientes.</div>
+            </div>
+        </div>
+
+        <div id="sim-warning-container"></div>
+    </section>
+
+    <!-- SECTION: Crear Tarjeta -->
+    <section class="page-section" id="section-crear-tarjeta">
+        <div class="section-header">
+            <h2>Registrar Socio</h2>
+            <p>Completa los datos del nuevo socio. Las credenciales se enviarán automáticamente por correo.</p>
+        </div>
+        <div class="two-col">
+            <div class="panel-card">
+                <h3><i class="fas fa-user-plus"></i> Datos del Socio</h3>
+                <div class="card-sub">Todos los campos con * son obligatorios.</div>
+                <form id="create-card-form" onsubmit="createCard(event)">
+                    <div class="form-group">
+                        <label for="client-name">Nombre completo *</label>
+                        <input type="text" id="client-name" placeholder="Ej. Maria Torres" oninput="updateCardPreview()" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="client-cedula">Cedula / Identificacion *</label>
+                            <input type="text" id="client-cedula" placeholder="001-1234567-8" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="client-phone">Telefono</label>
+                            <input type="text" id="client-phone" placeholder="809-000-0000">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="client-email">Correo electronico * <span style="font-weight:400;color:var(--text-muted);text-transform:none;">(recibira sus credenciales)</span></label>
+                        <input type="email" id="client-email" placeholder="cliente@correo.com" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="client-since">Cliente desde</label>
+                            <input type="text" id="client-since" value="julio de 2026" oninput="updateCardPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label for="client-init-points">Puntos iniciales</label>
+                            <input type="number" id="client-init-points" value="0" min="0" max="100">
+                        </div>
+                    </div>
+                    <div class="info-notice">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <span>Las credenciales se enviaran al correo del cliente desde <strong>fidelizacion@ivadsrl.com</strong>. No se mostraran en pantalla por seguridad.</span>
+                    </div>
+                    <button type="submit" class="btn-primary btn-gold">
+                        <i class="fas fa-paper-plane"></i> Crear tarjeta y enviar credenciales
+                    </button>
+                </form>
+            </div>
+            <div class="panel-card" style="display:flex;flex-direction:column;align-items:center;gap:20px;">
+                <div style="width:100%;display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <h3 style="margin-bottom:2px;"><i class="fas fa-credit-card"></i> Vista Previa</h3>
+                        <div class="card-sub" style="margin-bottom:0;">Haz clic en la tarjeta para voltearla</div>
+                    </div>
+                    <button class="btn-secondary" onclick="toggleCardFlip()" style="padding:8px 14px;font-size:0.78rem;flex-shrink:0;">
+                        <i class="fas fa-sync-alt"></i> Voltear
+                    </button>
+                </div>
+                <div class="card-container" id="preview-card-container" onclick="toggleCardFlip()" style="width:100%;max-width:340px;">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="card-front-top">
+                                <div class="card-front-logo">
+                                    <h3 id="prev-biz-name-label">IVAD</h3>
+                                    <p id="prev-biz-slogan-label">HOME Y GOODS</p>
+                                </div>
+                                <div>
+                                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:var(--accent-gold);stroke-width:2.5;stroke-linecap:round;">
+                                        <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5"/>
+                                        <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6"/>
+                                        <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card-chip">
+                                <svg viewBox="0 0 100 80" style="width:38px;height:28px;display:block;border-radius:4px;">
+                                    <defs><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5d382"/><stop offset="50%" stop-color="#d4af37"/><stop offset="100%" stop-color="#aa8010"/></linearGradient></defs>
+                                    <rect width="100" height="80" rx="10" fill="url(#cg)"/>
+                                    <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="25" y1="50" x2="25" y2="80" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="75" y1="0" x2="75" y2="30" stroke="#5d4308" stroke-width="2"/>
+                                    <line x1="75" y1="50" x2="75" y2="80" stroke="#5d4308" stroke-width="2"/>
+                                    <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="card-front-number" id="prev-card-code">IVAD 0000 0000 0000</div>
+                            <div class="card-front-bottom">
+                                <div>
+                                    <div class="front-label">Titular</div>
+                                    <div class="front-val" id="prev-card-holder">Nombre del cliente</div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div class="front-label">Desde</div>
+                                    <div class="front-val" id="prev-card-since">07/2026</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="card-back-inner">
+                                <div class="back-qr-wrap">
+                                    <img id="prev-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=IVAD-PREVIEW&color=12-14-17" alt="QR">
+                                    <span>ESCANEA</span>
+                                </div>
+                                <div class="back-details">
+                                    <h4 id="prev-back-biz-title">IVAD</h4>
+                                    <div><i class="fas fa-phone-alt"></i> <span id="prev-back-phone">809-241-6555</span></div>
+                                    <div><i class="fas fa-globe"></i> <span id="prev-back-web">www.ivadsrl.com</span></div>
+                                    <div><i class="fas fa-map-marker-alt"></i> <span id="prev-back-address">Ave. 27 de febrero</span></div>
+                                </div>
+                            </div>
+                            <div class="card-back-footer" id="prev-back-footer">Personal e intransferible - Est. 1996</div>
+                        </div>
+                    </div>
+                </div>
+                <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;"><i class="fas fa-hand-pointer" style="margin-right:4px;"></i>Clic en la tarjeta para voltearla · El diseño se actualiza en tiempo real</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: Registrar Venta -->
+    <section class="page-section" id="section-registrar-venta">
+        <div class="section-header">
+            <h2>Registrar Venta</h2>
+            <p>Busca al cliente por correo, cedula o codigo de tarjeta. Por cada RD$ 500 se otorgan 3 puntos.</p>
+        </div>
+        <div class="two-col">
+            <div class="panel-card">
+                <h3><i class="fas fa-search"></i> Buscar Cliente</h3>
+                <div class="card-sub">Escribe el correo, codigo IVAD-XXXXX o numero de cedula. Tambien puedes usar un escaner de codigos.</div>
+                <div class="form-group search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="client-search-input" placeholder="Buscar por correo, cedula o codigo..." oninput="searchClient(this.value)">
+                </div>
+                <div id="client-search-results" style="display:none;background:#f7f6f4;border-radius:10px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border-color);"></div>
+                <div id="selected-client-banner" style="display:none;background:rgba(191,166,135,0.08);border:1px solid rgba(191,166,135,0.3);border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+                    <div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Cliente seleccionado</div>
+                    <div style="font-size:1rem;font-weight:800;color:var(--btn-dark);" id="sel-name">-</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);" id="sel-code">-</div>
+                    <div style="font-size:0.8rem;font-weight:600;color:var(--accent-gold-dark);margin-top:4px;" id="sel-pts">-</div>
+                </div>
+                <form id="register-sale-form" onsubmit="registerSalePoints(event)">
+                    <input type="hidden" id="sale-client-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sale-invoice">Numero de factura *</label>
+                            <input type="text" id="sale-invoice" placeholder="Ej. F-0001" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sale-amount">Monto total (RD$) *</label>
+                            <input type="number" id="sale-amount" placeholder="Ej. 1500" min="0" oninput="calculatePointsPreview()" required>
+                        </div>
+                    </div>
+                    <div class="pts-preview" id="points-preview-box">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span class="pl">Puntos a otorgar:</span>
+                            <span class="pv" id="points-preview-val">+0 pts</span>
+                        </div>
+                        <div class="pf" id="points-formula"></div>
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Registrar y otorgar puntos
+                    </button>
+                </form>
+            </div>
+            <div class="panel-card">
+                <h3><i class="fas fa-qrcode"></i> Escanear Codigo QR</h3>
+                <div class="card-sub">El escaner detectara el codigo automaticamente cuando el campo de busqueda este activo.</div>
+                <div style="background:#f7f6f4;border-radius:12px;padding:24px;text-align:center;border:2px dashed var(--border-color);">
+                    <div style="font-size:3rem;color:var(--border-color);margin-bottom:12px;"><i class="fas fa-qrcode"></i></div>
+                    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px;">Activa el campo de busqueda y apunta el escaner al QR de la tarjeta del cliente.</p>
+                    <button class="btn-secondary" onclick="document.getElementById('client-search-input').focus(); document.getElementById('client-search-input').select();">
+                        <i class="fas fa-crosshairs"></i> Activar campo de busqueda
+                    </button>
+                </div>
+                <div style="margin-top:20px;">
+                    <h3 style="margin-bottom:8px;"><i class="fas fa-history"></i> Ultima venta registrada</h3>
+                    <div id="last-sale-info" style="font-size:0.82rem;color:var(--text-muted);">Ninguna venta registrada en esta sesion.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: Ver Clientes -->
+    <section class="page-section" id="section-ver-clientes">
+        <div class="section-header">
+            <h2>Ver Clientes</h2>
+            <p>Lista completa de clientes con tarjeta activa.</p>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+            <div class="form-group search-wrap" style="margin:0;flex:1;min-width:220px;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="clients-filter" placeholder="Filtrar por nombre, codigo, cedula o correo..." oninput="filterClients(this.value)">
+            </div>
+            <button class="btn-secondary" onclick="loadClients()">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+        </div>
+        <div class="clients-grid" id="saved-cards-container">
+            <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">Cargando tarjetas...</div>
+        </div>
+    </section>
+
+    <!-- SECTION: Configuracion -->
+    <section class="page-section" id="section-configuracion">
+        <div class="section-header">
+            <h2>Configuracion</h2>
+            <p>Personaliza los parametros del programa de fidelizacion.</p>
+        </div>
+        <div class="two-col">
+            <div class="panel-card">
+                <h3><i class="fas fa-gift"></i> Requisitos de Recompensas</h3>
+                <div class="card-sub">Define cuantos puntos necesita el cliente para desbloquear cada beneficio.</div>
+                <div class="reward-row">
+                    <div class="reward-info">
+                        <div class="reward-icon-box"><i class="fas fa-truck"></i></div>
+                        <div>
+                            <div class="reward-name">Envio Gratis</div>
+                            <div class="reward-desc">El cliente recibe envio sin costo</div>
+                        </div>
+                    </div>
+                    <div class="reward-pts-ctrl">
+                        <input type="number" id="cfg-pts-envio" value="20" min="1" max="500">
+                        <span>puntos</span>
+                    </div>
+                </div>
+                <div class="reward-row">
+                    <div class="reward-info">
+                        <div class="reward-icon-box"><i class="fas fa-tag"></i></div>
+                        <div>
+                            <div class="reward-name">10% OFF Vajilla</div>
+                            <div class="reward-desc">Descuento en vajillas y menaje</div>
+                        </div>
+                    </div>
+                    <div class="reward-pts-ctrl">
+                        <input type="number" id="cfg-pts-vajilla" value="30" min="1" max="500">
+                        <span>puntos</span>
+                    </div>
+                </div>
+                <div class="reward-row">
+                    <div class="reward-info">
+                        <div class="reward-icon-box"><i class="fas fa-coins"></i></div>
+                        <div>
+                            <div class="reward-name">RD$ 500 de Credito</div>
+                            <div class="reward-desc">Credito aplicable en proxima compra</div>
+                        </div>
+                    </div>
+                    <div class="reward-pts-ctrl">
+                        <input type="number" id="cfg-pts-credito" value="50" min="1" max="500">
+                        <span>puntos</span>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="saveRewardConfig()" style="margin-top:20px;">
+                    <i class="far fa-save"></i> Guardar configuracion
+                </button>
+            </div>
+            <div class="panel-card">
+                <h3><i class="fas fa-store"></i> Datos del Negocio</h3>
+                <div class="card-sub">Informacion que aparece en las tarjetas y correos.</div>
+                <form id="business-settings-form" onsubmit="saveBusinessSettings(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="biz-name">Nombre del negocio</label>
+                            <input type="text" id="biz-name" value="IVAD HOME Y GOODS" oninput="updateCardPreview()" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="biz-slogan">Eslogan / Ano</label>
+                            <input type="text" id="biz-slogan" value="Est. 1996" oninput="updateCardPreview()">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="biz-phone">Telefono</label>
+                            <input type="text" id="biz-phone" value="809-241-6555" oninput="updateCardPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label for="biz-web">Sitio web</label>
+                            <input type="text" id="biz-web" value="www.ivadsrl.com" oninput="updateCardPreview()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="biz-address">Direccion</label>
+                        <input type="text" id="biz-address" value="Ave. 27 de febrero" oninput="updateCardPreview()">
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="far fa-save"></i> Guardar datos
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sección de Gestión de Usuarios (Visible solo para administradores) -->
+        <div class="panel-card" id="user-management-card" style="display: none; margin-top: 24px;">
+            <h3><i class="fas fa-users-cog"></i> Gestión de Usuarios (Administrador)</h3>
+            <div class="card-sub">Crea, edita o elimina cuentas de administradores y cajeros del sistema.</div>
+            
+            <div class="two-col" style="margin-top: 20px; gap: 24px;">
+                <!-- Formulario para agregar usuario -->
+                <form id="add-user-form" onsubmit="addUser(event)">
+                    <h4 style="margin-bottom: 12px; font-size: 0.9rem; color: var(--accent-gold); text-transform: uppercase;">Agregar Nuevo Usuario</h4>
+                    <div class="form-group">
+                        <label for="new-username">Nombre de Usuario *</label>
+                        <input type="text" id="new-username" placeholder="Ej. Juan" required style="width:100%; padding:10px; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:6px; color:#fff;">
+                    </div>
+                    <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom: 15px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label for="new-password">Contraseña *</label>
+                            <input type="password" id="new-password" placeholder="Ej. 123456" required style="width:100%; padding:10px; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:6px; color:#fff;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label for="new-role">Rol *</label>
+                            <select id="new-role" required style="width:100%; padding:10px; background:#1f2228; border:1px solid var(--border-color); border-radius:6px; color:#fff;">
+                                <option value="cajero">Cajero</option>
+                                <option value="gerencia">Gerencia</option>
+                                <option value="administracion">Administración</option>
+                                <option value="contabilidad">Contabilidad</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="margin-top:10px;"><i class="fas fa-user-plus"></i> Crear Usuario</button>
+                </form>
+
+                <!-- Listado de usuarios -->
+                <div>
+                    <h4 style="margin-bottom: 12px; font-size: 0.9rem; color: var(--accent-gold); text-transform: uppercase;">Usuarios Activos</h4>
+                    <div id="users-list-container" style="display:flex; flex-direction:column; gap:10px; max-height:220px; overflow-y:auto; padding-right:8px;">
+                        <div style="color:var(--text-muted); font-size:0.8rem; text-align:center;">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+        <button class="bnav-item active" data-section="dashboard" onclick="showSection('dashboard')"><i class="fas fa-chart-bar"></i><span>Inicio</span></button>
+        <button class="bnav-item" data-section="crear-tarjeta" onclick="showSection('crear-tarjeta')"><i class="fas fa-user-plus"></i><span>Socio</span></button>
+        <button class="bnav-item" data-section="registrar-venta" onclick="showSection('registrar-venta')"><i class="fas fa-receipt"></i><span>Venta</span></button>
+        <button class="bnav-item" data-section="ver-clientes" onclick="showSection('ver-clientes')"><i class="fas fa-users"></i><span>Clientes</span></button>
+        <button class="bnav-item" data-section="configuracion" onclick="showSection('configuracion')"><i class="fas fa-cog"></i><span>Config</span></button>
+    </div>
+</nav>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="success-modal">
+    <div class="modal-box">
+        <div class="modal-icon success-green"><i class="fas fa-check-circle"></i></div>
+        <h3>Tarjeta Creada</h3>
+        <p>La tarjeta de fidelizacion ha sido generada correctamente.</p>
+        <div class="info-notice">
+            <i class="fas fa-envelope-circle-check"></i>
+            <span>Las credenciales de acceso fueron enviadas directamente al correo del cliente desde <strong>fidelizacion@ivadsrl.com</strong>. No se muestran en pantalla por seguridad del cliente.</span>
+        </div>
+        <button class="btn-primary" onclick="closeSuccessModal()">
+            <i class="fas fa-check"></i> Entendido
+        </button>
+    </div>
+</div>
+
+<!-- Card Detail Modal -->
+<div class="modal-overlay" id="card-modal" onclick="closeCardModal(event)">
+    <div class="card-modal-box" onclick="event.stopPropagation()">
+        <div class="card-modal-header">
+            <h3 id="modal-client-name">Cliente</h3>
+            <p id="modal-client-subtitle">IVAD-XXXXX - 0 puntos</p>
+        </div>
+        <div class="card-container" id="modal-card-container">
+            <div class="flip-card-inner" onclick="toggleModalCardFlip()">
+                <div class="flip-card-front">
+                    <div class="card-front-top">
+                        <div class="card-front-logo">
+                            <h3 id="modal-biz-name-label">IVAD</h3>
+                            <p id="modal-biz-slogan-label">HOME Y GOODS</p>
+                        </div>
+                        <div>
+                            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:var(--accent-gold);stroke-width:2.5;stroke-linecap:round;">
+                                <path d="M4 8.5c.7 1 1.1 2.2 1.1 3.5s-.4 2.5-1.1 3.5"/>
+                                <path d="M8 6c1.2 1.6 1.9 3.7 1.9 6s-.7 4.4-1.9 6"/>
+                                <path d="M12 3.5c1.8 2.4 2.9 5.3 2.9 8.5s-1.1 6.1-2.9 8.5"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-chip">
+                        <svg viewBox="0 0 100 80" style="width:38px;height:28px;display:block;border-radius:4px;">
+                            <defs><linearGradient id="cgm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5d382"/><stop offset="50%" stop-color="#d4af37"/><stop offset="100%" stop-color="#aa8010"/></linearGradient></defs>
+                            <rect width="100" height="80" rx="10" fill="url(#cgm)"/>
+                            <line x1="50" y1="0" x2="50" y2="80" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="0" y1="40" x2="100" y2="40" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="25" y1="0" x2="25" y2="30" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="25" y1="50" x2="25" y2="80" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="75" y1="0" x2="75" y2="30" stroke="#5d4308" stroke-width="2"/>
+                            <line x1="75" y1="50" x2="75" y2="80" stroke="#5d4308" stroke-width="2"/>
+                            <rect x="25" y="22" width="50" height="36" rx="4" fill="none" stroke="#5d4308" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-front-number" id="modal-card-code">IVAD 0000 0000 0000</div>
+                    <div class="card-front-bottom">
+                        <div>
+                            <div class="front-label">Titular</div>
+                            <div class="front-val" id="modal-card-holder">-</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="front-label">Desde</div>
+                            <div class="front-val" id="modal-card-since">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card-back">
+                    <div class="card-back-inner">
+                        <div class="back-qr-wrap">
+                            <img id="modal-qr-img" src="" alt="QR">
+                            <span>ESCANEA</span>
+                        </div>
+                        <div class="back-details">
+                            <h4 id="modal-back-biz-title">IVAD</h4>
+                            <div><i class="fas fa-phone-alt"></i> <span id="modal-back-phone">809-241-6555</span></div>
+                            <div><i class="fas fa-globe"></i> <span id="modal-back-web">www.ivadsrl.com</span></div>
+                            <div><i class="fas fa-map-marker-alt"></i> <span id="modal-back-address">Ave. 27 de febrero</span></div>
+                        </div>
+                    </div>
+                    <div class="card-back-footer" id="modal-back-footer">Personal e intransferible - Est. 1996</div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h4 style="font-size:0.88rem;font-weight:700;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:8px;margin-bottom:12px;">
+                <i class="fas fa-history" style="color:var(--accent-gold);margin-right:6px;"></i> Historial de Facturas
+            </h4>
+            <div class="modal-txn-list" id="modal-transactions-container">
+                <div style="font-size:0.76rem;color:rgba(255,255,255,0.35);text-align:center;padding:14px 0;">Cargando...</div>
+            </div>
+        </div>
+        <div class="card-modal-footer">Toca la tarjeta para voltearla - Clic fuera para cerrar</div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
+<script>
+    let allCards = [];
+    let isSimulationMode = false;
+    let businessSettings = { name:'IVAD HOME Y GOODS', slogan:'Est. 1996', phone:'809-241-6555', web:'www.ivadsrl.com', address:'Ave. 27 de febrero' };
+    let currentModalCardId = null;
+    let currentUser = { username: 'Alonzo', role: 'administracion' };
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        if (localStorage.getItem('ivad_loyalty_cards_simulated')?.includes('IVAD-AUGGX')) {
+            localStorage.removeItem('ivad_loyalty_cards_simulated');
+            localStorage.removeItem('ivad_loyalty_card');
+        }
+        if (localStorage.getItem('ivad_loyalty_admin') !== 'true') { window.location.href = 'admin-login.html'; return; }
+        
+        // Obtener usuario actual
+        const storedUser = localStorage.getItem('ivad_loyalty_user');
+        if (storedUser) currentUser = JSON.parse(storedUser);
+
+        // Refrescar datos del usuario desde la base de datos en vivo si está disponible
+        if (typeof supabaseClient !== 'undefined' && supabaseClient && currentUser.username) {
+            try {
+                const { data: dbUser } = await supabaseClient
+                    .from('loyalty_users')
+                    .select('*')
+                    .eq('username', currentUser.username)
+                    .maybeSingle();
+                if (dbUser) {
+                    currentUser = { username: dbUser.username, role: dbUser.role };
+                    localStorage.setItem('ivad_loyalty_user', JSON.stringify(currentUser));
+                }
+            } catch (e) {
+                console.error("Error refreshing current user info:", e);
+            }
+        }
+        
+        const roleNames = {
+            'administracion': 'Administrador',
+            'gerencia': 'Gerente / Dirección',
+            'cajero': 'Cajero',
+            'contabilidad': 'Contabilidad'
+        };
+        const badgeEl = document.querySelector('.sidebar-role-badge');
+        if (badgeEl) {
+            const roleLabel = roleNames[currentUser.role] || currentUser.role;
+            badgeEl.innerHTML = `<i class="fas fa-user-circle"></i> ${currentUser.username} (${roleLabel})`;
+        }
+
+        // Aplicar permisos visuales basados en roles
+        applyRolePermissions();
+
+        const storedBiz = localStorage.getItem('ivad_loyalty_biz_settings');
+        if (storedBiz) businessSettings = JSON.parse(storedBiz);
+        document.getElementById('biz-name').value = businessSettings.name;
+        document.getElementById('biz-slogan').value = businessSettings.slogan;
+        document.getElementById('biz-phone').value = businessSettings.phone;
+        document.getElementById('biz-web').value = businessSettings.web;
+        document.getElementById('biz-address').value = businessSettings.address;
+        const storedRewards = localStorage.getItem('ivad_reward_config');
+        if (storedRewards) {
+            const rc = JSON.parse(storedRewards);
+            document.getElementById('cfg-pts-envio').value = rc.envio || 20;
+            document.getElementById('cfg-pts-vajilla').value = rc.vajilla || 30;
+            document.getElementById('cfg-pts-credito').value = rc.credito || 50;
+        }
+        updateCardPreview();
+        loadClients();
+
+        // Suscribirse a cambios en tiempo real en Supabase (tarjetas, transacciones y solicitudes)
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            supabaseClient
+                .channel('realtime_loyalty')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'loyalty_cards' },
+                    (payload) => {
+                        console.log('Actualización en tiempo real (tarjetas) recibida:', payload);
+                        loadClients().then(() => {
+                            // Si el modal está abierto para este cliente, refrescar los datos mostrados
+                            if (currentModalCardId && document.getElementById('card-modal').classList.contains('open')) {
+                                const card = allCards.find(c => c.id === currentModalCardId);
+                                if (card) {
+                                    const el = (id,v) => { const e = document.getElementById(id); if (e) e.textContent=v; };
+                                    el('modal-client-subtitle', maskCardCode(card.card_code) + ' - ' + card.current_points + ' puntos');
+                                    el('modal-client-name', card.client_name);
+                                }
+                            }
+                            if (currentUser.role === 'administracion' || currentUser.role === 'gerencia') {
+                                loadRecentTransactions();
+                            }
+                        });
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'loyalty_transactions' },
+                    (payload) => {
+                        console.log('Actualización en tiempo real (transacciones) recibida:', payload);
+                        if (currentModalCardId && document.getElementById('card-modal').classList.contains('open')) {
+                            loadModalTransactions(currentModalCardId);
+                        }
+                        if (currentUser.role === 'administracion' || currentUser.role === 'gerencia') {
+                            loadRecentTransactions();
+                        }
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'loyalty_deletion_requests' },
+                    (payload) => {
+                        console.log('Actualización en tiempo real (solicitudes) recibida:', payload);
+                        if (currentUser.role === 'administracion' || currentUser.role === 'gerencia') {
+                            loadDeletionRequests();
+                        }
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'loyalty_users' },
+                    (payload) => {
+                        console.log('Actualización en tiempo real (usuarios) recibida:', payload);
+                        if (currentUser.role === 'administracion' || currentUser.role === 'gerencia') {
+                            loadUsersAdmin();
+                        }
+                    }
+                )
+                .subscribe();
+        }
+    });
+
+    const sectionTitles = { 'dashboard':'Panel Principal', 'crear-tarjeta':'Registrar Socio', 'registrar-venta':'Registrar Venta', 'ver-clientes':'Ver Clientes', 'configuracion':'Configuracion' };
+
+    function showSection(name) {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-' + name).classList.add('active');
+        document.querySelectorAll('.nav-item, .bnav-item').forEach(b => b.classList.toggle('active', b.dataset.section === name));
+        document.getElementById('topbar-title').textContent = sectionTitles[name] || name;
+        closeSidebar();
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebar-overlay').classList.toggle('open');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebar-overlay').classList.remove('open');
+    }
+    function logout() { localStorage.removeItem('ivad_loyalty_admin'); window.location.href = 'admin-login.html'; }
+
+    function updateCardPreview() {
+        const biz = document.getElementById('biz-name')?.value?.trim() || businessSettings.name;
+        const slogan = document.getElementById('biz-slogan')?.value?.trim() || businessSettings.slogan;
+        const phone = document.getElementById('biz-phone')?.value?.trim() || businessSettings.phone;
+        const web = document.getElementById('biz-web')?.value?.trim() || businessSettings.web;
+        const addr = document.getElementById('biz-address')?.value?.trim() || businessSettings.address;
+        const name = document.getElementById('client-name')?.value?.trim() || 'Nombre del cliente';
+        const el = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+        el('prev-biz-name-label', biz.split(' ')[0] || biz);
+        el('prev-biz-slogan-label', biz.split(' ').slice(1).join(' ') || slogan);
+        el('prev-card-holder', name);
+        el('prev-back-biz-title', biz);
+        el('prev-back-phone', phone);
+        el('prev-back-web', web);
+        el('prev-back-address', addr);
+        el('prev-back-footer', 'Personal e intransferible - ' + slogan);
+    }
+
+    function toggleCardFlip() { document.getElementById('preview-card-container').classList.toggle('flipped'); }
+    function toggleModalCardFlip() { document.getElementById('modal-card-container').classList.toggle('flipped'); }
+    
+    function maskCardCode(code) {
+        if (!code) return '';
+        const parts = code.split('-');
+        if (parts.length < 2) return code;
+        const body = parts[1];
+        if (body.length <= 4) return parts[0] + '-••••';
+        return parts[0] + '-••••••••' + body.slice(-4);
+    }
+
+    function formatCardCode(code, mask = false) {
+        const clean = code.replace(/[-\s]/g,'');
+        let body = clean.toUpperCase().startsWith('IVAD') ? clean.substring(4) : clean;
+        const padded = body.padEnd(12,'0');
+        if (mask) {
+            return 'IVAD ' + padded.substring(0,4) + ' •••• ' + padded.substring(8,12);
+        }
+        return 'IVAD ' + padded.substring(0,4) + ' ' + padded.substring(4,8) + ' ' + padded.substring(8,12);
+    }
+
+    async function loadClients() {
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient.from('loyalty_cards').select('*').order('created_at', { ascending: false });
+                if (error) { isSimulationMode = true; loadSimulationCards(); return; }
+                isSimulationMode = false;
+                allCards = data || [];
+                renderDashboardStats(allCards);
+                renderClientsCards(allCards);
+                renderRecentClients(allCards);
+            } catch (_) { isSimulationMode = true; loadSimulationCards(); }
+        } else { isSimulationMode = true; loadSimulationCards(); }
+    }
+
+    function loadSimulationCards() {
+        const stored = localStorage.getItem('ivad_loyalty_cards_simulated');
+        allCards = stored ? JSON.parse(stored) : [{ id:'mock-uuid-alonzo', card_code:'IVAD-991234567890', client_name:'Alonzo', client_email:'alonzo@correo.com', client_phone:'809-241-6555', client_cedula:'001-0000000-0', current_points:50, points_target:50, temp_password:'pwd-alonzo', created_at: new Date('2026-07-01').getTime() }];
+        if (!stored) localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+        renderDashboardStats(allCards);
+        renderClientsCards(allCards);
+        renderRecentClients(allCards);
+        const simContainer = document.getElementById('sim-warning-container');
+        if (simContainer && !simContainer.querySelector('.alert-warn')) {
+            simContainer.innerHTML = '<div class="alert-warn"><i class="fas fa-exclamation-triangle"></i><span><strong>Modo Simulacion:</strong> Supabase no conectado o tablas no creadas. Ejecuta <code>loyalty_schema.sql</code> en tu proyecto de Supabase para activar el modo en vivo.</span></div>';
+        }
+    }
+
+    async function renderDashboardStats(cards) {
+        document.getElementById('stat-total-clients').textContent = cards.length;
+        document.getElementById('active-cards-count').textContent = cards.length + ' tarjeta' + (cards.length !== 1 ? 's' : '');
+        const totalPoints = cards.reduce((s,c) => s + (c.current_points || 0), 0);
+        document.getElementById('stat-total-points').textContent = totalPoints;
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { data } = await supabaseClient.from('loyalty_transactions').select('sale_amount');
+                const total = (data || []).reduce((s,r) => s + parseFloat(r.sale_amount || 0), 0);
+                document.getElementById('stat-total-sales').textContent = 'RD$ ' + total.toLocaleString('es-DO');
+            } catch (_) {}
+        }
+    }
+
+    function renderRecentClients(cards) {
+        const el = document.getElementById('recent-clients-list');
+        const recent = cards.slice(0,5);
+        if (!recent.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px 0;">Sin clientes registrados aun.</div>'; return; }
+        el.innerHTML = recent.map(c => {
+            const d = new Date(c.created_at || Date.now()).toLocaleDateString('es-DO', { day:'2-digit', month:'short', year:'numeric' });
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f7f6f4;border-radius:8px;"><div><div style="font-size:0.88rem;font-weight:700;color:var(--text-dark);">' + c.client_name + '</div><div style="font-size:0.7rem;color:var(--text-muted);font-family:monospace;">' + maskCardCode(c.card_code) + ' - ' + d + '</div></div><div style="font-size:0.82rem;font-weight:700;color:var(--accent-gold-dark);">' + c.current_points + ' pts</div></div>';
+        }).join('');
+    }
+
+    function renderClientsCards(cards) {
+        const container = document.getElementById('saved-cards-container');
+        if (!cards.length) { container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">No hay clientes registrados.</div>'; return; }
+        
+        const hasAdjPermission = currentUser.role === 'administracion' || currentUser.role === 'gerencia';
+        const isContabilidad = currentUser.role === 'contabilidad';
+
+        container.innerHTML = cards.map(card => {
+            const date = new Date(card.created_at || Date.now());
+            const since = String(date.getMonth()+1).padStart(2,'0') + '/' + date.getFullYear();
+            
+            const trashBtn = isContabilidad 
+                ? '' 
+                : `<button class="btn-trash" onclick="deleteCard('${card.id}','${card.client_name.replace(/'/g,"\\'")}')" title="Eliminar"><i class="far fa-trash-alt"></i></button>`;
+
+            const pointsCtrl = hasAdjPermission
+                ? `<div class="pts-adjust-box"><button class="btn-adj" onclick="adjustPointsDirectly('${card.id}',-1)"><i class="fas fa-minus"></i></button><div class="pts-display"><strong id="pts-count-${card.id}">${card.current_points}</strong><span>Puntos</span></div><button class="btn-adj btn-adj-plus" onclick="adjustPointsDirectly('${card.id}',1)"><i class="fas fa-plus"></i></button></div>`
+                : `<div class="pts-adjust-box" style="justify-content:center;"><div class="pts-display"><strong id="pts-count-${card.id}">${card.current_points}</strong><span>Puntos</span></div></div>`;
+
+            return `
+                <div class="client-card">
+                    <div class="client-card-top">
+                        <h4>${card.client_name}</h4>
+                        ${trashBtn}
+                    </div>
+                    <div class="client-meta">
+                        <span class="code">${maskCardCode(card.card_code)}</span>
+                        ${card.client_cedula ? `<span><i class="fas fa-id-card" style="color:var(--text-muted);margin-right:4px;font-size:0.7rem;"></i>${card.client_cedula}</span>` : ''}
+                        <span>desde ${since}</span>
+                    </div>
+                    ${pointsCtrl}
+                    <button class="btn-view" onclick="openCardModal('${card.id}')"><i class="far fa-eye"></i> Ver tarjeta</button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterClients(q) {
+        const ql = q.toLowerCase();
+        const filtered = ql ? allCards.filter(c => c.client_name.toLowerCase().includes(ql) || c.card_code.toLowerCase().includes(ql) || (c.client_cedula||'').toLowerCase().includes(ql) || (c.client_email||'').toLowerCase().includes(ql)) : allCards;
+        renderClientsCards(filtered);
+    }
+
+    function searchClient(query) {
+        const resultsBox = document.getElementById('client-search-results');
+        const q = query.trim().toLowerCase();
+        if (!q) { resultsBox.style.display='none'; clearSelectedClient(); return; }
+        const matches = allCards.filter(c => c.client_name.toLowerCase().includes(q) || c.card_code.toLowerCase().includes(q) || (c.client_cedula||'').toLowerCase().includes(q) || (c.client_email||'').toLowerCase().includes(q)).slice(0,6);
+        if (!matches.length) { resultsBox.style.display='block'; resultsBox.innerHTML='<div style="padding:14px 16px;font-size:0.82rem;color:var(--text-muted);">No se encontro ningun cliente.</div>'; return; }
+        resultsBox.style.display='block';
+        resultsBox.innerHTML = matches.map(c => '<div onclick="selectClient(\'' + c.id + '\')" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-color);" onmouseover="this.style.background=\'rgba(191,166,135,0.08)\'" onmouseout="this.style.background=\'transparent\'"><div style="font-size:0.88rem;font-weight:700;color:var(--text-dark);">' + c.client_name + '</div><div style="font-size:0.72rem;color:var(--text-muted);font-family:monospace;">' + maskCardCode(c.card_code) + ' - ' + (c.client_email||'') + '</div></div>').join('');
+    }
+
+    function selectClient(cardId) {
+        const card = allCards.find(c => c.id === cardId);
+        if (!card) return;
+        document.getElementById('sale-client-id').value = cardId;
+        document.getElementById('client-search-input').value = card.client_name;
+        document.getElementById('client-search-results').style.display = 'none';
+        document.getElementById('selected-client-banner').style.display = 'block';
+        document.getElementById('sel-name').textContent = card.client_name;
+        document.getElementById('sel-code').textContent = maskCardCode(card.card_code) + ' - ' + (card.client_email||'');
+        document.getElementById('sel-pts').textContent = card.current_points + ' puntos actuales';
+    }
+
+    function clearSelectedClient() {
+        document.getElementById('sale-client-id').value = '';
+        document.getElementById('selected-client-banner').style.display = 'none';
+    }
+
+    function calculatePointsPreview() {
+        const amount = parseFloat(document.getElementById('sale-amount').value) || 0;
+        const points = Math.floor(amount / 500) * 3;
+        const box = document.getElementById('points-preview-box');
+        if (amount >= 500) {
+            box.style.display = 'block';
+            document.getElementById('points-preview-val').textContent = '+' + points + ' pts';
+            document.getElementById('points-formula').textContent = 'RD$ ' + amount.toLocaleString('es-DO') + ' / 500 x 3 = ' + points + ' puntos';
+        } else if (amount > 0) {
+            box.style.display = 'block';
+            document.getElementById('points-preview-val').textContent = '+0 pts';
+            document.getElementById('points-formula').textContent = 'Minimo RD$ 500 para acumular puntos.';
+        } else { box.style.display = 'none'; }
+    }
+
+    async function registerSalePoints(e) {
+        e.preventDefault();
+        const cardId = document.getElementById('sale-client-id').value;
+        const invoice = document.getElementById('sale-invoice').value.trim();
+        const amount = parseFloat(document.getElementById('sale-amount').value) || 0;
+        if (!cardId) { alert('Por favor selecciona un cliente primero.'); return; }
+        const card = allCards.find(c => c.id === cardId);
+        if (!card) { alert('Cliente no encontrado.'); return; }
+        const pointsEarned = Math.floor(amount / 500) * 3;
+        if (amount < 500) { alert('El monto minimo para otorgar puntos es RD$ 500.'); return; }
+        const newPoints = card.current_points + pointsEarned;
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { error: ce } = await supabaseClient.from('loyalty_cards').update({ current_points: newPoints }).eq('id', cardId);
+                if (ce) throw ce;
+                const { error: te } = await supabaseClient.from('loyalty_transactions').insert([{ card_id: cardId, sale_amount: amount, points_added: pointsEarned, invoice_number: invoice, notes: 'Venta registrada. Factura ' + invoice }]);
+                if (te) throw te;
+                showLastSale(card.client_name, invoice, amount, pointsEarned);
+                document.getElementById('register-sale-form').reset();
+                document.getElementById('points-preview-box').style.display = 'none';
+                clearSelectedClient();
+                loadClients();
+            } catch (err) { alert('Error: ' + err.message); }
+        } else {
+            card.current_points = newPoints;
+            localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+            const stored = localStorage.getItem('ivad_txs_simulated_' + cardId);
+            const txs = stored ? JSON.parse(stored) : [];
+            txs.unshift({ created_at: new Date().toISOString(), sale_amount: amount, points_added: pointsEarned, invoice_number: invoice });
+            localStorage.setItem('ivad_txs_simulated_' + cardId, JSON.stringify(txs));
+            showLastSale(card.client_name, invoice, amount, pointsEarned);
+            document.getElementById('register-sale-form').reset();
+            document.getElementById('points-preview-box').style.display = 'none';
+            clearSelectedClient();
+            loadSimulationCards();
+        }
+    }
+
+    function showLastSale(name, invoice, amount, pts) {
+        document.getElementById('last-sale-info').innerHTML = '<div style="background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.2);border-radius:8px;padding:12px 14px;margin-top:6px;"><div style="font-weight:700;color:#15803d;font-size:0.85rem;margin-bottom:4px;"><i class="fas fa-check-circle" style="margin-right:6px;"></i> +' + pts + ' pts otorgados a ' + name + '</div><div style="font-size:0.75rem;color:var(--text-muted);">Factura ' + invoice + ' - RD$ ' + Number(amount).toLocaleString('es-DO') + '</div></div>';
+    }
+
+    async function adjustPointsDirectly(cardId, delta) {
+        const card = allCards.find(c => c.id === cardId);
+        if (!card) return;
+        const newPoints = Math.max(0, card.current_points + delta);
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { error } = await supabaseClient.from('loyalty_cards').update({ current_points: newPoints }).eq('id', cardId);
+                if (error) { alert('Error: ' + error.message); return; }
+                await supabaseClient.from('loyalty_transactions').insert([{ card_id: cardId, sale_amount: 0, points_added: delta, notes: delta >= 1 ? 'Ajuste manual (+)' : 'Ajuste manual (-)' }]);
+                card.current_points = newPoints;
+                document.getElementById('pts-count-' + cardId).textContent = newPoints;
+            } catch (err) { console.error(err); }
+        } else {
+            card.current_points = newPoints;
+            localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+            document.getElementById('pts-count-' + cardId).textContent = newPoints;
+            const stored = localStorage.getItem('ivad_txs_simulated_' + cardId);
+            const txs = stored ? JSON.parse(stored) : [];
+            txs.unshift({ created_at: new Date().toISOString(), sale_amount: 0, points_added: delta, invoice_number: null, notes: delta >= 1 ? 'Ajuste manual (+)' : 'Ajuste manual (-)' });
+            localStorage.setItem('ivad_txs_simulated_' + cardId, JSON.stringify(txs));
+        }
+    }
+
+    async function createCard(e) {
+        e.preventDefault();
+        const name = document.getElementById('client-name').value.trim();
+        const email = document.getElementById('client-email').value.trim();
+        const phone = document.getElementById('client-phone').value.trim();
+        const cedula = document.getElementById('client-cedula').value.trim();
+        const initPoints = parseInt(document.getElementById('client-init-points').value) || 0;
+        const randomCode = 'IVAD-99' + Math.floor(1000000000 + Math.random() * 9000000000);
+        const randomPass = Math.random().toString(36).substring(2,8);
+        const btn = e.target.querySelector('button[type=submit]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient.from('loyalty_cards').insert([{ card_code: randomCode, client_name: name, client_email: email, client_phone: phone, client_cedula: cedula, temp_password: randomPass, current_points: initPoints, points_target: 50 }]).select().single();
+                if (error) { alert('Error al crear tarjeta: ' + error.message); btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Crear tarjeta y enviar credenciales'; return; }
+                let emailApiUrl = '/api/send-loyalty-email';
+                if (window.location.protocol === 'file:') {
+                    emailApiUrl = 'http://localhost:3000/api/send-loyalty-email';
+                }
+                fetch(emailApiUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ client_name:name, client_email:email, card_code:randomCode, temp_password:randomPass, card_id:data.id }) }).catch(err => console.error('Email error:', err));
+                document.getElementById('create-card-form').reset();
+                document.getElementById('client-since').value = 'julio de 2026';
+                loadClients();
+                document.getElementById('success-modal').classList.add('open');
+            } catch (err) { alert('Error de red: ' + err.message); }
+        } else {
+            const mockCard = { id:'mock-uuid-'+Date.now(), card_code:randomCode, client_name:name, client_email:email, client_phone:phone, client_cedula:cedula, current_points:initPoints, points_target:50, temp_password:randomPass, created_at:Date.now() };
+            allCards.unshift(mockCard);
+            localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+            document.getElementById('create-card-form').reset();
+            document.getElementById('client-since').value = 'julio de 2026';
+            loadSimulationCards();
+            document.getElementById('success-modal').classList.add('open');
+        }
+        btn.disabled=false;
+        btn.innerHTML='<i class="fas fa-paper-plane"></i> Crear tarjeta y enviar credenciales';
+    }
+
+    async function deleteCard(cardId, name) {
+        if (currentUser.role === 'cajero' || currentUser.role === 'contabilidad') {
+            if (!confirm('No tienes permiso para eliminar socios directamente con tu rol actual. ¿Deseas enviar una Solicitud de Eliminación para el socio "' + name + '" al Administrador?')) return;
+            
+            const card = allCards.find(c => c.id === cardId);
+            if (!card) return;
+
+            if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+                try {
+                    // Verificar si ya existe una solicitud pendiente
+                    const { data: existing } = await supabaseClient
+                        .from('loyalty_deletion_requests')
+                        .select('id')
+                        .eq('card_id', cardId)
+                        .eq('status', 'pendiente')
+                        .maybeSingle();
+
+                    if (existing) {
+                        alert('Ya existe una solicitud de eliminación pendiente para este socio.');
+                        return;
+                    }
+
+                    const { error } = await supabaseClient
+                        .from('loyalty_deletion_requests')
+                        .insert([{
+                            card_id: cardId,
+                            client_name: card.client_name,
+                            client_email: card.client_email,
+                            requested_by: currentUser.username,
+                            status: 'pendiente'
+                        }]);
+
+                    if (error) {
+                        alert('Error al enviar la solicitud: ' + error.message);
+                    } else {
+                        alert('Solicitud de eliminación enviada con éxito al Administrador.');
+                    }
+                } catch (err) {
+                    console.error('Request deletion error:', err);
+                    alert('Error de conexión.');
+                }
+            } else {
+                alert('(Modo Simulación) Solicitud de eliminación enviada.');
+            }
+            return;
+        }
+
+        if (!confirm('Eliminar la tarjeta de ' + name + '? Esta accion es irreversible.')) return;
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            const { error } = await supabaseClient.from('loyalty_cards').delete().eq('id', cardId);
+            if (error) alert('Error al eliminar: ' + error.message);
+            else loadClients();
+        } else {
+            allCards = allCards.filter(c => c.id !== cardId);
+            localStorage.setItem('ivad_loyalty_cards_simulated', JSON.stringify(allCards));
+            localStorage.removeItem('ivad_txs_simulated_' + cardId);
+            loadSimulationCards();
+        }
+    }
+
+    async function openCardModal(cardId) {
+        currentModalCardId = cardId;
+        const card = allCards.find(c => c.id === cardId);
+        if (!card) return;
+        const date = new Date(card.created_at || Date.now());
+        const since = String(date.getMonth()+1).padStart(2,'0') + '/' + date.getFullYear();
+        const el = (id,v) => { const e = document.getElementById(id); if (e) e.textContent=v; };
+        el('modal-client-name', card.client_name);
+        el('modal-client-subtitle', maskCardCode(card.card_code) + ' - ' + card.current_points + ' puntos');
+        el('modal-card-holder', card.client_name);
+        el('modal-card-since', since);
+        el('modal-card-code', formatCardCode(card.card_code, true));
+        el('modal-biz-name-label', businessSettings.name.split(' ')[0]);
+        el('modal-biz-slogan-label', businessSettings.name.split(' ').slice(1).join(' ') || businessSettings.slogan);
+        el('modal-back-biz-title', businessSettings.name);
+        el('modal-back-phone', businessSettings.phone);
+        el('modal-back-web', businessSettings.web);
+        el('modal-back-address', businessSettings.address);
+        el('modal-back-footer', 'Personal e intransferible - ' + businessSettings.slogan);
+        document.getElementById('modal-qr-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=' + encodeURIComponent(card.card_code) + '&color=12-14-17';
+        document.getElementById('modal-card-container').classList.remove('flipped');
+        await loadModalTransactions(cardId);
+        document.getElementById('card-modal').classList.add('open');
+    }
+
+    async function loadModalTransactions(cardId) {
+        const container = document.getElementById('modal-transactions-container');
+        container.innerHTML = '<div style="font-size:0.76rem;color:rgba(255,255,255,0.35);text-align:center;padding:14px 0;">Cargando historial...</div>';
+        let txs = [];
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try { const { data } = await supabaseClient.from('loyalty_transactions').select('*').eq('card_id', cardId).order('created_at',{ascending:false}); txs = data || []; } catch (_) {}
+        } else { const stored = localStorage.getItem('ivad_txs_simulated_' + cardId); txs = stored ? JSON.parse(stored) : []; }
+        if (!txs.length) { container.innerHTML = '<div style="font-size:0.76rem;color:rgba(255,255,255,0.35);text-align:center;padding:14px 0;">Sin compras registradas aun.</div>'; return; }
+        container.innerHTML = txs.map(tx => {
+            const d = new Date(tx.created_at).toLocaleDateString('es-DO',{day:'2-digit',month:'2-digit',year:'numeric'});
+            const inv = tx.invoice_number ? 'Factura ' + tx.invoice_number : (tx.notes || 'Registro manual');
+            return '<div class="txn-row"><div><span class="txn-title">' + inv + '</span><span class="txn-date">' + d + ' - RD$ ' + Number(tx.sale_amount||0).toLocaleString('es-DO') + '</span></div><span class="txn-pts">+' + tx.points_added + ' pts</span></div>';
+        }).join('');
+    }
+
+    function closeCardModal(e) { currentModalCardId = null; document.getElementById('card-modal').classList.remove('open'); }
+    function closeSuccessModal() { document.getElementById('success-modal').classList.remove('open'); }
+
+    function saveBusinessSettings(e) {
+        e.preventDefault();
+        businessSettings.name = document.getElementById('biz-name').value.trim();
+        businessSettings.slogan = document.getElementById('biz-slogan').value.trim();
+        businessSettings.phone = document.getElementById('biz-phone').value.trim();
+        businessSettings.web = document.getElementById('biz-web').value.trim();
+        businessSettings.address = document.getElementById('biz-address').value.trim();
+        localStorage.setItem('ivad_loyalty_biz_settings', JSON.stringify(businessSettings));
+        alert('Datos del negocio guardados correctamente.');
+        updateCardPreview();
+    }
+
+    function saveRewardConfig() {
+        const config = { envio: parseInt(document.getElementById('cfg-pts-envio').value)||20, vajilla: parseInt(document.getElementById('cfg-pts-vajilla').value)||30, credito: parseInt(document.getElementById('cfg-pts-credito').value)||50 };
+        localStorage.setItem('ivad_reward_config', JSON.stringify(config));
+        alert('Configuracion de recompensas guardada. Los umbrales se aplicaran en el panel del cliente al recargar.');
+    }
+
+    // --- MÓDULO DE SOLICITUDES DE ELIMINACIÓN (ADMIN) ---
+    async function loadDeletionRequests() {
+        if (currentUser.role !== 'admin') return;
+        const el = document.getElementById('deletion-requests-list');
+        const cardContainer = document.getElementById('deletion-requests-card');
+        
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('loyalty_deletion_requests')
+                    .select('*')
+                    .eq('status', 'pendiente')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    cardContainer.style.display = 'block';
+                    el.innerHTML = data.map(req => {
+                        return `
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(231,76,60,0.04);border:1px solid rgba(231,76,60,0.15);border-radius:10px;margin-bottom:8px;">
+                                <div>
+                                    <div style="font-size:0.88rem;font-weight:700;color:var(--text-dark);">${req.client_name}</div>
+                                    <div style="font-size:0.72rem;color:var(--text-muted);">${req.client_email}</div>
+                                    <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px;">Solicitado por: <strong>${req.requested_by}</strong></div>
+                                </div>
+                                <div style="display:flex;gap:8px;">
+                                    <button onclick="approveDeletion('${req.id}', '${req.card_id}', '${req.client_name.replace(/'/g,"\\'")}')" style="background:#2ecc71;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;"><i class="fas fa-check"></i> Aprobar</button>
+                                    <button onclick="rejectDeletion('${req.id}', '${req.client_name.replace(/'/g,"\\'")}')" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;"><i class="fas fa-times"></i> Rechazar</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    cardContainer.style.display = 'none';
+                    el.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px 0;">No hay solicitudes pendientes.</div>';
+                }
+            } catch (err) {
+                console.error('Error fetching deletion requests:', err);
+            }
+        } else {
+            cardContainer.style.display = 'none';
+        }
+    }
+
+    async function approveDeletion(requestId, cardId, clientName) {
+        if (!confirm(`¿Estás seguro de APROBAR la eliminación del socio "${clientName}"? Se borrará permanentemente de la base de datos.`)) return;
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                // Borrar la tarjeta
+                const { error: errCard } = await supabaseClient.from('loyalty_cards').delete().eq('id', cardId);
+                if (errCard) throw errCard;
+
+                // Borrar la solicitud
+                await supabaseClient.from('loyalty_deletion_requests').delete().eq('id', requestId);
+                
+                alert(`Socio "${clientName}" eliminado exitosamente.`);
+                loadClients();
+                loadDeletionRequests();
+            } catch (err) {
+                alert('Error al procesar: ' + err.message);
+            }
+        }
+    }
+
+    async function rejectDeletion(requestId, clientName) {
+        if (!confirm(`¿Estás seguro de RECHAZAR la solicitud de eliminación del socio "${clientName}"?`)) return;
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                await supabaseClient.from('loyalty_deletion_requests').delete().eq('id', requestId);
+                alert(`Solicitud rechazada para "${clientName}".`);
+                loadDeletionRequests();
+            } catch (err) {
+                alert('Error al procesar: ' + err.message);
+            }
+        }
+    }
+
+    // --- MÓDULO DE GESTIÓN DE USUARIOS (ADMIN) ---
+    async function loadUsersAdmin() {
+        if (currentUser.role !== 'admin') return;
+        const container = document.getElementById('users-list-container');
+        
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('loyalty_users')
+                    .select('*')
+                    .order('username', { ascending: true });
+                
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    container.innerHTML = data.map(user => {
+                        const isSelf = user.username === currentUser.username;
+                        const deleteBtn = isSelf 
+                            ? `<span style="font-size:0.7rem;color:var(--text-muted);font-style:italic;">(Tú)</span>`
+                            : `<button onclick="deleteUser('${user.id}', '${user.username.replace(/'/g,"\\'")}')" style="background:transparent;color:#e74c3c;border:none;cursor:pointer;padding:4px 8px;font-size:0.85rem;" title="Eliminar Cajero"><i class="far fa-trash-alt"></i></button>`;
+
+                        return `
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(255,255,255,0.03);border:1px solid var(--border-color);border-radius:6px;">
+                                <div>
+                                    <span style="font-weight:700;font-size:0.85rem;color:var(--text-dark);">${user.username}</span>
+                                    <span style="font-size:0.68rem;padding:2px 6px;background:rgba(191,166,135,0.15);color:var(--accent-gold);border-radius:4px;margin-left:6px;text-transform:uppercase;">${user.role === 'admin' ? 'Admin' : 'Cajero'}</span>
+                                </div>
+                                ${deleteBtn}
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;text-align:center;">Sin usuarios registrados.</div>';
+                }
+            } catch (err) {
+                console.error('Error fetching admin users:', err);
+                container.innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;text-align:center;">Error al cargar.</div>';
+            }
+        } else {
+            container.innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;text-align:center;">Modo Simulación.</div>';
+        }
+    }
+
+    async function addUser(e) {
+        e.preventDefault();
+        const usernameInput = document.getElementById('new-username');
+        const passwordInput = document.getElementById('new-password');
+        const roleInput = document.getElementById('new-role');
+        
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+        const role = roleInput.value;
+
+        if (!username || !password) return;
+
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                // Verificar si existe el nombre de usuario
+                const { data: existing } = await supabaseClient
+                    .from('loyalty_users')
+                    .select('id')
+                    .eq('username', username)
+                    .maybeSingle();
+
+                if (existing) {
+                    alert('Este nombre de usuario ya existe. Por favor elige otro.');
+                    return;
+                }
+
+                const { error } = await supabaseClient
+                    .from('loyalty_users')
+                    .insert([{ username, password, role }]);
+
+                if (error) {
+                    alert('Error al agregar usuario: ' + error.message);
+                } else {
+                    alert(`Usuario "${username}" creado correctamente.`);
+                    usernameInput.value = '';
+                    passwordInput.value = '';
+                    loadUsersAdmin();
+                }
+            } catch (err) {
+                alert('Error al agregar usuario: ' + err.message);
+            }
+        } else {
+            alert('(Modo Simulación) Usuario agregado.');
+        }
+    }
+
+    async function deleteUser(userId, username) {
+        if (username === currentUser.username) {
+            alert('No puedes eliminar tu propio usuario activo.');
+            return;
+        }
+        if (!confirm(`¿Estás seguro de eliminar el usuario "${username}"? Perderá el acceso al panel inmediatamente.`)) return;
+
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                const { error } = await supabaseClient
+                    .from('loyalty_users')
+                    .delete()
+                    .eq('id', userId);
+
+                if (error) {
+                    alert('Error al eliminar usuario: ' + error.message);
+                } else {
+                    alert(`Usuario "${username}" eliminado correctamente.`);
+                    loadUsersAdmin();
+                }
+            } catch (err) {
+                alert('Error al eliminar: ' + err.message);
+            }
+        }
+    }
+
+    function applyRolePermissions() {
+        const role = currentUser.role;
+        
+        // Elementos de la barra de navegación
+        const navDashboard = document.querySelector('.nav-item[data-section="dashboard"]');
+        const navSocio = document.querySelector('.nav-item[data-section="crear-tarjeta"]');
+        const navVenta = document.querySelector('.nav-item[data-section="registrar-venta"]');
+        const navClientes = document.querySelector('.nav-item[data-section="ver-clientes"]');
+        const navConfig = document.querySelector('.nav-item[data-section="configuracion"]');
+
+        const bnavDashboard = document.querySelector('.bnav-item[data-section="dashboard"]');
+        const bnavSocio = document.querySelector('.bnav-item[data-section="crear-tarjeta"]');
+        const bnavVenta = document.querySelector('.bnav-item[data-section="registrar-venta"]');
+        const bnavClientes = document.querySelector('.bnav-item[data-section="ver-clientes"]');
+        const bnavConfig = document.querySelector('.bnav-item[data-section="configuracion"]');
+
+        // Por defecto todos se muestran. Ocultar Registrar Venta a Contabilidad
+        if (role === 'contabilidad') {
+            if (navVenta) navVenta.style.display = 'none';
+            if (bnavVenta) bnavVenta.style.display = 'none';
+            // Si estaba en la sección de ventas, mover al dashboard
+            const activeSec = document.querySelector('.page-section.active');
+            if (activeSec && activeSec.id === 'section-registrar-venta') {
+                showSection('dashboard');
+            }
+        } else {
+            if (navVenta) navVenta.style.display = 'block';
+            if (bnavVenta) bnavVenta.style.display = 'block';
+        }
+
+        // Mostrar u ocultar paneles de administrador/gerente
+        const delCard = document.getElementById('deletion-requests-card');
+        const userCard = document.getElementById('user-management-card');
+        const txCard = document.getElementById('recent-transactions-card');
+        
+        if (role === 'administracion' || role === 'gerencia') {
+            if (delCard) delCard.style.display = 'block';
+            if (userCard) userCard.style.display = 'block';
+            if (txCard) txCard.style.display = 'block';
+            loadDeletionRequests();
+            loadUsersAdmin();
+            loadRecentTransactions();
+        } else {
+            if (delCard) delCard.style.display = 'none';
+            if (userCard) userCard.style.display = 'none';
+            if (txCard) txCard.style.display = 'none';
+        }
+
+        // Ocultar botón de guardar configuración a Cajeros y Contabilidad
+        const saveConfigBtn = document.querySelector('button[onclick="saveRewardConfig()"]');
+        const saveBizBtn = document.querySelector('#business-settings-form button[type="submit"]');
+        
+        if (role === 'cajero' || role === 'contabilidad') {
+            if (saveConfigBtn) saveConfigBtn.style.display = 'none';
+            if (saveBizBtn) saveBizBtn.style.display = 'none';
+            document.querySelectorAll('#business-settings-form input, #section-configuracion input').forEach(input => input.disabled = true);
+        } else {
+            if (saveConfigBtn) saveConfigBtn.style.display = 'block';
+            if (saveBizBtn) saveBizBtn.style.display = 'block';
+            document.querySelectorAll('#business-settings-form input, #section-configuracion input').forEach(input => input.disabled = false);
+        }
+    }
+
+    async function loadRecentTransactions() {
+        if (currentUser.role !== 'administracion' && currentUser.role !== 'gerencia') return;
+        const el = document.getElementById('recent-transactions-list');
+        const cardContainer = document.getElementById('recent-transactions-card');
+        
+        if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
+            try {
+                // Obtener transacciones incluyendo nombre del cliente (join de Supabase)
+                const { data, error } = await supabaseClient
+                    .from('loyalty_transactions')
+                    .select('*, loyalty_cards(client_name)')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    cardContainer.style.display = 'block';
+                    el.innerHTML = data.map(tx => {
+                        const clientName = tx.loyalty_cards?.client_name || 'Socio';
+                        const d = new Date(tx.created_at).toLocaleDateString('es-DO', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+                        const type = tx.points_added >= 0 ? '+' : '';
+                        const color = tx.points_added >= 0 ? '#2ecc71' : '#e74c3c';
+                        const notes = tx.invoice_number ? 'Factura ' + tx.invoice_number : (tx.notes || 'Ajuste');
+                        return `
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid var(--border-color);border-radius:8px;">
+                                <div>
+                                    <div style="font-size:0.85rem;font-weight:700;color:var(--text-dark);">${clientName}</div>
+                                    <div style="font-size:0.7rem;color:var(--text-muted);">${notes} · ${d}</div>
+                                </div>
+                                <div style="font-size:0.85rem;font-weight:700;color:${color};">${type}${tx.points_added} pts</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    el.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:20px 0;">Sin transacciones recientes.</div>';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        } else {
+            cardContainer.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,3 +1,5 @@
+import https from 'https';
+
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -148,27 +150,48 @@ export default async function handler(req, res) {
   `;
 
   try {
-    // 1. Send receipt email to client
-    const clientResponse = await fetch('https://api.resend.com/emails', {
+    // 1. Send receipt email to client using native https
+    const clientPostData = JSON.stringify({
+      from: 'Facturación IVAD <facturacion@ivadsrl.com>',
+      to: [client_email],
+      subject: `Recibo de Compra #${orderId} - IVAD Home & Goods`,
+      html: htmlContent
+    });
+
+    const clientOptions = {
+      hostname: 'api.resend.com',
+      path: '/emails',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`
-      },
-      body: JSON.stringify({
-        from: 'Facturación IVAD <facturacion@ivadsrl.com>',
-        to: [client_email],
-        subject: `Recibo de Compra #${orderId} - IVAD Home & Goods`,
-        html: htmlContent
-      })
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Length': Buffer.byteLength(clientPostData)
+      }
+    };
+
+    const clientData = await new Promise((resolve, reject) => {
+      const clientReq = https.request(clientOptions, (clientRes) => {
+        let responseBody = '';
+        clientRes.on('data', chunk => responseBody += chunk);
+        clientRes.on('end', () => {
+          try {
+            const parsedData = responseBody ? JSON.parse(responseBody) : {};
+            if (clientRes.statusCode >= 200 && clientRes.statusCode < 300) {
+              resolve(parsedData);
+            } else {
+              reject(new Error(`Resend receipt error status ${clientRes.statusCode}: ${JSON.stringify(parsedData)}`));
+            }
+          } catch (e) {
+            reject(new Error(`JSON Parse Error: ${e.message}. Body: ${responseBody}`));
+          }
+        });
+      });
+      clientReq.on('error', e => reject(e));
+      clientReq.write(clientPostData);
+      clientReq.end();
     });
 
-    const clientData = await clientResponse.json();
-    if (!clientResponse.ok) {
-      console.error('Error from Resend (Client Receipt):', clientData);
-    }
-
-    // 2. Send notification email to Admin (anotasy@gmail.com)
+    // 2. Send notification email to Admin (anotasy@gmail.com) using native https
     const adminHtmlContent = `
       <!DOCTYPE html>
       <html>
@@ -243,24 +266,45 @@ export default async function handler(req, res) {
       </html>
     `;
 
-    const adminResponse = await fetch('https://api.resend.com/emails', {
+    const adminPostData = JSON.stringify({
+      from: 'Notificaciones IVAD <facturacion@ivadsrl.com>',
+      to: ['anotasy@gmail.com'],
+      subject: `🚨 Nueva Orden Recibida #${orderId} - ${client_name}`,
+      html: adminHtmlContent
+    });
+
+    const adminOptions = {
+      hostname: 'api.resend.com',
+      path: '/emails',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`
-      },
-      body: JSON.stringify({
-        from: 'Notificaciones IVAD <facturacion@ivadsrl.com>',
-        to: ['anotasy@gmail.com'],
-        subject: `🚨 Nueva Orden Recibida #${orderId} - ${client_name}`,
-        html: adminHtmlContent
-      })
-    });
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Length': Buffer.byteLength(adminPostData)
+      }
+    };
 
-    const adminData = await adminResponse.json();
-    if (!adminResponse.ok) {
-      console.error('Error from Resend (Admin Notification):', adminData);
-    }
+    const adminData = await new Promise((resolve, reject) => {
+      const adminReq = https.request(adminOptions, (adminRes) => {
+        let responseBody = '';
+        adminRes.on('data', chunk => responseBody += chunk);
+        adminRes.on('end', () => {
+          try {
+            const parsedData = responseBody ? JSON.parse(responseBody) : {};
+            if (adminRes.statusCode >= 200 && adminRes.statusCode < 300) {
+              resolve(parsedData);
+            } else {
+              reject(new Error(`Resend admin notification error status ${adminRes.statusCode}: ${JSON.stringify(parsedData)}`));
+            }
+          } catch (e) {
+            reject(new Error(`JSON Parse Error: ${e.message}. Body: ${responseBody}`));
+          }
+        });
+      });
+      adminReq.on('error', e => reject(e));
+      adminReq.write(adminPostData);
+      adminReq.end();
+    });
 
     return res.status(200).json({ success: true, client_receipt: clientData, admin_notification: adminData });
   } catch (error) {

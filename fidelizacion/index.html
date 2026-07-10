@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club de Fidelización - IVAD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #121417;
+            --card-dark: #1f2228;
+            --accent-gold: #bfa687;
+            --accent-gold-hover: #a8906f;
+            --text-light: #f7fafc;
+            --text-muted: #a0aec0;
+            --border-color: #2d3139;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+        }
+
+        body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        /* Decorative Background Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 1;
+            opacity: 0.15;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatOrb {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(40px, -40px) scale(1.1); }
+        }
+
+        .orb-1 {
+            top: -15%;
+            left: -15%;
+            width: 450px;
+            height: 450px;
+            background-color: var(--accent-gold);
+        }
+
+        .orb-2 {
+            bottom: -15%;
+            right: -15%;
+            width: 550px;
+            height: 550px;
+            background-color: #1e2c3a;
+        }
+
+        /* Floating decorative cards in background */
+        .floating-card-decor {
+            position: absolute;
+            width: 260px;
+            height: 160px;
+            background: linear-gradient(135deg, rgba(25, 45, 69, 0.05) 0%, rgba(9, 22, 36, 0.1) 100%);
+            border: 1.5px solid rgba(191, 166, 135, 0.08);
+            border-radius: 14px;
+            z-index: 0;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .decor-1 {
+            top: 15%;
+            left: 5%;
+            transform: rotate(-15deg);
+            animation: floatCard1 9s ease-in-out infinite alternate;
+        }
+
+        .decor-2 {
+            bottom: 15%;
+            right: 5%;
+            transform: rotate(12deg);
+            animation: floatCard2 11s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatCard1 {
+            0% { transform: translateY(0) rotate(-15deg); }
+            100% { transform: translateY(-20px) rotate(-10deg); }
+        }
+
+        @keyframes floatCard2 {
+            0% { transform: translateY(0) rotate(12deg); }
+            100% { transform: translateY(25px) rotate(16deg); }
+        }
+
+        .decor-logo {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: rgba(191, 166, 135, 0.15);
+            letter-spacing: 2px;
+        }
+
+        .decor-chip {
+            width: 30px;
+            height: 22px;
+            background: rgba(191, 166, 135, 0.06);
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+
+        .decor-number {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.08);
+            letter-spacing: 2px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(31, 34, 40, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 35px 30px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.5);
+            z-index: 10;
+            text-align: center;
+            position: relative;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--bg-dark), var(--accent-gold), var(--bg-dark));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .logo-wrap {
+            margin-bottom: 20px;
+        }
+
+        .logo-wrap img {
+            height: 72px;
+            width: auto;
+            display: block;
+            margin: 0 auto 10px;
+        }
+
+        .logo-wrap h2 {
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .logo-wrap p {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 15px 13px 45px;
+            background: rgba(18, 20, 23, 0.65);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(191, 166, 135, 0.2);
+            background: rgba(18, 20, 23, 0.9);
+        }
+
+        .input-wrap input:focus + i {
+            color: var(--accent-gold);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-gold);
+            color: #121417;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(191, 166, 135, 0.15);
+        }
+
+        .btn-submit:hover {
+            background: var(--accent-gold-hover);
+            transform: translateY(-1.5px);
+            box-shadow: 0 6px 20px rgba(191, 166, 135, 0.25);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .error-box {
+            background: rgba(192, 57, 43, 0.15);
+            border: 1px solid rgba(192, 57, 43, 0.3);
+            color: #e74c3c;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .footer-line {
+            margin-top: 25px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            line-height: 1.5;
+        }
+
+        .footer-line a {
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer-line a:hover {
+            text-decoration: underline;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            .floating-card-decor {
+                display: none; /* Hide background cards on small screens to prevent clutter */
+            }
+            .login-container {
+                padding: 30px 20px;
+                border-radius: 16px;
+            }
+            .logo-wrap img {
+                height: 60px;
+            }
+            .logo-wrap h2 {
+                font-size: 1.05rem;
+            }
+            body {
+                padding: 20px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Cards in Background -->
+    <div class="floating-card-decor decor-1">
+        <div class="decor-logo">IVAD</div>
+        <div class="decor-chip"></div>
+        <div class="decor-number">•••• •••• •••• ••••</div>
+    </div>
+    
+    <div class="floating-card-decor decor-2">
+        <div class="decor-logo">IVAD</div>
+        <div class="decor-chip"></div>
+        <div class="decor-number">•••• •••• •••• ••••</div>
+    </div>
+
+    <!-- Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="logo-wrap">
+            <img src="https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/logo_transparent.png" alt="IVAD Logo">
+            <h2>Fidelidad IVAD</h2>
+            <p>Acumula puntos y gana premios</p>
+        </div>
+
+        <!-- Error Msg -->
+        <div class="error-box" id="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="error-text">Credenciales incorrectas.</span>
+        </div>
+
+        <!-- Client Login Form -->
+        <form id="client-form" onsubmit="handleClientLogin(event)">
+            <div class="form-group">
+                <label for="client-ident">Email o Código de Tarjeta</label>
+                <div class="input-wrap">
+                    <input type="text" id="client-ident" placeholder="ej: cliente@correo.com o IVAD-723A8" required>
+                    <i class="far fa-envelope"></i>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="client-pass">Contraseña Temporal</label>
+                <div class="input-wrap">
+                    <input type="password" id="client-pass" placeholder="••••••" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit" id="client-btn-text">Ver mi Tarjeta</button>
+            <div class="footer-line">
+                ¿No tienes una tarjeta de fidelización? <br>
+                <a href="formulario.html">Regístrate aquí gratis</a>
+            </div>
+        </form>
+
+        </div>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script>
+        function showError(msg) {
+            const errBox = document.getElementById('error-message');
+            const errText = document.getElementById('error-text');
+            errText.textContent = msg;
+            errBox.style.display = 'flex';
+        }
+
+        async function handleClientLogin(e) {
+            e.preventDefault();
+            document.getElementById('error-message').style.display = 'none';
+
+            const ident = document.getElementById('client-ident').value.trim();
+            const pass = document.getElementById('client-pass').value.trim();
+            const btn = document.getElementById('client-btn-text');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+
+            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+                try {
+                    // Search in loyalty_cards table by email OR by card_code
+                    const { data, error } = await supabaseClient
+                        .from('loyalty_cards')
+                        .select('*')
+                        .or(`client_email.eq."${ident}",card_code.eq."${ident}"`)
+                        .single();
+
+                    btn.disabled = false;
+                    btn.textContent = 'Ver mi Tarjeta';
+
+                    if (error || !data) {
+                        showError('Tarjeta no encontrada en el sistema.');
+                    } else if (data.temp_password !== pass) {
+                        showError('Contraseña temporal incorrecta.');
+                    } else {
+                        // Success! Save session locally and redirect
+                        localStorage.setItem('ivad_loyalty_card', JSON.stringify(data));
+                        window.location.href = 'cliente.html';
+                    }
+                } catch (err) {
+                    btn.disabled = false;
+                    btn.textContent = 'Ver mi Tarjeta';
+                    console.error('Login error:', err);
+                    showError('Error de conexión con la base de datos.');
+                }
+            } else {
+                // Mock fallback simulation
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Ver mi Tarjeta';
+                    
+                    if (ident === 'test@test.com' || ident === 'IVAD-12345') {
+                        if (pass === '123456') {
+                            const mockCard = {
+                                id: 'mock-uuid',
+                                card_code: 'IVAD-12345',
+                                client_name: 'Cliente de Prueba',
+                                client_email: 'test@test.com',
+                                client_phone: '809-123-4567',
+                                current_points: 4,
+                                points_target: 10,
+                                temp_password: '123456',
+                                status: 'activo'
+                            };
+                            localStorage.setItem('ivad_loyalty_card', JSON.stringify(mockCard));
+                            window.location.href = 'cliente.html';
+                        } else {
+                            showError('Contraseña temporal incorrecta (Prueba: 123456).');
+                        }
+                    } else {
+                        showError('Prueba con el correo test@test.com y contraseña 123456.');
+                    }
+                }, 800);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const regEmail = localStorage.getItem('temp_reg_email');
+            const regPass = localStorage.getItem('temp_reg_pass');
+            if (regEmail && regPass) {
+                document.getElementById('client-ident').value = regEmail;
+                document.getElementById('client-pass').value = regPass;
+                localStorage.removeItem('temp_reg_email');
+                localStorage.removeItem('temp_reg_pass');
+                
+                // Mostrar un mensaje de éxito en verde indicando que se autocompletaron
+                const msgBox = document.getElementById('error-message');
+                const msgText = document.getElementById('error-text');
+                msgBox.style.background = 'rgba(46, 204, 113, 0.15)';
+                msgBox.style.borderColor = 'rgba(46, 204, 113, 0.3)';
+                msgBox.style.color = '#2ecc71';
+                msgBox.querySelector('i').className = 'fas fa-circle-check';
+                msgText.textContent = '¡Registro exitoso! Tus credenciales de acceso se han autocompletado.';
+                msgBox.style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>
