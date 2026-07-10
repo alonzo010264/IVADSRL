@@ -980,7 +980,11 @@
             try {
                 const { data, error } = await supabaseClient.from('loyalty_cards').insert([{ card_code: randomCode, client_name: name, client_email: email, client_phone: phone, client_cedula: cedula, temp_password: randomPass, current_points: initPoints, points_target: 50 }]).select().single();
                 if (error) { alert('Error al crear tarjeta: ' + error.message); btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Crear tarjeta y enviar credenciales'; return; }
-                fetch('/api/send-loyalty-email', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ client_name:name, client_email:email, card_code:randomCode, temp_password:randomPass, card_id:data.id }) }).catch(err => console.error('Email error:', err));
+                let emailApiUrl = '/api/send-loyalty-email';
+                if (window.location.protocol === 'file:') {
+                    emailApiUrl = 'https://ivadsrl.com/api/send-loyalty-email';
+                }
+                fetch(emailApiUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ client_name:name, client_email:email, card_code:randomCode, temp_password:randomPass, card_id:data.id }) }).catch(err => console.error('Email error:', err));
                 document.getElementById('create-card-form').reset();
                 document.getElementById('client-since').value = 'julio de 2026';
                 loadClients();

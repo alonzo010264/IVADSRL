@@ -5,7 +5,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL  = process.env.SUPABASE_URL  || "https://rbtdahmhaksdvupsmkma.supabase.co";
-const SUPABASE_KEY  = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || "";
+const SUPABASE_KEY  = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || "sb_publishable_GP8roaav6iIHoQfFp7ncBg_slCdxC7S";
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing required parameters' });
   }
 
-  const resendApiKey = process.env.RESEND_API_KEY || "re_ENozXFAk_4NkvyYsRjcRHE3CCRFQtJjma";
+  const resendApiKey = process.env.RESEND_API_KEY || "re_jJBSfuUS_5yvgas3PvWx23ALeFtDWXKiv";
 
 
   const host = req.headers.host || 'ivadsrl.com';
