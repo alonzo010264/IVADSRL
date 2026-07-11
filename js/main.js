@@ -731,6 +731,57 @@ function renderStoreCategories() {
                 ]
             },
             {
+                id: 'decor_silla_tulip',
+                title: 'Silla de Diseño Tulip Giratoria',
+                price: 'RD$ 4,500.00',
+                priceNum: 4500,
+                img: 'https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/images/ceg_2415343.jpg',
+                subCategory: 'sillas',
+                material: 'polipropileno y metal',
+                uso: ['comedor', 'oficina'],
+                recentScore: 9,
+                description: 'Silla de diseño Tulip giratoria con cojín acolchado. Diseño icónico de mediados de siglo para tu comedor o estudio.',
+                features: [
+                    '<i class="fas fa-tag"></i> Diseño: Tulip clásico',
+                    '<i class="fas fa-sync"></i> Giro: 360 grados',
+                    '<i class="fas fa-couch"></i> Cojín: Cuero sintético acolchado'
+                ]
+            },
+            {
+                id: 'decor_silla_eames',
+                title: 'Silla de Diseño Nórdica Eames',
+                price: 'RD$ 2,800.00',
+                priceNum: 2800,
+                img: 'https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/images/ceg_31cACt6DgvL._AC_UL320_.jpg',
+                subCategory: 'sillas',
+                material: 'polipropileno y madera',
+                uso: ['comedor', 'sala'],
+                recentScore: 8,
+                description: 'Silla de comedor de estilo nórdico con patas de madera de haya y asiento ergonómico de polipropileno.',
+                features: [
+                    '<i class="fas fa-tag"></i> Estilo: Nórdico / Escandinavo',
+                    '<i class="fas fa-tree"></i> Patas: Madera de haya natural',
+                    '<i class="fas fa-shield-alt"></i> Soporte: Tensores de acero negro'
+                ]
+            },
+            {
+                id: 'decor_sillon_acapulco',
+                title: 'Sillón Lounge Acapulco',
+                price: 'RD$ 5,200.00',
+                priceNum: 5200,
+                img: 'https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/images/d__MINI_53.webp',
+                subCategory: 'sillas',
+                material: 'PVC y metal',
+                uso: ['terraza', 'sala'],
+                recentScore: 7,
+                description: 'Clásico sillón Acapulco tejido a mano con cordón de PVC de alta resistencia y estructura metálica electro-pintada. Perfecto para interiores y exteriores.',
+                features: [
+                    '<i class="fas fa-tag"></i> Tejido: PVC con filtro UV',
+                    '<i class="fas fa-paint-roller"></i> Estructura: Acero electro-pintado negro',
+                    '<i class="fas fa-cloud-sun"></i> Apto para: Exterior e interior'
+                ]
+            },
+            {
                 id: 'decor_lampara_tripode',
                 title: 'Lámpara de Pie Trípode Madera',
                 price: 'RD$ 3,950.00',
