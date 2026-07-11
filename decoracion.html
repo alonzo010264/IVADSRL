@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decoración y Muebles - IVAD Home & Goods</title>
+    <title>Decoración - IVAD Home & Goods</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
             <span class="est">Calidad y Diseño en cada Detalle</span>
             <div class="top-right">
                 <span>Envíos a todo el país</span>
-                <a href="contacto_decoracion.html">Contáctanos</a>
+                <a href="contacto.html">Contáctanos</a>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -35,35 +35,32 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
-                    <li><a href="nosotros_decoracion.html">Nosotros</a></li>
-                    <li><a href="decoracion.html" class="active">Decoración</a></li>
-                    <li><a href="ambientes.html">Ambientes</a></li>
-                    <li><a href="rastreo.html">Rastreo</a></li>
-                    <li><a href="contacto_decoracion.html">Contacto</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li><a href="decoracion.html" class="active">Tienda</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
                 </ul>
             </nav>
             <div class="header-icons">
                 <a href="#"><i class="fas fa-search"></i></a>
                 <a href="login.html"><i class="far fa-user"></i></a>
                 <a href="#" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
-                <button class="mobile-menu-btn" onclick="document.querySelector('.main-nav').classList.toggle('nav-open')"><i class="fas fa-bars"></i></button>
-            </div>
+            
+                <button class="mobile-menu-btn" onclick="document.querySelector('.main-nav').classList.toggle('nav-open')"><i class="fas fa-bars"></i></button></div>
         </div>
     </header>
 
-    <!-- ===== SEARCH BAR ===== -->
+    <!-- ===== TEMU-STYLE SEARCH BAR ===== -->
     <div class="temu-search-wrapper">
         <div class="temu-search-inner">
             <div class="temu-search-box">
                 <i class="fas fa-search temu-search-icon"></i>
-                <input type="text" id="search-input" placeholder="Buscar muebles, adornos, espejos..." autocomplete="off">
+                <input type="text" id="search-input" placeholder="Buscar productos, categorías..." autocomplete="off">
                 <button class="temu-search-btn" id="temu-search-btn"><i class="fas fa-search"></i> Buscar</button>
             </div>
             <div class="temu-search-suggestions" id="search-suggestions" style="display:none;"></div>
         </div>
     </div>
 
-    <!-- ===== CATEGORY OPTION STRIP ===== -->
     <div class="category-strip-wrapper">
         <div class="category-strip-scroll" id="category-strip">
             <button class="cat-pill active" data-category="all">Todo</button>
@@ -96,13 +93,13 @@
         </div>
     </div>
 
-    <!-- ===== TOP HERO IMAGE SLIDER ===== -->
+    <!-- ===== TOP HERO IMAGE SLIDER (NO TEXT) ===== -->
     <div class="top-hero-slider">
         <div class="slider-slides">
-            <div class="slide active" style="background-image: url('images/comedor_1782182137437.png');"></div>
+            <div class="slide active" style="background-image: url('images/nosotros_hero.png');"></div>
+            <div class="slide" style="background-image: url('images/comedor_1782182137437.png');"></div>
             <div class="slide" style="background-image: url('images/amb_hero.jpg');"></div>
             <div class="slide" style="background-image: url('images/amb_comedor.jpg');"></div>
-            <div class="slide" style="background-image: url('images/nosotros_hero.png');"></div>
         </div>
         <button class="slider-control prev-slide"><i class="fas fa-chevron-left"></i></button>
         <button class="slider-control next-slide"><i class="fas fa-chevron-right"></i></button>
@@ -120,7 +117,7 @@
             <ul class="breadcrumbs">
                 <li><a href="index.html">Inicio</a></li>
                 <li><i class="fas fa-chevron-right"></i></li>
-                <li class="active">Decoración y Muebles</li>
+                <li class="active">Decoración</li>
             </ul>
         </div>
     </div>
@@ -153,10 +150,10 @@
     </div>
 
     <!-- Central Banner Section -->
-    <section class="banner-central" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/amb_hero.jpg'); background-size: cover; background-position: center; padding: 60px 0; color: #fff; text-align: center; margin-top: 50px;">
+    <section class="banner-central" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/comedor_1782182137437.png'); background-size: cover; background-position: center; padding: 60px 0; color: #fff; text-align: center; margin-top: 50px;">
         <div class="container">
-            <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 20px; letter-spacing: 2px;">DISEÑO QUE TRANSFORMA TU ESPACIO</h2>
-            <a href="#" class="btn btn-primary" id="btn-show-all-promo">Ver todas las decoraciones</a>
+            <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 20px; letter-spacing: 2px;">IDEAL PARA CADA OCASIÓN</h2>
+            <a href="#" class="btn btn-primary" id="btn-show-all-promo">Ver todos los productos</a>
         </div>
     </section>
 
@@ -166,7 +163,7 @@
             <div class="info-intro">
                 <h2>¿QUÉ ES IVAD?</h2>
                 <p>IVAD es una empresa dedicada a ofrecer productos de alta calidad para el hogar y para negocios. Contamos con más de 25 años de experiencia brindando soluciones prácticas, modernas y confiables para cada necesidad.</p>
-                <a href="nosotros_decoracion.html" class="btn btn-primary">Conoce más</a>
+                <a href="#" class="btn btn-primary">Conoce más</a>
             </div>
             <div class="info-items">
                 <div class="info-item">
@@ -192,12 +189,12 @@
     </section>
 
     <!-- Bottom Banner Section -->
-    <section class="banner-section" id="banner" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/comedor_1782182137437.png'); background-size: cover; background-position: center;">
+    <section class="banner-section" id="banner" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/nosotros_hero.png'); background-size: cover; background-position: center;">
         <div class="container banner-content">
             <button class="slider-arrow prev banner-arrow"><i class="fas fa-chevron-left"></i></button>
             <div class="banner-text">
-                <h2>DISEÑOS ELEGANTES,<br>ESPACIOS CON ESTILO.</h2>
-                <a href="nosotros_decoracion.html" class="btn btn-dark">Descubre más</a>
+                <h2>CALIDAD QUE SE VE,<br>EXPERIENCIA QUE SE SIENTE.</h2>
+                <a href="#" class="btn btn-dark">Descubre más</a>
             </div>
             <button class="slider-arrow next banner-arrow"><i class="fas fa-chevron-right"></i></button>
         </div>
@@ -216,16 +213,16 @@
             <div class="footer-links">
                 <h3>ENLACES</h3>
                 <ul>
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="nosotros_decoracion.html">Nosotros</a></li>
-                    <li><a href="decoracion.html">Decoración</a></li>
-                    <li><a href="contacto_decoracion.html">Contacto</a></li>
+                    <li><a href="desechables.html">Inicio</a></li>
+                    <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                    <li><a href="desechables.html">Desechables</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
                 </ul>
             </div>
             <div class="footer-links">
                 <h3>DEPARTAMENTOS</h3>
                 <ul>
-                    <li><a href="decoracion.html">Decoración y Muebles</a></li>
+                    <li><a href="index.html#dep-decoracion">Decoración y Muebles</a></li>
                     <li><a href="desechables.html">Desechables para Negocios</a></li>
                 </ul>
             </div>
@@ -263,7 +260,7 @@
         </div>
     </footer>
 
-    <!-- Product Detail Modal -->
+    <!-- Product Modal -->
     <div id="product-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close"><i class="fas fa-times"></i></button>
@@ -309,9 +306,11 @@
         </div>
     </div>
 
+
     <!-- Supabase CDN y Configuración -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
+
