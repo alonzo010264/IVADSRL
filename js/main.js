@@ -675,11 +675,117 @@ function renderStoreCategories() {
 
 // Categorias internas que NO son productos de venta
         const EXCLUDED_CATEGORIES = new Set(['fotos','logo_banners','images','ivad_pagina']);
+        const DECOR_SUBCATEGORIES = new Set(['muebles', 'sofas', 'mesas', 'sillas', 'floreros', 'cojines', 'iluminacion', 'espejos', 'alfombras', 'cuadros', 'adornos']);
+        const isDecoracionPage = window.location.pathname.includes('decoracion.html');
+
+        const defaultDecorProducts = [
+            {
+                id: 'decor_sofa_moderno',
+                title: 'Sofá Moderno Velvet',
+                price: 'RD$ 28,500.00',
+                priceNum: 28500,
+                img: 'images/sofa_1782182122883.png',
+                subCategory: 'sofas',
+                material: 'terciopelo y madera',
+                uso: ['sala', 'oficina'],
+                recentScore: 9,
+                description: 'Elegante sofá tapizado en terciopelo de alta calidad con patas de madera sólida. Diseño ergonómico de gran confort para tu sala.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Terciopelo premium',
+                    '<i class="fas fa-ruler-combined"></i> Medidas: 200 x 85 x 75 cm',
+                    '<i class="fas fa-palette"></i> Color: Gris Plomo'
+                ]
+            },
+            {
+                id: 'decor_juego_comedor',
+                title: 'Juego de Comedor Mármol 6 Sillas',
+                price: 'RD$ 45,000.00',
+                priceNum: 45000,
+                img: 'images/comedor_1782182137437.png',
+                subCategory: 'mesas',
+                material: 'mármol y metal',
+                uso: ['comedor'],
+                recentScore: 8,
+                description: 'Moderna mesa de comedor con tope de mármol pulido y base metálica reforzada. Incluye 6 cómodas sillas tapizadas.',
+                features: [
+                    '<i class="fas fa-tag"></i> Tope: Mármol sintético de alta resistencia',
+                    '<i class="fas fa-users"></i> Capacidad: 6 personas',
+                    '<i class="fas fa-shield-alt"></i> Base: Acero inoxidable electro-pintado'
+                ]
+            },
+            {
+                id: 'decor_florero_nordico',
+                title: 'Florero Cerámico Texturizado',
+                price: 'RD$ 1,850.00',
+                priceNum: 1850,
+                img: 'images/florero_1782182149891.png',
+                subCategory: 'floreros',
+                material: 'cerámica',
+                uso: ['adornos', 'mesa'],
+                recentScore: 10,
+                description: 'Florero de cerámica de estilo nórdico minimalista con acabado mate texturizado. Ideal para arreglos florales secos.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Cerámica de alta calidad',
+                    '<i class="fas fa-ruler-vertical"></i> Altura: 28 cm',
+                    '<i class="fas fa-palette"></i> Acabado: Blanco Arena'
+                ]
+            },
+            {
+                id: 'decor_lampara_tripode',
+                title: 'Lámpara de Pie Trípode Madera',
+                price: 'RD$ 3,950.00',
+                priceNum: 3950,
+                img: 'images/amb_hero.jpg',
+                subCategory: 'iluminacion',
+                material: 'madera y tela',
+                uso: ['sala', 'dormitorio'],
+                recentScore: 7,
+                description: 'Lámpara de pie de diseño trípode en madera natural con pantalla de tela de lino. Aporta una luz cálida y acogedora.',
+                features: [
+                    '<i class="fas fa-lightbulb"></i> Socket: E27 (bombilla no incluida)',
+                    '<i class="fas fa-ruler-vertical"></i> Altura total: 155 cm',
+                    '<i class="fas fa-power-off"></i> Interruptor: De pedal en el cable'
+                ]
+            },
+            {
+                id: 'decor_espejo_dorado',
+                title: 'Espejo de Pared Ovalado Dorado',
+                price: 'RD$ 4,800.00',
+                priceNum: 4800,
+                img: 'images/amb_comedor.jpg',
+                subCategory: 'espejos',
+                material: 'vidrio y metal',
+                uso: ['entrada', 'sala'],
+                recentScore: 6,
+                description: 'Espejo de pared ovalado con marco de metal delgado acabado en oro cepillado. Diseño elegante y moderno.',
+                features: [
+                    '<i class="fas fa-border-style"></i> Marco: Aluminio acabado dorado',
+                    '<i class="fas fa-ruler-combined"></i> Medidas: 80 x 50 cm',
+                    '<i class="fas fa-tools"></i> Incluye: Accesorios para colgar'
+                ]
+            },
+            {
+                id: 'decor_cojin_terciopelo',
+                title: 'Cojín Decorativo Terciopelo (Set de 2)',
+                price: 'RD$ 1,200.00',
+                priceNum: 1200,
+                img: 'images/nosotros_valor1.png',
+                subCategory: 'cojines',
+                material: 'tela',
+                uso: ['sofa', 'cama'],
+                recentScore: 5,
+                description: 'Set de dos fundas de cojín con textura de terciopelo ultra suave y cremallera invisible. Incluye relleno de microfibra.',
+                features: [
+                    '<i class="fas fa-box"></i> Cantidad: Set de 2 unidades con relleno',
+                    '<i class="fas fa-ruler-combined"></i> Medidas: 45 x 45 cm',
+                    '<i class="fas fa-soap"></i> Lavado: A máquina con agua fría'
+                ]
+            }
+        ];
 
         async function fetchStoreProducts() {
             if (supabaseClient) {
                 try {
-                    // Paginacion para obtener TODOS los productos (Supabase limita a 1000 por llamada)
                     let allData = [];
                     let from = 0;
                     const PAGE_SIZE = 1000;
@@ -698,33 +804,42 @@ function renderStoreCategories() {
                     const data = allData;
                     
                     if (data && data.length > 0) {
-                        const disposableData = data.filter(p => !EXCLUDED_CATEGORIES.has(p.sub_category));
-                        desechablesProductsList = disposableData.map(p => ({
-                            id: p.id,
-                            title: p.title,
-                            price: p.price,
-                            priceNum: p.price_num,
-                            img: p.img,
-                            subCategory: p.sub_category,
-                            material: p.material || '',
-                            uso: p.uso || [],
-                            recentScore: p.recent_score || 0
-                        }));
+                        let filteredData = [];
+                        if (isDecoracionPage) {
+                            filteredData = data.filter(p => DECOR_SUBCATEGORIES.has(p.sub_category));
+                        } else {
+                            filteredData = data.filter(p => !EXCLUDED_CATEGORIES.has(p.sub_category) && !DECOR_SUBCATEGORIES.has(p.sub_category));
+                        }
 
-                        // Inject database details into productsData dynamically
-                        disposableData.forEach(p => {
-                            productsData[p.id] = {
-                                category: 'DESECHABLES',
+                        if (filteredData.length > 0) {
+                            desechablesProductsList = filteredData.map(p => ({
+                                id: p.id,
                                 title: p.title,
                                 price: p.price,
+                                priceNum: p.price_num,
                                 img: p.img,
-                                reviews: `(${Math.floor(Math.random() * 80) + 20} reseÃ±as)`,
-                                desc: p.description || p.title,
-                                features: p.features || [
-                                    `<i class="fas fa-tag"></i> Material: ${p.material || 'Varios'}`
-                                ]
-                            };
-                        });
+                                subCategory: p.sub_category,
+                                material: p.material || '',
+                                uso: p.uso || [],
+                                recentScore: p.recent_score || 0
+                            }));
+
+                            filteredData.forEach(p => {
+                                productsData[p.id] = {
+                                    category: isDecoracionPage ? 'DECORACIÓN' : 'DESECHABLES',
+                                    title: p.title,
+                                    price: p.price,
+                                    img: p.img,
+                                    reviews: `(${Math.floor(Math.random() * 80) + 20} reseñas)`,
+                                    desc: p.description || p.title,
+                                    features: p.features || [
+                                        `<i class="fas fa-tag"></i> Material: ${p.material || 'Varios'}`
+                                    ]
+                                };
+                            });
+                        } else {
+                            useDefaultProducts();
+                        }
                     } else {
                         useDefaultProducts();
                     }
@@ -739,44 +854,73 @@ function renderStoreCategories() {
         }
 
         function useDefaultProducts() {
-            const stored = localStorage.getItem('ivad_custom_products');
-            let sourceList = [];
-            if (stored) {
-                try {
-                    sourceList = JSON.parse(stored);
-                } catch(e) {
-                    sourceList = [];
-                }
-            } else {
-                sourceList = [];
-            }
-
-            const disposableSource = sourceList.filter(p => p.status === 'Activo' && !EXCLUDED_CATEGORIES.has(p.sub_category || p.subCategory));
-            desechablesProductsList = disposableSource.map(p => ({
-                id: p.id,
-                title: p.title,
-                price: p.price,
-                priceNum: p.price_num || p.priceNum || parseFloat(p.price.replace(/[^0-9.]/g, '')) || 0,
-                img: p.img,
-                subCategory: p.sub_category || p.subCategory,
-                material: p.material || '',
-                uso: p.uso || [],
-                recentScore: p.recent_score || p.recentScore || 0
-            }));
-
-            disposableSource.forEach(p => {
-                productsData[p.id] = {
-                    category: 'DESECHABLES',
+            if (isDecoracionPage) {
+                desechablesProductsList = defaultDecorProducts.map(p => ({
+                    id: p.id,
                     title: p.title,
                     price: p.price,
+                    priceNum: p.priceNum,
                     img: p.img,
-                    reviews: `(${Math.floor(Math.random() * 85) + 15} reseÃ±as)`,
-                    desc: p.description || p.desc || p.title,
-                    features: p.features || [
-                        `<i class="fas fa-tag"></i> Material: ${p.material || 'Varios'}`
-                    ]
-                };
-            });
+                    subCategory: p.subCategory,
+                    material: p.material || '',
+                    uso: p.uso || [],
+                    recentScore: p.recentScore
+                }));
+
+                defaultDecorProducts.forEach(p => {
+                    productsData[p.id] = {
+                        category: 'DECORACIÓN',
+                        title: p.title,
+                        price: p.price,
+                        img: p.img,
+                        reviews: `(${Math.floor(Math.random() * 85) + 15} reseñas)`,
+                        desc: p.description || p.title,
+                        features: p.features
+                    };
+                });
+            } else {
+                const stored = localStorage.getItem('ivad_custom_products');
+                let sourceList = [];
+                if (stored) {
+                    try {
+                        sourceList = JSON.parse(stored);
+                    } catch(e) {
+                        sourceList = [];
+                    }
+                } else {
+                    sourceList = [];
+                }
+
+                const disposableSource = sourceList.length > 0 
+                    ? sourceList.filter(p => p.status === 'Activo' && !EXCLUDED_CATEGORIES.has(p.sub_category || p.subCategory) && !DECOR_SUBCATEGORIES.has(p.sub_category || p.subCategory))
+                    : defaultDesechablesList;
+
+                desechablesProductsList = disposableSource.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    price: p.price,
+                    priceNum: p.price_num || p.priceNum || parseFloat(p.price.replace(/[^0-9.]/g, '')) || 0,
+                    img: p.img,
+                    subCategory: p.sub_category || p.subCategory,
+                    material: p.material || '',
+                    uso: p.uso || [],
+                    recentScore: p.recent_score || p.recentScore || 0
+                }));
+
+                disposableSource.forEach(p => {
+                    productsData[p.id] = {
+                        category: 'DESECHABLES',
+                        title: p.title,
+                        price: p.price,
+                        img: p.img,
+                        reviews: `(${Math.floor(Math.random() * 85) + 15} reseñas)`,
+                        desc: p.description || p.desc || p.title,
+                        features: p.features || [
+                            `<i class="fas fa-tag"></i> Material: ${p.material || 'Varios'}`
+                        ]
+                    };
+                });
+            }
         }
 
         const searchInput = document.getElementById('search-input');
