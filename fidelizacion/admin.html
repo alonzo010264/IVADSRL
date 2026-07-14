@@ -1313,7 +1313,7 @@
 
     // --- MÓDULO DE SOLICITUDES DE ELIMINACIÓN (ADMIN) ---
     async function loadDeletionRequests() {
-        if (currentUser.role !== 'admin') return;
+        if (currentUser.role !== 'admin' && currentUser.role !== 'administracion') return;
         const el = document.getElementById('deletion-requests-list');
         const cardContainer = document.getElementById('deletion-requests-card');
         
@@ -1391,7 +1391,7 @@
 
     // --- MÓDULO DE GESTIÓN DE USUARIOS (ADMIN) ---
     async function loadUsersAdmin() {
-        if (currentUser.role !== 'admin') return;
+        if (currentUser.role !== 'admin' && currentUser.role !== 'administracion') return;
         const container = document.getElementById('users-list-container');
         
         if (!isSimulationMode && typeof supabaseClient !== 'undefined' && supabaseClient) {
