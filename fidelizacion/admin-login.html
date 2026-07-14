@@ -301,19 +301,16 @@
 
         <form id="admin-form" onsubmit="handleAdminLogin(event)">
             <div class="form-group">
-                <label for="user-select">Usuario</label>
+                <label for="user-input">Usuario</label>
                 <div class="input-wrap">
-                    <select id="user-select" style="width: 100%; padding: 14px 15px 14px 45px; background: rgba(10, 13, 17, 0.7); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-family: inherit; font-size: 0.95rem; outline: none; appearance: none; -webkit-appearance: none; cursor: pointer;" required>
-                        <option value="" disabled selected>Cargando usuarios...</option>
-                    </select>
-                    <i class="fas fa-user" style="z-index: 5;"></i>
-                    <i class="fas fa-chevron-down" style="position: absolute; right: 15px; left: auto; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); font-size: 0.85rem;"></i>
+                    <input type="text" id="user-input" placeholder="Tu nombre de usuario" required autocomplete="username">
+                    <i class="fas fa-user"></i>
                 </div>
             </div>
             <div class="form-group">
                 <label for="admin-pass">Contraseña</label>
                 <div class="input-wrap">
-                    <input type="password" id="admin-pass" placeholder="••••••••" required>
+                    <input type="password" id="admin-pass" placeholder="••••••••" required autocomplete="current-password">
                     <i class="fas fa-key"></i>
                 </div>
             </div>
@@ -329,7 +326,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/supabase-config.js"></script>
     <script>
-        let allUsers = [];
+        // Usuarios de respaldo (en caso de que la tabla loyalty_users no exista)
+        const FALLBACK_USERS = [
+            { username: 'Alonzo', password: '@Alonzo0102', role: 'administracion' },
+            { username: 'Luis', password: '123456', role: 'cajero' }
+        ];
 
         function showError(msg) {
             const errBox = document.getElementById('error-message');
@@ -338,85 +339,63 @@
             errBox.style.display = 'flex';
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            loadUsers();
-        });
-
-        async function loadUsers() {
-            const selectEl = document.getElementById('user-select');
-            
-            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('loyalty_users')
-                        .select('*')
-                        .order('username', { ascending: true });
-
-                    if (error) throw error;
-
-                    allUsers = data || [];
-                } catch (err) {
-                    console.error('Error fetching users from Supabase:', err);
-                    allUsers = [
-                        { username: 'Alonzo', password: '@Alonzo0102', role: 'administracion' },
-                        { username: 'Luis', password: '123456', role: 'cajero' }
-                    ];
-                }
-            } else {
-                allUsers = [
-                    { username: 'Alonzo', password: '@Alonzo0102', role: 'administracion' },
-                    { username: 'Luis', password: '123456', role: 'cajero' }
-                ];
-            }
-
-            const roleLabels = {
-                'administracion': 'Administrador',
-                'gerencia': 'Gerente / Dirección',
-                'cajero': 'Cajero',
-                'contabilidad': 'Contabilidad',
-                'admin': 'Administrador'
-            };
-
-            selectEl.innerHTML = '<option value="" disabled selected>Selecciona tu Usuario...</option>' +
-                allUsers.map(user => {
-                    const label = roleLabels[user.role] || user.role;
-                    return `<option value="${user.username}">${user.username} (${label})</option>`;
-                }).join('');
-        }
-
-        function handleAdminLogin(e) {
+        async function handleAdminLogin(e) {
             e.preventDefault();
             document.getElementById('error-message').style.display = 'none';
 
-            const username = document.getElementById('user-select').value;
+            const usernameInput = document.getElementById('user-input').value.trim();
             const pass = document.getElementById('admin-pass').value.trim();
             const btn = document.getElementById('admin-btn-text');
 
-            if (!username) {
-                showError('Por favor, selecciona un usuario.');
+            if (!usernameInput) {
+                showError('Por favor, ingresa tu nombre de usuario.');
                 return;
             }
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
 
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.textContent = 'Ingresar al Panel';
+            let matchedUser = null;
 
-                const matchedUser = allUsers.find(u => u.username === username);
+            // 1. Intentar buscar en Supabase primero
+            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('loyalty_users')
+                        .select('*')
+                        .eq('username', usernameInput)
+                        .maybeSingle();
 
-                if (matchedUser && matchedUser.password === pass) {
-                    localStorage.setItem('ivad_loyalty_admin', 'true');
-                    localStorage.setItem('ivad_loyalty_user', JSON.stringify({
-                        username: matchedUser.username,
-                        role: matchedUser.role
-                    }));
-                    window.location.href = 'admin.html';
-                } else {
-                    showError('Contraseña incorrecta.');
+                    if (!error && data) {
+                        matchedUser = data;
+                    }
+                } catch (err) {
+                    console.warn('loyalty_users table not available, using fallback:', err.message);
                 }
-            }, 600);
+            }
+
+            // 2. Si no encontró en Supabase, usar usuarios de respaldo
+            if (!matchedUser) {
+                matchedUser = FALLBACK_USERS.find(u =>
+                    u.username.toLowerCase() === usernameInput.toLowerCase()
+                );
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Ingresar al Panel';
+
+            if (matchedUser && matchedUser.password === pass) {
+                localStorage.setItem('ivad_loyalty_admin', 'true');
+                localStorage.setItem('ivad_loyalty_user', JSON.stringify({
+                    username: matchedUser.username,
+                    role: matchedUser.role
+                }));
+                window.location.href = 'admin.html';
+            } else if (!matchedUser) {
+                showError('Usuario no encontrado. Verifica tu nombre de usuario.');
+            } else {
+                showError('Contraseña incorrecta. Intenta de nuevo.');
+            }
         }
     </script>
 </body>

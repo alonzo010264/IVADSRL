@@ -432,13 +432,16 @@
                         .from('loyalty_cards')
                         .select('*')
                         .or(`client_email.eq."${ident}",card_code.eq."${ident}"`)
-                        .single();
+                        .maybeSingle();
 
                     btn.disabled = false;
                     btn.textContent = 'Ver mi Tarjeta';
 
-                    if (error || !data) {
-                        showError('Tarjeta no encontrada en el sistema.');
+                    if (error) {
+                        console.error('Supabase error:', error);
+                        showError('Error al consultar la base de datos. Intenta de nuevo.');
+                    } else if (!data) {
+                        showError('Tarjeta no encontrada. Verifica tu correo o código de tarjeta.');
                     } else if (data.temp_password !== pass) {
                         showError('Contraseña temporal incorrecta.');
                     } else {
@@ -450,7 +453,7 @@
                     btn.disabled = false;
                     btn.textContent = 'Ver mi Tarjeta';
                     console.error('Login error:', err);
-                    showError('Error de conexión con la base de datos.');
+                    showError('Error de conexión. Intenta de nuevo en un momento.');
                 }
             } else {
                 // Mock fallback simulation
