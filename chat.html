@@ -922,19 +922,26 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
+        // Custom escape function
         function escapeHtml(str) {
             return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
         // Show/hide typing indicator
         function showTyping() {
+            const avatarHtml = agentConnected 
+                ? `<img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" alt="María González">`
+                : `<img src="logo_transparent.png" alt="IVAD Logo">`;
+            
+            const avatarClass = agentConnected ? 'message-avatar' : 'message-avatar-logo';
+
             const typingHtml = `
                 <div class="message-row incoming typing-indicator-row" id="typing-indicator">
-                    <div class="message-avatar-logo">
-                        <img src="logo_transparent.png" alt="IVAD Logo">
+                    <div class="${avatarClass}">
+                        ${avatarHtml}
                     </div>
                     <div class="message-bubble">
-                        <div class="typing-dots">
+                        <div class="dots">
                             <span></span><span></span><span></span>
                         </div>
                     </div>
@@ -1044,12 +1051,16 @@
             }, 2500);
         }
 
-        // Call Ollama backend
+        // Call Ollama backend with simulator fallback
         async function callOllama(messageText) {
+            waitingForAI = true;
+            showTyping();
+
+            // Add user message to history
+            conversationHistory.push({ role: 'user', content: messageText });
+
             if (agentConnected) {
                 // If agent is connected, simulate human agent typing indicator then direct agent message
-                waitingForAI = true;
-                showTyping();
                 setTimeout(() => {
                     hideTyping();
                     const mariaResponse = 'Muchas gracias. Déjame revisar el sistema inmediatamente para darte una actualización. Demorará menos de un minuto.';
@@ -1059,22 +1070,22 @@
                 return;
             }
 
-            waitingForAI = true;
-            showTyping();
-
-            // Add user message to history
-            conversationHistory.push({ role: 'user', content: messageText });
-
             try {
+                // Fetch with short timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+
                 const res = await fetch('http://localhost:3500/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: messageText,
                         history: conversationHistory
-                    })
+                    }),
+                    signal: controller.signal
                 });
 
+                clearTimeout(timeoutId);
                 hideTyping();
                 waitingForAI = false;
 
@@ -1103,14 +1114,52 @@
                 }
 
             } catch (err) {
-                hideTyping();
-                waitingForAI = false;
-                const isDown = err.message.includes('Failed to fetch') || err.message.includes('NetworkError');
-                appendBotMessage(
-                    isDown
-                    ? '⚠️ No puedo conectarme al asistente de IA en este momento. Asegúrate de que el proxy esté corriendo: <code>node server.js</code> en la carpeta <b>ollama-proxy</b>.'
-                    : `⚠️ Error: ${escapeHtml(err.message)}`
-                );
+                console.warn('Ollama proxy offline, falling back to simulator:', err);
+                
+                // Show a brief system message on first failure
+                const isFirstFail = !document.getElementById('simulator-banner');
+                if (isFirstFail) {
+                    const bannerHtml = `
+                        <div class="system-notification" id="simulator-banner" style="background-color: #fff9db; color: #b7791f; border: 1px solid #fef3c7;">
+                            ⚠️ El proxy local no está respondiendo (inicia <code>node server.js</code> en <b>ollama-proxy</b>). Iniciando simulación automática.
+                        </div>
+                    `;
+                    chatMessages.insertAdjacentHTML('beforeend', bannerHtml);
+                }
+
+                // Simulate writing delay
+                setTimeout(() => {
+                    hideTyping();
+                    waitingForAI = false;
+
+                    let reply = '';
+                    const lowerText = messageText.toLowerCase();
+
+                    if (lowerText.includes('pedido') || lowerText.includes('compra') || lowerText.includes('rastre')) {
+                        reply = 'Con gusto te ayudaré con tu consulta de pedido. Por favor, indícame tu código de pedido o tu correo electrónico para buscarlo.';
+                    } else if (lowerText.includes('producto') || lowerText.includes('catálogo') || lowerText.includes('precio') || lowerText.includes('información')) {
+                        reply = 'Contamos con una amplia variedad de productos desechables de alta calidad y artículos de decoración. ¿Buscas algún producto en específico?';
+                    } else if (lowerText.includes('envío') || lowerText.includes('entrega') || lowerText.includes('tiempo')) {
+                        reply = 'Realizamos envíos rápidos a todo el país. Los tiempos de entrega estándar son de 24 a 48 horas hábiles. ¿Deseas cotizar un envío?';
+                    } else if (lowerText.includes('devolución') || lowerText.includes('cambio') || lowerText.includes('reembolso')) {
+                        reply = 'Nuestra política de devoluciones te permite realizar cambios dentro de los primeros 7 días de tu compra. ¿Necesitas iniciar una devolución?';
+                    } else if (lowerText.includes('agente') || lowerText.includes('humano') || lowerText.includes('persona') || lowerText.includes('hablar con')) {
+                        reply = 'Claro, entiendo. Te voy a transferir con un agente humano de nuestro equipo para asistirte de inmediato.';
+                    } else {
+                        reply = 'Hola. Soy el asistente inteligente de IVAD. Puedo ayudarte con información de pedidos, envíos, devoluciones o conectarte con un agente humano. ¿Cuál es tu consulta?';
+                    }
+
+                    // Add assistant response to history
+                    conversationHistory.push({ role: 'assistant', content: reply });
+                    appendBotMessage(reply);
+
+                    // Check if we should trigger handoff
+                    const handoffKeywords = ['transferir con un agente', 'agente humano', 'hablar con', 'conectar con'];
+                    const wantsHandoff = handoffKeywords.some(kw => reply.toLowerCase().includes(kw));
+                    if (wantsHandoff && !agentConnected) {
+                        setTimeout(() => triggerAgentHandoff(), 1500);
+                    }
+                }, 2000);
             }
         }
 
