@@ -1126,37 +1126,76 @@
 
                     let reply = '';
                     const lowerText = messageText.toLowerCase();
-                    const isInConversation = conversationHistory.length > 2;
 
-                    // Detectar quejas o frustración del cliente
+                    // === Leer contexto de la conversación ===
+                    const lastBotMsg = conversationHistory.filter(m => m.role === 'assistant').slice(-1)[0]?.content?.toLowerCase() || '';
+                    const allUserHistory = conversationHistory.filter(m => m.role === 'user').map(m => m.content.toLowerCase()).join(' ');
+
+                    // ¿De qué tema venía hablando?
+                    const topicIsOrder = lastBotMsg.includes('pedido') || lastBotMsg.includes('número') || lastBotMsg.includes('orden') || lastBotMsg.includes('sistema');
+                    const topicIsShipping = lastBotMsg.includes('envío') || lastBotMsg.includes('entrega');
+                    const topicIsReturn = lastBotMsg.includes('devolución') || lastBotMsg.includes('cambio');
+
+                    // === Detectar quejas / frustración ===
                     const isComplaint = lowerText.includes('problema') || lowerText.includes('error') ||
                         lowerText.includes('culpa') || lowerText.includes('falla') || lowerText.includes('molest') ||
                         lowerText.includes('no llega') || lowerText.includes('perdido') || lowerText.includes('nunca') ||
                         lowerText.includes('siempre pasa') || lowerText.includes('mala') || lowerText.includes('horrible') ||
                         lowerText.includes('pésimo') || lowerText.includes('no aparece') || lowerText.includes('no creo') ||
-                        lowerText.includes('seguro es') || lowerText.includes('queja') || lowerText.includes('reclamo');
+                        lowerText.includes('seguro es') || lowerText.includes('queja') || lowerText.includes('reclamo') ||
+                        lowerText.includes('no lo registr') || lowerText.includes('hoy me lo dieron') ||
+                        lowerText.includes('quizas') || lowerText.includes('quizá') || lowerText.includes('no sé si');
 
+                    // === Lógica principal ===
                     if (isComplaint) {
-                        reply = 'Entiendo tu frustración y lo lamentamos mucho. 😔 Queremos solucionar esto cuanto antes. ¿Podrías darnos tu número de pedido para revisar lo que pasó?';
-                    } else if (lowerText.includes('pedido') || lowerText.includes('compra') || lowerText.includes('rastre') || lowerText.includes('estatus') || /\d{4,}/.test(lowerText)) {
-                        if (/\d{4,}/.test(lowerText)) {
-                            reply = 'He revisado ese número en nuestro sistema y no aparece registrado. ¿Seguro es ese número? Puedes confirmármelo y yo vuelvo a verificar.';
+                        // Queja o explicación del cliente — responder con empatía y acción
+                        if (topicIsOrder) {
+                            reply = 'Entiendo, es posible que el pedido aún no haya sido registrado en el sistema. 😔 Te recomiendo comunicarte con nuestro equipo de despacho para confirmar. ¿Tienes el comprobante de compra o el nombre de quien te atendió?';
                         } else {
-                            reply = '¡Claro que sí! Con gusto te ayudaré a revisar tu pedido. ¿Me podrías proporcionar tu número de orden? 📦';
+                            reply = 'Lamentamos mucho la situación 😔. Queremos resolverlo cuanto antes. ¿Podrías darnos tu número de pedido para revisar lo que pasó?';
                         }
-                    } else if (lowerText.includes('producto') || lowerText.includes('catálogo') || lowerText.includes('precio') || lowerText.includes('información')) {
-                        reply = 'Tenemos una gran variedad de artículos de decoración y productos desechables para tu hogar. ¿Qué estás buscando exactamente? 🛍️';
-                    } else if (lowerText.includes('envío') || lowerText.includes('entrega') || lowerText.includes('tiempo')) {
-                        reply = '¡Hacemos envíos rápidos a todo el país! Usualmente toman de 24 a 48 horas. ¿Hacia dónde sería tu envío? 🚚';
+
+                    } else if (/\d{4,}/.test(lowerText)) {
+                        // Cliente envía un número — verificar
+                        reply = 'He revisado ese número en nuestro sistema y no aparece registrado. Si lo recibiste hoy, puede que aún esté en proceso. ¿Tienes el recibo o comprobante de tu compra? 📄';
+
+                    } else if (lowerText.includes('pedido') || lowerText.includes('compra') || lowerText.includes('rastre') || lowerText.includes('estatus') || lowerText.includes('orden')) {
+                        reply = '¡Claro! Con gusto te ayudaré a revisar tu pedido. ¿Me podrías dar tu número de orden? 📦';
+
+                    } else if (topicIsOrder) {
+                        // Seguimiento contextual del tema de pedidos — no pedir más detalles inútiles
+                        if (lowerText.includes('sí') || lowerText.includes('si') || lowerText.includes('correcto') || lowerText.includes('ese es') || lowerText.includes('confirmo')) {
+                            reply = 'Entendido. En ese caso, te recomiendo contactar directamente con nuestro equipo. ¿Prefieres que te ponga en contacto con un agente para resolverlo de inmediato?';
+                        } else if (lowerText.includes('no') || lowerText.includes('equivoc')) {
+                            reply = '¡Sin problema! ¿Me podrías pasar el número correcto? Con gusto lo busco de nuevo. 📦';
+                        } else {
+                            reply = 'Entiendo. Si tienes el comprobante de compra, con ese número podemos ubicar tu pedido mucho más rápido. ¿Lo tienes a mano?';
+                        }
+
+                    } else if (lowerText.includes('producto') || lowerText.includes('catálogo') || lowerText.includes('precio')) {
+                        reply = 'Tenemos artículos de decoración y desechables para el hogar. ¿Qué estás buscando? 🛍️';
+
+                    } else if (lowerText.includes('envío') || lowerText.includes('entrega')) {
+                        reply = 'Hacemos envíos rápidos a todo el país, usualmente de 24 a 48 horas. ¿Hacia dónde sería tu envío? 🚚';
+
                     } else if (lowerText.includes('devolución') || lowerText.includes('cambio') || lowerText.includes('reembolso')) {
-                        reply = 'No te preocupes, puedes hacer devoluciones en los primeros 7 días de tu compra. ¿Me compartes tu número de pedido para revisarlo?';
+                        reply = 'Puedes hacer devoluciones en los primeros 7 días de tu compra. ¿Me das tu número de pedido para revisarlo?';
+
                     } else if (lowerText.includes('agente') || lowerText.includes('humano') || lowerText.includes('persona') || lowerText.includes('hablar con')) {
-                        reply = '¡Entendido! Te voy a transferir con un agente especializado de nuestro equipo para que te brinde atención personalizada. ¡Dame un segundito! 👩‍💻';
-                    } else if (isInConversation) {
-                        // Si ya hay conversación activa, NO reiniciar con "Hola", continuar el hilo
-                        reply = 'Disculpa, ¿podrías darme un poco más de detalle sobre tu consulta? Estoy aquí para ayudarte. 😊';
+                        reply = '¡Entendido! Te transfiero con un agente especializado ahora mismo. ¡Dame un segundito! 👩‍💻';
+
+                    } else if (lowerText.includes('hola') || lowerText.includes('buenas') || lowerText.includes('buen dia') || lowerText.includes('buenos') || conversationHistory.length <= 1) {
+                        reply = '¡Hola! ¿En qué te puedo ayudar hoy? 😊';
+
                     } else {
-                        reply = 'Hola, ¿en qué te puedo ayudar hoy? Puedo asistirte con pedidos, productos, envíos y más. 😊';
+                        // Último recurso con contexto — no preguntar algo inútil
+                        if (topicIsShipping) {
+                            reply = 'Con gusto te ayudo con el envío. ¿Podrías decirme el número de tu pedido para ver el estado? 🚚';
+                        } else if (topicIsReturn) {
+                            reply = 'Para procesar tu devolución necesito el número de pedido. ¿Lo tienes a mano?';
+                        } else {
+                            reply = 'Entendido. Para poder ayudarte mejor, ¿podrías decirme cuál es el número de tu pedido? Así puedo revisar tu caso directamente. 📦';
+                        }
                     }
 
                     // Add assistant response to history
