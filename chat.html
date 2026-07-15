@@ -1127,18 +1127,12 @@
                     let reply = '';
                     const lowerText = messageText.toLowerCase();
 
-                    if (lowerText.includes('pedido') || lowerText.includes('compra') || lowerText.includes('rastre')) {
-                        reply = 'Con gusto te ayudaré con tu consulta de pedido. Por favor, indícame tu código de pedido o tu correo electrónico para buscarlo.';
-                    } else if (lowerText.includes('producto') || lowerText.includes('catálogo') || lowerText.includes('precio') || lowerText.includes('información')) {
-                        reply = 'Contamos con una amplia variedad de productos desechables de alta calidad y artículos de decoración. ¿Buscas algún producto en específico?';
-                    } else if (lowerText.includes('envío') || lowerText.includes('entrega') || lowerText.includes('tiempo')) {
-                        reply = 'Realizamos envíos rápidos a todo el país. Los tiempos de entrega estándar son de 24 a 48 horas hábiles. ¿Deseas cotizar un envío?';
-                    } else if (lowerText.includes('devolución') || lowerText.includes('cambio') || lowerText.includes('reembolso')) {
-                        reply = 'Nuestra política de devoluciones te permite realizar cambios dentro de los primeros 7 días de tu compra. ¿Necesitas iniciar una devolución?';
-                    } else if (lowerText.includes('agente') || lowerText.includes('humano') || lowerText.includes('persona') || lowerText.includes('hablar con')) {
-                        reply = 'Claro, entiendo. Te voy a transferir con un agente humano de nuestro equipo para asistirte de inmediato.';
+                    if (lowerText.includes('pedido') || lowerText.includes('compra') || lowerText.includes('rastre') || lowerText.includes('estatus')) {
+                        reply = '¡Claro que sí! Con gusto te ayudaré a revisar tu pedido. ¿Me podrías proporcionar tu número de orden o el correo con el que compraste? 📦';
+                    } else if (lowerText.includes('hola') || lowerText.includes('buenas') || lowerText.includes('saludos')) {
+                        reply = '¡Hola! 😊 Soy el asistente virtual de IVAD. Estoy aquí para ayudarte con el estatus de tus pedidos. Si tienes otra consulta, te puedo comunicar con un agente. ¿En qué te ayudo hoy?';
                     } else {
-                        reply = 'Hola. Soy el asistente inteligente de IVAD. Puedo ayudarte con información de pedidos, envíos, devoluciones o conectarte con un agente humano. ¿Cuál es tu consulta?';
+                        reply = 'Para poder darte una atención más detallada sobre eso, te voy a transferir con un agente especializado de nuestro equipo. ¡Dame un segundito! 👩‍💻';
                     }
 
                     // Add assistant response to history
