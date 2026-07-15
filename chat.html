@@ -277,6 +277,13 @@
             letter-spacing: 0.2px;
         }
 
+        .agent-dept-text {
+            font-size: 0.82rem;
+            color: #d1d5db;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
         .agent-status-text {
             font-size: 0.78rem;
             color: #a0aec0;
@@ -740,6 +747,7 @@
                                 <path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/>
                             </svg>
                         </div>
+                        <div class="agent-dept-text" id="header-agent-dept" style="display: none;">Agente de Atención al Cliente</div>
                         <div class="agent-status-text">
                             <span class="agent-status-dot"></span>
                             En línea
@@ -921,12 +929,16 @@
                     // Switch Header to Maria Gonzalez
                     const headerAvatarSlot = document.getElementById('header-avatar-slot');
                     const headerAgentName = document.getElementById('header-agent-name');
+                    const headerAgentDept = document.getElementById('header-agent-dept');
 
                     headerAvatarSlot.innerHTML = `
                         <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" class="agent-avatar-img" alt="María González">
                         <div class="agent-status-indicator"></div>
                     `;
                     headerAgentName.textContent = 'María González';
+                    if (headerAgentDept) {
+                        headerAgentDept.style.display = 'block';
+                    }
 
                     // Append Connection System notification
                     const notificationHtml = `
