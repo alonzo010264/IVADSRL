@@ -1115,16 +1115,9 @@
             } catch (err) {
                 console.warn('Ollama proxy offline, falling back to simulator:', err);
                 
-                // Show a brief system message on first failure
+                // Show a brief system message on first failure (REMOVED per user request)
                 const isFirstFail = !document.getElementById('simulator-banner');
-                if (isFirstFail) {
-                    const bannerHtml = `
-                        <div class="system-notification" id="simulator-banner" style="background-color: #fff9db; color: #b7791f; border: 1px solid #fef3c7;">
-                            ⚠️ El proxy local no está respondiendo (inicia <code>node server.js</code> en <b>ollama-proxy</b>). Iniciando simulación automática.
-                        </div>
-                    `;
-                    chatMessages.insertAdjacentHTML('beforeend', bannerHtml);
-                }
+                // The yellow banner has been removed.
 
                 // Simulate writing delay
                 setTimeout(() => {
