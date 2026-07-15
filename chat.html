@@ -1126,10 +1126,21 @@
 
                     let reply = '';
                     const lowerText = messageText.toLowerCase();
+                    const isInConversation = conversationHistory.length > 2;
 
-                    if (lowerText.includes('pedido') || lowerText.includes('compra') || lowerText.includes('rastre') || lowerText.includes('estatus') || /\d{4,}/.test(lowerText)) {
+                    // Detectar quejas o frustración del cliente
+                    const isComplaint = lowerText.includes('problema') || lowerText.includes('error') ||
+                        lowerText.includes('culpa') || lowerText.includes('falla') || lowerText.includes('molest') ||
+                        lowerText.includes('no llega') || lowerText.includes('perdido') || lowerText.includes('nunca') ||
+                        lowerText.includes('siempre pasa') || lowerText.includes('mala') || lowerText.includes('horrible') ||
+                        lowerText.includes('pésimo') || lowerText.includes('no aparece') || lowerText.includes('no creo') ||
+                        lowerText.includes('seguro es') || lowerText.includes('queja') || lowerText.includes('reclamo');
+
+                    if (isComplaint) {
+                        reply = 'Entiendo tu frustración y lo lamentamos mucho. 😔 Queremos solucionar esto cuanto antes. ¿Podrías darnos tu número de pedido para revisar lo que pasó?';
+                    } else if (lowerText.includes('pedido') || lowerText.includes('compra') || lowerText.includes('rastre') || lowerText.includes('estatus') || /\d{4,}/.test(lowerText)) {
                         if (/\d{4,}/.test(lowerText)) {
-                            reply = 'He verificado ese número de pedido en nuestro sistema y no aparece registrado. ¿Podrías confirmarme si está correcto?';
+                            reply = 'He revisado ese número en nuestro sistema y no aparece registrado. ¿Seguro es ese número? Puedes confirmármelo y yo vuelvo a verificar.';
                         } else {
                             reply = '¡Claro que sí! Con gusto te ayudaré a revisar tu pedido. ¿Me podrías proporcionar tu número de orden? 📦';
                         }
@@ -1141,8 +1152,11 @@
                         reply = 'No te preocupes, puedes hacer devoluciones en los primeros 7 días de tu compra. ¿Me compartes tu número de pedido para revisarlo?';
                     } else if (lowerText.includes('agente') || lowerText.includes('humano') || lowerText.includes('persona') || lowerText.includes('hablar con')) {
                         reply = '¡Entendido! Te voy a transferir con un agente especializado de nuestro equipo para que te brinde atención personalizada. ¡Dame un segundito! 👩‍💻';
+                    } else if (isInConversation) {
+                        // Si ya hay conversación activa, NO reiniciar con "Hola", continuar el hilo
+                        reply = 'Disculpa, ¿podrías darme un poco más de detalle sobre tu consulta? Estoy aquí para ayudarte. 😊';
                     } else {
-                        reply = '¡Hola! 😊 Soy el asistente virtual de IVAD. Estoy aquí para ayudarte con información de pedidos, productos o envíos. ¿En qué te ayudo hoy?';
+                        reply = 'Hola, ¿en qué te puedo ayudar hoy? Puedo asistirte con pedidos, productos, envíos y más. 😊';
                     }
 
                     // Add assistant response to history
