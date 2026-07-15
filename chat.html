@@ -217,8 +217,8 @@
 
         .agent-avatar-container {
             position: relative;
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
         }
 
         .agent-avatar-img {
@@ -226,7 +226,7 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.15);
+            border: 2px solid var(--accent-gold);
             display: block;
         }
 
@@ -234,7 +234,8 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background-color: transparent;
+            background-color: #0b1426;
+            border: 2px solid var(--accent-gold);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -242,12 +243,10 @@
         }
 
         .agent-avatar-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
             display: block;
-            transform: scale(1.42);
-            transform-origin: center;
         }
 
         .agent-status-indicator {
@@ -381,10 +380,11 @@
         }
 
         .message-avatar-logo {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            background-color: transparent;
+            background-color: #0b1426;
+            border: 1px solid var(--accent-gold);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -393,12 +393,10 @@
         }
 
         .message-avatar-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
             display: block;
-            transform: scale(1.42);
-            transform-origin: center;
         }
 
         .message-bubble {
