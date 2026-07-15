@@ -212,47 +212,21 @@
         }
 
         /* Hablar con agente */
-        .agent-section {
-            margin-top: 50px;
+        .agent-link-line {
             text-align: center;
-            padding: 40px 20px;
-            background: #fff;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-
-        .agent-section h3 {
-            font-size: 1.3rem;
-            color: #22252a;
-            margin-bottom: 10px;
-        }
-
-        .agent-section p {
+            margin-top: 50px;
+            font-size: 1rem;
             color: #4a5568;
-            font-size: 0.95rem;
-            margin-bottom: 24px;
         }
 
-        .btn-chat-agent {
-            display: inline-block;
-            padding: 13px 32px;
-            background: #bfa687;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem;
+        .agent-link-line a {
+            color: #bfa687;
             font-weight: 700;
             text-decoration: none;
-            cursor: pointer;
-            transition: background 0.25s, transform 0.2s;
         }
 
-        .btn-chat-agent:hover {
-            background: #a8906f;
-            transform: translateY(-1px);
-            color: #fff;
+        .agent-link-line a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -402,11 +376,7 @@
             </div>
 
             <!-- Hablar con un Agente -->
-            <div class="agent-section">
-                <h3>¿No encontraste lo que buscabas?</h3>
-                <p>Nuestro equipo está disponible para ayudarte directamente.</p>
-                <a href="chat.html" class="btn-chat-agent">Hablar con un Agente</a>
-            </div>
+            <p class="agent-link-line">¿Aún no se resuelve el problema? <a href="chat.html">Hablar con un agente &rsaquo;</a></p>
 
         </div>
     </section>
