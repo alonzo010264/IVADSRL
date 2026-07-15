@@ -25,6 +25,7 @@
                 <li data-section="categorias"><a href="#"><i class="fas fa-tags"></i> Categorías</a></li>
                 <li data-section="pedidos"><a href="#"><i class="fas fa-shopping-bag"></i> Pedidos</a></li>
                 <li data-section="clientes" style="display:none;"><a href="#"><i class="fas fa-users"></i> Clientes</a></li>
+                <li data-section="equipo"><a href="#"><i class="fas fa-user-tie"></i> Equipo</a></li>
                 <li data-section="inventario" style="display:none;"><a href="#"><i class="fas fa-clipboard-list"></i> Inventario</a></li>
                 <li data-section="cupones" style="display:none;"><a href="#"><i class="fas fa-ticket-alt"></i> Cupones</a></li>
                 <li data-section="envios"><a href="#"><i class="fas fa-truck"></i> Despachos</a></li>
@@ -613,6 +614,141 @@
             </section>
 
             <!-- ============================================================
+                 EQUIPO
+            ============================================================ -->
+            <section class="page-section" id="sec-equipo">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="table-actions-left">
+                            <h2 style="margin:0;">Equipo Interno</h2>
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" id="btn-add-team" onclick="document.getElementById('modal-add-team').style.display='flex'"><i class="fas fa-plus"></i> Añadir empleado</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filters-bar" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
+                        <div class="search-input" style="max-width: 300px;">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Buscar empleado...">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Empleado</th>
+                                    <th>Departamento</th>
+                                    <th>Verificación</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="team-table-body">
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Roberto Carlos</strong><span>roberto@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Gerencia</td>
+                                    <td><div class="badge-role badge-gerencia"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Gerencia</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Luis Peña</strong><span>luis@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Empleados</td>
+                                    <td><div class="badge-role badge-empleado"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#3b82f6" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Empleados</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>María González</strong><span>maria@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Atención al Cliente</td>
+                                    <td><div class="badge-role badge-atencion"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Atención al Cliente</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Laura Pérez</strong><span>laura@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Marketing</td>
+                                    <td><div class="badge-role badge-marketing"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#1e3a8a" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Marketing</span></div></td>
+                                    <td><span class="status-badge inactive"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Inactivo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar">JM</div>
+                                            <div class="customer-info"><strong>José Martínez</strong><span>jose@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Cajeros</td>
+                                    <td><div class="badge-role badge-cajero"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#ea580c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Cajeros</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Ana Ruiz</strong><span>ana@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Supervisores</td>
+                                    <td><div class="badge-role badge-supervisor"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#1f2937" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Supervisores</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar">DB</div>
+                                            <div class="customer-info"><strong>Daniel Blanco</strong><span>daniel@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Tecnología</td>
+                                    <td><div class="badge-role badge-tecnologia"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#78350f" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Tecnología</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1554151228-14d9def656e4?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Sara Jiménez</strong><span>sara@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Contabilidad</td>
+                                    <td><div class="badge-role badge-contabilidad"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#16a34a" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Contabilidad</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
                  CONFIGURACIÓN
             ============================================================ -->
             <section class="page-section" id="sec-configuracion">
@@ -688,6 +824,45 @@
 
         </div>
 <!-- Supabase CDN y Configuración -->
+<!-- ============================================================
+     MODALS
+============================================================ -->
+<div class="modal-overlay" id="modal-add-team" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:9999;">
+    <div class="modal-content" style="background:#fff; width:100%; max-width:500px; border-radius:12px; padding:24px;">
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0; font-size:1.2rem;">Añadir Empleado</h2>
+            <button onclick="document.getElementById('modal-add-team').style.display='none'" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#888;">&times;</button>
+        </div>
+        <div class="modal-body form-section">
+            <div class="form-group" style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.85rem; font-weight:600;">Nombre completo</label>
+                <input type="text" placeholder="Ej. Juan Pérez" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:inherit;">
+            </div>
+            <div class="form-group" style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.85rem; font-weight:600;">Correo electrónico</label>
+                <input type="email" placeholder="juan@ivad.com" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:inherit;">
+            </div>
+            <div class="form-group" style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.85rem; font-weight:600;">Departamento / Verificación</label>
+                <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:inherit; background:#fff;">
+                    <option value="gerencia">Gerencia (Insignia Blanca)</option>
+                    <option value="empleados">Empleados (Insignia Azul)</option>
+                    <option value="atencion">Atención al Cliente (Insignia Dorada)</option>
+                    <option value="marketing">Marketing (Insignia Marina)</option>
+                    <option value="cajeros">Cajeros (Insignia Naranja)</option>
+                    <option value="supervisores">Supervisores (Insignia Negra)</option>
+                    <option value="tecnologia">Tecnología (Insignia Marrón)</option>
+                    <option value="contabilidad">Contabilidad (Insignia Verde)</option>
+                </select>
+            </div>
+            <div class="form-actions" style="display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" onclick="document.getElementById('modal-add-team').style.display='none'" class="btn btn-outline" style="padding:10px 15px; border:1px solid #ddd; border-radius:6px; background:#fff; cursor:pointer;">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="alert('Funcionalidad guardada con éxito.'); document.getElementById('modal-add-team').style.display='none';" style="padding:10px 15px; border:none; border-radius:6px; background:#000; color:#fff; cursor:pointer;">Guardar Empleado</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
 

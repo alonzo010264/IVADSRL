@@ -1254,3 +1254,14 @@ body {
     .config-grid { grid-template-columns: 1fr; }
 }
 
+/* Equipo Badges */
+.badge-role { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+.badge-role svg { flex-shrink: 0; }
+.badge-gerencia .role-text { color: #4b5563; }
+.badge-empleado .role-text { color: #3b82f6; }
+.badge-atencion .role-text { color: #e6a23c; }
+.badge-marketing .role-text { color: #1e3a8a; }
+.badge-cajero .role-text { color: #ea580c; }
+.badge-supervisor .role-text { color: #1f2937; }
+.badge-tecnologia .role-text { color: #78350f; }
+.badge-contabilidad .role-text { color: #16a34a; }
