@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Agentes - IVAD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f3f4f6; /* Very light gray for outer bg */
+            --panel-bg: #ffffff;
+            --accent-gold: #bfa687;
+            --accent-gold-light: #fdfaf6;
+            --accent-gold-border: #e6a23c;
+            --text-dark: #1e2229;
+            --text-muted: #6b7280;
+            --text-light-muted: #9ca3af;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            
+            --bubble-user-bg: #f4ebe1;
+            --bubble-sys-bg: #ffffff;
+            --bubble-border: #f3f4f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0b111a; /* Dark border like the mockup outer area */
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 1600px;
+            height: 95vh;
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* ─── SCROLLBARS ─── */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 4px;
+        }
+
+        /* ─── COMMON UTILS ─── */
+        .flex { display: flex; }
+        .flex-col { display: flex; flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        
+        .badge-gold {
+            width: 16px; height: 16px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .status-dot {
+            width: 8px; height: 8px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* ─── LEFT SIDEBAR (Agents List) ─── */
+        .sidebar {
+            width: 320px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .brand-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .brand-logo-circle {
+            width: 50px; height: 50px;
+            background-color: #0b111a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.6rem;
+            text-align: center;
+            line-height: 1.1;
+            padding: 5px;
+        }
+        .brand-logo-circle span {
+            color: var(--accent-gold);
+        }
+        .brand-info h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+        .brand-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        .agents-list-header {
+            padding: 20px 24px 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .agents-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .agent-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .agent-card:hover {
+            background-color: #f9fafb;
+        }
+        .agent-card.active {
+            background-color: var(--accent-gold-light);
+            border: 1px solid #f2e3d0;
+        }
+
+        .agent-avatar {
+            width: 45px; height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .agent-card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .agent-card-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .agent-card-dept {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .agent-card-status {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 2px;
+        }
+
+        .all-agents-btn {
+            margin: 15px 24px 24px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background: #fff;
+        }
+        .all-agents-btn:hover {
+            background: #f9fafb;
+        }
+        .all-agents-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .all-agents-icon {
+            width: 36px; height: 36px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+        }
+        .all-agents-text h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .all-agents-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ─── MIDDLE SECTION (Chat Area) ─── */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+        }
+
+        .chat-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #ffffff;
+        }
+        .chat-header-agent {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chat-header-avatar {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .chat-header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+        .chat-header-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .chat-header-dept {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .chat-header-status {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 1px;
+        }
+
+        .chat-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        .btn-outline {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: transparent;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-outline:hover {
+            background: #f9fafb;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background-color: #fafafa;
+        }
+
+        .date-divider {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .date-divider span {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .msg-row {
+            display: flex;
+            gap: 12px;
+            max-width: 75%;
+        }
+        .msg-row.incoming {
+            align-self: flex-start;
+        }
+        .msg-row.outgoing {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .msg-row.system {
+            align-self: center;
+            max-width: 100%;
+        }
+        
+        .msg-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .msg-avatar.system-avatar {
+            background-color: #0b111a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.5rem;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .msg-bubble {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+        }
+        .msg-row.incoming .msg-bubble {
+            background-color: var(--bubble-sys-bg);
+            border: 1px solid var(--bubble-border);
+            border-top-left-radius: 4px;
+            color: var(--text-dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .msg-row.outgoing .msg-bubble {
+            background-color: var(--bubble-user-bg);
+            border-top-right-radius: 4px;
+            color: var(--text-dark);
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            color: var(--text-light-muted);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+        .msg-row.incoming .msg-time {
+            justify-content: flex-start;
+        }
+
+        .msg-system-badge {
+            background-color: #f3f4f6;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-input-area {
+            padding: 20px 24px;
+            background-color: #ffffff;
+            border-top: 1px solid var(--border-color);
+        }
+        .input-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .input-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px 0;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        .input-box input::placeholder {
+            color: #9ca3af;
+        }
+        .btn-attach {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        .btn-send {
+            width: 40px; height: 40px;
+            background-color: #0b111a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-send:hover {
+            background-color: #1a2332;
+        }
+
+        .security-footer {
+            text-align: center;
+            padding-top: 15px;
+            font-size: 0.75rem;
+            color: var(--text-light-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* ─── RIGHT SIDEBAR (Agent Info) ─── */
+        .right-sidebar {
+            width: 320px;
+            border-left: 1px solid var(--border-color);
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .agent-profile-large {
+            padding: 30px 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .agent-profile-avatar-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .agent-profile-avatar {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .agent-profile-status-dot {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 14px; height: 14px;
+            background-color: var(--success-color);
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+        }
+        
+        .agent-profile-status-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+        
+        .agent-profile-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .agent-profile-dept {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .profile-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 20px 24px;
+        }
+
+        .agent-bio {
+            padding: 0 24px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .info-section {
+            padding: 24px;
+        }
+        .info-section h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .info-item {
+            display: flex;
+            gap: 12px;
+        }
+        .info-item i {
+            color: var(--text-light-muted);
+            font-size: 1rem;
+            margin-top: 2px;
+        }
+        .info-item-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .info-item-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .info-item-value {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .actions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            background: none;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .action-btn-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        .action-btn-left i {
+            color: var(--text-light-muted);
+            width: 16px;
+        }
+        .action-btn i.fa-chevron-right {
+            color: var(--text-light-muted);
+            font-size: 0.8rem;
+        }
+
+        .right-sidebar-footer {
+            margin-top: auto;
+            padding: 24px;
+        }
+        .btn-full {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-full:hover {
+            background: #f9fafb;
+        }
+
+        /* Reusable SVG Check Badge */
+        .svg-badge {
+            width: 18px; height: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <!-- ─── LEFT SIDEBAR (Agents List) ─── -->
+        <aside class="sidebar">
+            <div class="brand-header">
+                <div class="brand-logo-circle">
+                    <div>IVAD<br><span style="font-size: 0.4rem;">Home & Goods</span></div>
+                </div>
+                <div class="brand-info">
+                    <h2>IVAD</h2>
+                    <p>Home & Goods<br>Atención al Cliente</p>
+                </div>
+            </div>
+
+            <div class="agents-list-header">
+                Agentes en línea <span class="status-dot"></span>
+            </div>
+
+            <div class="agents-list">
+                <!-- Agent 1 (Active) -->
+                <div class="agent-card active">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" class="agent-avatar" alt="María González">
+                    <div class="agent-card-info">
+                        <div class="agent-card-name">
+                            María González
+                            <svg class="svg-badge" viewBox="0 0 24 24"><path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg>
+                        </div>
+                        <span class="agent-card-dept">Atención al Cliente</span>
+                        <div class="agent-card-status"><span class="status-dot"></span> En línea</div>
+                    </div>
+                </div>
+
+                <!-- Agent 2 -->
+                <div class="agent-card">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" class="agent-avatar" alt="Carlos Méndez">
+                    <div class="agent-card-info">
+                        <div class="agent-card-name">
+                            Carlos Méndez
+                            <svg class="svg-badge" viewBox="0 0 24 24"><path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg>
+                        </div>
+                        <span class="agent-card-dept">Atención al Cliente</span>
+                        <div class="agent-card-status"><span class="status-dot"></span> En línea</div>
+                    </div>
+                </div>
+
+                <!-- Agent 3 -->
+                <div class="agent-card">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200&auto=format&fit=crop" class="agent-avatar" alt="Laura Pérez">
+                    <div class="agent-card-info">
+                        <div class="agent-card-name">
+                            Laura Pérez
+                            <svg class="svg-badge" viewBox="0 0 24 24"><path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg>
+                        </div>
+                        <span class="agent-card-dept">Atención al Cliente</span>
+                        <div class="agent-card-status"><span class="status-dot"></span> En línea</div>
+                    </div>
+                </div>
+
+                <!-- Agent 4 -->
+                <div class="agent-card">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" class="agent-avatar" alt="Andrés Ramírez">
+                    <div class="agent-card-info">
+                        <div class="agent-card-name">
+                            Andrés Ramírez
+                            <svg class="svg-badge" viewBox="0 0 24 24"><path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg>
+                        </div>
+                        <span class="agent-card-dept">Atención al Cliente</span>
+                        <div class="agent-card-status"><span class="status-dot"></span> En línea</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="all-agents-btn">
+                <div class="all-agents-left">
+                    <div class="all-agents-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <div class="all-agents-text">
+                        <h4>Todos los agentes</h4>
+                        <p>4 agentes en línea</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right" style="color: var(--text-light-muted); font-size: 0.9rem;"></i>
+            </div>
+        </aside>
+
+        <!-- ─── MIDDLE SECTION (Chat Area) ─── -->
+        <main class="chat-area">
+            
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-agent">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" class="chat-header-avatar" alt="María González">
+                    <div class="chat-header-info">
+                        <div class="chat-header-name">
+                            María González
+                            <svg class="svg-badge" viewBox="0 0 24 24"><path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg>
+                        </div>
+                        <div class="chat-header-dept">Atención al Cliente</div>
+                        <div class="chat-header-status"><span class="status-dot"></span> En línea</div>
+                    </div>
+                </div>
+                <div class="chat-header-actions">
+                    <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+                    <button class="btn-outline">Finalizar chat</button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages">
+                
+                <div class="date-divider">
+                    <span>Hoy</span>
+                </div>
+
+                <!-- Bot message -->
+                <div class="msg-row incoming">
+                    <div class="msg-avatar system-avatar">IVAD<br>bot</div>
+                    <div class="msg-bubble">
+                        ¡Hola! 👋 Soy el asistente virtual de IVAD.<br>
+                        Estoy aquí para ayudarte al instante.<br><br>
+                        ¿En qué puedo ayudarte hoy?
+                        <div class="msg-time">10:30 a. m.</div>
+                    </div>
+                </div>
+
+                <!-- User message -->
+                <div class="msg-row outgoing">
+                    <div class="msg-bubble">
+                        Hola, necesito ayuda con mi pedido.
+                        <div class="msg-time">10:31 a. m. <i class="fas fa-check-double" style="margin-left: 2px;"></i></div>
+                    </div>
+                </div>
+
+                <!-- Bot message transfer -->
+                <div class="msg-row incoming">
+                    <div class="msg-avatar system-avatar">IVAD<br>bot</div>
+                    <div class="msg-bubble">
+                        Con gusto te ayudaré con tu pedido.<br>
+                        Para brindarte una mejor atención,<br>
+                        te voy a conectar con un agente.<br><br>
+                        Un momento, por favor...
+                        <div class="msg-time">10:31 a. m.</div>
+                    </div>
+                </div>
+
+                <!-- System Badge -->
+                <div class="msg-row system">
+                    <div class="msg-system-badge">
+                        <i class="fas fa-headset"></i> Conectando con un agente...
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--text-light-muted); margin-left: 8px;">10:31 a. m.</div>
+                </div>
+
+                <!-- Agent message -->
+                <div class="msg-row incoming">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" class="msg-avatar" alt="María González">
+                    <div class="msg-bubble">
+                        ¡Hola! 😊 Soy María, con gusto<br>
+                        te ayudo con tu pedido.<br><br>
+                        ¿Podrías darme tu número de pedido<br>
+                        o tu correo electrónico?
+                        <div class="msg-time">10:32 a. m.</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-area">
+                <div class="input-box">
+                    <input type="text" placeholder="Escribe tu mensaje...">
+                    <button class="btn-attach"><i class="fas fa-paperclip"></i></button>
+                    <button class="btn-send"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div class="security-footer">
+                    <i class="fas fa-lock"></i> La conversación es segura y tus datos están protegidos.
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ─── RIGHT SIDEBAR (Agent Info) ─── -->
+        <aside class="right-sidebar">
+            
+            <div class="agent-profile-large">
+                <div class="agent-profile-avatar-container">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" class="agent-profile-avatar" alt="María González">
+                </div>
+                <div class="agent-profile-status-text"><span class="status-dot"></span> En línea</div>
+                <div class="agent-profile-name">
+                    María González
+                    <svg class="svg-badge" viewBox="0 0 24 24"><path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg>
+                </div>
+                <div class="agent-profile-dept">Atención al Cliente</div>
+            </div>
+
+            <div class="profile-divider"></div>
+
+            <div class="agent-bio">
+                Agente verificado de IVAD<br>
+                Especialista en atención y<br>
+                solución de pedidos.
+            </div>
+
+            <div class="profile-divider" style="margin-top: 25px;"></div>
+
+            <div class="info-section">
+                <h3>Información del chat</h3>
+                <div class="info-list">
+                    <div class="info-item">
+                        <i class="far fa-clock"></i>
+                        <div class="info-item-text">
+                            <span class="info-item-label">Tiempo de respuesta</span>
+                            <span class="info-item-value">00:01:24</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="far fa-comment-dots"></i>
+                        <div class="info-item-text">
+                            <span class="info-item-label">Mensajes</span>
+                            <span class="info-item-value">5</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="far fa-calendar-alt"></i>
+                        <div class="info-item-text">
+                            <span class="info-item-label">Iniciado</span>
+                            <span class="info-item-value">Hoy, 10:30 a. m.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-divider" style="margin-top: 10px;"></div>
+
+            <div class="info-section" style="padding-top: 0;">
+                <h3>Acciones del agente</h3>
+                <div class="actions-list">
+                    <button class="action-btn">
+                        <div class="action-btn-left">
+                            <i class="fas fa-history"></i> Ver historial del cliente
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="action-btn">
+                        <div class="action-btn-left">
+                            <i class="far fa-sticky-note"></i> Notas internas
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="action-btn">
+                        <div class="action-btn-left">
+                            <i class="fas fa-exchange-alt"></i> Transferir conversación
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="right-sidebar-footer">
+                <button class="btn-full">
+                    <i class="fas fa-sign-out-alt"></i> Finalizar chat
+                </button>
+            </div>
+
+        </aside>
+
+    </div>
+
+</body>
+</html>
