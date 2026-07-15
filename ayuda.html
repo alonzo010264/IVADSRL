@@ -210,6 +210,183 @@
             color: #c53030;
             background-color: #fff5f5;
         }
+
+        /* ─── Hablar con un Agente ─── */
+        .agent-section {
+            margin-top: 60px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #22252a 0%, #1a1d22 60%, #2b2418 100%);
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+        }
+
+        .agent-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 80% 50%, rgba(191,166,135,0.10) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .agent-avatars {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 22px;
+            gap: -10px;
+        }
+
+        .agent-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 3px solid #22252a;
+            background: linear-gradient(135deg, #bfa687, #8c6d4f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #fff;
+            font-weight: 700;
+            margin-left: -10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .agent-avatar:first-child { margin-left: 0; background: linear-gradient(135deg, #bfa687, #a8906f); }
+        .agent-avatar:nth-child(2) { background: linear-gradient(135deg, #6b8fa3, #4a6d82); }
+        .agent-avatar:nth-child(3) { background: linear-gradient(135deg, #8fa687, #6a8a6a); }
+
+        .agent-status-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: #2ecc71;
+            border-radius: 50%;
+            border: 2px solid #22252a;
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.5); }
+            50% { box-shadow: 0 0 0 5px rgba(46,204,113,0); }
+        }
+
+        .agent-section h3 {
+            font-size: 1.7rem;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .agent-section p {
+            color: #a0aec0;
+            font-size: 1rem;
+            max-width: 480px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .agent-online-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(46,204,113,0.12);
+            border: 1px solid rgba(46,204,113,0.25);
+            color: #2ecc71;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 28px;
+        }
+
+        .agent-online-badge span {
+            width: 7px;
+            height: 7px;
+            background: #2ecc71;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulseDot 1.5s infinite;
+        }
+
+        .agent-channels {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .agent-channel-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #d4d8df;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .agent-channel-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(191,166,135,0.4);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .agent-channel-btn i { font-size: 1rem; }
+        .agent-channel-btn.whatsapp i { color: #25D366; }
+        .agent-channel-btn.email i { color: #bfa687; }
+
+        .btn-chat-agent {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 36px;
+            background: linear-gradient(135deg, #bfa687, #a8906f);
+            color: #1a1d22;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(191,166,135,0.25);
+        }
+
+        .btn-chat-agent:hover {
+            background: linear-gradient(135deg, #d4b896, #bfa687);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(191,166,135,0.35);
+            color: #1a1d22;
+        }
+
+        .btn-chat-agent i { font-size: 1.1rem; }
+
+        @media (max-width: 600px) {
+            .agent-section { padding: 35px 20px; }
+            .agent-section h3 { font-size: 1.35rem; }
+            .agent-channels { gap: 10px; }
+            .agent-channel-btn { padding: 9px 16px; font-size: 0.82rem; }
+        }
     </style>
 </head>
 <body>
@@ -355,6 +532,39 @@
                     <button class="feedback-btn btn-yes" data-resolved="yes"><i class="far fa-thumbs-up" style="margin-right: 8px;"></i>Sí, gracias</button>
                     <button class="feedback-btn btn-no" data-resolved="no"><i class="far fa-thumbs-down" style="margin-right: 8px;"></i>No del todo</button>
                 </div>
+            </div>
+
+            <!-- ─── Hablar con un Agente ─── -->
+            <div class="agent-section">
+                <!-- Avatars -->
+                <div class="agent-avatars">
+                    <div class="agent-avatar">A<div class="agent-status-dot"></div></div>
+                    <div class="agent-avatar">L</div>
+                    <div class="agent-avatar">M</div>
+                </div>
+
+                <!-- Online badge -->
+                <div class="agent-online-badge">
+                    <span></span> Agentes en línea ahora
+                </div>
+
+                <h3>¿Aún tienes dudas? Habla con nosotros</h3>
+                <p>Nuestro equipo de atención al cliente está disponible para ayudarte en tiempo real. Elige cómo prefières contactarnos.</p>
+
+                <!-- Quick contact channels -->
+                <div class="agent-channels">
+                    <a href="https://wa.me/18091234567" target="_blank" class="agent-channel-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a href="mailto:info@ivad.com" class="agent-channel-btn email">
+                        <i class="fas fa-envelope"></i> Correo
+                    </a>
+                </div>
+
+                <!-- Main CTA -->
+                <a href="chat.html" class="btn-chat-agent">
+                    <i class="fas fa-comments"></i> Iniciar Chat con un Agente
+                </a>
             </div>
 
         </div>

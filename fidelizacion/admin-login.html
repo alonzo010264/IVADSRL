@@ -361,10 +361,10 @@
             if (typeof supabaseClient !== 'undefined' && supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient
-                        .from('loyalty_users')
-                        .select('*')
-                        .eq('username', usernameInput)
-                        .maybeSingle();
+                    .from('loyalty_users')
+                    .select('*')
+                    .or(`username.eq.${usernameInput},email.eq.${usernameInput}`)
+                    .maybeSingle();
 
                     if (!error && data) {
                         matchedUser = data;
