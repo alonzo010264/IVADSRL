@@ -499,6 +499,65 @@
             margin: 10px 0;
         }
 
+        /* Quick-reply option buttons */
+        .quick-options-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 8px 0 8px 48px;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .quick-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .quick-option-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 16px;
+            border: 1.5px solid var(--accent-gold);
+            border-radius: 14px;
+            background: #fff;
+            color: #5a4a38;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+            text-align: left;
+        }
+
+        .quick-option-btn:hover {
+            background: #fdf6ec;
+            box-shadow: 0 4px 14px rgba(191,166,135,0.18);
+            transform: translateY(-1px);
+        }
+
+        .quick-option-btn:active {
+            transform: scale(0.97);
+        }
+
+        .quick-option-btn i {
+            color: var(--accent-gold);
+            font-size: 1.05rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .quick-option-btn.full-width {
+            grid-column: 1 / -1;
+            justify-content: center;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
         /* Chat Input Section */
         .chat-input-wrapper {
             padding: 20px 24px;
@@ -772,9 +831,30 @@
                         <img src="logo_transparent.png" alt="IVAD Logo">
                     </div>
                     <div class="message-bubble">
-                        <div class="message-text">¿En qué puedo ayudarte hoy?</div>
+                        <div class="message-text">¿En qué puedo ayudarte hoy? Elige una opción:</div>
                         <div class="message-meta">10:30 a. m.</div>
                     </div>
+                </div>
+
+                <!-- Quick-reply options -->
+                <div class="quick-options-wrapper" id="quick-options">
+                    <div class="quick-options-grid">
+                        <button class="quick-option-btn" onclick="selectOption('Consultar pedido')">
+                            <i class="fas fa-box"></i> Consultar pedido
+                        </button>
+                        <button class="quick-option-btn" onclick="selectOption('Información de productos')">
+                            <i class="fas fa-tag"></i> Información de productos
+                        </button>
+                        <button class="quick-option-btn" onclick="selectOption('Envíos y entregas')">
+                            <i class="fas fa-truck"></i> Envíos y entregas
+                        </button>
+                        <button class="quick-option-btn" onclick="selectOption('Devoluciones')">
+                            <i class="fas fa-undo-alt"></i> Devoluciones
+                        </button>
+                    </div>
+                    <button class="quick-option-btn full-width" onclick="selectOption('Hablar con un agente')">
+                        <i class="fas fa-headset"></i> Hablar con un agente
+                    </button>
                 </div>
             </div>
 
@@ -836,9 +916,22 @@
             }
         }
 
+        function selectOption(label) {
+            // Hide the quick options
+            const opts = document.getElementById('quick-options');
+            if (opts) opts.remove();
+            // Simulate the user typing that option
+            chatInput.value = label;
+            handleSendMessage();
+        }
+
         function handleSendMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
+
+            // Hide quick options if still visible (in case user typed manually)
+            const opts = document.getElementById('quick-options');
+            if (opts) opts.remove();
 
             // Clear input
             chatInput.value = '';
