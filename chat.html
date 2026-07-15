@@ -249,17 +249,6 @@
             transform-origin: center;
         }
 
-        .agent-status-indicator {
-            position: absolute;
-            bottom: 1px;
-            right: 1px;
-            width: 11px;
-            height: 11px;
-            background-color: #2ecc71;
-            border: 2px solid var(--chat-header-bg);
-            border-radius: 50%;
-        }
-
         .agent-text-info {
             display: flex;
             flex-direction: column;
@@ -933,7 +922,6 @@
 
                     headerAvatarSlot.innerHTML = `
                         <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" class="agent-avatar-img" alt="María González">
-                        <div class="agent-status-indicator"></div>
                     `;
                     headerAgentName.textContent = 'María González';
                     if (headerAgentDept) {
