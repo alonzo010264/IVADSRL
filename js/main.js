@@ -1,0 +1,1700 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // Simple mock functionality for sliders
+    const dots = document.querySelectorAll('.slider-dots .dot');
+    
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            const activeDot = document.querySelector('.slider-dots .active');
+            if (activeDot) activeDot.classList.remove('active');
+            dot.classList.add('active');
+        });
+    });
+
+    const prevHeroBtn = document.querySelector('.hero .prev');
+    const nextHeroBtn = document.querySelector('.hero .next');
+
+    if(prevHeroBtn && nextHeroBtn) {
+        prevHeroBtn.addEventListener('click', () => {
+            console.log('Previous slide');
+        });
+        nextHeroBtn.addEventListener('click', () => {
+            console.log('Next slide');
+        });
+    }
+
+    // Products Carousel mock functionality
+    const prevProdBtn = document.querySelector('.productos-carousel-container .prev');
+    const nextProdBtn = document.querySelector('.productos-carousel-container .next');
+    const prodGrid = document.querySelector('.productos-grid');
+
+    if(prevProdBtn && nextProdBtn && prodGrid) {
+        prevProdBtn.addEventListener('click', () => {
+            prodGrid.scrollBy({ left: -200, behavior: 'smooth' });
+        });
+        nextProdBtn.addEventListener('click', () => {
+            prodGrid.scrollBy({ left: 200, behavior: 'smooth' });
+        });
+    }
+
+    // Dropdown toggle mobile
+    const dropdownToggles = document.querySelectorAll('.dropdown > a');
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                const menu = toggle.nextElementSibling;
+                if (menu && menu.classList.contains('dropdown-menu')) {
+                    menu.classList.toggle('show');
+                }
+            }
+        });
+    });
+
+    // Close dropdowns when clicking outside or on a dropdown item
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown') || e.target.closest('.dropdown-menu a')) {
+            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+    });
+
+    // Product Database (for modal detail visualization)
+    const productsData = {
+        'sofa': {
+            category: 'MUEBLES',
+            title: 'Sofá Moderno',
+            price: '$450.00',
+            img: 'images/sofa_1782182122883.png',
+            reviews: '(24 reseñas)',
+            desc: 'Sofá moderno de 3 plazas con diseño minimalista, ideal para cualquier espacio de tu hogar. Fabricado con materiales de alta resistencia y confort.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Tela de alta calidad',
+                '<i class="fas fa-ruler-combined"></i> Dimensiones: 180cm (Ancho) x 85cm (Prof.) x 75cm (Alto)',
+                '<i class="fas fa-palette"></i> Colores disponibles: Beige, Gris',
+                '<i class="fas fa-truck"></i> Envío: 3-5 días hábiles',
+                '<i class="fas fa-info-circle"></i> Garantía: 1 año'
+            ]
+        },
+        'comedor': {
+            category: 'MUEBLES',
+            title: 'Juego de Comedor',
+            price: '$650.00',
+            img: 'images/comedor_1782182137437.png',
+            reviews: '(15 reseñas)',
+            desc: 'Elegante juego de comedor de madera sólida con capacidad para 6 personas. Sillas acolchadas para mayor comodidad durante tus comidas.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Madera de roble y tapizado',
+                '<i class="fas fa-users"></i> Capacidad: 6 puestos',
+                '<i class="fas fa-truck"></i> Envío: 5-7 días hábiles',
+                '<i class="fas fa-info-circle"></i> Garantía: 2 años'
+            ]
+        },
+        'florero': {
+            category: 'DECORACIÓN',
+            title: 'Florero Decorativo',
+            price: '$35.00',
+            img: 'images/florero_1782182149891.png',
+            reviews: '(42 reseñas)',
+            desc: 'Florero de cerámica con diseño texturizado mate. Perfecto para flores secas o ramas decorativas. Aporta un toque elegante a cualquier mesa o repisa.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Cerámica',
+                '<i class="fas fa-ruler-combined"></i> Altura: 25cm',
+                '<i class="fas fa-truck"></i> Envío: 1-2 días hábiles'
+            ]
+        },
+        'vasos': {
+            category: 'DESECHABLES',
+            title: 'Vasos Plásticos 16 oz',
+            price: 'RD$ 150.00',
+            img: 'images/vasos.png',
+            reviews: '(120 reseñas)',
+            desc: 'Paquete de vasos transparentes desechables, ideales para bebidas frías en fiestas, negocios o eventos al aire libre.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Plástico PET reciclable',
+                '<i class="fas fa-box"></i> Cantidad: 50 unidades por paquete',
+                '<i class="fas fa-glass-whiskey"></i> Capacidad: 16 onzas'
+            ]
+        },
+        'platos': {
+            category: 'DESECHABLES',
+            title: 'Platos Desechables',
+            price: 'RD$ 70.00',
+            img: 'images/platos.png',
+            reviews: '(85 reseñas)',
+            desc: 'Platos redondos desechables súper resistentes, aptos para comidas calientes y frías. Perfectos para catering y eventos.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Cartón grueso biodegradable',
+                '<i class="fas fa-box"></i> Cantidad: 20 unidades por paquete',
+                '<i class="fas fa-ruler-combined"></i> Diámetro: 22cm'
+            ]
+        },
+        'bolsas': {
+            category: 'EMPAQUES',
+            title: 'Bolsas Kraft',
+            price: 'RD$ 25.00',
+            img: 'images/bolsas.png',
+            reviews: '(300 reseñas)',
+            desc: 'Bolsas de papel Kraft con asas reforzadas, ecológicas y resistentes. Ideales para tiendas de ropa, regalos o entregas de comida.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Papel Kraft 120g',
+                '<i class="fas fa-box"></i> Venta: Por unidad (descuento al mayor)',
+                '<i class="fas fa-leaf"></i> 100% Reciclables y Biodegradables'
+            ]
+        },
+        'cubiertos': {
+            category: 'DESECHABLES',
+            title: 'Cubiertos Plásticos',
+            price: 'RD$ 110.00',
+            img: 'images/cubiertos.svg',
+            reviews: '(45 reseñas)',
+            desc: 'Juego de cubiertos desechables de plástico resistente. Incluye cucharas, tenedores y cuchillos. Ideal para picnics y celebraciones.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Plástico poliestireno',
+                '<i class="fas fa-box"></i> Cantidad: 24 piezas por paquete',
+                '<i class="fas fa-truck"></i> Envío: 1-2 días hábiles'
+            ]
+        },
+        'contenedores': {
+            category: 'DESECHABLES',
+            title: 'Contenedores con Tapa',
+            price: 'RD$ 200.00',
+            img: 'images/contenedor.svg',
+            reviews: '(60 reseñas)',
+            desc: 'Contenedor biodegradable para alimentos con tapa integrada. Mantiene el calor y previene derrames. Excelente opción para delivery y restaurantes.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Bagazo de caña de azúcar',
+                '<i class="fas fa-box"></i> Cantidad: 10 unidades por paquete',
+                '<i class="fas fa-leaf"></i> 100% Compostable y apto para microondas'
+            ]
+        },
+        'vasos_foam': {
+            category: 'DESECHABLES',
+            title: 'Vasos Foam',
+            price: 'RD$ 130.00',
+            img: 'images/vasos_foam.svg',
+            reviews: '(55 reseñas)',
+            desc: 'Vasos térmicos de foam para café, té y bebidas calientes. Conservan la temperatura y evitan quemaduras.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Poliestireno expandido (Foam)',
+                '<i class="fas fa-box"></i> Cantidad: 25 unidades por paquete',
+                '<i class="fas fa-glass-whiskey"></i> Capacidad: 8 onzas'
+            ]
+        },
+        'platos_divisiones': {
+            category: 'DESECHABLES',
+            title: 'Platos con Divisiones',
+            price: 'RD$ 170.00',
+            img: 'images/platos_divisiones.svg',
+            reviews: '(35 reseñas)',
+            desc: 'Platos desechables rígidos con 3 divisiones, ideales para servir almuerzos completos sin mezclar alimentos.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Cartón grueso impermeable',
+                '<i class="fas fa-box"></i> Cantidad: 15 unidades por paquete',
+                '<i class="fas fa-ruler-combined"></i> Diámetro: 26cm'
+            ]
+        },
+        'servilletas': {
+            category: 'DESECHABLES',
+            title: 'Servilletas',
+            price: 'RD$ 55.00',
+            img: 'images/servilletas.svg',
+            reviews: '(150 reseñas)',
+            desc: 'Servilletas de papel absorbente de doble hoja. Ideales para el uso diario en mesa o eventos especiales.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Celulosa de doble hoja',
+                '<i class="fas fa-box"></i> Cantidad: 100 unidades por paquete',
+                '<i class="fas fa-leaf"></i> Biodegradable y suave al tacto'
+            ]
+        },
+        'bandeja_kraft': {
+            category: 'DESECHABLES',
+            title: 'Bandejas para Alimentos',
+            price: 'RD$ 250.00',
+            img: 'images/bandeja_kraft.svg',
+            reviews: '(40 reseñas)',
+            desc: 'Bandejas desechables de cartón kraft resistente para catering, ideales para servir aperitivos y bocadillos en reuniones y eventos.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Cartón Kraft de alta densidad',
+                '<i class="fas fa-box"></i> Cantidad: 10 unidades por paquete',
+                '<i class="fas fa-ruler-combined"></i> Dimensiones: 32cm x 22cm'
+            ]
+        },
+        'vaso_cafe': {
+            category: 'DESECHABLES',
+            title: 'Vasos de Papel para Café',
+            price: 'RD$ 180.00',
+            img: 'images/vaso_cafe.svg',
+            reviews: '(95 reseñas)',
+            desc: 'Vasos desechables de papel kraft de doble pared para bebidas calientes. Incluye tapa protectora de plástico biodegradable.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Papel Kraft y bioplástico',
+                '<i class="fas fa-box"></i> Cantidad: 20 vasos con tapa por paquete',
+                '<i class="fas fa-glass-whiskey"></i> Capacidad: 12 onzas'
+            ]
+        },
+        'bandeja_aluminio': {
+            category: 'DESECHABLES',
+            title: 'Bandejas de Aluminio',
+            price: 'RD$ 320.00',
+            img: 'images/bandeja_aluminio.svg',
+            reviews: '(30 reseñas)',
+            desc: 'Bandejas rectangulares de aluminio desechables para hornear y transportar alimentos. Perfectas para catering caliente.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Aluminio reciclable grueso',
+                '<i class="fas fa-box"></i> Cantidad: 5 unidades por paquete',
+                '<i class="fas fa-ruler-combined"></i> Dimensiones: 40cm x 28cm'
+            ]
+        },
+        'portavasos': {
+            category: 'DESECHABLES',
+            title: 'Portavasos de Cartón',
+            price: 'RD$ 90.00',
+            img: 'images/portavasos.svg',
+            reviews: '(78 reseñas)',
+            desc: 'Portavasos de cartón prensado con capacidad para 4 vasos de cualquier tamaño. Práctico y seguro para el transporte de bebidas.',
+            features: [
+                '<i class="fas fa-tag"></i> Material: Cartón prensado ecológico',
+                '<i class="fas fa-box"></i> Cantidad: 10 unidades por paquete',
+                '<i class="fas fa-leaf"></i> 100% Reciclable y apilable'
+            ]
+        }
+    };
+
+    // Modal View Trigger Logic (using Event Delegation)
+    const modalOverlay = document.getElementById('product-modal');
+    const modalClose = document.querySelector('.modal-close');
+    
+    // Modal Elements to update
+    const mImg = document.getElementById('modal-img');
+    const mCategory = document.getElementById('modal-category');
+    const mTitle = document.getElementById('modal-title');
+    const mPrice = document.getElementById('modal-price');
+    const mReviewsCount = document.getElementById('modal-reviews-count');
+    const mDesc = document.getElementById('modal-desc');
+    const mFeatures = document.getElementById('modal-features');
+    const qtyInput = document.querySelector('.qty-input');
+
+    if (modalOverlay) {
+        // Helper: inject recommended products into modal
+        function showRecommended(currentId) {
+            const recommendedGrid = document.getElementById('modal-recommended-grid');
+            if (!recommendedGrid) return;
+            
+            // Get the current product category
+            const currentData = productsData[currentId];
+            const currentCat = currentData ? currentData.category : null;
+            
+            // Filter out current product, prefer same category
+            let pool = Object.entries(productsData)
+                .filter(([key]) => key !== currentId)
+                .map(([key, val]) => ({ id: key, ...val }));
+            
+            // Prefer same category, fallback to all
+            let sameCat = pool.filter(p => p.category === currentCat);
+            if (sameCat.length < 4) sameCat = pool;
+            
+            // Shuffle and pick 4
+            const shuffled = sameCat.sort(() => Math.random() - 0.5).slice(0, 4);
+            
+            if (shuffled.length === 0) {
+                recommendedGrid.closest('.modal-recommended').style.display = 'none';
+                return;
+            }
+            recommendedGrid.closest('.modal-recommended').style.display = '';
+            recommendedGrid.innerHTML = shuffled.map(p => `
+                <div class="rec-card" data-id="${p.id}">
+                    <div class="rec-card-img">
+                        <img src="${p.img}" alt="${p.title}" loading="lazy">
+                    </div>
+                    <div class="rec-card-info">
+                        <p class="rec-card-title">${p.title}</p>
+                        <span class="rec-card-price">${p.price}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Delegate click for product cards (both static on index and dynamic on store)
+        document.addEventListener('click', (e) => {
+            // Handle 'Add to cart' button on card directly (no modal)
+            const addBtn = e.target.closest('.btn-add-to-cart-card');
+            if (addBtn) {
+                e.stopPropagation();
+                const id = addBtn.getAttribute('data-id');
+                const title = addBtn.getAttribute('data-title');
+                const price = addBtn.getAttribute('data-price');
+                const img = addBtn.getAttribute('data-img');
+                addToCart(id, title, price, img, 1);
+                return;
+            }
+
+            // Handle recommended product click inside modal
+            const recCard = e.target.closest('.rec-card');
+            if (recCard && modalOverlay.classList.contains('active')) {
+                const id = recCard.getAttribute('data-id');
+                if (id && productsData[id]) {
+                    const data = productsData[id];
+                    if (mImg) mImg.src = data.img;
+                    if (mCategory) mCategory.textContent = data.category;
+                    if (mTitle) mTitle.textContent = data.title;
+                    if (mPrice) mPrice.textContent = data.price;
+                    if (mReviewsCount) mReviewsCount.textContent = data.reviews;
+                    if (mDesc) mDesc.textContent = data.desc;
+                    if (mFeatures) mFeatures.innerHTML = data.features.map(f => `<li>${f}</li>`).join('');
+                    if (qtyInput) qtyInput.value = 1;
+                    showRecommended(id);
+                    // Scroll modal back to top
+                    const mc = document.querySelector('.modal-content');
+                    if (mc) mc.scrollTop = 0;
+                }
+                return;
+            }
+
+            // Open modal on card click (but not on add-to-cart button)
+            const card = e.target.closest('.producto-card, .store-card, .temu-card');
+            if (card) {
+                // Skip if clicking inside fav buttons or the add to cart button
+                if (e.target.closest('.fav-btn-card') || e.target.closest('.fav-btn') || e.target.closest('.btn-add-to-cart-card')) {
+                    return;
+                }
+                const id = card.getAttribute('data-id');
+                if (id && productsData[id]) {
+                    const data = productsData[id];
+                    if (mImg) mImg.src = data.img;
+                    if (mCategory) mCategory.textContent = data.category;
+                    if (mTitle) mTitle.textContent = data.title;
+                    if (mPrice) mPrice.textContent = data.price;
+                    if (mReviewsCount) mReviewsCount.textContent = data.reviews;
+                    if (mDesc) mDesc.textContent = data.desc;
+                    
+                    if (mFeatures) {
+                        mFeatures.innerHTML = data.features.map(f => `<li>${f}</li>`).join('');
+                    }
+                    if (qtyInput) qtyInput.value = 1;
+                    showRecommended(id);
+
+                    modalOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                }
+            }
+        });
+
+        // Close Modal via Button
+        if (modalClose) {
+            modalClose.addEventListener('click', () => {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+        }
+
+        // Close Modal via Click Outside
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Quantity Buttons inside Modal
+        const btnMinus = document.querySelector('.qty-btn.minus');
+        const btnPlus = document.querySelector('.qty-btn.plus');
+        
+        if (btnMinus && btnPlus && qtyInput) {
+            btnMinus.addEventListener('click', () => {
+                let current = parseInt(qtyInput.value);
+                if (current > 1) qtyInput.value = current - 1;
+            });
+            btnPlus.addEventListener('click', () => {
+                let current = parseInt(qtyInput.value);
+                qtyInput.value = current + 1;
+            });
+        }
+    }
+
+    // Toggle card favorite status
+    document.addEventListener('click', (e) => {
+        const favBtn = e.target.closest('.fav-btn-card');
+        if (favBtn) {
+            favBtn.classList.toggle('active');
+            const heartIcon = favBtn.querySelector('i');
+            if (heartIcon) {
+                heartIcon.classList.toggle('fas');
+                heartIcon.classList.toggle('far');
+            }
+        }
+    });
+
+    /* ==========================================
+       DESECHABLES STORE FUNCTIONALITY
+       ========================================== */
+    const storeGrid = document.getElementById('store-grid');
+    if (storeGrid) {
+        let desechablesProductsList = [];
+
+        const defaultDesechablesList = [
+            {
+                id: 'platos',
+                title: 'Platos Desechables',
+                price: 'RD$ 70.00',
+                priceNum: 70.00,
+                img: 'images/platos.png',
+                subCategory: 'platos',
+                material: 'carton',
+                uso: ['diario', 'para llevar', 'eventos'],
+                recentScore: 10,
+                desc: 'Platos redondos desechables súper resistentes, aptos para comidas calientes y frías. Perfectos para catering y eventos.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Cartón grueso biodegradable',
+                    '<i class="fas fa-box"></i> Cantidad: 20 unidades por paquete',
+                    '<i class="fas fa-ruler-combined"></i> Diámetro: 22cm'
+                ]
+            },
+            {
+                id: 'vasos',
+                title: 'Vasos Plásticos 16 oz',
+                price: 'RD$ 150.00',
+                priceNum: 150.00,
+                img: 'images/vasos.png',
+                subCategory: 'vasos',
+                material: 'plastico',
+                uso: ['fiestas', 'eventos'],
+                recentScore: 8,
+                desc: 'Paquete de vasos transparentes desechables, ideales para bebidas frías en fiestas, negocios o eventos al aire libre.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Plástico PET reciclable',
+                    '<i class="fas fa-box"></i> Cantidad: 50 unidades por paquete',
+                    '<i class="fas fa-glass-whiskey"></i> Capacidad: 16 onzas'
+                ]
+            },
+            {
+                id: 'cubiertos',
+                title: 'Cubiertos Plásticos',
+                price: 'RD$ 110.00',
+                priceNum: 110.00,
+                img: 'images/cubiertos.svg',
+                subCategory: 'cubiertos',
+                material: 'plastico',
+                uso: ['fiestas', 'diario'],
+                recentScore: 9,
+                desc: 'Juego de cubiertos desechables de plástico resistente. Incluye cucharas, tenedores y cuchillos. Ideal para picnics y celebraciones.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Plástico poliestireno',
+                    '<i class="fas fa-box"></i> Cantidad: 24 piezas por paquete',
+                    '<i class="fas fa-truck"></i> Envío: 1-2 días hábiles'
+                ]
+            },
+            {
+                id: 'contenedores',
+                title: 'Contenedores con Tapa',
+                price: 'RD$ 200.00',
+                priceNum: 200.00,
+                img: 'images/contenedor.svg',
+                subCategory: 'contenedores',
+                material: 'biodegradable',
+                uso: ['para llevar', 'restaurantes'],
+                recentScore: 7,
+                desc: 'Contenedor biodegradable para alimentos con tapa integrada. Mantiene el calor y previene derrames. Excelente opción para delivery y restaurantes.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Bagazo de caña de azúcar',
+                    '<i class="fas fa-box"></i> Cantidad: 10 unidades por paquete',
+                    '<i class="fas fa-leaf"></i> 100% Compostable y apto para microondas'
+                ]
+            },
+            {
+                id: 'vasos_foam',
+                title: 'Vasos Foam',
+                price: 'RD$ 130.00',
+                priceNum: 130.00,
+                img: 'images/vasos_foam.svg',
+                subCategory: 'vasos',
+                material: 'foam',
+                uso: ['diario', 'para llevar'],
+                recentScore: 6,
+                desc: 'Vasos térmicos de foam para café, té y bebidas calientes. Conservan la temperatura y evitan quemaduras.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Poliestireno expandido (Foam)',
+                    '<i class="fas fa-box"></i> Cantidad: 25 unidades por paquete',
+                    '<i class="fas fa-glass-whiskey"></i> Capacidad: 8 onzas'
+                ]
+            },
+            {
+                id: 'platos_divisiones',
+                title: 'Platos con Divisiones',
+                price: 'RD$ 170.00',
+                priceNum: 170.00,
+                img: 'images/platos_divisiones.svg',
+                subCategory: 'platos',
+                material: 'carton',
+                uso: ['eventos', 'restaurantes'],
+                recentScore: 5,
+                desc: 'Platos con tres divisiones para separar alimentos cómodamente. Ideales para picnics y buffets.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Cartón grueso impermeable',
+                    '<i class="fas fa-box"></i> Cantidad: 15 unidades por paquete'
+                ]
+            },
+            {
+                id: 'bolsas',
+                title: 'Bolsas Kraft',
+                price: 'RD$ 25.00',
+                priceNum: 25.00,
+                img: 'images/bolsas.png',
+                subCategory: 'bolsas',
+                material: 'papel',
+                uso: ['para llevar', 'restaurantes'],
+                recentScore: 11,
+                desc: 'Bolsas de papel Kraft con asas reforzadas, ecológicas y resistentes. Ideales para tiendas de ropa, regalos o entregas de comida.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Papel Kraft 120g',
+                    '<i class="fas fa-box"></i> Venta: Por unidad (descuento al mayor)',
+                    '<i class="fas fa-leaf"></i> 100% Reciclables y Biodegradables'
+                ]
+            },
+            {
+                id: 'servilletas',
+                title: 'Servilletas',
+                price: 'RD$ 55.00',
+                priceNum: 55.00,
+                img: 'images/servilletas.svg',
+                subCategory: 'servilletas',
+                material: 'papel',
+                uso: ['diario', 'fiestas'],
+                recentScore: 4,
+                desc: 'Servilletas de papel absorbente de doble hoja, muy suaves y resistentes para eventos o el día a día.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Celulosa de alta calidad',
+                    '<i class="fas fa-box"></i> Cantidad: 100 unidades por paquete'
+                ]
+            },
+            {
+                id: 'bandeja_kraft',
+                title: 'Bandejas para Alimentos',
+                price: 'RD$ 250.00',
+                priceNum: 250.00,
+                img: 'images/bandeja_kraft.svg',
+                subCategory: 'bandejas',
+                material: 'carton',
+                uso: ['eventos', 'restaurantes'],
+                recentScore: 12,
+                desc: 'Bandejas de cartón kraft para picaderas y postres, perfectas para eventos y repostería.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Cartón kraft resistente a grasas',
+                    '<i class="fas fa-box"></i> Cantidad: 10 unidades por paquete'
+                ]
+            },
+            {
+                id: 'vaso_cafe',
+                title: 'Vasos de Papel para Café',
+                price: 'RD$ 180.00',
+                priceNum: 180.00,
+                img: 'images/vaso_cafe.svg',
+                subCategory: 'vasos',
+                material: 'papel',
+                uso: ['diario', 'para llevar'],
+                recentScore: 13,
+                desc: 'Vasos de cartón térmicos para café expreso y capuchino. No queman las manos.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Cartón con recubrimiento de PLA',
+                    '<i class="fas fa-box"></i> Cantidad: 50 unidades por paquete'
+                ]
+            },
+            {
+                id: 'bandeja_aluminio',
+                title: 'Bandejas de Aluminio',
+                price: 'RD$ 320.00',
+                priceNum: 320.00,
+                img: 'images/bandeja_aluminio.svg',
+                subCategory: 'bandejas',
+                material: 'biodegradable',
+                uso: ['eventos', 'restaurantes'],
+                recentScore: 14,
+                desc: 'Bandejas desechables de aluminio grueso, ideales para hornear y transportar comidas calientes.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Aluminio de grado alimenticio',
+                    '<i class="fas fa-box"></i> Cantidad: 5 unidades por paquete'
+                ]
+            },
+            {
+                id: 'portavasos',
+                title: 'Portavasos de Cartón',
+                price: 'RD$ 90.00',
+                priceNum: 90.00,
+                img: 'images/portavasos.svg',
+                subCategory: 'bandejas',
+                material: 'carton',
+                uso: ['para llevar'],
+                recentScore: 15,
+                desc: 'Portavasos rígidos de cartón prensado para transportar hasta 4 bebidas frías o calientes simultáneamente.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Cartón prensado reciclado',
+                    '<i class="fas fa-box"></i> Capacidad: 4 vasos de 8 a 32 oz'
+                ]
+            }
+        ];
+
+        
+let categoriesList = [];
+
+async function loadStoreCategories() {
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient.from('categories').select('*');
+            if (error) throw error;
+            categoriesList = data || [];
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    renderStoreCategories();
+}
+
+function renderStoreCategories() {
+    const filterContainer = document.querySelector('.category-links');
+    if (!filterContainer) return;
+    
+    let html = '<li><a href="#" class="cat-link active" data-category="all">Todos los productos</a></li>';
+    categoriesList.forEach(c => {
+        html += `
+        <li><a href="#" class="cat-link" data-category="${c.id}">${c.name}</a></li>
+        `;
+    });
+    filterContainer.innerHTML = html;
+    
+    const newLinks = filterContainer.querySelectorAll('.cat-link');
+    newLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.cat-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            activeCategory = link.getAttribute('data-category');
+            applyFilters();
+        });
+    });
+}
+
+// Categorias internas que NO son productos de venta
+        const EXCLUDED_CATEGORIES = new Set(['fotos','logo_banners','images','ivad_pagina']);
+        const DECOR_SUBCATEGORIES = new Set(['muebles', 'sofas', 'mesas', 'sillas', 'floreros', 'cojines', 'iluminacion', 'espejos', 'alfombras', 'cuadros', 'adornos']);
+        const isDecoracionPage = window.location.pathname.includes('decoracion.html');
+
+        const defaultDecorProducts = [
+            {
+                id: 'decor_sofa_moderno',
+                title: 'Sofá Moderno Velvet',
+                price: 'RD$ 28,500.00',
+                priceNum: 28500,
+                img: 'images/sofa_1782182122883.png',
+                subCategory: 'sofas',
+                material: 'terciopelo y madera',
+                uso: ['sala', 'oficina'],
+                recentScore: 9,
+                description: 'Elegante sofá tapizado en terciopelo de alta calidad con patas de madera sólida. Diseño ergonómico de gran confort para tu sala.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Terciopelo premium',
+                    '<i class="fas fa-ruler-combined"></i> Medidas: 200 x 85 x 75 cm',
+                    '<i class="fas fa-palette"></i> Color: Gris Plomo'
+                ]
+            },
+            {
+                id: 'decor_juego_comedor',
+                title: 'Juego de Comedor Mármol 6 Sillas',
+                price: 'RD$ 45,000.00',
+                priceNum: 45000,
+                img: 'images/comedor_1782182137437.png',
+                subCategory: 'mesas',
+                material: 'mármol y metal',
+                uso: ['comedor'],
+                recentScore: 8,
+                description: 'Moderna mesa de comedor con tope de mármol pulido y base metálica reforzada. Incluye 6 cómodas sillas tapizadas.',
+                features: [
+                    '<i class="fas fa-tag"></i> Tope: Mármol sintético de alta resistencia',
+                    '<i class="fas fa-users"></i> Capacidad: 6 personas',
+                    '<i class="fas fa-shield-alt"></i> Base: Acero inoxidable electro-pintado'
+                ]
+            },
+            {
+                id: 'decor_florero_nordico',
+                title: 'Florero Cerámico Texturizado',
+                price: 'RD$ 1,850.00',
+                priceNum: 1850,
+                img: 'images/florero_1782182149891.png',
+                subCategory: 'floreros',
+                material: 'cerámica',
+                uso: ['adornos', 'mesa'],
+                recentScore: 10,
+                description: 'Florero de cerámica de estilo nórdico minimalista con acabado mate texturizado. Ideal para arreglos florales secos.',
+                features: [
+                    '<i class="fas fa-tag"></i> Material: Cerámica de alta calidad',
+                    '<i class="fas fa-ruler-vertical"></i> Altura: 28 cm',
+                    '<i class="fas fa-palette"></i> Acabado: Blanco Arena'
+                ]
+            },
+            {
+                id: 'decor_silla_tulip',
+                title: 'Silla de Diseño Tulip Giratoria',
+                price: 'RD$ 4,500.00',
+                priceNum: 4500,
+                img: 'https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/images/ceg_2415343.jpg',
+                subCategory: 'sillas',
+                material: 'polipropileno y metal',
+                uso: ['comedor', 'oficina'],
+                recentScore: 9,
+                description: 'Silla de diseño Tulip giratoria con cojín acolchado. Diseño icónico de mediados de siglo para tu comedor o estudio.',
+                features: [
+                    '<i class="fas fa-tag"></i> Diseño: Tulip clásico',
+                    '<i class="fas fa-sync"></i> Giro: 360 grados',
+                    '<i class="fas fa-couch"></i> Cojín: Cuero sintético acolchado'
+                ]
+            },
+            {
+                id: 'decor_silla_eames',
+                title: 'Silla de Diseño Nórdica Eames',
+                price: 'RD$ 2,800.00',
+                priceNum: 2800,
+                img: 'https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/images/ceg_31cACt6DgvL._AC_UL320_.jpg',
+                subCategory: 'sillas',
+                material: 'polipropileno y madera',
+                uso: ['comedor', 'sala'],
+                recentScore: 8,
+                description: 'Silla de comedor de estilo nórdico con patas de madera de haya y asiento ergonómico de polipropileno.',
+                features: [
+                    '<i class="fas fa-tag"></i> Estilo: Nórdico / Escandinavo',
+                    '<i class="fas fa-tree"></i> Patas: Madera de haya natural',
+                    '<i class="fas fa-shield-alt"></i> Soporte: Tensores de acero negro'
+                ]
+            },
+            {
+                id: 'decor_sillon_acapulco',
+                title: 'Sillón Lounge Acapulco',
+                price: 'RD$ 5,200.00',
+                priceNum: 5200,
+                img: 'https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/images/d__MINI_53.webp',
+                subCategory: 'sillas',
+                material: 'PVC y metal',
+                uso: ['terraza', 'sala'],
+                recentScore: 7,
+                description: 'Clásico sillón Acapulco tejido a mano con cordón de PVC de alta resistencia y estructura metálica electro-pintada. Perfecto para interiores y exteriores.',
+                features: [
+                    '<i class="fas fa-tag"></i> Tejido: PVC con filtro UV',
+                    '<i class="fas fa-paint-roller"></i> Estructura: Acero electro-pintado negro',
+                    '<i class="fas fa-cloud-sun"></i> Apto para: Exterior e interior'
+                ]
+            },
+            {
+                id: 'decor_lampara_tripode',
+                title: 'Lámpara de Pie Trípode Madera',
+                price: 'RD$ 3,950.00',
+                priceNum: 3950,
+                img: 'images/amb_hero.jpg',
+                subCategory: 'iluminacion',
+                material: 'madera y tela',
+                uso: ['sala', 'dormitorio'],
+                recentScore: 7,
+                description: 'Lámpara de pie de diseño trípode en madera natural con pantalla de tela de lino. Aporta una luz cálida y acogedora.',
+                features: [
+                    '<i class="fas fa-lightbulb"></i> Socket: E27 (bombilla no incluida)',
+                    '<i class="fas fa-ruler-vertical"></i> Altura total: 155 cm',
+                    '<i class="fas fa-power-off"></i> Interruptor: De pedal en el cable'
+                ]
+            },
+            {
+                id: 'decor_espejo_dorado',
+                title: 'Espejo de Pared Ovalado Dorado',
+                price: 'RD$ 4,800.00',
+                priceNum: 4800,
+                img: 'images/amb_comedor.jpg',
+                subCategory: 'espejos',
+                material: 'vidrio y metal',
+                uso: ['entrada', 'sala'],
+                recentScore: 6,
+                description: 'Espejo de pared ovalado con marco de metal delgado acabado en oro cepillado. Diseño elegante y moderno.',
+                features: [
+                    '<i class="fas fa-border-style"></i> Marco: Aluminio acabado dorado',
+                    '<i class="fas fa-ruler-combined"></i> Medidas: 80 x 50 cm',
+                    '<i class="fas fa-tools"></i> Incluye: Accesorios para colgar'
+                ]
+            },
+            {
+                id: 'decor_cojin_terciopelo',
+                title: 'Cojín Decorativo Terciopelo (Set de 2)',
+                price: 'RD$ 1,200.00',
+                priceNum: 1200,
+                img: 'images/nosotros_valor1.png',
+                subCategory: 'cojines',
+                material: 'tela',
+                uso: ['sofa', 'cama'],
+                recentScore: 5,
+                description: 'Set de dos fundas de cojín con textura de terciopelo ultra suave y cremallera invisible. Incluye relleno de microfibra.',
+                features: [
+                    '<i class="fas fa-box"></i> Cantidad: Set de 2 unidades con relleno',
+                    '<i class="fas fa-ruler-combined"></i> Medidas: 45 x 45 cm',
+                    '<i class="fas fa-soap"></i> Lavado: A máquina con agua fría'
+                ]
+            }
+        ];
+
+        async function fetchStoreProducts() {
+            if (supabaseClient) {
+                try {
+                    let allData = [];
+                    let from = 0;
+                    const PAGE_SIZE = 1000;
+                    while (true) {
+                        const { data: page, error } = await supabaseClient
+                            .from('products')
+                            .select('*')
+                            .eq('status', 'Activo')
+                            .order('id', { ascending: true })
+                            .range(from, from + PAGE_SIZE - 1);
+                        if (error) throw error;
+                        if (!page || page.length === 0) break;
+                        allData = allData.concat(page);
+                        if (page.length < PAGE_SIZE) break;
+                        from += PAGE_SIZE;
+                    }
+                    const data = allData;
+                    
+                    if (data && data.length > 0) {
+                        let filteredData = [];
+                        if (isDecoracionPage) {
+                            filteredData = data.filter(p => DECOR_SUBCATEGORIES.has(p.sub_category));
+                        } else {
+                            filteredData = data.filter(p => !EXCLUDED_CATEGORIES.has(p.sub_category) && !DECOR_SUBCATEGORIES.has(p.sub_category));
+                        }
+
+                        if (filteredData.length > 0) {
+                            desechablesProductsList = filteredData.map(p => ({
+                                id: p.id,
+                                title: p.title,
+                                price: p.price,
+                                priceNum: p.price_num,
+                                img: p.img,
+                                subCategory: p.sub_category,
+                                material: p.material || '',
+                                features: p.features || [],
+                                uso: p.uso || [],
+                                recentScore: p.recent_score || 0
+                            }));
+
+                            filteredData.forEach(p => {
+                                productsData[p.id] = {
+                                    category: isDecoracionPage ? 'DECORACIÓN' : 'DESECHABLES',
+                                    title: p.title,
+                                    price: p.price,
+                                    img: p.img,
+                                    reviews: `(${Math.floor(Math.random() * 80) + 20} reseñas)`,
+                                    desc: p.description || p.title,
+                                    features: p.features || [
+                                        `<i class="fas fa-tag"></i> Material: ${p.material || 'Varios'}`
+                                    ]
+                                };
+                            });
+                        } else {
+                            useDefaultProducts();
+                        }
+                    } else {
+                        useDefaultProducts();
+                    }
+                } catch (err) {
+                    console.error("Error cargando productos de Supabase:", err);
+                    useDefaultProducts();
+                }
+            } else {
+                useDefaultProducts();
+            }
+            applyFilters();
+        }
+
+        function useDefaultProducts() {
+            if (isDecoracionPage) {
+                desechablesProductsList = defaultDecorProducts.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    price: p.price,
+                    priceNum: p.priceNum,
+                    img: p.img,
+                    subCategory: p.subCategory,
+                    material: p.material || '',
+                    uso: p.uso || [],
+                    recentScore: p.recentScore
+                }));
+
+                defaultDecorProducts.forEach(p => {
+                    productsData[p.id] = {
+                        category: 'DECORACIÓN',
+                        title: p.title,
+                        price: p.price,
+                        img: p.img,
+                        reviews: `(${Math.floor(Math.random() * 85) + 15} reseñas)`,
+                        desc: p.description || p.title,
+                        features: p.features
+                    };
+                });
+            } else {
+                const stored = localStorage.getItem('ivad_custom_products');
+                let sourceList = [];
+                if (stored) {
+                    try {
+                        sourceList = JSON.parse(stored);
+                    } catch(e) {
+                        sourceList = [];
+                    }
+                } else {
+                    sourceList = [];
+                }
+
+                const disposableSource = sourceList.length > 0 
+                    ? sourceList.filter(p => p.status === 'Activo' && !EXCLUDED_CATEGORIES.has(p.sub_category || p.subCategory) && !DECOR_SUBCATEGORIES.has(p.sub_category || p.subCategory))
+                    : defaultDesechablesList;
+
+                desechablesProductsList = disposableSource.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    price: p.price,
+                    priceNum: p.price_num || p.priceNum || parseFloat(p.price.replace(/[^0-9.]/g, '')) || 0,
+                    img: p.img,
+                    subCategory: p.sub_category || p.subCategory,
+                    material: p.material || '',
+                    uso: p.uso || [],
+                    recentScore: p.recent_score || p.recentScore || 0
+                }));
+
+                disposableSource.forEach(p => {
+                    productsData[p.id] = {
+                        category: 'DESECHABLES',
+                        title: p.title,
+                        price: p.price,
+                        img: p.img,
+                        reviews: `(${Math.floor(Math.random() * 85) + 15} reseñas)`,
+                        desc: p.description || p.desc || p.title,
+                        features: p.features || [
+                            `<i class="fas fa-tag"></i> Material: ${p.material || 'Varios'}`
+                        ]
+                    };
+                });
+            }
+        }
+
+        const searchInput = document.getElementById('search-input');
+        const sortSelect = document.getElementById('sort-select');
+        const catPills = document.querySelectorAll('.cat-pill');
+        const resultsCount = document.getElementById('results-count');
+        const btnShowAllPromo = document.getElementById('btn-show-all-promo');
+        const searchSuggestions = document.getElementById('search-suggestions');
+        const temuSearchBtn = document.getElementById('temu-search-btn');
+        const btnLoadMore = document.getElementById('btn-load-more');
+        const loadMoreWrapper = document.getElementById('load-more-wrapper');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let activeCategory = urlParams.get('category') || 'all';
+
+        let currentLimit = 20;
+        let filteredProductsList = [];
+
+        // Hide parameter in URL
+        if (urlParams.has('category')) {
+            window.history.replaceState(null, '', window.location.pathname);
+        }
+
+        // Sync initial active state in UI if category is from URL
+        if (activeCategory !== 'all') {
+            catPills.forEach(p => {
+                if (p.getAttribute('data-category') === activeCategory) {
+                    p.classList.add('active');
+                } else {
+                    p.classList.remove('active');
+                }
+            });
+        }
+
+        function renderProducts() {
+            const productsToRender = filteredProductsList.slice(0, currentLimit);
+            
+            if (filteredProductsList.length === 0) {
+                storeGrid.innerHTML = `
+                    <div class="temu-no-results">
+                        <i class="fas fa-search-minus"></i>
+                        <p>No se encontraron productos con los filtros seleccionados.</p>
+                    </div>
+                `;
+                if (resultsCount) resultsCount.textContent = '0 productos encontrados';
+                if (loadMoreWrapper) loadMoreWrapper.style.display = 'none';
+                return;
+            }
+            
+            storeGrid.innerHTML = productsToRender.map(p => {
+                const isNew = (p.recentScore && p.recentScore > 7) ? '<span class="temu-card-badge">Nuevo</span>' : '';
+                return `
+                <div class="temu-card card-open-modal" data-id="${p.id}">
+                    <div class="temu-card-img">
+                        ${isNew}
+                        <img src="${p.img}" alt="${p.title}" loading="lazy">
+                    </div>
+                    <div class="temu-card-body">
+                        <div class="temu-card-title">${p.title}</div>
+                        <div class="temu-card-category">${(p.subCategory || '').replace(/_/g, ' ').toUpperCase()}</div>
+                        <div class="temu-card-price">${p.price}</div>
+                        <div class="temu-card-actions">
+                            <button class="temu-cart-btn btn-add-to-cart-card" data-id="${p.id}" data-title="${p.title.replace(/"/g,'&quot;')}" data-price="${p.price}" data-img="${p.img}">
+                                <i class="fas fa-cart-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+            
+            if (resultsCount) {
+                const showingCount = Math.min(currentLimit, filteredProductsList.length);
+                resultsCount.textContent = `Mostrando ${showingCount} de ${filteredProductsList.length} productos`;
+            }
+            
+            if (loadMoreWrapper) {
+                if (currentLimit < filteredProductsList.length) {
+                    loadMoreWrapper.style.display = 'block';
+                } else {
+                    loadMoreWrapper.style.display = 'none';
+                }
+            }
+        }
+
+        function applyFilters() {
+            let filtered = [...desechablesProductsList];
+            
+            // 1. Filter by Category
+            if (activeCategory !== 'all') {
+                filtered = filtered.filter(p => p.subCategory === activeCategory);
+            }
+            
+            // 2. Filter by Search Query
+            if (searchInput) {
+                const query = searchInput.value.toLowerCase().trim();
+                if (query) {
+                    filtered = filtered.filter(p => {
+                        const titleLower = (p.title || '').toLowerCase();
+                        const idLower = (p.id || '').toLowerCase();
+                        const materialLower = (p.material || '').toLowerCase();
+                        const featLower = (p.features || []).join(' ').toLowerCase();
+                        return titleLower.includes(query) ||
+                               idLower.includes(query) ||
+                               (p.subCategory && p.subCategory.toLowerCase().includes(query)) ||
+                               materialLower.includes(query) ||
+                               featLower.includes(query);
+                    });
+                }
+            }
+            
+            // 3. Sort
+            if (sortSelect) {
+                const sortBy = sortSelect.value;
+                if (sortBy === 'recent') {
+                    filtered.sort((a, b) => b.recentScore - a.recentScore);
+                } else if (sortBy === 'price-asc') {
+                    filtered.sort((a, b) => a.priceNum - b.priceNum);
+                } else if (sortBy === 'price-desc') {
+                    filtered.sort((a, b) => b.priceNum - a.priceNum);
+                }
+            }
+            
+            filteredProductsList = filtered;
+            renderProducts();
+        }
+
+        // Autocomplete suggestions like Temu
+        if (searchInput && searchSuggestions) {
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase().trim();
+                if (!query) {
+                    searchSuggestions.style.display = 'none';
+                    applyFilters();
+                    return;
+                }
+
+                const matchingCategories = new Set();
+                const matchingProducts = [];
+
+                desechablesProductsList.forEach(p => {
+                    if (p.subCategory && p.subCategory.toLowerCase().includes(query)) {
+                        matchingCategories.add(p.subCategory);
+                    }
+                    if (p.title.toLowerCase().includes(query)) {
+                        matchingProducts.push(p);
+                    }
+                });
+
+                let html = '';
+                
+                matchingCategories.forEach(cat => {
+                    html += `
+                        <div class="suggestion-item" data-type="category" data-value="${cat}">
+                            <i class="fas fa-th-large"></i> Categoría: <span class="suggestion-highlight">${cat.replace(/_/g, ' ')}</span>
+                        </div>
+                    `;
+                });
+
+                matchingProducts.slice(0, 5).forEach(p => {
+                    html += `
+                        <div class="suggestion-item" data-type="product" data-value="${p.title}" data-id="${p.id}">
+                            <i class="fas fa-search"></i> ${p.title}
+                        </div>
+                    `;
+                });
+
+                if (html) {
+                    searchSuggestions.innerHTML = html;
+                    searchSuggestions.style.display = 'block';
+                } else {
+                    searchSuggestions.style.display = 'none';
+                }
+
+                applyFilters();
+            });
+
+            // Handle suggestion click
+            searchSuggestions.addEventListener('click', (e) => {
+                const item = e.target.closest('.suggestion-item');
+                if (!item) return;
+
+                const type = item.getAttribute('data-type');
+                const val = item.getAttribute('data-value');
+
+                if (type === 'category') {
+                    activeCategory = val;
+                    catPills.forEach(p => {
+                        if (p.getAttribute('data-category') === val) {
+                            p.classList.add('active');
+                        } else {
+                            p.classList.remove('active');
+                        }
+                    });
+                    searchInput.value = '';
+                } else {
+                    searchInput.value = val;
+                }
+
+                searchSuggestions.style.display = 'none';
+                currentLimit = 20;
+                applyFilters();
+            });
+
+            // Close suggestions when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.temu-search-inner')) {
+                    searchSuggestions.style.display = 'none';
+                }
+            });
+
+            // Close on Enter key
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    searchSuggestions.style.display = 'none';
+                    currentLimit = 20;
+                    applyFilters();
+                }
+            });
+        }
+
+        if (temuSearchBtn) {
+            temuSearchBtn.addEventListener('click', () => {
+                if (searchSuggestions) searchSuggestions.style.display = 'none';
+                currentLimit = 20;
+                applyFilters();
+            });
+        }
+
+        if (btnLoadMore) {
+            btnLoadMore.addEventListener('click', () => {
+                currentLimit += 20;
+                renderProducts();
+            });
+        }
+
+        if (sortSelect) sortSelect.addEventListener('change', applyFilters);
+
+        // Bind category pills click
+        catPills.forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                e.preventDefault();
+                catPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                activeCategory = pill.getAttribute('data-category');
+                
+                currentLimit = 20;
+                applyFilters();
+            });
+        });
+
+        if (btnShowAllPromo) {
+            btnShowAllPromo.addEventListener('click', (e) => {
+                e.preventDefault();
+                activeCategory = 'all';
+                catPills.forEach(p => {
+                    if (p.getAttribute('data-category') === 'all') {
+                        p.classList.add('active');
+                    } else {
+                        p.classList.remove('active');
+                    }
+                });
+                if (searchInput) searchInput.value = '';
+                currentLimit = 20;
+                applyFilters();
+            });
+        }
+
+        // Initialize Top Hero Slider
+        const sliderSlides = document.querySelectorAll('.top-hero-slider .slide');
+        const prevSlideBtn = document.querySelector('.prev-slide');
+        const nextSlideBtn = document.querySelector('.next-slide');
+        const slideDots = document.querySelectorAll('.slider-dots .dot');
+
+        if (sliderSlides.length > 0) {
+            let currentSlideIndex = 0;
+            let slideInterval;
+
+            function showSlide(index) {
+                sliderSlides.forEach(s => s.classList.remove('active'));
+                slideDots.forEach(d => d.classList.remove('active'));
+
+                currentSlideIndex = (index + sliderSlides.length) % sliderSlides.length;
+                sliderSlides[currentSlideIndex].classList.add('active');
+                if (slideDots[currentSlideIndex]) {
+                    slideDots[currentSlideIndex].classList.add('active');
+                }
+            }
+
+            function nextSlide() {
+                showSlide(currentSlideIndex + 1);
+            }
+
+            function prevSlide() {
+                showSlide(currentSlideIndex - 1);
+            }
+
+            function startSlideShow() {
+                stopSlideShow();
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+
+            function stopSlideShow() {
+                if (slideInterval) clearInterval(slideInterval);
+            }
+
+            if (nextSlideBtn) {
+                nextSlideBtn.addEventListener('click', () => {
+                    nextSlide();
+                    startSlideShow();
+                });
+            }
+
+            if (prevSlideBtn) {
+                prevSlideBtn.addEventListener('click', () => {
+                    prevSlide();
+                    startSlideShow();
+                });
+            }
+
+            slideDots.forEach((dot, idx) => {
+                dot.addEventListener('click', () => {
+                    showSlide(idx);
+                    startSlideShow();
+                });
+            });
+
+            startSlideShow();
+        }
+
+        // Initialize grid on load
+        loadStoreCategories();
+        fetchStoreProducts();
+
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            supabaseClient.channel('store-products')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
+                    console.log('Realtime products payload:', payload);
+                    fetchStoreProducts(); 
+                })
+                .subscribe();
+
+            supabaseClient.channel('store-categories')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, (payload) => {
+                    console.log('Realtime categories payload:', payload);
+                    loadStoreCategories(); 
+                })
+                .subscribe();
+        }
+    }
+
+    /* ==========================================
+       GLOBAL SHOPPING CART FUNCTIONALITY
+       ========================================== */
+    // Initialize Cart state from LocalStorage
+    let cart = JSON.parse(localStorage.getItem('ivad_cart')) || [];
+
+    // Inject HTML structure for Cart Drawer and Overlay if not exists
+    if (!document.getElementById('cart-drawer')) {
+        const drawerHtml = `
+            <div id="cart-overlay"></div>
+            <div id="cart-drawer">
+                <div class="cart-header">
+                    <h2>Tu Carrito</h2>
+                    <button class="cart-close-btn" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="cart-items-list" id="cart-items-container">
+                    <!-- Cart items will be loaded dynamically here -->
+                </div>
+                <div class="cart-footer">
+                    <div class="cart-summary-line">
+                        <span>Subtotal</span>
+                        <span id="cart-subtotal">RD$ 0.00</span>
+                    </div>
+                    <div class="cart-summary-line">
+                        <span>ITBIS (18%)</span>
+                        <span id="cart-tax">RD$ 0.00</span>
+                    </div>
+                    <div class="cart-summary-line total">
+                        <span>Total</span>
+                        <span id="cart-total">RD$ 0.00</span>
+                    </div>
+                    <button class="cart-checkout-btn" id="btn-cart-checkout">Pagar ahora</button>
+                </div>
+            </div>
+
+            <!-- Checkout Success Modal -->
+            <div class="checkout-modal-overlay" id="checkout-success-modal">
+                <div class="checkout-modal-content">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>¡Pedido Confirmado!</h3>
+                    <p>Muchas gracias por tu compra en IVAD. Tu orden está siendo procesada y te enviaremos los detalles del envío por correo electrónico.</p>
+                    <button class="checkout-modal-close-btn" id="btn-checkout-close">Cerrar</button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', drawerHtml);
+    }
+
+    // Elements
+    const cartOverlay = document.getElementById('cart-overlay');
+    const cartDrawer = document.getElementById('cart-drawer');
+    const cartCloseBtn = document.querySelector('.cart-close-btn');
+    const cartItemsContainer = document.getElementById('cart-items-container');
+    const cartSubtotalEl = document.getElementById('cart-subtotal');
+    const cartTaxEl = document.getElementById('cart-tax');
+    const cartTotalEl = document.getElementById('cart-total');
+    const cartCheckoutBtn = document.getElementById('btn-cart-checkout');
+    const checkoutModal = document.getElementById('checkout-success-modal');
+    const checkoutCloseBtn = document.getElementById('btn-checkout-close');
+
+    // Sync Cart Badge Count
+    function updateCartBadge() {
+        const totalItemsCount = cart.reduce((sum, item) => sum + item.qty, 0);
+        document.querySelectorAll('.cart-count').forEach(badge => {
+            badge.textContent = totalItemsCount;
+            // Highlight animation on count change
+            badge.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                badge.style.transform = 'scale(1)';
+            }, 200);
+        });
+    }
+
+    // Save Cart to LocalStorage and Render
+    function saveAndRenderCart() {
+        localStorage.setItem('ivad_cart', JSON.stringify(cart));
+        updateCartBadge();
+        renderCartItems();
+    }
+
+    // Render Items inside Drawer
+    function renderCartItems() {
+        if (!cartItemsContainer) return;
+
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = `
+                <div class="cart-empty-message">
+                    <i class="fas fa-shopping-basket"></i>
+                    <p>Tu carrito está vacío.</p>
+                </div>
+            `;
+            if (cartSubtotalEl) cartSubtotalEl.textContent = 'RD$ 0.00';
+            if (cartTaxEl) cartTaxEl.textContent = 'RD$ 0.00';
+            if (cartTotalEl) cartTotalEl.textContent = 'RD$ 0.00';
+            if (cartCheckoutBtn) cartCheckoutBtn.disabled = true;
+            return;
+        }
+
+        if (cartCheckoutBtn) cartCheckoutBtn.disabled = false;
+
+        let subtotal = 0;
+
+        cartItemsContainer.innerHTML = cart.map(item => {
+            const itemTotal = item.price * item.qty;
+            subtotal += itemTotal;
+            return `
+                <div class="cart-item" data-id="${item.id}">
+                    <img src="${item.img}" alt="${item.title}" class="cart-item-img">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.title}</div>
+                        <div class="cart-item-price">RD$ ${item.price.toFixed(2)}</div>
+                        <div class="cart-item-controls">
+                            <button class="cart-item-qty-btn minus-qty" data-id="${item.id}"><i class="fas fa-minus"></i></button>
+                            <span class="cart-item-qty">${item.qty}</span>
+                            <button class="cart-item-qty-btn plus-qty" data-id="${item.id}"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <button class="cart-item-delete" data-id="${item.id}" aria-label="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `;
+        }).join('');
+
+        const tax = subtotal * 0.18;
+        const total = subtotal + tax;
+
+        if (cartSubtotalEl) cartSubtotalEl.textContent = `RD$ ${subtotal.toFixed(2)}`;
+        if (cartTaxEl) cartTaxEl.textContent = `RD$ ${tax.toFixed(2)}`;
+        if (cartTotalEl) cartTotalEl.textContent = `RD$ ${total.toFixed(2)}`;
+    }
+
+    // Toggle Cart Drawer
+    function toggleCart(show = true) {
+        if (show) {
+            cartOverlay.classList.add('active');
+            cartDrawer.classList.add('active');
+            renderCartItems();
+        } else {
+            cartOverlay.classList.remove('active');
+            cartDrawer.classList.remove('active');
+        }
+    }
+
+    // Event Listeners for Cart drawer visibility
+    document.querySelectorAll('.cart-icon').forEach(icon => {
+        icon.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleCart(true);
+        });
+    });
+
+    if (cartCloseBtn) cartCloseBtn.addEventListener('click', () => toggleCart(false));
+    if (cartOverlay) cartOverlay.addEventListener('click', () => toggleCart(false));
+
+    // Handle Item Modifications inside Drawer (delegated clicks)
+    if (cartItemsContainer) {
+        cartItemsContainer.addEventListener('click', (e) => {
+            const btnMinus = e.target.closest('.minus-qty');
+            const btnPlus = e.target.closest('.plus-qty');
+            const btnDelete = e.target.closest('.cart-item-delete');
+
+            if (btnMinus) {
+                const id = btnMinus.getAttribute('data-id');
+                const idx = cart.findIndex(item => item.id === id);
+                if (idx !== -1) {
+                    if (cart[idx].qty > 1) {
+                        cart[idx].qty -= 1;
+                    } else {
+                        cart.splice(idx, 1);
+                    }
+                    saveAndRenderCart();
+                }
+            }
+
+            if (btnPlus) {
+                const id = btnPlus.getAttribute('data-id');
+                const idx = cart.findIndex(item => item.id === id);
+                if (idx !== -1) {
+                    cart[idx].qty += 1;
+                    saveAndRenderCart();
+                }
+            }
+
+            if (btnDelete) {
+                const id = btnDelete.getAttribute('data-id');
+                cart = cart.filter(item => item.id !== id);
+                saveAndRenderCart();
+            }
+        });
+    }
+
+    // Add to Cart Logic
+    function addToCart(id, title, priceStr, img, qty = 1) {
+        const price = parseFloat(priceStr.split('|')[0].replace(/[^0-9.-]+/g, ""));
+        const existingIdx = cart.findIndex(item => item.id === id);
+        
+        if (existingIdx !== -1) {
+            cart[existingIdx].qty += qty;
+        } else {
+            cart.push({ id, title, price, img, qty });
+        }
+        saveAndRenderCart();
+        if (window.innerWidth <= 768) {
+            window.showToast("Agregado: " + title);
+        } else {
+            toggleCart(true); // En escritorio sí lo abrimos
+        }
+    }
+
+    // Add to Cart from the Detail Modal
+    const modalAddBtn = document.querySelector('.add-to-cart');
+    if (modalAddBtn) {
+        modalAddBtn.addEventListener('click', () => {
+            const activeModal = document.getElementById('product-modal');
+            if (activeModal && activeModal.classList.contains('active')) {
+                const title = document.getElementById('modal-title').textContent;
+                const priceStr = document.getElementById('modal-price').textContent;
+                const img = document.getElementById('modal-img').getAttribute('src');
+                const qty = parseInt(document.querySelector('.qty-input').value) || 1;
+                
+                let id = 'unknown';
+                for (const key in productsData) {
+                    if (productsData[key].title === title) {
+                        id = key;
+                        break;
+                    }
+                }
+
+                if (id !== 'unknown') {
+                    addToCart(id, title, priceStr, img, qty);
+                    const modalClose = document.querySelector('.modal-close');
+                    if (modalClose) modalClose.click();
+                }
+            }
+        });
+    }
+
+    // Add to Cart from Quick Add buttons on Store Grid
+    document.addEventListener('click', (e) => {
+        const quickAdd = e.target.closest('.add-to-cart-quick');
+        if (quickAdd) {
+            e.stopPropagation();
+            const id = quickAdd.getAttribute('data-id');
+            if (id && productsData[id]) {
+                const data = productsData[id];
+                addToCart(id, data.title, data.price, data.img, 1);
+            }
+        }
+    });
+
+    // Checkout button handler
+    if (cartCheckoutBtn) {
+        cartCheckoutBtn.addEventListener('click', () => {
+            toggleCart(false);
+            window.location.href = 'checkout.html';
+        });
+    }
+
+    if (checkoutCloseBtn) {
+        checkoutCloseBtn.addEventListener('click', () => {
+            if (checkoutModal) {
+                checkoutModal.classList.remove('active');
+            }
+        });
+    }
+
+    if (checkoutModal) {
+        checkoutModal.addEventListener('click', (e) => {
+            if (e.target === checkoutModal) {
+                checkoutModal.classList.remove('active');
+            }
+        });
+    }
+
+    // Initial load
+    updateCartBadge();
+    renderCartItems();
+
+    // User session management (Header user icon)
+    function syncUserSession(userData) {
+        const userLinks = document.querySelectorAll('a[href="login.html"]');
+        userLinks.forEach(anchor => {
+            const initial = userData.name ? userData.name.charAt(0).toUpperCase() : 'U';
+            anchor.innerHTML = `<span class="user-logged-initial" style="
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 28px;
+                height: 28px;
+                background-color: var(--secondary-color);
+                color: var(--text-light);
+                font-weight: 700;
+                font-size: 0.85rem;
+                border-radius: 50%;
+                border: 2px solid transparent;
+                transition: border-color 0.2s;
+            " title="${userData.name} (Haga clic para cerrar sesión)">${initial}</span>`;
+            
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (confirm(`Hola, ${userData.name}. ¿Deseas cerrar sesión?`)) {
+                    if (supabaseClient) {
+                        supabaseClient.auth.signOut().then(() => {
+                            localStorage.removeItem('ivad_user');
+                            alert('Sesión cerrada.');
+                            window.location.reload();
+                        });
+                    } else {
+                        localStorage.removeItem('ivad_user');
+                        alert('Sesión cerrada.');
+                        window.location.reload();
+                    }
+                }
+            });
+        });
+    }
+
+    // Sync session on load
+    if (supabaseClient) {
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                const user = {
+                    name: session.user.user_metadata.full_name || session.user.email.split('@')[0],
+                    email: session.user.email,
+                    phone: session.user.user_metadata.phone || ''
+                };
+                localStorage.setItem('ivad_user', JSON.stringify(user));
+                syncUserSession(user);
+            } else {
+                localStorage.removeItem('ivad_user');
+            }
+        });
+    } else {
+        const ivadUserStr = localStorage.getItem('ivad_user');
+        if (ivadUserStr) {
+            try {
+                const userData = JSON.parse(ivadUserStr);
+                syncUserSession(userData);
+            } catch (err) {
+                console.error('Error parsing user data:', err);
+            }
+        }
+    }
+});
+
+// Toast Notifications System
+window.showToast = function(message) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>` + message + `</span>`;
+    
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 400); // Wait for fade out animation
+    }, 3000); // Show for 3 seconds
+};
+
+    // Mobile Filter Toggle
+    const btnToggleFilters = document.getElementById('btn-toggle-filters');
+    const filtersSidebar = document.getElementById('filters-sidebar');
+    if (btnToggleFilters && filtersSidebar) {
+        btnToggleFilters.addEventListener('click', () => {
+            filtersSidebar.classList.toggle('show-mobile');
+        });
+    }

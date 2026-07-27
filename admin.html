@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - IVAD Home & Goods</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+            <img src="logo_transparent.png" alt="IVAD Home & Goods" style="height: 50px; width: auto; display: block; margin: 0 auto;">
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active" data-section="dashboard"><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li data-section="productos"><a href="#"><i class="fas fa-box-open"></i> Productos</a></li>
+                <li data-section="marcas"><a href="#"><i class="fas fa-copyright"></i> Marcas</a></li>
+                <li data-section="gestor-imagenes"><a href="#"><i class="fas fa-images"></i> Gestor Imágenes</a></li>
+                <li data-section="categorias"><a href="#"><i class="fas fa-tags"></i> Categorías</a></li>
+                <li data-section="pedidos"><a href="#"><i class="fas fa-shopping-bag"></i> Pedidos</a></li>
+                <li data-section="clientes" style="display:none;"><a href="#"><i class="fas fa-users"></i> Clientes</a></li>
+                <li data-section="equipo"><a href="#"><i class="fas fa-user-tie"></i> Equipo</a></li>
+                <li data-section="inventario" style="display:none;"><a href="#"><i class="fas fa-clipboard-list"></i> Inventario</a></li>
+                <li data-section="cupones" style="display:none;"><a href="#"><i class="fas fa-ticket-alt"></i> Cupones</a></li>
+                <li data-section="envios"><a href="#"><i class="fas fa-truck"></i> Despachos</a></li>
+                <li data-section="pagos"><a href="#"><i class="fas fa-credit-card"></i> Pagos (Azul)</a></li>
+                <li data-section="opiniones" style="display:none;"><a href="#"><i class="far fa-comment-dots"></i> Opiniones</a></li>
+                <li data-section="reportes" style="display:none;"><a href="#"><i class="fas fa-chart-bar"></i> Reportes</a></li>
+                <li data-section="configuracion"><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="avatar">AD</div>
+                <div class="user-info">
+                    <strong>Administrador</strong>
+                    <span>admin@ivad.com</span>
+                </div>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <div class="header-titles">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageSubtitle">Bienvenido al panel de administración</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="notifications">
+                    <i class="far fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="user-dropdown">
+                    Hola, Administrador <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-wrapper">
+
+            <!-- ============================================================
+                 DASHBOARD
+            ============================================================ -->
+            <section class="page-section active" id="sec-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-box-open"></i></div>
+                        <div class="stat-info"><h3>156</h3><span>Productos activos</span></div>
+                        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> 12%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                        <div class="stat-info"><h3>84</h3><span>Pedidos este mes</span></div>
+                        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> 8%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info"><h3>342</h3><span>Clientes registrados</span></div>
+                        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> 5%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="stat-info"><h3>$12,450</h3><span>Ingresos del mes</span></div>
+                        <div class="stat-trend down"><i class="fas fa-arrow-down"></i> 3%</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-bottom">
+                    <div class="card">
+                        <div class="card-header"><h2>Pedidos recientes</h2></div>
+                        <div class="table-responsive">
+                            <table class="product-table">
+                                <thead><tr><th>PEDIDO</th><th>CLIENTE</th><th>PRODUCTOS</th><th>TOTAL</th><th>ESTADO</th></tr></thead>
+                                <tbody>
+                                    <tr><td><strong>#PED-001</strong></td><td>María López</td><td>Sofá Moderno, Florero</td><td><strong>$485.00</strong></td><td><span class="status-badge active">Enviado</span></td></tr>
+                                    <tr><td><strong>#PED-002</strong></td><td>Carlos Pérez</td><td>Vasos x50, Platos x30</td><td><strong>$161.00</strong></td><td><span class="status-badge pending">Pendiente</span></td></tr>
+                                    <tr><td><strong>#PED-003</strong></td><td>Ana Rodríguez</td><td>Juego de Comedor</td><td><strong>$650.00</strong></td><td><span class="status-badge active">Completado</span></td></tr>
+                                    <tr><td><strong>#PED-004</strong></td><td>Pedro Martínez</td><td>Bolsas Kraft x200</td><td><strong>$70.00</strong></td><td><span class="status-badge processing">En proceso</span></td></tr>
+                                    <tr><td><strong>#PED-005</strong></td><td>Lucía Sánchez</td><td>Florero Decorativo x3</td><td><strong>$105.00</strong></td><td><span class="status-badge active">Enviado</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2>Alertas de inventario</h2></div>
+                        <div class="alerts-list">
+                            <div class="alert-item alert-low"><i class="fas fa-exclamation-circle"></i><div><strong>Sofá Moderno</strong><span>Solo 2 unidades restantes</span></div><span class="stock-badge low">Bajo</span></div>
+                            <div class="alert-item alert-warn"><i class="fas fa-exclamation-triangle"></i><div><strong>Florero Decorativo</strong><span>5 unidades restantes</span></div><span class="stock-badge warning">Alerta</span></div>
+                            <div class="alert-item alert-warn"><i class="fas fa-exclamation-triangle"></i><div><strong>Juego de Comedor</strong><span>8 unidades restantes</span></div><span class="stock-badge warning">Alerta</span></div>
+                            <div class="alert-item alert-ok"><i class="fas fa-check-circle"></i><div><strong>Vasos Plásticos</strong><span>100 unidades disponibles</span></div><span class="stock-badge ok">OK</span></div>
+                            <div class="alert-item alert-ok"><i class="fas fa-check-circle"></i><div><strong>Bolsas Kraft</strong><span>200 unidades disponibles</span></div><span class="stock-badge ok">OK</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 PRODUCTOS
+            ============================================================ -->
+            <section class="page-section" id="sec-productos">
+                <div class="dashboard-grid">
+                    <div class="card card-list">
+                        <div class="card-header"><h2>Lista de productos</h2></div>
+                        <div class="table-controls">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="searchInput" placeholder="Buscar productos...">
+                            </div>
+                            <div class="filters">
+                                <select class="filter-select" id="catFilter">
+                                    <option value="">Todas las subcategorías</option>
+                                    <option value="platos">Platos</option>
+                                    <option value="vasos">Vasos</option>
+                                    <option value="cubiertos">Cubiertos</option>
+                                    <option value="bandejas">Bandejas</option>
+                                    <option value="contenedores">Contenedores</option>
+                                    <option value="servilletas">Servilletas</option>
+                                    <option value="bolsas">Bolsas</option>
+                                </select>
+                                <select class="filter-select" id="brandFilter">
+                                    <option value="">Todas las Marcas</option>
+                                </select>
+                                <select class="filter-select" id="statusFilter">
+                                    <option value="">Estado</option>
+                                    <option value="Activo">Activo</option>
+                                    <option value="Borrador">Borrador</option>
+                                </select>
+                                <button class="btn btn-primary" id="btnAgregar"><i class="fas fa-plus"></i> Agregar</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="product-table">
+                                <thead><tr><th>PRODUCTO</th><th>MARCA</th><th>SUBCATEGORÍA</th><th>PRECIO</th><th>INVENTARIO</th><th>ESTADO</th><th>ACCIONES</th></tr></thead>
+                                <tbody id="productTableBody">
+                                    <tr><td colspan="7" style="text-align:center;padding:30px;color:#888;"><i class="fas fa-spinner fa-spin"></i> Cargando catálogo de productos...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer">
+                            <span id="productCount">Mostrando 6 de 6 productos</span>
+                            <div class="pagination"><button class="page-btn"><i class="fas fa-chevron-left"></i></button><button class="page-btn active">1</button><button class="page-btn"><i class="fas fa-chevron-right"></i></button></div>
+                        </div>
+                    </div>
+
+                    <div class="card card-form">
+                        <div class="card-header"><h2 id="formTitle">Agregar nuevo producto</h2></div>
+                        <div class="product-form">
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <strong>Subir imágenes</strong>
+                                <span>Arrastra y suelta o haz clic para seleccionar</span>
+                                <span class="upload-hint">Formato: JPG, PNG. Máx: 5MB</span>
+                                <input type="file" id="imgUpload" accept="image/*" style="display:none">
+                            </div>
+                            <div class="form-section">
+                                <h3>Información básica</h3>
+                                <div class="form-group"><label>Nombre del producto</label><input type="text" id="prodName" placeholder="Ej. Vasos Plásticos 16 oz"></div>
+                                <div class="form-group"><label>Marca</label><input type="text" id="prodBrand" placeholder="Ej. TOUCH OF COLOR, FINELINE, etc."></div>
+                                <div class="form-group">
+                                    <label>Subcategoría</label>
+                                    <select id="prodCat" required>
+                                        <option value="">Cargando categorías...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group"><label>Descripción</label><textarea id="prodDesc" placeholder="Describe tu producto..."></textarea></div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Precio e inventario</h3>
+                                <div class="form-row">
+                                    <div class="form-group"><label>Precio (RD$)</label><input type="number" id="prodPrice" placeholder="0.00" min="0" step="0.01"></div>
+                                    <div class="form-group"><label>Inventario</label><input type="number" id="prodInv" placeholder="0" min="0"></div>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Filtros de Tienda</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Material</label>
+                                        <select id="prodMaterial">
+                                            <option value="">Selecciona material</option>
+                                            <option value="carton">Cartón</option>
+                                            <option value="plastico">Plástico</option>
+                                            <option value="papel">Papel</option>
+                                            <option value="foam">Foam</option>
+                                            <option value="biodegradable">Biodegradable</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Uso principal (separado por comas)</label>
+                                        <input type="text" id="prodUso" placeholder="Ej. diario, para llevar, eventos">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Envío y disponibilidad</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Tiempo de envío</label>
+                                        <select id="prodShipping">
+                                            <option value="1-2 días">1-2 días</option>
+                                            <option value="3-5 días">3-5 días</option>
+                                            <option value="5-7 días">5-7 días</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>¿Envío disponible?</label>
+                                        <select id="prodAvailable">
+                                            <option value="Sí">Sí</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Estado</h3>
+                                <div class="form-group"><label>Estado del producto</label><select id="prodStatus"><option value="Activo">Activo</option><option value="Borrador">Borrador</option></select></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline" id="btnCancelar">Cancelar</button>
+                            <button type="button" class="btn btn-primary" id="btnGuardar"><i class="fas fa-save"></i> Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 MARCAS
+            ============================================================ -->
+            <section class="page-section" id="sec-marcas">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-copyright"></i></div>
+                        <div class="stat-info"><h3 id="statTotalMarcas">0</h3><span>Marcas registradas</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-crown"></i></div>
+                        <div class="stat-info"><h3 id="statTopMarca" style="font-size:1.1rem;word-break:break-all;">—</h3><span>Marca principal</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+                        <div class="stat-info"><h3 id="statProdsConMarca">0</h3><span>Productos con marca</span></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header section-header">
+                        <h2>Catálogo por Marcas</h2>
+                        <div class="header-controls">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="marcasSearchInput" placeholder="Buscar marca..." oninput="renderMarcasSection()">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>MARCA</th><th>CANTIDAD DE PRODUCTOS</th><th>INVENTARIO TOTAL</th><th>ACCIONES</th></tr></thead>
+                            <tbody id="marcasTableBody">
+                                <tr><td colspan="4" style="text-align:center;padding:30px;color:#888;"><i class="fas fa-spinner fa-spin"></i> Cargando marcas...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 GESTOR DE IMÁGENES
+            ============================================================ -->
+            <section class="page-section" id="sec-gestor-imagenes">
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header section-header">
+                        <h2>Gestor Rápido de Imágenes</h2>
+                        <div class="header-controls">
+                            <select class="filter-select" id="imgFilterStatus" onchange="renderGestorImagenesSection()">
+                                <option value="todos">Todos los productos</option>
+                                <option value="sin_imagen">Solo Sin Imagen / SVG / Placeholder</option>
+                                <option value="con_imagen">Solo Con Foto Real (JPG/PNG/WEBP)</option>
+                            </select>
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="imgSearchInput" placeholder="Buscar producto..." oninput="renderGestorImagenesSection()">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 15px 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; color: #475569; display:flex; align-items:center; gap:10px;">
+                        <i class="fas fa-info-circle" style="color:#3b82f6; font-size:1.2rem;"></i> <span>Haz clic en <strong>"Subir Foto"</strong> en cualquier producto para seleccionar una imagen de tu computadora. Se subirá automáticamente a <strong>Supabase Storage</strong>.</span>
+                    </div>
+                </div>
+
+                <div id="gestorImagenesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                    <!-- Grid of product image cards -->
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CATEGORÍAS
+            ============================================================ -->
+            <section class="page-section" id="sec-categorias">
+                <div class="dashboard-grid" style="grid-template-columns: 1fr; max-width: 800px; margin: 0 auto;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Gestión de Categorías</h2>
+                        </div>
+                        <div style="padding: 20px; border-bottom: 1px solid #eee;">
+                            <form id="categoryForm" style="display:flex; gap:10px; align-items:center;">
+                                <input type="text" id="catName" placeholder="Nombre de la categoría (ej. Platos)" required style="padding: 10px; flex:1; border: 1px solid #ddd; border-radius: 4px;">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Agregar</button>
+                            </form>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="product-table">
+                                <thead><tr><th>ID</th><th>NOMBRE</th><th>ACCIONES</th></tr></thead>
+                                <tbody id="categories-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 PEDIDOS
+            ============================================================ -->
+            <section class="page-section" id="sec-pedidos">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Gestión de pedidos</h2>
+                        <div class="header-controls">
+                            <select class="filter-select"><option>Todos los estados</option><option>Pendiente</option><option>En proceso</option><option>Enviado</option><option>Completado</option><option>Cancelado</option></select>
+                            <div class="search-box"><i class="fas fa-search search-icon"></i><input type="text" placeholder="Buscar pedido..."></div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>PEDIDO</th><th>CLIENTE</th><th>FECHA</th><th>PRODUCTOS</th><th>TOTAL</th><th>ESTADO</th><th>ACCIONES</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>#PED-001</strong></td><td><div class="client-cell"><div class="client-avatar">ML</div>María López</div></td><td>22 Jun 2026</td><td>Sofá Moderno, Florero</td><td><strong>$485.00</strong></td><td><span class="status-badge active">Enviado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-002</strong></td><td><div class="client-cell"><div class="client-avatar">CP</div>Carlos Pérez</div></td><td>21 Jun 2026</td><td>Vasos x50, Platos x30</td><td><strong>$161.00</strong></td><td><span class="status-badge pending">Pendiente</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-003</strong></td><td><div class="client-cell"><div class="client-avatar">AR</div>Ana Rodríguez</div></td><td>20 Jun 2026</td><td>Juego de Comedor</td><td><strong>$650.00</strong></td><td><span class="status-badge active">Completado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-004</strong></td><td><div class="client-cell"><div class="client-avatar">PM</div>Pedro Martínez</div></td><td>20 Jun 2026</td><td>Bolsas Kraft x200</td><td><strong>$70.00</strong></td><td><span class="status-badge processing">En proceso</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-005</strong></td><td><div class="client-cell"><div class="client-avatar">LS</div>Lucía Sánchez</div></td><td>19 Jun 2026</td><td>Florero Decorativo x3</td><td><strong>$105.00</strong></td><td><span class="status-badge active">Enviado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-006</strong></td><td><div class="client-cell"><div class="client-avatar">JG</div>Jorge García</div></td><td>18 Jun 2026</td><td>Platos x100, Vasos x100</td><td><strong>$370.00</strong></td><td><span class="status-badge cancelled">Cancelado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><strong>#PED-007</strong></td><td><div class="client-cell"><div class="client-avatar">RD</div>Rosa Díaz</div></td><td>17 Jun 2026</td><td>Sofá Moderno</td><td><strong>$450.00</strong></td><td><span class="status-badge active">Completado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-footer">
+                        <span>Mostrando 7 de 84 pedidos</span>
+                        <div class="pagination"><button class="page-btn"><i class="fas fa-chevron-left"></i></button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn"><i class="fas fa-chevron-right"></i></button></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CLIENTES
+            ============================================================ -->
+            <section class="page-section" id="sec-clientes">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Clientes registrados</h2>
+                        <div class="header-controls">
+                            <div class="search-box"><i class="fas fa-search search-icon"></i><input type="text" placeholder="Buscar cliente..."></div>
+                            <button class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo cliente</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>CLIENTE</th><th>EMAIL</th><th>TELÉFONO</th><th>PEDIDOS</th><th>GASTO TOTAL</th><th>REGISTRADO</th><th>ACCIONES</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="client-cell"><div class="client-avatar">ML</div><div><strong>María López</strong><span class="product-id">Cliente frecuente</span></div></div></td><td>maria@email.com</td><td>(809) 555-0101</td><td>8</td><td><strong>$1,240.00</strong></td><td>Ene 2026</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">CP</div><div><strong>Carlos Pérez</strong><span class="product-id">Nuevo cliente</span></div></div></td><td>carlos@email.com</td><td>(809) 555-0202</td><td>2</td><td><strong>$231.00</strong></td><td>May 2026</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">AR</div><div><strong>Ana Rodríguez</strong><span class="product-id">Cliente VIP</span></div></div></td><td>ana@email.com</td><td>(809) 555-0303</td><td>15</td><td><strong>$4,850.00</strong></td><td>Feb 2025</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">PM</div><div><strong>Pedro Martínez</strong><span class="product-id">Cliente frecuente</span></div></div></td><td>pedro@email.com</td><td>(809) 555-0404</td><td>5</td><td><strong>$680.00</strong></td><td>Mar 2026</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">LS</div><div><strong>Lucía Sánchez</strong><span class="product-id">Nuevo cliente</span></div></div></td><td>lucia@email.com</td><td>(809) 555-0505</td><td>1</td><td><strong>$105.00</strong></td><td>Jun 2026</td><td><div class="actions"><button class="action-btn"><i class="fas fa-eye"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-footer">
+                        <span>Mostrando 5 de 342 clientes</span>
+                        <div class="pagination"><button class="page-btn"><i class="fas fa-chevron-left"></i></button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn"><i class="fas fa-chevron-right"></i></button></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 INVENTARIO
+            ============================================================ -->
+            <section class="page-section" id="sec-inventario">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Control de inventario</h2>
+                        <div class="header-controls">
+                            <select class="filter-select"><option>Todos</option><option>Stock bajo</option><option>Stock normal</option><option>Sin stock</option></select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>PRODUCTO</th><th>CATEGORÍA</th><th>STOCK ACTUAL</th><th>STOCK MÍNIMO</th><th>ESTADO</th><th>ACTUALIZACIÓN</th><th>ACCIONES</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/sofa_1782182122883.png" alt="Sofá"></div><strong>Sofá Moderno</strong></div></td><td>Muebles</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar low-bar" style="width:10%"></div></div><span>2</span></div></td><td>10</td><td><span class="stock-badge low">Bajo</span></td><td>Hoy</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/comedor_1782182137437.png" alt="Comedor"></div><strong>Juego de Comedor</strong></div></td><td>Muebles</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar warn-bar" style="width:40%"></div></div><span>8</span></div></td><td>10</td><td><span class="stock-badge warning">Alerta</span></td><td>Ayer</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/florero_1782182149891.png" alt="Florero"></div><strong>Florero Decorativo</strong></div></td><td>Decoración</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar warn-bar" style="width:50%"></div></div><span>25</span></div></td><td>20</td><td><span class="stock-badge warning">Alerta</span></td><td>22 Jun</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/vasos.png" alt="Vasos"></div><strong>Vasos Plásticos</strong></div></td><td>Desechables</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar ok-bar" style="width:100%"></div></div><span>100</span></div></td><td>30</td><td><span class="stock-badge ok">OK</span></td><td>21 Jun</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/platos.png" alt="Platos"></div><strong>Platos Desechables</strong></div></td><td>Desechables</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar ok-bar" style="width:100%"></div></div><span>150</span></div></td><td>50</td><td><span class="stock-badge ok">OK</span></td><td>20 Jun</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                                <tr><td><div class="product-cell"><div class="img-wrapper"><img src="images/bolsas.png" alt="Bolsas"></div><strong>Bolsas Kraft</strong></div></td><td>Desechables</td><td><div class="stock-bar-wrap"><div class="stock-track"><div class="stock-bar ok-bar" style="width:100%"></div></div><span>200</span></div></td><td>50</td><td><span class="stock-badge ok">OK</span></td><td>19 Jun</td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CUPONES
+            ============================================================ -->
+            <section class="page-section" id="sec-cupones">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header"><h2>Cupones de descuento</h2></div>
+                        <div class="table-responsive">
+                            <table class="product-table">
+                                <thead><tr><th>CÓDIGO</th><th>DESCUENTO</th><th>USOS</th><th>VENCE</th><th>ESTADO</th><th>ACCIONES</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="coupon-code">IVAD10</span></td><td>10% off</td><td>24 / 100</td><td>31 Dic 2026</td><td><span class="status-badge active">Activo</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                    <tr><td><span class="coupon-code">DECO20</span></td><td>20% off</td><td>8 / 50</td><td>30 Jun 2026</td><td><span class="status-badge active">Activo</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                    <tr><td><span class="coupon-code">BIENVENIDO</span></td><td>$15 off</td><td>50 / 50</td><td>01 Jun 2026</td><td><span class="status-badge inactive">Expirado</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                    <tr><td><span class="coupon-code">DESE15</span></td><td>15% off desechables</td><td>0 / 30</td><td>31 Jul 2026</td><td><span class="status-badge active">Activo</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-pen"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="far fa-trash-alt"></i></button></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card card-form">
+                        <div class="card-header"><h2>Nuevo cupón</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Configuración</h3>
+                                <div class="form-group"><label>Código del cupón</label><input type="text" placeholder="Ej. DECO20"></div>
+                                <div class="form-group"><label>Tipo de descuento</label><select><option>Porcentaje (%)</option><option>Monto fijo ($)</option></select></div>
+                                <div class="form-group"><label>Valor del descuento</label><input type="number" placeholder="Ej. 10" min="0"></div>
+                                <div class="form-group"><label>Límite de usos</label><input type="number" placeholder="Ej. 100" min="1"></div>
+                                <div class="form-group"><label>Fecha de vencimiento</label><input type="date"></div>
+                                <div class="form-group"><label>Aplica a categoría</label><select><option value="">Todas las categorías</option><option>Muebles</option><option>Decoración</option><option>Desechables</option></select></div>
+                                <div class="form-group"><label>Estado</label><select><option>Activo</option><option>Inactivo</option></select></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-outline">Cancelar</button>
+                            <button class="btn btn-primary"><i class="fas fa-save"></i> Crear cupón</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 DESPACHOS
+            ============================================================ -->
+            <section class="page-section" id="sec-envios">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Despachos de pedidos</h2>
+                        <div class="header-controls">
+                            <select class="filter-select" id="filterDespacho">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">Pendiente de despacho</option>
+                                <option value="en_camino">En camino</option>
+                                <option value="entregado">Entregado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Info banner -->
+                    <div style="margin: 0 0 20px 0; padding: 14px 20px; background: #f0f7ff; border-left: 4px solid #4A90D9; border-radius: 8px; font-size: 0.88rem; color: #2c5282;">
+                        <i class="fas fa-info-circle" style="margin-right:8px;"></i>
+                        <strong>Modelo de entrega IVAD:</strong> Los pedidos se despachan por entrega propia de IVAD o a través del transportista elegido por el cliente al momento de pedir. Actualiza el estado de cada pedido aquí.
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="product-table" id="despachos-table">
+                            <thead><tr><th>PEDIDO</th><th>CLIENTE</th><th>DIRECCIÓN</th><th>MÉTODO ENTREGA</th><th>ESTADO</th><th>FECHA PEDIDO</th><th>ACCIONES</th></tr></thead>
+                            <tbody id="despachos-tbody">
+                                <!-- Rows loaded from orders table via JS -->
+                                <tr><td colspan="7" style="text-align:center; padding: 40px; color: #aaa;"><i class="fas fa-truck" style="font-size:2rem; display:block; margin-bottom:10px;"></i>Cargando pedidos...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 PAGOS CON AZUL
+            ============================================================ -->
+            <section class="page-section" id="sec-pagos">
+                <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap: 24px;">
+
+                    <!-- Status Card -->
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <div class="card-header">
+                            <h2>Integración de Pagos — <span style="color:#0066CC;">Azul</span> (Servicios Digitales Popular)</h2>
+                        </div>
+                        <div class="product-form">
+                            <div style="display:flex; align-items:center; gap:20px; padding: 20px; background: linear-gradient(135deg, #0066CC10, #0099FF10); border-radius: 12px; border: 1px solid #0066CC30; margin-bottom: 24px;">
+                                <img src="https://www.azul.com.do/wp-content/themes/azul/img/logo-azul.png" alt="Azul" style="height:48px; object-fit:contain;" onerror="this.style.display='none'">
+                                <div>
+                                    <div style="font-size:1rem; font-weight:700; color:#0066CC;">Azul — Servicios Digitales Popular</div>
+                                    <div style="font-size:0.83rem; color:#555; margin-top:4px;">Pasarela de pago líder en República Dominicana. Acepta tarjetas Visa, Mastercard y American Express.</div>
+                                    <div style="margin-top:8px;">
+                                        <span id="azul-status-badge" style="display:inline-flex; align-items:center; gap:6px; padding: 4px 12px; border-radius:20px; font-size:0.78rem; font-weight:600; background:#fef3c7; color:#92400e;"><i class="fas fa-circle" style="font-size:0.5rem;"></i> No configurado</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Azul Credentials Form -->
+                            <div class="form-section">
+                                <h3><i class="fas fa-key" style="margin-right:8px; color:#0066CC;"></i>Credenciales de Azul</h3>
+                                <p style="font-size:0.83rem; color:#888; margin-bottom:16px;">Obtén estas credenciales registrándote como comercio en <a href="https://www.azul.com.do" target="_blank" style="color:#0066CC;">azul.com.do</a> o escribiendo a <a href="mailto:solucionesecommerce@azul.com.do" style="color:#0066CC;">solucionesecommerce@azul.com.do</a></p>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                                    <div class="form-group">
+                                        <label>Merchant ID (Auth1)</label>
+                                        <input type="text" id="azul-merchant-id" placeholder="Ej. 39038540035" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Merchant Name</label>
+                                        <input type="text" id="azul-merchant-name" placeholder="IVAD SRL" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Auth1 (Usuario)</label>
+                                        <input type="text" id="azul-auth1" placeholder="Usuario de API" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Auth2 (Contraseña)</label>
+                                        <input type="password" id="azul-auth2" placeholder="Contraseña de API" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-top:8px;">
+                                    <label>Ambiente</label>
+                                    <select id="azul-env">
+                                        <option value="sandbox">🧪 Pruebas (Sandbox)</option>
+                                        <option value="production">🔴 Producción</option>
+                                    </select>
+                                </div>
+                                <button class="btn-save" id="btn-save-azul" onclick="saveAzulConfig()" style="margin-top:12px;"><i class="fas fa-save"></i> Guardar configuración</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Integration Method Card -->
+                    <div class="card">
+                        <div class="card-header"><h2>Método de integración</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Página de Pagos (Recomendado)</h3>
+                                <p style="font-size:0.83rem; color:#666; line-height:1.6;">El cliente es redirigido a la página segura de Azul para completar el pago. Sin necesidad de manejo de datos de tarjeta en tu servidor. Menor requisito de cumplimiento PCI.</p>
+                                <div style="margin-top:12px; padding:12px; background:#f0fdf4; border-radius:8px; border:1px solid #86efac;">
+                                    <strong style="color:#166534; font-size:0.85rem;"><i class="fas fa-check-circle"></i> Recomendado para IVAD</strong>
+                                    <p style="font-size:0.8rem; color:#166534; margin:4px 0 0;">Implementación simple, máxima seguridad, sin costos adicionales de infraestructura.</p>
+                                </div>
+                                <div style="margin-top:16px; padding:12px; background:#f8f9fa; border-radius:8px; border:1px solid #e2e8f0; font-size:0.82rem; color:#555;">
+                                    <strong>URL de Retorno (Post-Pago):</strong><br>
+                                    <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:0.8rem;">https://www.ivadsrl.com/pago-exitoso</code>
+                                    <br><br>
+                                    <strong>URL de Error:</strong><br>
+                                    <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:0.8rem;">https://www.ivadsrl.com/pago-error</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Help Card -->
+                    <div class="card">
+                        <div class="card-header"><h2>Soporte y contacto Azul</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <div style="display:flex; flex-direction:column; gap:14px; font-size:0.88rem;">
+                                    <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                                        <i class="fas fa-envelope" style="color:#0066CC; font-size:1.2rem; width:24px;"></i>
+                                        <div><strong>E-commerce</strong><br><a href="mailto:solucionesecommerce@azul.com.do" style="color:#0066CC;">solucionesecommerce@azul.com.do</a></div>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                                        <i class="fas fa-phone" style="color:#0066CC; font-size:1.2rem; width:24px;"></i>
+                                        <div><strong>Teléfono</strong><br><a href="tel:8095442985" style="color:#0066CC;">809-544-2985</a></div>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                                        <i class="fas fa-globe" style="color:#0066CC; font-size:1.2rem; width:24px;"></i>
+                                        <div><strong>Portal de desarrolladores</strong><br><a href="https://www.azul.com.do" target="_blank" style="color:#0066CC;">azul.com.do → Desarrolladores</a></div>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                                        <i class="fas fa-credit-card" style="color:#0066CC; font-size:1.2rem; width:24px;"></i>
+                                        <div><strong>Acepta</strong><br>Visa · Mastercard · American Express</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 OPINIONES
+            ============================================================ -->
+            <section class="page-section" id="sec-opiniones">
+                <div class="card full-height-card">
+                    <div class="card-header section-header">
+                        <h2>Opiniones de clientes</h2>
+                        <div class="header-controls">
+                            <select class="filter-select"><option>Todas</option><option>5 estrellas</option><option>4 estrellas</option><option>3 o menos</option><option>Pendientes</option></select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="product-table">
+                            <thead><tr><th>CLIENTE</th><th>PRODUCTO</th><th>CALIFICACIÓN</th><th>COMENTARIO</th><th>FECHA</th><th>ESTADO</th><th>ACCIONES</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="client-cell"><div class="client-avatar">ML</div>María López</div></td><td>Sofá Moderno</td><td><div class="stars-display">★★★★★ <span>5.0</span></div></td><td><span class="review-text">Excelente calidad, llegó perfecto.</span></td><td>22 Jun 2026</td><td><span class="status-badge active">Aprobado</span></td><td><div class="actions"><button class="action-btn delete" onclick="deleteProduct(this)"><i class="fas fa-eye-slash"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">CP</div>Carlos Pérez</div></td><td>Vasos Plásticos</td><td><div class="stars-display">★★★★☆ <span>4.0</span></div></td><td><span class="review-text">Buenos, pero la entrega tardó un poco.</span></td><td>21 Jun 2026</td><td><span class="status-badge pending">Pendiente</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-check"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="fas fa-times"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">AR</div>Ana Rodríguez</div></td><td>Juego de Comedor</td><td><div class="stars-display">★★★★★ <span>5.0</span></div></td><td><span class="review-text">Precioso, exactamente como en las fotos.</span></td><td>20 Jun 2026</td><td><span class="status-badge active">Aprobado</span></td><td><div class="actions"><button class="action-btn delete" onclick="deleteProduct(this)"><i class="fas fa-eye-slash"></i></button></div></td></tr>
+                                <tr><td><div class="client-cell"><div class="client-avatar">PM</div>Pedro Martínez</div></td><td>Bolsas Kraft</td><td><div class="stars-display">★★★☆☆ <span>3.0</span></div></td><td><span class="review-text">Son buenas pero podrían ser más resistentes.</span></td><td>19 Jun 2026</td><td><span class="status-badge pending">Pendiente</span></td><td><div class="actions"><button class="action-btn"><i class="fas fa-check"></i></button><button class="action-btn delete" onclick="deleteProduct(this)"><i class="fas fa-times"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 REPORTES
+            ============================================================ -->
+            <section class="page-section" id="sec-reportes">
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-dollar-sign"></i></div><div class="stat-info"><h3>$12,450</h3><span>Ingresos del mes</span></div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> 8%</div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-shopping-bag"></i></div><div class="stat-info"><h3>84</h3><span>Pedidos del mes</span></div><div class="stat-trend up"><i class="fas fa-arrow-up"></i> 12%</div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-percent"></i></div><div class="stat-info"><h3>68%</h3><span>Tasa de conversión</span></div><div class="stat-trend down"><i class="fas fa-arrow-down"></i> 2%</div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-undo"></i></div><div class="stat-info"><h3>3</h3><span>Devoluciones</span></div><div class="stat-trend down"><i class="fas fa-arrow-down"></i> 1%</div></div>
+                </div>
+                <div class="dashboard-bottom">
+                    <div class="card">
+                        <div class="card-header"><h2>Ventas por categoría</h2></div>
+                        <div class="report-chart-area">
+                            <div class="bar-chart">
+                                <div class="bar-item"><div class="bar-label">Muebles</div><div class="bar-track"><div class="bar-fill primary-bar" style="width:70%"></div></div><div class="bar-value">$8,715</div></div>
+                                <div class="bar-item"><div class="bar-label">Decoración</div><div class="bar-track"><div class="bar-fill primary-bar" style="width:45%;opacity:0.7"></div></div><div class="bar-value">$2,800</div></div>
+                                <div class="bar-item"><div class="bar-label">Desechables</div><div class="bar-track"><div class="bar-fill primary-bar" style="width:25%;opacity:0.45"></div></div><div class="bar-value">$935</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2>Productos más vendidos</h2></div>
+                        <div class="top-products">
+                            <div class="top-item"><span class="rank">1</span><div class="product-cell"><div class="img-wrapper"><img src="images/comedor_1782182137437.png" alt="Comedor"></div><div><strong>Juego de Comedor</strong><span class="product-id">38 vendidos</span></div></div><strong>$24,700</strong></div>
+                            <div class="top-item"><span class="rank">2</span><div class="product-cell"><div class="img-wrapper"><img src="images/sofa_1782182122883.png" alt="Sofá"></div><div><strong>Sofá Moderno</strong><span class="product-id">22 vendidos</span></div></div><strong>$9,900</strong></div>
+                            <div class="top-item"><span class="rank">3</span><div class="product-cell"><div class="img-wrapper"><img src="images/vasos.png" alt="Vasos"></div><div><strong>Vasos Plásticos</strong><span class="product-id">400 vendidos</span></div></div><strong>$1,000</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 EQUIPO
+            ============================================================ -->
+            <section class="page-section" id="sec-equipo">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="table-actions-left">
+                            <h2 style="margin:0;">Equipo Interno</h2>
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" id="btn-add-team" onclick="document.getElementById('modal-add-team').style.display='flex'"><i class="fas fa-plus"></i> Añadir empleado</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filters-bar" style="border-bottom: 1px solid var(--border-color); padding: 16px 24px;">
+                        <div class="search-input" style="max-width: 300px;">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Buscar empleado...">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Empleado</th>
+                                    <th>Departamento</th>
+                                    <th>Verificación</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="team-table-body">
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Roberto Carlos</strong><span>roberto@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Gerencia</td>
+                                    <td><div class="badge-role badge-gerencia"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Gerencia</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Luis Peña</strong><span>luis@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Empleados</td>
+                                    <td><div class="badge-role badge-empleado"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#3b82f6" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Empleados</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>María González</strong><span>maria@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Atención al Cliente</td>
+                                    <td><div class="badge-role badge-atencion"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Atención al Cliente</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Laura Pérez</strong><span>laura@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Marketing</td>
+                                    <td><div class="badge-role badge-marketing"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#1e3a8a" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Marketing</span></div></td>
+                                    <td><span class="status-badge inactive"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Inactivo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar">JM</div>
+                                            <div class="customer-info"><strong>José Martínez</strong><span>jose@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Cajeros</td>
+                                    <td><div class="badge-role badge-cajero"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#ea580c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Cajeros</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Ana Ruiz</strong><span>ana@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Supervisores</td>
+                                    <td><div class="badge-role badge-supervisor"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#1f2937" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Supervisores</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar">DB</div>
+                                            <div class="customer-info"><strong>Daniel Blanco</strong><span>daniel@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Tecnología</td>
+                                    <td><div class="badge-role badge-tecnologia"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#78350f" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Tecnología</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <div class="avatar"><img src="https://images.unsplash.com/photo-1554151228-14d9def656e4?w=100&q=80" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                                            <div class="customer-info"><strong>Sara Jiménez</strong><span>sara@ivad.com</span></div>
+                                        </div>
+                                    </td>
+                                    <td>Contabilidad</td>
+                                    <td><div class="badge-role badge-contabilidad"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#16a34a" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/></svg> <span class="role-text">Contabilidad</span></div></td>
+                                    <td><span class="status-badge active"><i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> Activo</span></td>
+                                    <td><button class="action-btn" title="Editar"><i class="far fa-edit"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CONFIGURACIÓN
+            ============================================================ -->
+            <section class="page-section" id="sec-configuracion">
+                <div class="config-grid">
+                    <div class="card">
+                        <div class="card-header"><h2>Datos de la tienda</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Información general</h3>
+                                <div class="form-group"><label>Nombre de la tienda</label><input type="text" value="IVAD Home & Goods"></div>
+                                <div class="form-group"><label>Email de contacto</label><input type="email" value="info@ivad.com"></div>
+                                <div class="form-group"><label>Teléfono</label><input type="text" value="+1 (809) 555-0100"></div>
+                                <div class="form-group"><label>Dirección</label><input type="text" value="Av. 27 de Febrero, Santo Domingo, RD"></div>
+                                <div class="form-group"><label>Moneda</label><select><option>USD ($)</option><option>DOP (RD$)</option><option>EUR (€)</option></select></div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Redes sociales</h3>
+                                <div class="form-group"><label>Instagram</label><input type="text" placeholder="@ivad_homegoods"></div>
+                                <div class="form-group"><label>Facebook</label><input type="text" placeholder="facebook.com/ivad"></div>
+                                <div class="form-group"><label>WhatsApp</label><input type="text" placeholder="+1 809 000 0000"></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-outline">Descartar</button>
+                            <button class="btn btn-primary"><i class="fas fa-save"></i> Guardar cambios</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h2>Cuenta de administrador</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Perfil</h3>
+                                <div class="form-group"><label>Nombre completo</label><input type="text" value="Administrador IVAD"></div>
+                                <div class="form-group"><label>Correo electrónico</label><input type="email" value="admin@ivad.com"></div>
+                                <div class="form-group"><label>Rol</label><select><option>Administrador</option><option>Editor</option><option>Visualizador</option></select></div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Cambiar contraseña</h3>
+                                <div class="form-group"><label>Contraseña actual</label><input type="password" placeholder="••••••••"></div>
+                                <div class="form-group"><label>Nueva contraseña</label><input type="password" placeholder="••••••••"></div>
+                                <div class="form-group"><label>Confirmar contraseña</label><input type="password" placeholder="••••••••"></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-outline">Cancelar</button>
+                            <button class="btn btn-primary"><i class="fas fa-save"></i> Actualizar</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h2>Configuración de envíos</h2></div>
+                        <div class="product-form">
+                            <div class="form-section">
+                                <h3>Tarifas</h3>
+                                <div class="form-group"><label>Envío estándar (RD)</label><input type="number" value="150"></div>
+                                <div class="form-group"><label>Envío express (RD)</label><input type="number" value="350"></div>
+                                <div class="form-group"><label>Envío gratis a partir de (USD)</label><input type="number" value="100"></div>
+                            </div>
+                            <div class="form-section">
+                                <h3>Cobertura</h3>
+                                <div class="form-group"><label>Cobertura nacional</label><select><option>Habilitado</option><option>Deshabilitado</option></select></div>
+                                <div class="form-group"><label>Envíos internacionales</label><select><option>Deshabilitado</option><option>Habilitado</option></select></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-outline">Cancelar</button>
+                            <button class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+<!-- Supabase CDN y Configuración -->
+<!-- ============================================================
+     MODALS
+============================================================ -->
+<div class="modal-overlay" id="modal-add-team" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:9999;">
+    <div class="modal-content" style="background:#fff; width:100%; max-width:500px; border-radius:12px; padding:24px;">
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0; font-size:1.2rem;">Añadir Empleado</h2>
+            <button onclick="document.getElementById('modal-add-team').style.display='none'" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#888;">&times;</button>
+        </div>
+        <div class="modal-body form-section">
+            <div class="form-group" style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.85rem; font-weight:600;">Nombre completo</label>
+                <input type="text" placeholder="Ej. Juan Pérez" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:inherit;">
+            </div>
+            <div class="form-group" style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.85rem; font-weight:600;">Correo electrónico</label>
+                <input type="email" placeholder="juan@ivad.com" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:inherit;">
+            </div>
+            <div class="form-group" style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.85rem; font-weight:600;">Departamento / Verificación</label>
+                <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:inherit; background:#fff;">
+                    <option value="gerencia">Gerencia (Insignia Blanca)</option>
+                    <option value="empleados">Empleados (Insignia Azul)</option>
+                    <option value="atencion">Atención al Cliente (Insignia Dorada)</option>
+                    <option value="marketing">Marketing (Insignia Marina)</option>
+                    <option value="cajeros">Cajeros (Insignia Naranja)</option>
+                    <option value="supervisores">Supervisores (Insignia Negra)</option>
+                    <option value="tecnologia">Tecnología (Insignia Marrón)</option>
+                    <option value="contabilidad">Contabilidad (Insignia Verde)</option>
+                </select>
+            </div>
+            <div class="form-actions" style="display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" onclick="document.getElementById('modal-add-team').style.display='none'" class="btn btn-outline" style="padding:10px 15px; border:1px solid #ddd; border-radius:6px; background:#fff; cursor:pointer;">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="alert('Funcionalidad guardada con éxito.'); document.getElementById('modal-add-team').style.display='none';" style="padding:10px 15px; border:none; border-radius:6px; background:#000; color:#fff; cursor:pointer;">Guardar Empleado</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+
+<script>
+// Navegación
+const sectionMeta = {
+    dashboard:         { title: 'Dashboard',              sub: 'Bienvenido al panel de administración' },
+    productos:         { title: 'Productos',               sub: 'Gestiona tu catálogo de productos de desechables' },
+    marcas:            { title: 'Marcas',                  sub: 'Visualiza y gestiona las marcas de tu catálogo' },
+    'gestor-imagenes': { title: 'Gestor de Imágenes',     sub: 'Sube y asigna imágenes de productos fácilmente' },
+    categorias:        { title: 'Categorías',              sub: 'Administra las categorías de tus productos' },
+    envios:            { title: 'Despachos',               sub: 'Gestiona el estado de entrega de tus pedidos' },
+    pagos:             { title: 'Pagos — Azul',            sub: 'Configura la pasarela de pago Azul para República Dominicana' },
+    pedidos:           { title: 'Pedidos',                 sub: 'Revisa y gestiona los pedidos recibidos' },
+    configuracion:     { title: 'Configuración',           sub: 'Ajustes generales de la tienda' },
+    equipo:            { title: 'Equipo',                  sub: 'Gestiona los empleados y sus verificaciones por departamento' },
+};
+
+document.querySelectorAll('.sidebar-nav li').forEach(li => {
+    li.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = li.dataset.section;
+        if (!section || sectionMeta[section] === undefined) return;
+        document.querySelectorAll('.sidebar-nav li').forEach(l => l.classList.remove('active'));
+        li.classList.add('active');
+        document.getElementById('pageTitle').textContent = sectionMeta[section].title;
+        document.getElementById('pageSubtitle').textContent = sectionMeta[section].sub;
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('sec-' + section).classList.add('active');
+        document.getElementById('sidebar').classList.remove('open');
+
+        if (section === 'marcas') renderMarcasSection();
+        if (section === 'gestor-imagenes') renderGestorImagenesSection();
+    });
+});
+
+// Mobile toggle
+document.getElementById('mobileToggle').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+});
+
+// Default Desechables Products to seed database if empty
+const defaultProducts = [
+    {
+        id: 'platos',
+        title: 'Platos Desechables',
+        price: 'RD$ 70.00',
+        price_num: 70.00,
+        img: 'images/platos.png',
+        sub_category: 'platos',
+        material: 'carton',
+        uso: ['diario', 'para llevar', 'eventos'],
+        recent_score: 10,
+        description: 'Platos redondos desechables súper resistentes, aptos para comidas calientes y frías. Perfectos para catering y eventos.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón grueso biodegradable',
+            '<i class="fas fa-box"></i> Cantidad: 20 unidades por paquete',
+            '<i class="fas fa-ruler-combined"></i> Diámetro: 22cm'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'vasos',
+        title: 'Vasos Plásticos 16 oz',
+        price: 'RD$ 150.00',
+        price_num: 150.00,
+        img: 'images/vasos.png',
+        sub_category: 'vasos',
+        material: 'plastico',
+        uso: ['fiestas', 'eventos'],
+        recent_score: 8,
+        description: 'Paquete de vasos transparentes desechables, ideales para bebidas frías en fiestas, negocios o eventos al aire libre.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Plástico PET reciclable',
+            '<i class="fas fa-box"></i> Cantidad: 50 unidades por paquete',
+            '<i class="fas fa-glass-whiskey"></i> Capacidad: 16 onzas'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'cubiertos',
+        title: 'Cubiertos Plásticos',
+        price: 'RD$ 110.00',
+        price_num: 110.00,
+        img: 'images/cubiertos.svg',
+        sub_category: 'cubiertos',
+        material: 'plastico',
+        uso: ['fiestas', 'diario'],
+        recent_score: 9,
+        description: 'Juego de cubiertos desechables de plástico resistente. Incluye cucharas, tenedores y cuchillos. Ideal para picnics y celebraciones.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Plástico poliestireno',
+            '<i class="fas fa-box"></i> Cantidad: 24 piezas por paquete',
+            '<i class="fas fa-truck"></i> Envío: 1-2 días hábiles'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'contenedores',
+        title: 'Contenedores con Tapa',
+        price: 'RD$ 200.00',
+        price_num: 200.00,
+        img: 'images/contenedor.svg',
+        sub_category: 'contenedores',
+        material: 'biodegradable',
+        uso: ['para llevar', 'restaurantes'],
+        recent_score: 7,
+        description: 'Contenedor biodegradable para alimentos con tapa integrada. Mantiene el calor y previene derrames. Excelente opción para delivery y restaurantes.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Bagazo de caña de azúcar',
+            '<i class="fas fa-box"></i> Cantidad: 10 unidades por paquete',
+            '<i class="fas fa-leaf"></i> 100% Compostable y apto para microondas'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'vasos_foam',
+        title: 'Vasos Foam',
+        price: 'RD$ 130.00',
+        price_num: 130.00,
+        img: 'images/vasos_foam.svg',
+        sub_category: 'vasos',
+        material: 'foam',
+        uso: ['diario', 'para llevar'],
+        recent_score: 6,
+        description: 'Vasos térmicos de foam para café, té y bebidas calientes. Conservan la temperatura y evitan quemaduras.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Poliestireno expandido (Foam)',
+            '<i class="fas fa-box"></i> Cantidad: 25 unidades por paquete',
+            '<i class="fas fa-glass-whiskey"></i> Capacidad: 8 onzas'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'platos_divisiones',
+        title: 'Platos con Divisiones',
+        price: 'RD$ 170.00',
+        price_num: 170.00,
+        img: 'images/platos_divisiones.svg',
+        sub_category: 'platos',
+        material: 'carton',
+        uso: ['eventos', 'restaurantes'],
+        recent_score: 5,
+        description: 'Platos con tres divisiones para separar alimentos cómodamente. Ideales para picnics y buffets.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón grueso impermeable',
+            '<i class="fas fa-box"></i> Cantidad: 15 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'bolsas',
+        title: 'Bolsas Kraft',
+        price: 'RD$ 25.00',
+        price_num: 25.00,
+        img: 'images/bolsas.png',
+        sub_category: 'bolsas',
+        material: 'papel',
+        uso: ['para llevar', 'restaurantes'],
+        recent_score: 11,
+        description: 'Bolsas de papel Kraft con asas reforzadas, ecológicas y resistentes. Ideales para tiendas de ropa, regalos o entregas de comida.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Papel Kraft 120g',
+            '<i class="fas fa-box"></i> Venta: Por unidad (descuento al mayor)',
+            '<i class="fas fa-leaf"></i> 100% Reciclables y Biodegradables'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'servilletas',
+        title: 'Servilletas',
+        price: 'RD$ 55.00',
+        price_num: 55.00,
+        img: 'images/servilletas.svg',
+        sub_category: 'servilletas',
+        material: 'papel',
+        uso: ['diario', 'fiestas'],
+        recent_score: 4,
+        description: 'Servilletas de papel absorbente de doble hoja, muy suaves y resistentes para eventos o el día a día.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Celulosa de alta calidad',
+            '<i class="fas fa-box"></i> Cantidad: 100 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'bandeja_kraft',
+        title: 'Bandejas para Alimentos',
+        price: 'RD$ 250.00',
+        price_num: 250.00,
+        img: 'images/bandeja_kraft.svg',
+        sub_category: 'bandejas',
+        material: 'carton',
+        uso: ['eventos', 'restaurantes'],
+        recent_score: 12,
+        description: 'Bandejas de cartón kraft para picaderas y postres, perfectas para eventos y repostería.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón kraft resistente a grasas',
+            '<i class="fas fa-box"></i> Cantidad: 10 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'vaso_cafe',
+        title: 'Vasos de Papel para Café',
+        price: 'RD$ 180.00',
+        price_num: 180.00,
+        img: 'images/vaso_cafe.svg',
+        sub_category: 'vasos',
+        material: 'papel',
+        uso: ['diario', 'para llevar'],
+        recent_score: 13,
+        description: 'Vasos de cartón térmicos para café expreso y capuchino. No queman las manos.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón con recubrimiento de PLA',
+            '<i class="fas fa-box"></i> Cantidad: 50 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'bandeja_aluminio',
+        title: 'Bandejas de Aluminio',
+        price: 'RD$ 320.00',
+        price_num: 320.00,
+        img: 'images/bandeja_aluminio.svg',
+        sub_category: 'bandejas',
+        material: 'biodegradable',
+        uso: ['eventos', 'restaurantes'],
+        recent_score: 14,
+        description: 'Bandejas desechables de aluminio grueso, ideales para hornear y transportar comidas calientes.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Aluminio de grado alimenticio',
+            '<i class="fas fa-box"></i> Cantidad: 5 unidades por paquete'
+        ],
+        status: 'Activo'
+    },
+    {
+        id: 'portavasos',
+        title: 'Portavasos de Cartón',
+        price: 'RD$ 90.00',
+        price_num: 90.00,
+        img: 'images/portavasos.svg',
+        sub_category: 'bandejas',
+        material: 'carton',
+        uso: ['para llevar'],
+        recent_score: 15,
+        description: 'Portavasos rígidos de cartón prensado para transportar hasta 4 bebidas frías o calientes simultáneamente.',
+        features: [
+            '<i class="fas fa-tag"></i> Material: Cartón prensado reciclado',
+            '<i class="fas fa-box"></i> Capacidad: 4 vasos de 8 a 32 oz'
+        ],
+        status: 'Activo'
+    }
+];
+
+let productsList = [];
+let editProductId = null;
+let uploadedImgUrl = '';
+
+// Load products from Supabase or fallback to memory
+
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        supabaseClient
+            .channel('admin-updates')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => {
+                loadProducts();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, payload => {
+                loadCategories();
+            })
+            .subscribe();
+    }
+
+async function loadProducts() {
+    // Carga ultrarrápida instantánea desde caché local si existe
+    const stored = localStorage.getItem('ivad_custom_products');
+    if (stored) {
+        try {
+            const cached = JSON.parse(stored);
+            if (Array.isArray(cached) && cached.length > 0) {
+                productsList = cached;
+                renderProductsTable();
+                updateDashboardStats();
+                if (document.getElementById('sec-marcas')?.classList.contains('active')) renderMarcasSection();
+                if (document.getElementById('sec-gestor-imagenes')?.classList.contains('active')) renderGestorImagenesSection();
+            }
+        } catch (e) { console.error("Error leyendo caché local:", e); }
+    }
+
+    if (supabaseClient) {
+        try {
+            let allData = [];
+            let from = 0;
+            const PAGE_SIZE = 1000;
+            while (true) {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('*')
+                    .order('id', { ascending: true })
+                    .range(from, from + PAGE_SIZE - 1);
+                if (error) throw error;
+                if (!data || data.length === 0) break;
+                allData = allData.concat(data);
+                if (data.length < PAGE_SIZE) break;
+                from += PAGE_SIZE;
+            }
+            productsList = allData;
+            localStorage.setItem('ivad_custom_products', JSON.stringify(productsList));
+        } catch (err) {
+            console.error("Error cargando productos de Supabase:", err);
+            if (!productsList || productsList.length === 0) {
+                const storedFallback = localStorage.getItem('ivad_custom_products');
+                if (storedFallback) productsList = JSON.parse(storedFallback);
+            }
+        }
+    } else if (!productsList || productsList.length === 0) {
+        const storedFallback = localStorage.getItem('ivad_custom_products');
+        if (storedFallback) productsList = JSON.parse(storedFallback);
+    }
+
+    renderProductsTable();
+    updateDashboardStats();
+    loadRecentOrders();
+    if (document.getElementById('sec-marcas')?.classList.contains('active')) renderMarcasSection();
+    if (document.getElementById('sec-gestor-imagenes')?.classList.contains('active')) renderGestorImagenesSection();
+}
+
+function extractProductBrand(p) {
+    if (p.brand && p.brand.trim()) return p.brand.trim();
+    if (Array.isArray(p.features)) {
+        for (const f of p.features) {
+            const clean = f.replace(/<[^>]*>/g, '');
+            const match = clean.match(/Marca:\s*([^|,<]+)/i);
+            if (match && match[1]) return match[1].trim();
+        }
+    }
+    return 'General';
+}
+
+function renderProductsTable() {
+    const tbody = document.getElementById('productTableBody');
+    if (!tbody) return;
+
+    const sEl = document.getElementById('searchInput');
+    const cEl = document.getElementById('catFilter');
+    const bEl = document.getElementById('brandFilter');
+    const stEl = document.getElementById('statusFilter');
+
+    const s = sEl ? sEl.value.toLowerCase().trim() : '';
+    const c = cEl ? cEl.value : '';
+    const b = bEl ? bEl.value : '';
+    const st = stEl ? stEl.value : '';
+
+    // Populate brand filter options dynamically
+    if (bEl && bEl.options.length <= 1 && productsList.length > 0) {
+        const brands = Array.from(new Set(productsList.map(extractProductBrand))).sort();
+        brands.forEach(br => {
+            const opt = document.createElement('option');
+            opt.value = br;
+            opt.textContent = br;
+            bEl.appendChild(opt);
+        });
+    }
+
+    let filtered = productsList.filter(p => {
+        const pBrand = extractProductBrand(p);
+        const titleLower = (p.title || '').toLowerCase();
+        const idLower = (p.id || '').toLowerCase();
+        const materialLower = (p.material || '').toLowerCase();
+        const descLower = (p.description || '').toLowerCase();
+        const featLower = (p.features || []).join(' ').toLowerCase();
+
+        const matchSearch = !s || 
+            titleLower.includes(s) || 
+            idLower.includes(s) || 
+            materialLower.includes(s) || 
+            descLower.includes(s) || 
+            featLower.includes(s) ||
+            pBrand.toLowerCase().includes(s);
+
+        const matchCat = !c || p.sub_category === c;
+        const matchBrand = !b || pBrand === b;
+        const matchStatus = !st || p.status === st;
+
+        return matchSearch && matchCat && matchBrand && matchStatus;
+    });
+
+    tbody.innerHTML = filtered.map(p => {
+        const pBrand = extractProductBrand(p);
+        return `
+        <tr data-cat="${p.sub_category}" data-status="${p.status}">
+            <td>
+                <div class="product-cell">
+                    <div class="img-wrapper">
+                        <img src="${p.img}" alt="${p.title}">
+                    </div>
+                    <div>
+                        <strong>${p.title}</strong>
+                        <span class="product-id">ID: #${p.id}</span>
+                    </div>
+                </div>
+            </td>
+            <td><span style="background:#e0f2fe;color:#0369a1;padding:4px 10px;border-radius:12px;font-size:0.75rem;font-weight:700;">${pBrand}</span></td>
+            <td>${(p.sub_category || '').toUpperCase()}</td>
+            <td><strong>${p.price}</strong></td>
+            <td>${(p.recent_score || 1) * 8}</td>
+            <td><span class="status-badge ${p.status === 'Activo' ? 'active' : 'inactive'}">${p.status}</span></td>
+            <td>
+                <div class="actions">
+                    <button class="action-btn" onclick="quickUploadProductImage('${p.id}')" title="Subir / Cambiar Foto"><i class="fas fa-camera"></i></button>
+                    <button class="action-btn" onclick="editProduct('${p.id}')" title="Editar"><i class="fas fa-pen"></i></button>
+                    <button class="action-btn delete" onclick="deleteProduct('${p.id}')" title="Eliminar"><i class="far fa-trash-alt"></i></button>
+                </div>
+            </td>
+        </tr>
+    `;
+    }).join('');
+
+    document.getElementById('productCount').textContent = `Mostrando ${filtered.length} de ${productsList.length} productos`;
+}
+
+function quickUploadProductImage(productId) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!supabaseClient) {
+            alert('Supabase no está conectado.');
+            return;
+        }
+
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${productId}_${Date.now()}.${fileExt}`;
+        const filePath = `products/${fileName}`;
+
+        try {
+            const { data, error: uploadErr } = await supabaseClient.storage
+                .from('product-images')
+                .upload(filePath, file, { upsert: true });
+
+            if (uploadErr) throw uploadErr;
+
+            const { data: { publicUrl } } = supabaseClient.storage
+                .from('product-images')
+                .getPublicUrl(filePath);
+
+            const { error: dbErr } = await supabaseClient
+                .from('products')
+                .update({ img: publicUrl })
+                .eq('id', productId);
+
+            if (dbErr) throw dbErr;
+
+            alert('¡Imagen subida y actualizada con éxito!');
+            loadProducts();
+            if (document.getElementById('sec-gestor-imagenes').classList.contains('active')) {
+                renderGestorImagenesSection();
+            }
+        } catch (err) {
+            console.error("Error al subir imagen:", err);
+            alert("Error al subir imagen: " + err.message);
+        }
+    };
+    input.click();
+}
+
+function renderMarcasSection() {
+    const tbody = document.getElementById('marcasTableBody');
+    if (!tbody) return;
+
+    const searchInput = document.getElementById('marcasSearchInput');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+    const brandMap = {};
+    let totalWithBrand = 0;
+
+    productsList.forEach(p => {
+        const bName = extractProductBrand(p);
+        if (bName !== 'General') totalWithBrand++;
+
+        if (!brandMap[bName]) {
+            brandMap[bName] = { count: 0, stock: 0, products: [] };
+        }
+        brandMap[bName].count += 1;
+        brandMap[bName].stock += (p.recent_score || 1) * 8;
+        brandMap[bName].products.push(p);
+    });
+
+    const brandList = Object.keys(brandMap).sort((a, b) => brandMap[b].count - brandMap[a].count);
+
+    const totalMarcasEl = document.getElementById('statTotalMarcas');
+    const topMarcaEl = document.getElementById('statTopMarca');
+    const prodsConMarcaEl = document.getElementById('statProdsConMarca');
+
+    if (totalMarcasEl) totalMarcasEl.textContent = brandList.length;
+    if (topMarcaEl) topMarcaEl.textContent = brandList.length > 0 ? brandList[0] : '—';
+    if (prodsConMarcaEl) prodsConMarcaEl.textContent = totalWithBrand;
+
+    const filteredBrands = brandList.filter(b => b.toLowerCase().includes(query));
+
+    if (filteredBrands.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:#888;">No se encontraron marcas matching.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filteredBrands.map(b => `
+        <tr>
+            <td>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:38px;height:38px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;color:#0284c7;font-weight:800;font-size:1.1rem;">
+                        <i class="fas fa-copyright"></i>
+                    </div>
+                    <div>
+                        <strong style="font-size:0.95rem;color:#0f172a;">${b}</strong>
+                    </div>
+                </div>
+            </td>
+            <td><strong style="color:#0284c7;">${brandMap[b].count}</strong> productos</td>
+            <td>${brandMap[b].stock} unidades</td>
+            <td>
+                <button class="btn btn-outline" style="padding:6px 12px;font-size:0.78rem;" onclick="filterProductsByBrand('${b}')">
+                    <i class="fas fa-filter"></i> Ver Productos
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function filterProductsByBrand(brandName) {
+    const prodLi = document.querySelector('.sidebar-nav li[data-section="productos"]');
+    if (prodLi) prodLi.click();
+
+    const bEl = document.getElementById('brandFilter');
+    if (bEl) {
+        bEl.value = brandName;
+        renderProductsTable();
+    }
+}
+
+function renderGestorImagenesSection() {
+    const container = document.getElementById('gestorImagenesGrid');
+    if (!container) return;
+
+    const statusFilter = document.getElementById('imgFilterStatus')?.value || 'todos';
+    const query = document.getElementById('imgSearchInput')?.value.toLowerCase().trim() || '';
+
+    const filtered = productsList.filter(p => {
+        const titleLower = (p.title || '').toLowerCase();
+        const idLower = (p.id || '').toLowerCase();
+        const matchSearch = !query || titleLower.includes(query) || idLower.includes(query);
+
+        const isSvgOrMissing = !p.img || p.img.includes('.svg') || p.img.includes('placeholder') || p.img.includes('default');
+        
+        let matchStatus = true;
+        if (statusFilter === 'sin_imagen') matchStatus = isSvgOrMissing;
+        if (statusFilter === 'con_imagen') matchStatus = !isSvgOrMissing;
+
+        return matchSearch && matchStatus;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;color:#94a3b8;background:#fff;border-radius:12px;border:1px solid #e2e8f0;">No se encontraron productos.</div>`;
+        return;
+    }
+
+    container.innerHTML = filtered.map(p => {
+        const pBrand = extractProductBrand(p);
+        const hasRealImg = p.img && !p.img.includes('.svg') && !p.img.includes('placeholder');
+        return `
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+                <div style="width:100%;height:160px;background:#f8fafc;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;border:1px solid #cbd5e1;">
+                    <img src="${p.img}" alt="${p.title}" style="max-height:100%;max-width:100%;object-fit:contain;">
+                    <span style="position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:10px;font-size:0.68rem;font-weight:700;${hasRealImg ? 'background:#dcfce7;color:#15803d;' : 'background:#fef3c7;color:#b45309;'}">
+                        ${hasRealImg ? 'Foto HD' : 'Placeholder / SVG'}
+                    </span>
+                </div>
+                <div>
+                    <span style="font-size:0.7rem;color:#0284c7;font-weight:700;text-transform:uppercase;">${pBrand}</span>
+                    <h4 style="font-size:0.92rem;font-weight:700;color:#0f172a;margin:2px 0 4px;line-height:1.3;">${p.title}</h4>
+                    <span style="font-size:0.75rem;color:#64748b;">ID: #${p.id} — <strong>${p.price}</strong></span>
+                </div>
+                <button class="btn btn-primary" style="margin-top:auto;font-size:0.8rem;padding:9px;" onclick="quickUploadProductImage('${p.id}')">
+                    <i class="fas fa-cloud-upload-alt"></i> Subir Foto
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+// Stats for dashboard
+function updateDashboardStats() {
+    const activeProds = productsList.filter(p => p.status === 'Activo').length;
+    const firstStat = document.querySelectorAll('.stat-card')[0];
+    if (firstStat) firstStat.querySelector('h3').textContent = activeProds;
+}
+
+// Load recent orders from Supabase
+async function loadRecentOrders() {
+    let orders = [];
+    if (supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(5);
+            if (error) throw error;
+            orders = data || [];
+        } catch (err) {
+            console.error("Error al cargar órdenes de Supabase:", err);
+        }
+    }
+    
+    const tbody = document.querySelector('#sec-dashboard tbody');
+    if (!tbody) return;
+    
+    if (orders.length > 0) {
+        tbody.innerHTML = orders.map(o => {
+            const itemsStr = Array.isArray(o.items) ? o.items.map(i => `${i.title} (x${i.qty || 1})`).join(', ') : 'Productos';
+            return `
+                <tr>
+                    <td><strong>#PED-${o.id.toString().substring(0, 5).toUpperCase()}</strong></td>
+                    <td>${o.client_name}<br><small style="color:#888">${o.client_email}</small></td>
+                    <td>${itemsStr}</td>
+                    <td><strong>$${parseFloat(o.total_amount).toFixed(2)}</strong></td>
+                    <td><span class="status-badge active">${o.status}</span></td>
+                </tr>
+            `;
+        }).join('');
+        
+        const totalIncome = orders.reduce((sum, o) => sum + parseFloat(o.total_amount), 0);
+        
+        const secondStat = document.querySelectorAll('.stat-card')[1];
+        if (secondStat) secondStat.querySelector('h3').textContent = orders.length;
+        
+        const fourthStat = document.querySelectorAll('.stat-card')[3];
+        if (fourthStat) fourthStat.querySelector('h3').textContent = `$${totalIncome.toFixed(2)}`;
+    }
+}
+
+// Filters logic
+const searchInput = document.getElementById('searchInput');
+const catFilter = document.getElementById('catFilter');
+const brandFilter = document.getElementById('brandFilter');
+const statusFilter = document.getElementById('statusFilter');
+
+if (searchInput) {
+    searchInput.addEventListener('input', renderProductsTable);
+    if (catFilter) catFilter.addEventListener('change', renderProductsTable);
+    if (brandFilter) brandFilter.addEventListener('change', renderProductsTable);
+    if (statusFilter) statusFilter.addEventListener('change', renderProductsTable);
+}
+
+// Handle Image Upload to Storage or Fallback
+const uploadArea = document.getElementById('uploadArea');
+const imgUpload = document.getElementById('imgUpload');
+if (uploadArea) {
+    uploadArea.addEventListener('click', () => imgUpload.click());
+    imgUpload.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (supabaseClient) {
+            uploadArea.innerHTML = `<i class="fas fa-spinner fa-spin" style="color:var(--secondary-color);font-size:1.4rem"></i><strong>Subiendo imagen...</strong><span style="color:#888">Guardando en Supabase Storage</span>`;
+            
+            // Unique file name
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+            const filePath = `products/${fileName}`;
+
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('product-images')
+                    .upload(filePath, file);
+
+                if (error) throw error;
+
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('product-images')
+                    .getPublicUrl(filePath);
+
+                uploadedImgUrl = publicUrl;
+                uploadArea.innerHTML = `<i class="fas fa-check-circle" style="color:#48bb78;font-size:1.4rem"></i><strong>${file.name}</strong><span style="color:#48bb78">¡Subida con éxito!</span>`;
+            } catch (err) {
+                console.error("Error al subir archivo a Supabase Storage:", err);
+                alert("Error al subir imagen a Supabase Storage. Asegúrate de haber ejecutado las políticas del bucket.");
+                uploadArea.innerHTML = `<i class="fas fa-cloud-upload-alt" style="color:#e53e3e"></i><strong>Error</strong><span>Reintentar subida</span>`;
+                uploadedImgUrl = '';
+            }
+        } else {
+            // Local mockup fallback
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                uploadedImgUrl = event.target.result;
+                uploadArea.innerHTML = `<i class="fas fa-check-circle" style="color:#48bb78;font-size:1.4rem"></i><strong>${file.name}</strong><span style="color:#48bb78">Listo (simulado)</span>`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// Edit Product helper
+function editProduct(id) {
+    const prod = productsList.find(p => p.id === id);
+    if (!prod) return;
+
+    editProductId = prod.id;
+    document.getElementById('formTitle').textContent = 'Editar producto';
+    document.getElementById('prodName').value = prod.title;
+    const pBrand = extractProductBrand(prod);
+    document.getElementById('prodBrand').value = pBrand !== 'General' ? pBrand : '';
+    document.getElementById('prodCat').value = prod.sub_category;
+    document.getElementById('prodDesc').value = prod.description || '';
+    document.getElementById('prodPrice').value = prod.price_num;
+    document.getElementById('prodInv').value = prod.recent_score * 8;
+    document.getElementById('prodMaterial').value = prod.material || '';
+    document.getElementById('prodUso').value = Array.isArray(prod.uso) ? prod.uso.join(', ') : (prod.uso || '');
+    document.getElementById('prodStatus').value = prod.status;
+    
+    uploadedImgUrl = prod.img;
+    uploadArea.innerHTML = `<img src="${prod.img}" style="max-height:80px;border-radius:6px;margin-bottom:5px;"><strong>Imagen actual</strong><span style="color:#888">Haz clic para cambiar</span>`;
+    
+    // Switch to products section and scroll to form
+    const prodTab = document.querySelector('.sidebar-nav li[data-section="productos"]');
+    if (prodTab) prodTab.click();
+    
+    const cardForm = document.querySelector('.card-form');
+    if (cardForm) cardForm.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Save or Update Product
+const btnGuardar = document.getElementById('btnGuardar');
+if (btnGuardar) {
+    btnGuardar.addEventListener('click', async () => {
+        const name = document.getElementById('prodName').value.trim();
+        const brand = document.getElementById('prodBrand').value.trim();
+        const cat = document.getElementById('prodCat').value;
+        const desc = document.getElementById('prodDesc').value.trim();
+        const priceNum = parseFloat(document.getElementById('prodPrice').value) || 0;
+        const inv = parseInt(document.getElementById('prodInv').value) || 0;
+        const material = document.getElementById('prodMaterial').value;
+        const usoInput = document.getElementById('prodUso').value;
+        const status = document.getElementById('prodStatus').value;
+
+        if (!name) { alert('Ingresa el nombre del producto.'); return; }
+        if (!cat)  { alert('Selecciona una subcategoría.'); return; }
+        if (priceNum <= 0) { alert('Ingresa un precio válido.'); return; }
+        if (!uploadedImgUrl) { alert('Sube una imagen para el producto.'); return; }
+
+        const usoArray = usoInput.split(',').map(u => u.trim().toLowerCase()).filter(u => u !== '');
+        
+        btnGuardar.disabled = true;
+        btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+        const id = editProductId || name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+        const existingProd = editProductId ? productsList.find(p => p.id === editProductId) : null;
+        
+        let finalPriceStr = `RD$ ${priceNum.toFixed(2)}`;
+        let finalFeatures = [
+            `<i class="fas fa-tag"></i> Material: ${material ? material.charAt(0).toUpperCase() + material.slice(1) : 'Estándar'}`,
+            `<i class="fas fa-box"></i> Inventario: ${inv} unidades`
+        ];
+
+        if (brand) {
+            finalFeatures.unshift(`<i class="fas fa-tag"></i> Marca: ${brand}`);
+        }
+
+        if (existingProd) {
+            if (existingProd.price_num === priceNum) {
+                finalPriceStr = existingProd.price;
+            } else {
+                if (existingProd.price.includes('|')) {
+                    const parts = existingProd.price.split('|');
+                    const boxPriceStr = priceNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    finalPriceStr = `Caja: RD$ ${boxPriceStr} |${parts[1]}`;
+                }
+            }
+
+            let baseFeatures = [...(existingProd.features || [])];
+            
+            if (brand) {
+                const bIdx = baseFeatures.findIndex(f => f.includes('Marca:'));
+                const newBFeature = `<i class="fas fa-tag"></i> Marca: ${brand}`;
+                if (bIdx !== -1) {
+                    baseFeatures[bIdx] = newBFeature;
+                } else {
+                    baseFeatures.unshift(newBFeature);
+                }
+            }
+
+            const matIdx = baseFeatures.findIndex(f => f.includes('Material:'));
+            const newMatFeature = `<i class="fas fa-tag"></i> Material: ${material ? material.charAt(0).toUpperCase() + material.slice(1) : 'Estándar'}`;
+            if (matIdx !== -1) {
+                baseFeatures[matIdx] = newMatFeature;
+            } else {
+                baseFeatures.push(newMatFeature);
+            }
+            
+            const invIdx = baseFeatures.findIndex(f => f.includes('Inventario:') || f.includes('Existencia física:'));
+            const newInvFeature = `<i class="fas fa-box"></i> Inventario: ${inv} unidades`;
+            if (invIdx !== -1) {
+                baseFeatures[invIdx] = newInvFeature;
+            } else {
+                baseFeatures.push(newInvFeature);
+            }
+            
+            finalFeatures = baseFeatures;
+        }
+
+        const productData = {
+            id: id,
+            title: name,
+            price: finalPriceStr,
+            price_num: priceNum,
+            img: uploadedImgUrl,
+            sub_category: cat,
+            material: material,
+            uso: usoArray,
+            recent_score: Math.max(1, Math.min(15, Math.ceil(inv / 8))),
+            description: desc,
+            features: finalFeatures,
+            status: status
+        };
+
+        if (supabaseClient) {
+            try {
+                let error;
+                if (editProductId) {
+                    // Update
+                    const { error: err } = await supabaseClient
+                        .from('products')
+                        .update(productData)
+                        .eq('id', editProductId);
+                    error = err;
+                } else {
+                    // Insert
+                    const { error: err } = await supabaseClient
+                        .from('products')
+                        .insert([productData]);
+                    error = err;
+                }
+
+                if (error) throw error;
+                alert(editProductId ? 'Producto actualizado correctamente.' : 'Producto creado correctamente.');
+            } catch (err) {
+                console.error("Error al guardar en Supabase:", err);
+                alert("Error al guardar en Supabase: " + err.message);
+                btnGuardar.disabled = false;
+                btnGuardar.innerHTML = '<i class="fas fa-save"></i> Guardar';
+                return;
+            }
+        } else {
+            // Local storage fallback
+            if (editProductId) {
+                productsList = productsList.map(p => p.id === editProductId ? productData : p);
+            } else {
+                productsList.push(productData);
+            }
+            localStorage.setItem('ivad_custom_products', JSON.stringify(productsList));
+            alert('¡Producto guardado localmente!');
+        }
+
+        btnGuardar.disabled = false;
+        btnGuardar.innerHTML = '<i class="fas fa-save"></i> Guardar';
+        resetForm();
+        loadProducts();
+    });
+}
+
+function resetForm() {
+    editProductId = null;
+    uploadedImgUrl = '';
+    document.getElementById('formTitle').textContent = 'Agregar nuevo producto';
+    ['prodName','prodBrand','prodDesc','prodPrice','prodInv','prodUso'].forEach(i => {
+        const el = document.getElementById(i);
+        if (el) el.value = '';
+    });
+    document.getElementById('prodCat').value = '';
+    document.getElementById('prodMaterial').value = '';
+    document.getElementById('prodStatus').value = 'Activo';
+    uploadArea.innerHTML = `<i class="fas fa-cloud-upload-alt"></i><strong>Subir imágenes</strong><span>Arrastra y suelta o haz clic para seleccionar</span><span class="upload-hint">Formato: JPG, PNG. Máx: 5MB</span>`;
+}
+
+const btnCancelar = document.getElementById('btnCancelar');
+if (btnCancelar) btnCancelar.addEventListener('click', resetForm);
+
+async function deleteProduct(id) {
+    if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
+
+    if (supabaseClient) {
+        try {
+            const { error } = await supabaseClient
+                .from('products')
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            alert('Producto eliminado correctamente.');
+        } catch (err) {
+            console.error("Error al eliminar de Supabase:", err);
+            alert("Error al eliminar de Supabase: " + err.message);
+            return;
+        }
+    } else {
+        productsList = productsList.filter(p => p.id !== id);
+        localStorage.setItem('ivad_custom_products', JSON.stringify(productsList));
+    }
+    loadProducts();
+}
+
+// Initial load on page ready
+
+let categoriesList = [];
+
+async function loadCategories() {
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient.from('categories').select('*');
+            if (error) throw error;
+            categoriesList = data || [];
+        } catch (err) {
+            console.error("Error loading categories:", err);
+            categoriesList = [];
+        }
+    }
+    renderCategories();
+    populateCategoryDropdown();
+}
+
+function renderCategories() {
+    const tbody = document.getElementById('categories-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    categoriesList.forEach(c => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${c.id}</td>
+                <td><strong>${c.name}</strong></td>
+                <td><button class="action-btn delete" onclick="deleteCategory('${c.id}')"><i class="far fa-trash-alt"></i></button></td>
+            </tr>
+        `;
+    });
+}
+
+function populateCategoryDropdown() {
+    const prodCat = document.getElementById('prodCat');
+    if (!prodCat) return;
+    prodCat.innerHTML = '<option value="">Selecciona una subcategoría</option>';
+    categoriesList.forEach(c => {
+        prodCat.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const categoryForm = document.getElementById('categoryForm');
+    if (categoryForm) {
+        categoryForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('catName').value;
+            const id = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/^-|-$/g, '');
+            
+            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+                const { error } = await supabaseClient.from('categories').insert([{ id, name }]);
+                if (error) {
+                    alert("Error al guardar categoría: " + error.message);
+                    return;
+                }
+                document.getElementById('catName').value = '';
+                loadCategories();
+            }
+        });
+    }
+});
+
+async function deleteCategory(id) {
+    if (!confirm("¿Seguro que deseas eliminar esta categoría?")) return;
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        const { error } = await supabaseClient.from('categories').delete().eq('id', id);
+        if (error) alert("Error: " + error.message);
+        loadCategories();
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadProducts();
+  loadCategories();
+  loadDespachos();
+  loadAzulConfig();
+});
+
+// ============ AZUL CONFIG ============
+function loadAzulConfig() {
+    const cfg = JSON.parse(localStorage.getItem('ivad_azul_config') || '{}');
+    if (cfg.merchantId) document.getElementById('azul-merchant-id').value = cfg.merchantId;
+    if (cfg.merchantName) document.getElementById('azul-merchant-name').value = cfg.merchantName;
+    if (cfg.auth1) document.getElementById('azul-auth1').value = cfg.auth1;
+    if (cfg.auth2) document.getElementById('azul-auth2').value = cfg.auth2;
+    if (cfg.env) document.getElementById('azul-env').value = cfg.env;
+    const badge = document.getElementById('azul-status-badge');
+    if (badge && cfg.merchantId) {
+        badge.style.background = '#d1fae5';
+        badge.style.color = '#065f46';
+        badge.innerHTML = '<i class="fas fa-circle" style="font-size:0.5rem;"></i> Configurado';
+    }
+}
+
+function saveAzulConfig() {
+    const cfg = {
+        merchantId: document.getElementById('azul-merchant-id').value.trim(),
+        merchantName: document.getElementById('azul-merchant-name').value.trim(),
+        auth1: document.getElementById('azul-auth1').value.trim(),
+        auth2: document.getElementById('azul-auth2').value.trim(),
+        env: document.getElementById('azul-env').value
+    };
+    if (!cfg.merchantId || !cfg.auth1 || !cfg.auth2) {
+        alert('Por favor completa Merchant ID, Auth1 y Auth2 antes de guardar.');
+        return;
+    }
+    localStorage.setItem('ivad_azul_config', JSON.stringify(cfg));
+    const badge = document.getElementById('azul-status-badge');
+    if (badge) {
+        badge.style.background = '#d1fae5';
+        badge.style.color = '#065f46';
+        badge.innerHTML = '<i class="fas fa-circle" style="font-size:0.5rem;"></i> Configurado';
+    }
+    alert('Configuración de Azul guardada correctamente.');
+}
+
+// ============ DESPACHOS ============
+async function loadDespachos() {
+    const tbody = document.getElementById('despachos-tbody');
+    if (!tbody) return;
+
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#aaa;"><i class="fas fa-plug" style="font-size:2rem; display:block; margin-bottom:10px;"></i>Conecta Supabase para ver pedidos</td></tr>';
+        return;
+    }
+
+    const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+    if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#aaa;"><i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:10px;"></i>Aún no hay pedidos registrados</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = data.map(o => {
+        const statusMap = {
+            'pendiente': '<span class="status-badge pending">Pendiente de despacho</span>',
+            'en_camino': '<span class="status-badge processing">En camino</span>',
+            'entregado': '<span class="status-badge active">Entregado</span>',
+            'cancelado': '<span class="status-badge inactive">Cancelado</span>'
+        };
+        const deliveryMethod = o.delivery_method || o.shipping_method || 'Por confirmar';
+        const address = o.client_address || o.address || '—';
+        const fecha = o.created_at ? new Date(o.created_at).toLocaleDateString('es-DO') : '—';
+        const statusBadge = statusMap[o.status] || `<span class="status-badge pending">${o.status || 'Pendiente'}</span>`;
+        return `
+        <tr>
+            <td><strong>#${o.id ? o.id.toString().slice(-6).toUpperCase() : '—'}</strong></td>
+            <td>${o.client_name || '—'}<br><small style="color:#888">${o.client_email || ''}</small></td>
+            <td>${address}</td>
+            <td><i class="fas fa-truck" style="color:#4A90D9; margin-right:4px;"></i>${deliveryMethod}</td>
+            <td>${statusBadge}</td>
+            <td>${fecha}</td>
+            <td>
+                <div class="actions">
+                    <select onchange="updateDespachoStatus('${o.id}', this.value)" style="font-size:0.78rem; padding:4px 8px; border-radius:6px; border:1px solid #ddd; cursor:pointer;">
+                        <option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option>
+                        <option value="en_camino" ${o.status==='en_camino'?'selected':''}>En camino</option>
+                        <option value="entregado" ${o.status==='entregado'?'selected':''}>Entregado</option>
+                        <option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>
+                    </select>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+async function updateDespachoStatus(orderId, newStatus) {
+    if (!supabaseClient) return;
+    const { error } = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', orderId);
+    if (error) {
+        alert('Error al actualizar: ' + error.message);
+    }
+}
+</script>
+</body>
+</html>
+

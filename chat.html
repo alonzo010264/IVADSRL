@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atención al Cliente - IVAD</title>
+    <meta name="description" content="Portal de atención al cliente de IVAD Home & Goods. Conversación segura con agentes verificados.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8f9fb;
+            --sidebar-width: 320px;
+            --accent-gold: #bfa687;
+            --accent-gold-dark: #a8906f;
+            --accent-gold-light: #f5eedf;
+            --text-dark: #1e2229;
+            --text-muted: #7f8c8d;
+            --verify-color: #f39c12;
+            --chat-header-bg: #090d14;
+            --bubble-user-bg: #f4ebe1;
+            --bubble-agent-bg: #ffffff;
+            --border-color: #eef2f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        /* Header Navigation */
+        .header {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .header-logo {
+            cursor: pointer;
+        }
+
+        .header-logo img {
+            height: 50px;
+            width: auto;
+            display: block;
+        }
+
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 24px;
+        }
+
+        .main-nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .main-nav a:hover {
+            color: var(--accent-gold);
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background-color: #1a1d24;
+            color: #ffffff;
+            font-size: 0.75rem;
+            padding: 8px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 15px;
+            font-weight: 500;
+        }
+
+        /* ─── Main Content Layout ─── */
+        .main-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 40px;
+            flex: 1;
+            align-items: stretch;
+        }
+
+        /* ─── Left Sidebar ─── */
+        .sidebar {
+            width: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-top h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-top h1 span.brand-gold {
+            color: var(--accent-gold);
+            font-weight: 800;
+        }
+
+        .sidebar-top h1 span.heart-icon {
+            color: var(--accent-gold);
+            font-weight: 300;
+            margin-left: 5px;
+        }
+
+        .sidebar-top p.subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .gold-line {
+            width: 40px;
+            height: 2px;
+            background-color: var(--accent-gold);
+            margin-bottom: 35px;
+        }
+
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bullet-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .bullet-item svg.check-badge {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 40px;
+            line-height: 1.4;
+        }
+
+        /* ─── Chat Window Area ─── */
+        .chat-container {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background-color: var(--chat-header-bg);
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #ffffff;
+            transition: background-color 0.3s;
+        }
+
+        .chat-agent-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .agent-avatar-container {
+            position: relative;
+            width: 56px;
+            height: 56px;
+        }
+
+        .agent-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-gold);
+            display: block;
+        }
+
+        .agent-avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: none;
+        }
+
+        .agent-avatar-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            transform: scale(1.18);
+            transform-origin: center;
+        }
+
+        .agent-text-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .agent-name-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .agent-name {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .agent-dept-text {
+            font-size: 0.82rem;
+            color: #d1d5db;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .agent-status-text {
+            font-size: 0.78rem;
+            color: #a0aec0;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .agent-status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 15px;
+            color: #a0aec0;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .window-btn:hover {
+            color: #ffffff;
+        }
+
+        /* Chat Messages Area */
+        .chat-messages {
+            flex: 1;
+            background-color: #fcfdfe;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 400px;
+            max-height: 500px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: #e2e8f0;
+            border-radius: 4px;
+        }
+
+        .date-divider {
+            text-align: center;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .date-divider-text {
+            background-color: #f1f3f6;
+            color: #718096;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        /* Message Bubble Styles */
+        .message-row {
+            display: flex;
+            gap: 12px;
+            max-width: 80%;
+            align-items: flex-start;
+        }
+
+        .message-row.incoming {
+            align-self: flex-start;
+        }
+
+        .message-row.outgoing {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+            max-width: 75%;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .message-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .message-avatar-logo {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background-color: transparent;
+            border: none;
+        }
+
+        .message-avatar-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            transform: scale(1.18);
+            transform-origin: center;
+        }
+
+        .message-bubble {
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+        }
+
+        .message-row.incoming .message-bubble {
+            background-color: var(--bubble-agent-bg);
+            color: var(--text-dark);
+            border: 1px solid #edf2f7;
+            border-top-left-radius: 4px;
+        }
+
+        .message-row.outgoing .message-bubble {
+            background-color: var(--bubble-user-bg);
+            color: #3b332b;
+            border-top-right-radius: 4px;
+        }
+
+        .message-text {
+            word-break: break-word;
+        }
+
+        .message-meta {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .message-row.outgoing .message-meta {
+            color: #8c8276;
+        }
+
+        .check-marks {
+            color: #5d6d7e;
+            font-size: 0.72rem;
+        }
+
+        /* Connecting / Typing indicator bubble */
+        .connecting-indicator {
+            background-color: #f1f3f5;
+            padding: 10px 16px;
+            border-radius: 20px;
+            align-self: flex-start;
+            margin-left: 48px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #718096;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .dots span {
+            width: 6px;
+            height: 6px;
+            background-color: #a0aec0;
+            border-radius: 50%;
+            display: inline-block;
+            animation: dotBounce 1.4s infinite ease-in-out both;
+        }
+
+        .dots span:nth-child(1) { animation-delay: -0.32s; }
+        .dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* System notification */
+        .system-notification {
+            align-self: center;
+            background-color: #edf2f7;
+            color: #4a5568;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 12px;
+            max-width: 90%;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* Quick-reply option buttons */
+        .quick-options-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 8px 0 8px 48px;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .quick-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .quick-option-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 16px;
+            border: 1.5px solid var(--accent-gold);
+            border-radius: 14px;
+            background: #fff;
+            color: #5a4a38;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+            text-align: left;
+        }
+
+        .quick-option-btn:hover {
+            background: #fdf6ec;
+            box-shadow: 0 4px 14px rgba(191,166,135,0.18);
+            transform: translateY(-1px);
+        }
+
+        .quick-option-btn:active {
+            transform: scale(0.97);
+        }
+
+        .quick-option-btn i {
+            color: var(--accent-gold);
+            font-size: 1.05rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .quick-option-btn.full-width {
+            grid-column: 1 / -1;
+            justify-content: center;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Chat Input Section */
+        .chat-input-wrapper {
+            padding: 20px 24px;
+            background-color: #ffffff;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .chat-input-box {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 28px;
+            padding: 6px 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .chat-input-box:focus-within {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(191, 166, 135, 0.15);
+        }
+
+        .chat-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 0;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            color: var(--text-dark);
+        }
+
+        .chat-input::placeholder {
+            color: #a0aec0;
+        }
+
+        .input-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #718096;
+        }
+
+        .input-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #4a5568;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .input-btn:hover {
+            color: var(--accent-gold-dark);
+        }
+
+        /* ─── Bottom Info Bar ─── */
+        .bottom-info-pill {
+            max-width: 900px;
+            width: calc(100% - 40px);
+            margin: 0 auto 30px;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            gap: 40px;
+        }
+
+        .info-bar-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .info-bar-section span.highlight-gold {
+            color: var(--accent-gold-dark);
+        }
+
+        .info-bar-section svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .info-bar-divider {
+            width: 1px;
+            height: 24px;
+            background-color: var(--border-color);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #121417;
+            color: #a0aec0;
+            padding: 40px 30px;
+            font-size: 0.85rem;
+            border-top: 1px solid #1f2228;
+            width: 100%;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .main-container {
+                flex-direction: column;
+                margin: 20px auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding-right: 0;
+                margin-bottom: 20px;
+            }
+
+            .bottom-info-pill {
+                flex-direction: column;
+                gap: 15px;
+                border-radius: 18px;
+                padding: 20px;
+                text-align: center;
+            }
+
+            .info-bar-divider {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <span>Calidad y Diseño en cada Detalle</span>
+        <div>
+            <span>Envíos a todo el país</span>
+            <a href="contacto.html">Contáctanos</a>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header">
+        <div class="header-logo" onclick="window.location.href='index.html'">
+            <img src="logo_transparent.png" alt="IVAD Home & Goods">
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="nosotros_desechables.html">Nosotros</a></li>
+                <li><a href="desechables.html">Tienda</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <h1>Atención<br>al cliente<br><span class="brand-gold">IVAD</span></h1>
+                <p class="subtitle">Comienza tu conversación con nuestra IA y, si lo necesitas, un agente humano te ayudará.</p>
+                
+                <div class="gold-line"></div>
+
+                <ul class="bullet-list">
+                    <li class="bullet-item">
+                        <!-- Custom Gold Verified Badge -->
+                        <svg class="check-badge" viewBox="0 0 24 24">
+                            <path fill="#bfa687" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/>
+                        </svg>
+                        Conversación segura y confiable
+                    </li>
+                    <li class="bullet-item">
+                        <svg class="check-badge" viewBox="0 0 24 24">
+                            <path fill="#bfa687" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/>
+                        </svg>
+                        Agentes verificados
+                    </li>
+                    <li class="bullet-item">
+                        <svg class="check-badge" viewBox="0 0 24 24">
+                            <path fill="#bfa687" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/>
+                        </svg>
+                        Respuestas rápidas
+                    </li>
+                    <li class="bullet-item">
+                        <svg class="check-badge" viewBox="0 0 24 24">
+                            <path fill="#bfa687" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/>
+                        </svg>
+                        Tus datos protegidos
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <i class="fas fa-lock"></i>
+                <span>La conversación es segura y tus datos están protegidos.</span>
+            </div>
+        </aside>
+
+        <!-- Chat Box -->
+        <main class="chat-container">
+            <!-- Header -->
+            <div class="chat-header" id="chat-header">
+                <div class="chat-agent-info">
+                    <div class="agent-avatar-container" id="header-avatar-slot">
+                        <div class="agent-avatar-placeholder">
+                            <img src="logo_transparent.png" alt="IVAD">
+                        </div>
+                    </div>
+                    <div class="agent-text-info">
+                        <div class="agent-name-row">
+                            <span class="agent-name" id="header-agent-name">Atención al cliente de IVAD</span>
+                            <!-- Custom gold checkmark badge -->
+                            <svg viewBox="0 0 24 24" width="18" height="18" style="display:inline-block; vertical-align:middle;">
+                                <path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/>
+                            </svg>
+                        </div>
+                        <div class="agent-dept-text" id="header-agent-dept" style="display: none;">Agente de Atención al Cliente</div>
+                        <div class="agent-status-text">
+                            <span class="agent-status-dot"></span>
+                            En línea
+                        </div>
+                    </div>
+                </div>
+                <div class="window-controls">
+                    <i class="fas fa-minus window-btn"></i>
+                    <i class="fas fa-times window-btn" onclick="window.location.href='index.html'"></i>
+                </div>
+            </div>
+
+            <!-- Messages List -->
+            <div class="chat-messages" id="chat-messages">
+                <div class="date-divider">
+                    <span class="date-divider-text">Hoy</span>
+                </div>
+
+                <!-- Message 1 -->
+                <div class="message-row incoming">
+                    <div class="message-avatar-logo">
+                        <img src="logo_transparent.png" alt="IVAD Logo">
+                    </div>
+                    <div class="message-bubble">
+                        <div class="message-text">¡Hola! 👋 Soy el asistente virtual de IVAD. Estoy aquí para ayudarte al instante.</div>
+                        <div class="message-meta">10:30 a. m.</div>
+                    </div>
+                </div>
+
+                <!-- Message 2 -->
+                <div class="message-row incoming">
+                    <div class="message-avatar-logo">
+                        <img src="logo_transparent.png" alt="IVAD Logo">
+                    </div>
+                    <div class="message-bubble">
+                        <div class="message-text">¿En qué puedo ayudarte hoy? Elige una opción:</div>
+                        <div class="message-meta">10:30 a. m.</div>
+                    </div>
+                </div>
+
+                <!-- Quick-reply options -->
+                <div class="quick-options-wrapper" id="quick-options">
+                    <div class="quick-options-grid">
+                        <button class="quick-option-btn" onclick="selectOption('Consultar pedido')">
+                            <i class="fas fa-box"></i> Consultar pedido
+                        </button>
+                        <button class="quick-option-btn" onclick="selectOption('Información de productos')">
+                            <i class="fas fa-tag"></i> Información de productos
+                        </button>
+                        <button class="quick-option-btn" onclick="selectOption('Envíos y entregas')">
+                            <i class="fas fa-truck"></i> Envíos y entregas
+                        </button>
+                        <button class="quick-option-btn" onclick="selectOption('Devoluciones')">
+                            <i class="fas fa-undo-alt"></i> Devoluciones
+                        </button>
+                    </div>
+                    <button class="quick-option-btn full-width" onclick="selectOption('Hablar con un agente')">
+                        <i class="fas fa-headset"></i> Hablar con un agente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input area -->
+            <div class="chat-input-wrapper">
+                <div class="chat-input-box">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Escribe tu mensaje..." onkeydown="checkEnter(event)">
+                    <div class="input-btn-group">
+                        <button class="input-btn" title="Adjuntar archivo"><i class="fas fa-paperclip"></i></button>
+                        <button class="input-btn" id="send-msg-btn" onclick="handleSendMessage()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bottom Pill Bar -->
+    <div class="bottom-info-pill">
+        <div class="info-bar-section">
+            <svg viewBox="0 0 24 24">
+                <path fill="#e6a23c" d="M23,12L20.6,9.2L20.9,5.5L17.3,4.7L15.4,1.5L12,3L8.6,1.5L6.7,4.7L3.1,5.5L3.4,9.2L1,12L3.4,14.8L3.1,18.5L6.7,19.3L8.6,22.5L12,21L15.4,22.5L17.3,19.3L20.9,18.5L20.6,14.8L23,12M10,17L6,13L7.4,11.6L10,14.2L16.6,7.6L18,9L10,17Z"/>
+            </svg>
+            <span>Solo los agentes <span class="highlight-gold">verificados</span> pueden atenderte.</span>
+        </div>
+        <div class="info-bar-divider"></div>
+        <div class="info-bar-section">
+            <i class="far fa-heart" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
+            <span>Gracias por confiar en <span class="highlight-gold">IVAD</span>.</span>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2024 IVAD Home & Goods. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Logic Script -->
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        
+        let conversationHistory = [];
+        let waitingForAI = false;
+        let agentConnected = false;
+
+        function formatAMPM(date) {
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'p. m.' : 'a. m.';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return hours + ':' + minutes + ' ' + ampm;
+        }
+
+        function checkEnter(e) {
+            if (e.key === 'Enter') {
+                handleSendMessage();
+            }
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Custom escape function
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // Show/hide typing indicator
+        function showTyping() {
+            const avatarHtml = agentConnected 
+                ? `<img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" alt="María González">`
+                : `<img src="logo_transparent.png" alt="IVAD Logo">`;
+            
+            const avatarClass = agentConnected ? 'message-avatar' : 'message-avatar-logo';
+
+            const typingHtml = `
+                <div class="message-row incoming typing-indicator-row" id="typing-indicator">
+                    <div class="${avatarClass}">
+                        ${avatarHtml}
+                    </div>
+                    <div class="message-bubble">
+                        <div class="dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', typingHtml);
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Append message helpers
+        function appendUserMessage(text) {
+            const time = formatAMPM(new Date());
+            const userMsgHtml = `
+                <div class="message-row outgoing">
+                    <div class="message-bubble">
+                        <div class="message-text">${escapeHtml(text)}</div>
+                        <div class="message-meta">
+                            ${time}
+                            <span class="check-marks">✓✓</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', userMsgHtml);
+            scrollToBottom();
+        }
+
+        function appendBotMessage(text) {
+            const time = formatAMPM(new Date());
+            const avatarHtml = agentConnected 
+                ? `<img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" alt="María González">`
+                : `<img src="logo_transparent.png" alt="IVAD Logo">`;
+            
+            const avatarClass = agentConnected ? 'message-avatar' : 'message-avatar-logo';
+
+            const botMsgHtml = `
+                <div class="message-row incoming">
+                    <div class="${avatarClass}">
+                        ${avatarHtml}
+                    </div>
+                    <div class="message-bubble">
+                        <div class="message-text">${text}</div>
+                        <div class="message-meta">${time}</div>
+                    </div>
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', botMsgHtml);
+            scrollToBottom();
+        }
+
+        // Agent Handoff transition
+        function triggerAgentHandoff() {
+            if (agentConnected) return;
+            agentConnected = true;
+
+            // Connecting indicator
+            const connectingHtml = `
+                <div class="connecting-indicator" id="conn-indicator">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                    Conectando con un agente de soporte...
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', connectingHtml);
+            scrollToBottom();
+
+            setTimeout(() => {
+                const indicator = document.getElementById('conn-indicator');
+                if (indicator) indicator.remove();
+
+                // Switch Header to Maria Gonzalez
+                const headerAvatarSlot = document.getElementById('header-avatar-slot');
+                const headerAgentName = document.getElementById('header-agent-name');
+                const headerAgentDept = document.getElementById('header-agent-dept');
+
+                headerAvatarSlot.innerHTML = `
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" class="agent-avatar-img" alt="María González">
+                `;
+                headerAgentName.textContent = 'María González';
+                if (headerAgentDept) {
+                    headerAgentDept.style.display = 'block';
+                    headerAgentDept.textContent = 'Atención al Cliente';
+                }
+
+                // System notification
+                const notificationHtml = `
+                    <div class="system-notification">
+                        Te has conectado con María González, agente de atención al cliente.
+                    </div>
+                `;
+                chatMessages.insertAdjacentHTML('beforeend', notificationHtml);
+                scrollToBottom();
+
+                // Maria greeting
+                setTimeout(() => {
+                    const greeting = '¡Hola! 😊 Soy María González. Veo que deseas hablar con un agente. ¿En qué te puedo colaborar el día de hoy?';
+                    appendBotMessage(greeting);
+                    conversationHistory.push({ role: 'assistant', content: greeting });
+                }, 1000);
+
+            }, 2500);
+        }
+
+        // Call Ollama backend with simulator fallback
+        async function callOllama(messageText) {
+            waitingForAI = true;
+            showTyping();
+
+            // Add user message to history
+            conversationHistory.push({ role: 'user', content: messageText });
+
+            if (agentConnected) {
+                // If agent is connected, simulate human agent typing indicator then direct agent message
+                setTimeout(() => {
+                    hideTyping();
+                    const mariaResponse = 'Muchas gracias. Déjame revisar el sistema inmediatamente para darte una actualización. Demorará menos de un minuto.';
+                    appendBotMessage(mariaResponse);
+                    waitingForAI = false;
+                }, 2000);
+                return;
+            }
+
+            try {
+                // Fetch with short timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+                const res = await fetch('http://localhost:3500/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: conversationHistory
+                    }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                hideTyping();
+                waitingForAI = false;
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+
+                const data = await res.json();
+                const reply = data.reply || 'Lo siento, no recibí respuesta.';
+
+                // Add assistant response to history
+                conversationHistory.push({ role: 'assistant', content: reply });
+
+                appendBotMessage(reply);
+
+                // Detect if AI wants to hand off to a human agent
+                const handoffKeywords = [
+                    'conectar con un agente', 'agente humano', 'te voy a transferir',
+                    'voy a conectarte', 'te comunicaré', 'agente especializado',
+                    'hablar con un agente', 'un representante', 'hablar con maría',
+                    'hablar con maria'
+                ];
+                const wantsHandoff = handoffKeywords.some(kw => reply.toLowerCase().includes(kw));
+                if (wantsHandoff && !agentConnected) {
+                    setTimeout(() => triggerAgentHandoff(), 1500);
+                }
+
+            } catch (err) {
+                console.warn('Ollama proxy offline, falling back to simulator:', err);
+                
+                // Show a brief system message on first failure (REMOVED per user request)
+                const isFirstFail = !document.getElementById('simulator-banner');
+                // The yellow banner has been removed.
+
+                // Simulate writing delay
+                setTimeout(() => {
+                    hideTyping();
+                    waitingForAI = false;
+
+                    let reply = '';
+                    const lowerText = messageText.toLowerCase();
+
+                    // === Leer contexto de la conversación ===
+                    const lastBotMsg = conversationHistory.filter(m => m.role === 'assistant').slice(-1)[0]?.content?.toLowerCase() || '';
+                    const allUserHistory = conversationHistory.filter(m => m.role === 'user').map(m => m.content.toLowerCase()).join(' ');
+
+                    // ¿De qué tema venía hablando?
+                    const topicIsOrder = lastBotMsg.includes('pedido') || lastBotMsg.includes('número') || lastBotMsg.includes('orden') || lastBotMsg.includes('sistema');
+                    const topicIsShipping = lastBotMsg.includes('envío') || lastBotMsg.includes('entrega');
+                    const topicIsReturn = lastBotMsg.includes('devolución') || lastBotMsg.includes('cambio');
+
+                    // === Detectar quejas / frustración ===
+                    const isComplaint = lowerText.includes('problema') || lowerText.includes('error') ||
+                        lowerText.includes('culpa') || lowerText.includes('falla') || lowerText.includes('molest') ||
+                        lowerText.includes('no llega') || lowerText.includes('perdido') || lowerText.includes('nunca') ||
+                        lowerText.includes('siempre pasa') || lowerText.includes('mala') || lowerText.includes('horrible') ||
+                        lowerText.includes('pésimo') || lowerText.includes('no aparece') || lowerText.includes('no creo') ||
+                        lowerText.includes('seguro es') || lowerText.includes('queja') || lowerText.includes('reclamo') ||
+                        lowerText.includes('no lo registr') || lowerText.includes('hoy me lo dieron') ||
+                        lowerText.includes('quizas') || lowerText.includes('quizá') || lowerText.includes('no sé si');
+
+                    // === Lógica principal ===
+                    if (isComplaint) {
+                        // Queja o explicación del cliente — responder con empatía y acción
+                        if (topicIsOrder) {
+                            reply = 'Entiendo, es posible que el pedido aún no haya sido registrado en el sistema. 😔 Te recomiendo comunicarte con nuestro equipo de despacho para confirmar. ¿Tienes el comprobante de compra o el nombre de quien te atendió?';
+                        } else {
+                            reply = 'Lamentamos mucho la situación 😔. Queremos resolverlo cuanto antes. ¿Podrías darnos tu número de pedido para revisar lo que pasó?';
+                        }
+
+                    } else if (/\d{4,}/.test(lowerText)) {
+                        // Cliente envía un número — verificar
+                        reply = 'He revisado ese número en nuestro sistema y no aparece registrado. Si lo recibiste hoy, puede que aún esté en proceso. ¿Tienes el recibo o comprobante de tu compra? 📄';
+
+                    } else if (lowerText.includes('pedido') || lowerText.includes('compra') || lowerText.includes('rastre') || lowerText.includes('estatus') || lowerText.includes('orden')) {
+                        reply = '¡Claro! Con gusto te ayudaré a revisar tu pedido. ¿Me podrías dar tu número de orden? 📦';
+
+                    } else if (topicIsOrder) {
+                        // Seguimiento contextual del tema de pedidos — no pedir más detalles inútiles
+                        if (lowerText.includes('sí') || lowerText.includes('si') || lowerText.includes('correcto') || lowerText.includes('ese es') || lowerText.includes('confirmo')) {
+                            reply = 'Entendido. En ese caso, te recomiendo contactar directamente con nuestro equipo. ¿Prefieres que te ponga en contacto con un agente para resolverlo de inmediato?';
+                        } else if (lowerText.includes('no') || lowerText.includes('equivoc')) {
+                            reply = '¡Sin problema! ¿Me podrías pasar el número correcto? Con gusto lo busco de nuevo. 📦';
+                        } else {
+                            reply = 'Entiendo. Si tienes el comprobante de compra, con ese número podemos ubicar tu pedido mucho más rápido. ¿Lo tienes a mano?';
+                        }
+
+                    } else if (lowerText.includes('producto') || lowerText.includes('catálogo') || lowerText.includes('precio')) {
+                        reply = 'Tenemos artículos de decoración y desechables para el hogar. ¿Qué estás buscando? 🛍️';
+
+                    } else if (lowerText.includes('envío') || lowerText.includes('entrega')) {
+                        reply = 'Hacemos envíos rápidos a todo el país, usualmente de 24 a 48 horas. ¿Hacia dónde sería tu envío? 🚚';
+
+                    } else if (lowerText.includes('devolución') || lowerText.includes('cambio') || lowerText.includes('reembolso')) {
+                        reply = 'Puedes hacer devoluciones en los primeros 7 días de tu compra. ¿Me das tu número de pedido para revisarlo?';
+
+                    } else if (lowerText.includes('agente') || lowerText.includes('humano') || lowerText.includes('persona') || lowerText.includes('hablar con')) {
+                        reply = '¡Entendido! Te transfiero con un agente especializado ahora mismo. ¡Dame un segundito! 👩‍💻';
+
+                    } else if (lowerText.includes('hola') || lowerText.includes('buenas') || lowerText.includes('buen dia') || lowerText.includes('buenos') || conversationHistory.length <= 1) {
+                        reply = '¡Hola! ¿En qué te puedo ayudar hoy? 😊';
+
+                    } else {
+                        // Último recurso con contexto — no preguntar algo inútil
+                        if (topicIsShipping) {
+                            reply = 'Con gusto te ayudo con el envío. ¿Podrías decirme el número de tu pedido para ver el estado? 🚚';
+                        } else if (topicIsReturn) {
+                            reply = 'Para procesar tu devolución necesito el número de pedido. ¿Lo tienes a mano?';
+                        } else {
+                            reply = 'Entendido. Para poder ayudarte mejor, ¿podrías decirme cuál es el número de tu pedido? Así puedo revisar tu caso directamente. 📦';
+                        }
+                    }
+
+                    // Add assistant response to history
+                    conversationHistory.push({ role: 'assistant', content: reply });
+                    appendBotMessage(reply);
+
+                    // Check if we should trigger handoff
+                    const handoffKeywords = ['transferir con un agente', 'agente humano', 'hablar con', 'conectar con'];
+                    const wantsHandoff = handoffKeywords.some(kw => reply.toLowerCase().includes(kw));
+                    if (wantsHandoff && !agentConnected) {
+                        setTimeout(() => triggerAgentHandoff(), 1500);
+                    }
+                }, 2000);
+            }
+        }
+
+        // Quick-option selected
+        function selectOption(label) {
+            const opts = document.getElementById('quick-options');
+            if (opts) opts.remove();
+            appendUserMessage(label);
+            callOllama(label);
+        }
+
+        // Send message
+        function handleSendMessage() {
+            if (waitingForAI) return;
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            const opts = document.getElementById('quick-options');
+            if (opts) opts.remove();
+
+            chatInput.value = '';
+            appendUserMessage(text);
+            callOllama(text);
+        }
+
+        // Initial scroll down on load
+        window.addEventListener('DOMContentLoaded', () => {
+            scrollToBottom();
+        });
+    </script>
+</body>
+</html>

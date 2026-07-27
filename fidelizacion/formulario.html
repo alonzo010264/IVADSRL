@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Socio - IVAD Club</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #121417;
+            --card-dark: #1f2228;
+            --accent-gold: #bfa687;
+            --accent-gold-hover: #a8906f;
+            --text-light: #f7fafc;
+            --text-muted: #a0aec0;
+            --border-color: #2d3139;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            scrollbar-width: none;
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Background Grid */
+        .bg-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(191, 166, 135, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(191, 166, 135, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Decorative Background Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 1;
+            opacity: 0.15;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes floatOrb {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(40px, -40px) scale(1.1); }
+        }
+
+        .orb-1 {
+            top: -15%;
+            left: -15%;
+            width: 450px;
+            height: 450px;
+            background-color: var(--accent-gold);
+        }
+
+        .orb-2 {
+            bottom: -15%;
+            right: -15%;
+            width: 550px;
+            height: 550px;
+            background-color: #1e2c3a;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(31, 34, 40, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 35px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.5);
+            z-index: 10;
+            text-align: center;
+            position: relative;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--bg-dark), var(--accent-gold), var(--bg-dark));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .logo-wrap {
+            margin-bottom: 25px;
+        }
+
+        .logo-wrap img {
+            height: 76px;
+            width: auto;
+            display: block;
+            margin: 0 auto 12px;
+        }
+
+        .logo-wrap h2 {
+            font-size: 1.25rem;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .logo-wrap p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 15px 13px 45px;
+            background: rgba(18, 20, 23, 0.65);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(191, 166, 135, 0.2);
+            background: rgba(18, 20, 23, 0.9);
+        }
+
+        .input-wrap input:focus + i {
+            color: var(--accent-gold);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-hover));
+            color: #121417;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(191, 166, 135, 0.2);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1.5px);
+            box-shadow: 0 6px 20px rgba(191, 166, 135, 0.3);
+        }
+
+        .error-box {
+            background: rgba(192, 57, 43, 0.15);
+            border: 1px solid rgba(192, 57, 43, 0.3);
+            color: #e74c3c;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .footer-line {
+            margin-top: 25px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            line-height: 1.5;
+        }
+
+        .footer-line a {
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer-line a:hover {
+            text-decoration: underline;
+        }
+
+        /* Success Container */
+        .success-box {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+        .success-icon {
+            font-size: 3.5rem;
+            color: #2ecc71;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
+        }
+        .success-details {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .success-details strong {
+            color: var(--accent-gold);
+        }
+        
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 30px 20px;
+                border-radius: 16px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .form-row .form-group:first-child {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="register-container">
+        
+        <!-- FORMULARIO DE REGISTRO -->
+        <div id="form-content">
+            <div class="logo-wrap">
+                <img src="https://rbtdahmhaksdvupsmkma.supabase.co/storage/v1/object/public/product-images/logo_transparent.png" alt="IVAD Logo">
+                <h2>Registro de Socio</h2>
+                <p>Únete al Club de Fidelización IVAD</p>
+            </div>
+
+            <div class="error-box" id="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="error-text">Ocurrió un error.</span>
+            </div>
+
+            <form id="register-form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="reg-name">Nombre Completo *</label>
+                    <div class="input-wrap">
+                        <input type="text" id="reg-name" placeholder="ej: María Pérez" required>
+                        <i class="far fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reg-cedula">Cédula *</label>
+                        <div class="input-wrap">
+                            <input type="text" id="reg-cedula" placeholder="001-1234567-8" required>
+                            <i class="far fa-id-card"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">Teléfono *</label>
+                        <div class="input-wrap">
+                            <input type="text" id="reg-phone" placeholder="809-555-5555" required>
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-email">Correo Electrónico *</label>
+                    <div class="input-wrap">
+                        <input type="email" id="reg-email" placeholder="ej: cliente@correo.com" required>
+                        <i class="far fa-envelope"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btn-text">Registrarme y Obtener Tarjeta</button>
+            </form>
+
+            <div class="footer-line">
+                ¿Ya tienes una tarjeta de fidelización? <br>
+                <a href="index.html">Inicia sesión aquí</a>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE ÉXITO -->
+        <div id="success-content" class="success-box">
+            <i class="fas fa-circle-check success-icon"></i>
+            <h2>¡Registro Exitoso!</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Tu tarjeta digital ha sido generada correctamente</p>
+            
+            <div class="success-details">
+                Hola <strong id="success-client-name">-</strong>,<br><br>
+                Hemos creado tu tarjeta digital con el código <strong id="success-card-code">-</strong>.<br><br>
+                Tus credenciales de acceso y tu <strong>contraseña temporal</strong> han sido enviadas a tu correo: <strong id="success-client-email">-</strong>.<br><br>
+                <span style="font-size: 0.78rem; color: var(--text-muted); display: block; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 10px;">
+                    💡 <em>Si no ves el correo en unos minutos, revisa tu carpeta de <strong>Spam</strong> o Correo no deseado.</em>
+                </span>
+            </div>
+
+            <button class="btn-submit" onclick="redirectToLogin()">Ir al Inicio de Sesión</button>
+        </div>
+
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script>
+        let tempUserCredentials = null;
+
+        function showError(msg) {
+            const errBox = document.getElementById('error-message');
+            const errText = document.getElementById('error-text');
+            errText.textContent = msg;
+            errBox.style.display = 'flex';
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            document.getElementById('error-message').style.display = 'none';
+
+            const name = document.getElementById('reg-name').value.trim();
+            const cedula = document.getElementById('reg-cedula').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const btn = document.getElementById('btn-text');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+
+            const randomCode = 'IVAD-99' + Math.floor(1000000000 + Math.random() * 9000000000);
+            const randomPass = Math.random().toString(36).substring(2, 8);
+
+            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+                try {
+                    // Verificar si el correo ya existe
+                    const { data: existingCard } = await supabaseClient
+                        .from('loyalty_cards')
+                        .select('id')
+                        .eq('client_email', email)
+                        .maybeSingle();
+
+                    if (existingCard) {
+                        btn.disabled = false;
+                        btn.textContent = 'Registrarme y Obtener Tarjeta';
+                        showError('Este correo electrónico ya está registrado.');
+                        return;
+                    }
+
+                    // Insertar en Supabase
+                    const { data, error } = await supabaseClient
+                        .from('loyalty_cards')
+                        .insert([{
+                            card_code: randomCode,
+                            client_name: name,
+                            client_email: email,
+                            client_phone: phone,
+                            client_cedula: cedula,
+                            temp_password: randomPass,
+                            current_points: 0,
+                            points_target: 50
+                        }])
+                        .select()
+                        .single();
+
+                    if (error) {
+                        btn.disabled = false;
+                        btn.textContent = 'Registrarme y Obtener Tarjeta';
+                        showError('Error al guardar datos: ' + error.message);
+                        return;
+                    }
+
+                    // Enviar correo de credenciales
+                    let emailApiUrl = '/api/send-loyalty-email';
+                    if (window.location.protocol === 'file:') {
+                        emailApiUrl = 'http://localhost:3000/api/send-loyalty-email';
+                    }
+
+                    fetch(emailApiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            client_name: name,
+                            client_email: email,
+                            card_code: randomCode,
+                            temp_password: randomPass,
+                            card_id: data.id
+                        })
+                    })
+                    .then(async response => {
+                        const resData = await response.json();
+                        if (!response.ok) console.error("Error al enviar correo:", resData);
+                    })
+                    .catch(err => console.error('Email error:', err));
+
+                    // Guardar credenciales para rellenar el login automáticamente
+                    tempUserCredentials = { email, pass: randomPass };
+                    localStorage.setItem('temp_reg_email', email);
+                    localStorage.setItem('temp_reg_pass', randomPass);
+
+                    // Mostrar pantalla de éxito
+                    document.getElementById('success-client-name').textContent = name;
+                    document.getElementById('success-card-code').textContent = randomCode.replace('IVAD-', 'IVAD ');
+                    document.getElementById('success-client-email').textContent = email;
+
+                    document.getElementById('form-content').style.display = 'none';
+                    document.getElementById('success-content').style.display = 'block';
+
+                } catch (err) {
+                    btn.disabled = false;
+                    btn.textContent = 'Registrarme y Obtener Tarjeta';
+                    console.error('Error:', err);
+                    showError('Error de conexión con la base de datos.');
+                }
+            } else {
+                // Simulación local
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Registrarme y Obtener Tarjeta';
+
+                    localStorage.setItem('temp_reg_email', email);
+                    localStorage.setItem('temp_reg_pass', randomPass);
+
+                    document.getElementById('success-client-name').textContent = name;
+                    document.getElementById('success-card-code').textContent = randomCode.replace('IVAD-', 'IVAD ');
+                    document.getElementById('success-client-email').textContent = email;
+
+                    document.getElementById('form-content').style.display = 'none';
+                    document.getElementById('success-content').style.display = 'block';
+                }, 1000);
+            }
+        }
+
+        function redirectToLogin() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
