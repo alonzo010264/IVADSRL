@@ -115,39 +115,43 @@
 
         .valor-card {
             background-color: #fff;
-            border-radius: 4px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(191, 166, 135, 0.25);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+            transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.35s, border-color 0.35s;
             display: flex;
             flex-direction: column;
         }
 
         .valor-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(49,63,74,0.12);
+            border-color: var(--secondary-color);
         }
 
-        .valor-card-img {
-            height: 200px;
-            overflow: hidden;
-            background-color: #fafafa;
+        .valor-card-icon {
+            height: 120px;
+            background: linear-gradient(135deg, #faf7f2 0%, #f3ede2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            transition: background 0.35s ease;
         }
 
-        .valor-card-img img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            display: block;
-            transition: transform 0.4s ease;
+        .valor-card-icon i {
+            font-size: 2.6rem;
+            color: var(--secondary-color);
+            transition: transform 0.35s ease, color 0.35s ease;
         }
 
-        .valor-card:hover .valor-card-img img {
-            transform: scale(1.05);
+        .valor-card:hover .valor-card-icon {
+            background: linear-gradient(135deg, #313f4a 0%, #1e293b 100%);
+        }
+
+        .valor-card:hover .valor-card-icon i {
+            transform: scale(1.15);
+            color: #ffffff;
         }
 
         .valor-card-body {
@@ -433,36 +437,36 @@
             <span class="title-line"></span>
 
             <div class="valores-grid">
-                <!-- Calidad Premium -->
+                <!-- Calidad y Resistencia -->
                 <div class="valor-card">
-                    <div class="valor-card-img">
-                        <img src="images/platos.png" alt="Resistencia Superior">
+                    <div class="valor-card-icon">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
                     <div class="valor-card-body">
-                        <h3>Resistencia Superior</h3>
-                        <p>Materiales de alta durabilidad y resistencia,<br>ideales para todo tipo de alimentos y bebidas.</p>
+                        <h3>Calidad y Resistencia</h3>
+                        <p>Selección rigurosa de materiales de alta durabilidad e higiene, aptos para todo tipo de alimentos y bebidas.</p>
                     </div>
                 </div>
 
                 <!-- Sostenibilidad -->
                 <div class="valor-card">
-                    <div class="valor-card-img">
-                        <img src="images/contenedor.png" alt="Sostenibilidad">
+                    <div class="valor-card-icon">
+                        <i class="fas fa-leaf"></i>
                     </div>
                     <div class="valor-card-body">
-                        <h3>Sostenibilidad</h3>
-                        <p>Comprometidos con el medio ambiente,<br>ofreciendo una gama ecológica y biodegradable.</p>
+                        <h3>Sostenibilidad Ambiental</h3>
+                        <p>Comprometidos con el planeta ofreciendo empaques ecológicos, biodegradables y de menor impacto.</p>
                     </div>
                 </div>
 
-                <!-- Variedad y Stock -->
+                <!-- Compromiso y Servicio -->
                 <div class="valor-card">
-                    <div class="valor-card-img">
-                        <img src="images/vasos.png" alt="Variedad y Stock">
+                    <div class="valor-card-icon">
+                        <i class="fas fa-handshake"></i>
                     </div>
                     <div class="valor-card-body">
-                        <h3>Variedad y Stock</h3>
-                        <p>Un catálogo amplio y suministro constante<br>adaptado a las demandas de tu negocio.</p>
+                        <h3>Compromiso y Servicio</h3>
+                        <p>Atención personalizada y asesoría confiable para construir relaciones sólidas a largo plazo.</p>
                     </div>
                 </div>
             </div>
