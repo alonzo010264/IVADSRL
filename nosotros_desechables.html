@@ -376,6 +376,223 @@
                 grid-template-columns: 1fr 1fr;
             }
         }
+
+        /* =====================================================
+           ANIMACIONES & INTERACTIVIDAD
+        ===================================================== */
+        
+        /* Reveal on scroll */
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal-item.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-1 { transition-delay: 0.12s; }
+        .delay-2 { transition-delay: 0.24s; }
+        .delay-3 { transition-delay: 0.36s; }
+
+        /* Floating Badge Animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(191, 166, 135, 0.15);
+            border: 1px solid rgba(191, 166, 135, 0.4);
+            backdrop-filter: blur(8px);
+            padding: 8px 18px;
+            border-radius: 30px;
+            color: var(--secondary-color);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        /* Categorías Interactivas */
+        .nosotros-categorias {
+            padding: 90px 0;
+            background: linear-gradient(180deg, #ffffff 0%, #faf8f5 100%);
+        }
+
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            margin-bottom: 45px;
+        }
+
+        .tab-btn {
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            color: var(--text-dark);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn i {
+            color: var(--secondary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(191, 166, 135, 0.2);
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(49, 63, 74, 0.25);
+        }
+
+        .tab-btn.active i {
+            color: var(--secondary-color);
+        }
+
+        .cat-display-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .cat-card {
+            background-color: #fff;
+            border-radius: 16px;
+            padding: 30px 25px;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(49, 63, 74, 0.12);
+        }
+
+        .cat-card:hover::before {
+            opacity: 1;
+        }
+
+        .cat-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #faf7f2 0%, #f3ede2 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            transition: all 0.35s ease;
+        }
+
+        .cat-card:hover .cat-card-icon {
+            background: var(--primary-color);
+            color: #fff;
+            transform: rotate(5deg) scale(1.08);
+        }
+
+        .cat-card h3 {
+            font-size: 1.15rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .cat-card p {
+            font-size: 0.88rem;
+            color: var(--gray-text);
+            line-height: 1.65;
+            margin-bottom: 18px;
+        }
+
+        .cat-card-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .cat-tag {
+            font-size: 0.72rem;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* Pulsing Floating WhatsApp button */
+        .whatsapp-float-btn {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 60px;
+            height: 60px;
+            background-color: #25d366;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            z-index: 999;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: pulseGlow 2.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
+            70% { box-shadow: 0 0 0 16px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        .whatsapp-float-btn:hover {
+            transform: scale(1.12);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -415,30 +632,29 @@
                 <a href="#" class="cart-icon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a> -->
                 <button class="mobile-menu-btn" onclick="document.querySelector('.main-nav').classList.toggle('nav-open')"><i class="fas fa-bars"></i></button></div>
         </div>
-    </header>
-
-    <!-- ===================== HERO ===================== -->
+      <!-- ===================== HERO ===================== -->
     <section class="nosotros-hero">
-        <div class="container">
-            <span class="pre-label">Sobre Nosotros</span>
+        <div class="container reveal-item">
+            <span class="hero-badge"><i class="fas fa-award"></i> Líderes en Desechables Corporativos</span>
             <h1>Calidad y resistencia<br>para cada ocasión.</h1>
             <p>En IVAD Desechables seleccionamos y ofrecemos la mejor<br>
             variedad de productos desechables, garantizando la calidad<br>
             y la presentación ideal que tu negocio y eventos merecen.</p>
-            <a href="#historia" class="btn btn-primary">Conoce nuestra historia</a>
+            <a href="#categorias" class="btn btn-primary" style="margin-right: 12px;">Explora productos</a>
+            <a href="contacto.html" class="btn btn-outline" style="border-color: rgba(255,255,255,0.4); color: #fff;">Cotizar al por mayor</a>
         </div>
     </section>
 
     <!-- ===================== VALORES ===================== -->
     <section class="nosotros-valores">
         <div class="container">
-            <span class="pre-label">Nuestra Esencia</span>
-            <h2>Valores que nos Definen</h2>
-            <span class="title-line"></span>
+            <span class="pre-label reveal-item">Nuestra Esencia</span>
+            <h2 class="reveal-item delay-1">Valores que nos Definen</h2>
+            <span class="title-line reveal-item delay-1"></span>
 
             <div class="valores-grid">
                 <!-- Calidad y Resistencia -->
-                <div class="valor-card">
+                <div class="valor-card reveal-item delay-1">
                     <div class="valor-card-icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
@@ -449,7 +665,7 @@
                 </div>
 
                 <!-- Sostenibilidad -->
-                <div class="valor-card">
+                <div class="valor-card reveal-item delay-2">
                     <div class="valor-card-icon">
                         <i class="fas fa-leaf"></i>
                     </div>
@@ -460,7 +676,7 @@
                 </div>
 
                 <!-- Compromiso y Servicio -->
-                <div class="valor-card">
+                <div class="valor-card reveal-item delay-3">
                     <div class="valor-card-icon">
                         <i class="fas fa-handshake"></i>
                     </div>
@@ -473,12 +689,79 @@
         </div>
     </section>
 
+    <!-- ===================== CATEGORÍAS INTERACTIVAS ===================== -->
+    <section class="nosotros-categorias" id="categorias">
+        <div class="container">
+            <span class="pre-label reveal-item" style="text-align: center; display: block;">Catálogo Especializado</span>
+            <h2 class="reveal-item delay-1" style="text-align: center; font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 400; color: var(--text-dark);">Soluciones para tu Negocio</h2>
+            <span class="title-line reveal-item delay-1" style="margin: 14px auto 20px;"></span>
+
+            <!-- Tabs de navegación de categorías -->
+            <div class="category-tabs reveal-item delay-2">
+                <button class="tab-btn active" data-category="all"><i class="fas fa-border-all"></i> Todos</button>
+                <button class="tab-btn" data-category="bebidas"><i class="fas fa-wine-glass-alt"></i> Vasos y Bebidas</button>
+                <button class="tab-btn" data-category="empaques"><i class="fas fa-box-open"></i> Empaques y Envases</button>
+                <button class="tab-btn" data-category="ecologicos"><i class="fas fa-seedling"></i> Línea Biodegradable</button>
+            </div>
+
+            <!-- Grilla dinámica de categorías -->
+            <div class="cat-display-grid">
+                <!-- Tarjeta 1 -->
+                <div class="cat-card reveal-item delay-1" data-cat="bebidas">
+                    <div class="cat-card-icon"><i class="fas fa-glass-whiskey"></i></div>
+                    <h3>Vasos Fríos y Calientes</h3>
+                    <p>Variedad en PET transparente con tapa domo, polipapel térmico y vasos acrílicos para bebidas y postres.</p>
+                    <div class="cat-card-tags">
+                        <span class="cat-tag">PET Transparente</span>
+                        <span class="cat-tag">Polipapel Térmico</span>
+                        <span class="cat-tag">Tapa Domo / Plana</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 2 -->
+                <div class="cat-card reveal-item delay-2" data-cat="empaques">
+                    <div class="cat-card-icon"><i class="fas fa-utensils"></i></div>
+                    <h3>Contenedores y Clamshells</h3>
+                    <p>Envases con cierre hermético para delivery, comida rápida, repostería y banquetes con resistencia térmica.</p>
+                    <div class="cat-card-tags">
+                        <span class="cat-tag">Cierre Bisagra</span>
+                        <span class="cat-tag">Apto Microondas</span>
+                        <span class="cat-tag">Cero Fugas</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 3 -->
+                <div class="cat-card reveal-item delay-3" data-cat="ecologicos">
+                    <div class="cat-card-icon"><i class="fas fa-leaf"></i></div>
+                    <h3>Vajilla de Bagazo de Caña</h3>
+                    <p>Platos, bowls y bandejas 100% compostables producidos a partir de fibras naturales renovables.</p>
+                    <div class="cat-card-tags">
+                        <span class="cat-tag">100% Biodegradable</span>
+                        <span class="cat-tag">Bagazo de Caña</span>
+                        <span class="cat-tag">Ecológico</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 4 -->
+                <div class="cat-card reveal-item delay-1" data-cat="bebidas empaques">
+                    <div class="cat-card-icon"><i class="fas fa-concierge-bell"></i></div>
+                    <h3>Cubiertos y Servilletas</h3>
+                    <p>Sets individuales higiénicamente empacados, servilletas institucionales y cubiertos pesados de alta durabilidad.</p>
+                    <div class="cat-card-tags">
+                        <span class="cat-tag">Empacado Individual</span>
+                        <span class="cat-tag">Suministro Masivo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ===================== HISTORIA ===================== -->
     <section class="nosotros-historia" id="historia">
         <div class="container">
             <div class="historia-grid">
                 <!-- Texto izquierda -->
-                <div class="historia-text">
+                <div class="historia-text reveal-item">
                     <span class="pre-label">Nuestra Historia</span>
                     <h2>Apoyando al sector gastronómico<br><strong>y de eventos desde 1996.</strong></h2>
                     <span class="title-line"></span>
@@ -486,7 +769,7 @@
                     <p>Hoy, nos enorgullece ser el socio confiable de cientos de restaurantes, cafeterías y organizadores de eventos, brindando siempre productos que cumplen con los más altos estándares de higiene y resistencia.</p>
                 </div>
                 <!-- Imagen derecha -->
-                <div class="historia-img">
+                <div class="historia-img reveal-item delay-2">
                     <img src="images/comedor_1782182137437.png" alt="Historia IVAD Desechables">
                 </div>
             </div>
@@ -497,22 +780,22 @@
     <section class="nosotros-stats">
         <div class="container">
             <div class="stats-grid">
-                <div class="stat-item">
+                <div class="stat-item reveal-item delay-1">
                     <div class="stat-icon"><i class="far fa-star"></i></div>
-                    <span class="stat-label">+25 Años de Experiencia</span>
+                    <span class="stat-label">+<span class="counter" data-target="25">25</span> Años de Experiencia</span>
                     <p class="stat-desc">Más de dos décadas ofreciendo soluciones prácticas y confiables a nivel nacional.</p>
                 </div>
-                <div class="stat-item">
+                <div class="stat-item reveal-item delay-2">
                     <div class="stat-icon"><i class="fas fa-box-open"></i></div>
                     <span class="stat-label">Stock Garantizado</span>
                     <p class="stat-desc">Contamos con almacenes abastecidos para responder a las necesidades de tu negocio.</p>
                 </div>
-                <div class="stat-item">
+                <div class="stat-item reveal-item delay-3">
                     <div class="stat-icon"><i class="far fa-comment-dots"></i></div>
                     <span class="stat-label">Atención Corporativa</span>
                     <p class="stat-desc">Asesoría personalizada y cotizaciones a la medida para compras al por mayor.</p>
                 </div>
-                <div class="stat-item">
+                <div class="stat-item reveal-item delay-4">
                     <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
                     <span class="stat-label">Calidad Certificada</span>
                     <p class="stat-desc">Productos fabricados bajo altos estándares de seguridad alimentaria e higiene.</p>
@@ -523,11 +806,17 @@
 
     <!-- ===================== BOTTOM BANNER ===================== -->
     <section class="nosotros-bottom-banner">
-        <div class="banner-text-inner">
+        <div class="banner-text-inner reveal-item">
             <h2>Más que empaques y vajillas, ofrecemos<br>las soluciones prácticas que impulsan tu negocio.</h2>
             <span class="title-line"></span>
+            <a href="contacto.html" class="btn btn-primary" style="margin-top: 20px;">Contactar un Asesor</a>
         </div>
     </section>
+
+    <!-- BOTÓN FLOTANTE WHATSAPP -->
+    <a href="https://wa.me/18092416555?text=Hola,%20quisiera%20informaci%C3%B3n%20sobre%20los%20productos%20desechables" target="_blank" class="whatsapp-float-btn" title="Contactar por WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <!-- ===================== FOOTER ===================== -->
     <footer class="footer">
@@ -568,13 +857,13 @@
                 <div class="social-icons-footer">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://wa.me/18092416555" target="_blank"><i class="fab fa-whatsapp"></i></a>
                 </div>
                 <h3>CONTÁCTANOS</h3>
                 <ul class="contact-info">
                     <li><i class="fas fa-phone-alt"></i> (809) 241-6555</li>
                     <li><i class="fas fa-envelope"></i> info@ivadsrl.com</li>
-                    <li><i class="fas fa-map-marker-alt"></i> Santiago De Los Caballeros, RD</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Ave. 27 de Febrero #142, Santiago, RD</li>
                 </ul>
             </div>
         </div>
@@ -592,6 +881,55 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/main.js"></script>
+
+    <!-- SCRIPT DE INTERACTIVIDAD & ANIMACIÓN -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Scroll Reveal Animation using IntersectionObserver
+            const revealElements = document.querySelectorAll('.reveal-item');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            }, {
+                threshold: 0.15,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            revealElements.forEach(el => observer.observe(el));
+
+            // 2. Interactive Category Tabs Filter
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const catCards = document.querySelectorAll('.cat-card');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const cat = this.getAttribute('data-category');
+
+                    catCards.forEach(card => {
+                        if (cat === 'all' || card.getAttribute('data-cat').includes(cat)) {
+                            card.style.display = 'block';
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'translateY(0)';
+                            }, 50);
+                        } else {
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-
