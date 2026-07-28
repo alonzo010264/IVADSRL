@@ -9,6 +9,254 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Rediseño Elegante para Página de Contacto */
+        body {
+            background-color: #faf7f2 !important;
+        }
+
+        .help-section {
+            padding: 70px 30px 50px;
+            background: linear-gradient(180deg, #ffffff 0%, #f7f3ed 100%);
+            border-radius: 24px;
+            margin: 40px auto 50px;
+            box-shadow: 0 10px 40px rgba(49, 63, 74, 0.04);
+            border: 1px solid rgba(191, 166, 135, 0.2);
+        }
+
+        .help-section .section-title {
+            color: #1e293b;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            letter-spacing: 1px;
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .help-card {
+            background: #ffffff;
+            padding: 35px 25px;
+            text-align: center;
+            border-radius: 16px;
+            border: 1px solid rgba(191, 166, 135, 0.25);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .help-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #313f4a, #bfa687);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .help-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 35px rgba(49, 63, 74, 0.12);
+            border-color: #bfa687;
+        }
+
+        .help-card:hover::before {
+            opacity: 1;
+        }
+
+        .help-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #f5ede3 0%, #e8decb 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #bfa687;
+            transition: all 0.35s ease;
+        }
+
+        .help-card:hover .help-icon {
+            background: linear-gradient(135deg, #313f4a 0%, #1e293b 100%);
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .help-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .help-card p {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #bfa687;
+            margin-bottom: 8px;
+        }
+
+        .help-detail {
+            font-size: 0.83rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* Formulario e Interactivo */
+        .contact-interactive {
+            margin: 40px auto 70px;
+        }
+
+        .contact-form-container, .contact-map-container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(191, 166, 135, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .form-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: #bfa687;
+            border-radius: 2px;
+        }
+
+        .contact-form input,
+        .contact-form textarea,
+        .contact-form select {
+            background-color: #faf8f5;
+            border: 1.5px solid #e8e2d8;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            transition: all 0.25s ease;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus,
+        .contact-form select:focus {
+            background-color: #ffffff;
+            border-color: #bfa687;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(191, 166, 135, 0.18);
+        }
+
+        .btn-block {
+            background: linear-gradient(135deg, #313f4a 0%, #1e293b 100%);
+            border-radius: 10px;
+            padding: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(49, 63, 74, 0.2);
+        }
+
+        .btn-block:hover {
+            background: linear-gradient(135deg, #bfa687 0%, #a89175 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(191, 166, 135, 0.35);
+        }
+
+        .map-wrapper {
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .map-overlay-box {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Sección ¿Qué es IVAD? */
+        .info-section {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 80px 0;
+        }
+
+        .info-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(191, 166, 135, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .info-intro h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 30px 24px;
+            border-radius: 14px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-4px);
+            border-color: rgba(191, 166, 135, 0.4);
+        }
+
+        .info-item h3 {
+            color: #bfa687;
+            font-weight: 700;
+        }
+
+        @media (max-width: 992px) {
+            .help-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+            .contact-form-container, .contact-map-container {
+                padding: 25px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Top Bar -->
