@@ -34,9 +34,9 @@ const EmployeeProfile = () => {
       <div className="w-full max-w-3xl flex flex-col">
         
         {/* Portada y Header Fusionados */}
-        <div className="relative mb-32">
+        <div className="mb-6">
           {/* Fondo curvo */}
-          <div className="bg-[#1c2c4c] rounded-b-[2.5rem] shadow-sm h-36">
+          <div className="bg-[#1c2c4c] rounded-b-[2.5rem] shadow-sm h-36 relative z-10">
             <div className="text-white p-4 flex items-center">
               <button onClick={() => navigate(-1)} className="p-1 mr-2 z-10 hover:bg-white/10 rounded-full transition">
                 <ChevronLeft size={24} />
@@ -45,10 +45,10 @@ const EmployeeProfile = () => {
             </div>
           </div>
           
-          {/* Avatar y Textos flotantes */}
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 flex flex-col items-center w-full">
-            <div className="relative">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white relative z-20 flex items-center justify-center">
+          {/* Avatar y Textos en Flujo normal con margen negativo */}
+          <div className="flex flex-col items-center w-full px-6 -mt-16 relative z-20">
+            <div className="relative shrink-0">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-50 shadow-md bg-white flex items-center justify-center">
                 {employee.avatar ? (
                   <img src={employee.avatar} alt={employee.name} className="w-full h-full object-cover scale-[1.35]" />
                 ) : (
@@ -59,12 +59,12 @@ const EmployeeProfile = () => {
               </div>
             </div>
             
-            <div className="mt-3 flex items-center justify-center gap-1.5">
-              <h1 className="text-2xl font-bold text-[#1c2c4c]">{employee.name}</h1>
-              <CustomVerificationBadge status={isVerified} className="w-6 h-6" />
+            <div className="mt-4 flex items-center justify-center gap-1.5 flex-wrap text-center w-full">
+              <h1 className="text-2xl font-bold text-[#1c2c4c] leading-tight">{employee.name}</h1>
+              <CustomVerificationBadge status={isVerified} className="w-6 h-6 shrink-0" />
             </div>
-            <p className="text-[#d4af37] font-medium text-sm">{employee.role}</p>
-            <p className="text-gray-500 text-xs mt-0.5">{employee.department}</p>
+            <p className="text-[#d4af37] font-medium text-sm mt-1.5 text-center">{employee.role}</p>
+            <p className="text-gray-500 text-xs mt-0.5 text-center">{employee.department}</p>
           </div>
         </div>
 
