@@ -121,15 +121,24 @@ const Payroll = () => {
               <X size={20} />
             </button>
             
-            <div id="receipt-content" className="p-10 text-gray-800">
+            <div id="receipt-content" className="p-10 text-gray-800 relative">
+              
+              {/* Sello de IVAD */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none z-0">
+                <img src="/sello-ivad.png" alt="Sello de agua IVAD" className="w-[400px] h-[400px] object-contain" />
+              </div>
+              <div className="absolute top-6 right-10 opacity-90 pointer-events-none z-0">
+                <img src="/sello-ivad.png" alt="Sello IVAD" className="w-24 h-24 object-contain" />
+              </div>
+
               {/* Encabezado del Documento */}
-              <div className="flex justify-between items-start border-b-2 border-[#1c2c4c] pb-6 mb-8">
+              <div className="flex justify-between items-start border-b-2 border-[#1c2c4c] pb-6 mb-8 relative z-10">
                 <div>
                   <img src="/logo.png" alt="IVAD Logo" className="h-16 object-contain mb-2" />
                   <p className="text-xs text-gray-500">IVAD Home & Goods S.R.L.</p>
                   <p className="text-xs text-gray-500">RNC: 1-32-45678-9</p>
                 </div>
-                <div className="text-right">
+                <div className="text-right pr-28">
                   <h2 className="text-[#1c2c4c] font-bold text-2xl uppercase tracking-wider mb-1">Volante de Pago</h2>
                   <p className="text-sm font-medium text-gray-600">Comprobante Digital</p>
                   <p className="text-xs text-gray-500 mt-2">Nº Transacción: <span className="font-mono">{selectedPayroll.id.split('-')[0].toUpperCase()}</span></p>
