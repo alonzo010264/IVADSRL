@@ -5,40 +5,42 @@ import { useNavigate } from 'react-router-dom';
 const MenuDrawer = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isInstallable, setIsInstallable] = useState(false);
+
+  // Intentar recuperar el evento si se guardó globalmente en window
+  useEffect(() => {
+    if (window.deferredPrompt) {
+      setDeferredPrompt(window.deferredPrompt);
+    }
+  }, []);
 
   useEffect(() => {
-    // Escuchar el evento que el navegador dispara cuando la app web se puede instalar como nativa
     const handleBeforeInstallPrompt = (e) => {
-      // Prevenir que Chrome muestre el prompt automáticamente
       e.preventDefault();
-      // Guardar el evento para dispararlo cuando el usuario haga clic en nuestro botón
       setDeferredPrompt(e);
-      setIsInstallable(true);
+      window.deferredPrompt = e; // Guardar globalmente por si acaso
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    
-    // Mostrar el prompt de instalación nativo del navegador
-    deferredPrompt.prompt();
-    
-    // Esperar a que el usuario responda
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    // Si la instaló, ocultamos el botón
-    if (outcome === 'accepted') {
-      setIsInstallable(false);
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+        window.deferredPrompt = null;
+      }
+    } else {
+      // Si no hay evento (iOS, o ya instalado, o PC), mostrar instrucciones
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS) {
+        alert("En tu iPhone/iPad:\n1. Toca el botón 'Compartir' (el cuadrado con la flecha hacia arriba) en Safari.\n2. Selecciona 'Agregar a Inicio'.");
+      } else {
+        alert("Para instalar:\nEn Android: Toca los 3 puntos del navegador y selecciona 'Instalar aplicación' o 'Agregar a la pantalla principal'.\nEn PC: Busca el ícono de descarga al lado de la barra de direcciones.");
+      }
     }
-    
-    setDeferredPrompt(null);
   };
 
   return (
@@ -149,21 +151,19 @@ const MenuDrawer = ({ isOpen, onClose }) => {
 
         </div>
 
-        {/* Botón de Instalar App (PWA) */}
-        {isInstallable && (
-          <div className="p-5 border-t border-gray-100 bg-gray-50/50">
-            <button 
-              onClick={handleInstallClick}
-              className="w-full bg-[#0b1c3c] hover:bg-[#0b1c3c]/90 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
-            >
-              <Download size={20} className="text-[#d4af37]" />
-              <span>Descargar la App</span>
-            </button>
-            <p className="text-center text-[10px] text-gray-500 mt-3 px-2 leading-tight">
-              Instala IVAD Connect directamente en tu celular sin usar PlayStore ni AppStore.
-            </p>
-          </div>
-        )}
+        {/* Botón de Instalar App (PWA) SIEMPRE VISIBLE */}
+        <div className="p-5 border-t border-gray-100 bg-gray-50/50">
+          <button 
+            onClick={handleInstallClick}
+            className="w-full bg-[#0b1c3c] hover:bg-[#0b1c3c]/90 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
+          >
+            <Download size={20} className="text-[#d4af37]" />
+            <span>Descargar la App</span>
+          </button>
+          <p className="text-center text-[10px] text-gray-500 mt-3 px-2 leading-tight">
+            Instala IVAD Connect directamente en tu celular para un acceso más rápido.
+          </p>
+        </div>
       </div>
     </>
   );
