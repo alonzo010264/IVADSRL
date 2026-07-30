@@ -114,86 +114,74 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 gap-4 mb-8">
           
           {/* Card 1: Empleados */}
-          <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-gray-100 flex flex-col justify-between">
-            <div className="flex items-start gap-3 mb-6">
-              <div className="bg-[#0b1c3c] rounded-full w-14 h-14 shrink-0 flex items-center justify-center text-white shadow-sm">
-                <Users size={28} strokeWidth={2} />
+          <div className="bg-white rounded-[1.25rem] p-4 shadow-sm border border-gray-100 flex flex-col justify-between">
+            <div className="mb-4">
+              <div className="bg-[#0b1c3c] rounded-full w-12 h-12 flex items-center justify-center text-white shadow-sm mb-3">
+                <Users size={24} strokeWidth={2} />
               </div>
-              <div>
-                <h3 className="text-3xl font-bold text-[#0b1c3c] leading-none">{employees.length}</h3>
-                <p className="text-gray-500 text-sm leading-tight mt-1">Empleados<br/>activos</p>
-              </div>
+              <h3 className="text-2xl font-bold text-[#0b1c3c] leading-none">{employees.length}</h3>
+              <p className="text-gray-500 text-xs leading-tight mt-1">Empleados<br/>activos</p>
             </div>
-            
             <div 
               className="flex items-center justify-between border-t border-gray-100 pt-3 cursor-pointer"
               onClick={() => navigate('/equipo')}
             >
-              <span className="text-gray-600 text-xs font-medium">Ver equipo</span>
-              <ArrowRight size={16} className="text-[#0b1c3c]" />
+              <span className="text-gray-600 text-[10px] sm:text-xs font-medium">Ver equipo</span>
+              <ArrowRight size={14} className="text-[#0b1c3c]" />
             </div>
           </div>
 
           {/* Card 2: Asistencias */}
-          <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-gray-100 flex flex-col justify-between">
-            <div className="flex items-start gap-3 mb-6">
-              <div className="bg-[#c8985c] rounded-full w-14 h-14 shrink-0 flex items-center justify-center text-white shadow-sm">
-                <Calendar size={28} strokeWidth={2} />
+          <div className="bg-white rounded-[1.25rem] p-4 shadow-sm border border-gray-100 flex flex-col justify-between">
+            <div className="mb-4">
+              <div className="bg-[#c8985c] rounded-full w-12 h-12 flex items-center justify-center text-white shadow-sm mb-3">
+                <Calendar size={24} strokeWidth={2} />
               </div>
-              <div>
-                <h3 className="text-3xl font-bold text-[#0b1c3c] leading-none">18</h3>
-                <p className="text-gray-500 text-sm leading-tight mt-1">Asistencias<br/>registradas</p>
-              </div>
+              <h3 className="text-2xl font-bold text-[#0b1c3c] leading-none">18</h3>
+              <p className="text-gray-500 text-xs leading-tight mt-1">Asistencias<br/>registradas</p>
             </div>
-            
             <div 
               className="flex items-center justify-between border-t border-gray-100 pt-3 cursor-pointer"
               onClick={() => navigate('/asistencia')}
             >
-              <span className="text-gray-600 text-xs font-medium">Ver asistencia</span>
-              <ArrowRight size={16} className="text-[#0b1c3c]" />
+              <span className="text-gray-600 text-[10px] sm:text-xs font-medium">Ver asistencia</span>
+              <ArrowRight size={14} className="text-[#0b1c3c]" />
             </div>
           </div>
 
           {/* Card 3: Tareas */}
-          <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-gray-100 flex flex-col justify-between">
-            <div className="flex items-start gap-3 mb-6">
-              <div className="bg-[#0b1c3c] rounded-full w-14 h-14 shrink-0 flex items-center justify-center text-white shadow-sm">
-                <ClipboardList size={28} strokeWidth={2} />
+          <div className="bg-white rounded-[1.25rem] p-4 shadow-sm border border-gray-100 flex flex-col justify-between">
+            <div className="mb-4">
+              <div className="bg-[#0b1c3c] rounded-full w-12 h-12 flex items-center justify-center text-white shadow-sm mb-3">
+                <ClipboardList size={24} strokeWidth={2} />
               </div>
-              <div>
-                <h3 className="text-3xl font-bold text-[#0b1c3c] leading-none">5</h3>
-                <p className="text-gray-500 text-sm leading-tight mt-1">Tareas<br/>pendientes</p>
-              </div>
+              <h3 className="text-2xl font-bold text-[#0b1c3c] leading-none">5</h3>
+              <p className="text-gray-500 text-xs leading-tight mt-1">Tareas<br/>pendientes</p>
             </div>
-            
             <div 
               className="flex items-center justify-between border-t border-gray-100 pt-3 cursor-pointer"
               onClick={() => navigate('/tareas')}
             >
-              <span className="text-gray-600 text-xs font-medium">Ver tareas</span>
-              <ArrowRight size={16} className="text-[#0b1c3c]" />
+              <span className="text-gray-600 text-[10px] sm:text-xs font-medium">Ver tareas</span>
+              <ArrowRight size={14} className="text-[#0b1c3c]" />
             </div>
           </div>
 
           {/* Card 4: Solicitudes */}
-          <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-gray-100 flex flex-col justify-between">
-            <div className="flex items-start gap-3 mb-6">
-              <div className="bg-[#c8985c] rounded-full w-14 h-14 shrink-0 flex items-center justify-center text-white shadow-sm">
-                <DollarSign size={28} strokeWidth={2} />
+          <div className="bg-white rounded-[1.25rem] p-4 shadow-sm border border-gray-100 flex flex-col justify-between">
+            <div className="mb-4">
+              <div className="bg-[#c8985c] rounded-full w-12 h-12 flex items-center justify-center text-white shadow-sm mb-3">
+                <DollarSign size={24} strokeWidth={2} />
               </div>
-              <div>
-                <h3 className="text-3xl font-bold text-[#0b1c3c] leading-none">2</h3>
-                <p className="text-gray-500 text-sm leading-tight mt-1">Solicitudes<br/>pendientes</p>
-              </div>
+              <h3 className="text-2xl font-bold text-[#0b1c3c] leading-none">2</h3>
+              <p className="text-gray-500 text-xs leading-tight mt-1">Solicitudes<br/>pendientes</p>
             </div>
-            
             <div 
               className="flex items-center justify-between border-t border-gray-100 pt-3 cursor-pointer"
               onClick={() => navigate('/nomina')}
             >
-              <span className="text-gray-600 text-xs font-medium">Ver solicitudes</span>
-              <ArrowRight size={16} className="text-[#0b1c3c]" />
+              <span className="text-gray-600 text-[10px] sm:text-xs font-medium">Ver solicitudes</span>
+              <ArrowRight size={14} className="text-[#0b1c3c]" />
             </div>
           </div>
 
