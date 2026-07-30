@@ -198,7 +198,7 @@ const AgentDashboard = () => {
               }`}
             >
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 font-bold text-lg shrink-0">
-                {chat.employeeName.charAt(0)}
+                {chat.employee_name ? chat.employee_name.charAt(0) : '?'}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-baseline mb-1">
@@ -231,7 +231,7 @@ const AgentDashboard = () => {
             <div className="bg-white px-6 py-3 border-b border-gray-200 flex items-center justify-between shrink-0 h-16 shadow-sm z-10">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold">
-                  {activeChat.employee_name.charAt(0)}
+                  {activeChat.employee_name ? activeChat.employee_name.charAt(0) : '?'}
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-gray-800 leading-tight">{activeChat.employee_name}</span>
