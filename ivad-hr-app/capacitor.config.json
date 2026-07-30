@@ -1,5 +1,10 @@
 {
-  "appId": "com.ivad.connect",
+  "appId": "com.ivadsrl.connect",
   "appName": "IVAD Connect",
-  "webDir": "dist"
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://connect.ivadsrl.com/",
+    "cleartext": true
+  }
 }

@@ -1,4 +1,4 @@
-package com.ivad.connect;
+package com.ivadsrl.connect;
 
 import com.getcapacitor.BridgeActivity;
 
