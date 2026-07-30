@@ -45,6 +45,9 @@ export const EmployeeProvider = ({ children }) => {
   }, [currentUser]);
 
   const addEmployee = async (employee) => {
+    const isAdmin = employee.accessLevel === 'Administrador' || employee.accessLevel === 'Gerencia';
+    const initialVerificationStatus = isAdmin ? 'gold' : null;
+
     const { data, error } = await supabase
       .from('employees')
       .insert([{
@@ -52,10 +55,11 @@ export const EmployeeProvider = ({ children }) => {
         role: employee.role,
         department: employee.dept || employee.department,
         email: employee.email,
-        // Almacenamos la contraseña en la tabla por ahora como pidió el diseño (sólo modo prueba inicial)
         phone: employee.phone || '',
         birthday: employee.birthday || null,
-        avatar: null
+        avatar: null,
+        is_admin: isAdmin,
+        verification_status: initialVerificationStatus
       }])
       .select();
       
@@ -102,7 +106,7 @@ export const EmployeeProvider = ({ children }) => {
         return true;
       } else {
         // En caso de que el admin no exista, crear mock en memoria
-        setCurrentUser({ id: '000-admin', name: 'Administrador', role: 'RRHH', email, is_admin: true, avatar: null });
+        setCurrentUser({ id: '000-admin', name: 'Administrador', role: 'RRHH', email, is_admin: true, avatar: null, verification_status: 'gold' });
         return true;
       }
     }

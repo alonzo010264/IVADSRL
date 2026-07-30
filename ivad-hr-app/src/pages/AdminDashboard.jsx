@@ -16,7 +16,8 @@ const AdminDashboard = () => {
     email: '',
     phone: '',
     birthday: '',
-    address: ''
+    address: '',
+    accessLevel: 'Empleado'
   });
   
   const [message, setMessage] = useState('');
@@ -45,7 +46,7 @@ const AdminDashboard = () => {
       await sendCredentialsEmail(employeeData.name, employeeData.email, employeeData.password);
       
       setMessage(`¡Empleado ${employeeData.name} registrado y credenciales enviadas por correo!`);
-      setFormData({ name: '', role: '', dept: '', email: '', phone: '', birthday: '', address: '' });
+      setFormData({ name: '', role: '', dept: '', email: '', phone: '', birthday: '', address: '', accessLevel: 'Empleado' });
     } catch (error) {
       console.error(error);
       setMessage(`Error: No se pudo completar el registro o el envío de correo.`);
@@ -115,6 +116,15 @@ const AdminDashboard = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico (Corporativo)</label>
                 <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none" placeholder="juan.perez@ivad.com.do" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nivel de Acceso</label>
+                <select name="accessLevel" value={formData.accessLevel} onChange={handleChange} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none">
+                  <option value="Empleado">Empleado Regular</option>
+                  <option value="Gerencia">Gerencia</option>
+                  <option value="Administrador">Administrador (RRHH / Finanzas)</option>
+                </select>
               </div>
 
               <div>
