@@ -61,7 +61,7 @@ const Dashboard = () => {
           
           <button className="text-white hover:opacity-80 transition relative">
             <Bell size={28} strokeWidth={2} />
-            <span className="absolute -top-1 -right-1 bg-[#d4af37] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-[#0b1c3c]">
+            <span className="absolute -top-1.5 -right-1.5 bg-[#d4af37] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
               3
             </span>
           </button>

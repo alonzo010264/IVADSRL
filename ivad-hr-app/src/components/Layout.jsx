@@ -74,7 +74,7 @@ const Header = () => {
         {isDashboard && (
           <button className="relative" onClick={() => navigate('/notificaciones')}>
             <Bell size={24} />
-            <span className="absolute -top-1 -right-1 bg-gray-400 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+            <span className="absolute -top-1.5 -right-1.5 bg-[#d4af37] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
               0
             </span>
           </button>
