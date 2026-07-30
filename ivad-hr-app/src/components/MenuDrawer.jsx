@@ -46,14 +46,14 @@ const MenuDrawer = ({ isOpen, onClose }) => {
       {/* Backdrop (Fondo oscuro) */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-[#0b1c3c]/40 backdrop-blur-sm z-40 transition-opacity duration-300"
+          className="fixed inset-0 bg-[#0b1c3c]/40 backdrop-blur-sm z-[60] transition-opacity duration-300"
           onClick={onClose}
         />
       )}
 
       {/* Menú Lateral (Drawer) */}
       <div 
-        className={`fixed top-0 left-0 h-full w-[85%] max-w-[320px] bg-white z-50 transform transition-transform duration-300 ease-in-out shadow-2xl flex flex-col ${
+        className={`fixed top-0 left-0 h-full w-[85%] max-w-[320px] bg-white z-[60] transform transition-transform duration-300 ease-in-out shadow-2xl flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -66,11 +66,11 @@ const MenuDrawer = ({ isOpen, onClose }) => {
             <X size={24} />
           </button>
           
-          <div className="flex flex-col gap-3 mt-4">
-            <div className="w-16 h-16 bg-white rounded-2xl p-2 shadow-lg flex items-center justify-center overflow-hidden border border-white/20">
-              <img src="/logo.png" alt="IVAD Logo" className="w-full h-full object-contain" />
+          <div className="flex flex-col gap-1 mt-4">
+            <div className="w-28 h-28 flex items-center justify-start -ml-2 -mt-4">
+              <img src="/logo.png" alt="IVAD Logo" className="w-full h-full object-contain drop-shadow-md" />
             </div>
-            <div>
+            <div className="mt-2">
               <h2 className="text-2xl font-bold tracking-tight">IVAD Connect</h2>
               <p className="text-sm text-[#d4af37] font-medium mt-0.5">Portal de Empleados</p>
             </div>
