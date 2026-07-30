@@ -1,36 +1,51 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, UserPlus, Users, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useEmployees } from '../context/EmployeeContext';
 
 const AdminAgentes = () => {
   const navigate = useNavigate();
+  const { employees, addEmployee, deleteEmployee } = useEmployees();
   
-  // Agentes mockeados por ahora
-  const [agentes, setAgentes] = useState([
-    { id: 1, name: 'Soporte Luis', email: 'luis.soporte@ivadsrl.com' },
-    { id: 2, name: 'Asesor 1', email: 'asesor1@ivadsrl.com' }
-  ]);
-
+  const [agentes, setAgentes] = useState([]);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCreateAgent = (e) => {
+  useEffect(() => {
+    // Filtrar los que tienen rol de agente
+    if (employees) {
+      setAgentes(employees.filter(emp => emp.role === 'agent'));
+    }
+  }, [employees]);
+
+  const handleCreateAgent = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.password) return;
     
-    // Aquí iría la lógica para crear el usuario en Supabase con role="agent"
-    const newAgent = {
-      id: Date.now(),
-      name: formData.name,
-      email: formData.email
-    };
-    
-    setAgentes([...agentes, newAgent]);
-    setFormData({ name: '', email: '', password: '' });
+    setIsSubmitting(true);
+    try {
+      // Usamos la misma función de agregar empleado, pero le forzamos el rol "agent"
+      await addEmployee({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: 'agent',
+        dept: 'Soporte',
+        accessLevel: 'Soporte'
+      });
+      
+      setFormData({ name: '', email: '', password: '' });
+    } catch (error) {
+      console.error("Error al crear agente:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleDelete = (id) => {
-    // Lógica para borrar agente
-    setAgentes(agentes.filter(a => a.id !== id));
+  const handleDelete = async (id) => {
+    if (window.confirm("¿Seguro que deseas eliminar este agente?")) {
+      await deleteEmployee(id);
+    }
   };
 
   return (
@@ -94,9 +109,10 @@ const AdminAgentes = () => {
 
             <button 
               type="submit"
-              className="w-full mt-2 bg-[#d4af37] hover:bg-[#c8985c] text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.98]"
+              disabled={isSubmitting}
+              className="w-full mt-2 bg-[#d4af37] hover:bg-[#c8985c] text-white font-bold py-3.5 rounded-xl shadow-md transition-all active:scale-[0.98] disabled:opacity-50"
             >
-              Registrar Agente
+              {isSubmitting ? 'Creando...' : 'Registrar Agente'}
             </button>
           </form>
         </div>

@@ -10,54 +10,147 @@ const AgentDashboard = () => {
   const [activeChat, setActiveChat] = useState(null);
   const [newMessage, setNewMessage] = useState('');
 
-  // Datos mockeados de chats entrantes
-  const [chats] = useState([
-    {
-      id: 1,
-      employeeName: 'Juan Pérez',
-      lastMessage: 'Tengo un problema con mis vacaciones',
-      time: '10:45',
-      unread: 2,
-      department: 'Ventas',
-      status: 'waiting'
-    },
-    {
-      id: 2,
-      employeeName: 'Ana Gómez',
-      lastMessage: '¿Cuándo pagan el bono?',
-      time: '09:30',
-      unread: 0,
-      department: 'Almacén',
-      status: 'active'
-    }
-  ]);
+  const [chats, setChats] = useState([]);
+  const [messages, setMessages] = useState([]);
 
-  // Mensajes mockeados del chat activo
-  const [messages, setMessages] = useState([
-    { id: 1, text: 'Hola, tengo una duda con mi solicitud de vacaciones.', sender: 'employee', time: '10:43' },
-    { id: 2, text: 'El sistema dice que fue rechazada pero mi gerente me dijo que sí.', sender: 'employee', time: '10:45' }
-  ]);
+  // Cargar sesiones de chat al iniciar
+  useEffect(() => {
+    fetchSessions();
+    
+    // Suscribirse a nuevas sesiones
+    const channel = supabase
+      .channel('public:chat_sessions')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_sessions' }, (payload) => {
+        fetchSessions();
+      })
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchSessions = async () => {
+    const { data } = await supabase
+      .from('chat_sessions')
+      .select('*')
+      .order('updated_at', { ascending: false });
+      
+    if (data) setChats(data);
+  };
+
+  // Cargar mensajes cuando se selecciona un chat
+  useEffect(() => {
+    if (!activeChat) return;
+
+    const fetchMessages = async () => {
+      const { data } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('session_id', activeChat.id)
+        .order('created_at', { ascending: true });
+        
+      if (data) setMessages(data);
+    };
+
+    fetchMessages();
+
+    // Marcar sesión como active y asignar agente si estaba waiting
+    if (activeChat.status === 'waiting') {
+      const joinChat = async () => {
+        await supabase
+          .from('chat_sessions')
+          .update({ status: 'active', agent_id: currentUser.id, agent_name: currentUser.name })
+          .eq('id', activeChat.id);
+          
+        // Enviar alerta de sistema de que el agente se unió
+        await supabase
+          .from('chat_messages')
+          .insert([{
+            session_id: activeChat.id,
+            sender_id: 'system',
+            sender_name: 'System',
+            sender_role: 'system_alert',
+            text: `${currentUser.name} se ha unido al chat.`
+          }]);
+      };
+      joinChat();
+    }
+
+    // Suscribirse a los mensajes de este chat
+    const channel = supabase
+      .channel(`chat_${activeChat.id}`)
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'chat_messages',
+        filter: `session_id=eq.${activeChat.id}`
+      }, (payload) => {
+        setMessages(prev => [...prev, payload.new]);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [activeChat, currentUser]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
   };
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !activeChat) return;
 
-    const now = new Date();
-    const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-    setMessages([...messages, {
-      id: Date.now(),
-      text: newMessage,
-      sender: 'agent',
-      time: timeString
-    }]);
-    
+    const textToSend = newMessage;
     setNewMessage('');
+
+    // Mostrar optimísticamente
+    const timeString = new Date().toISOString();
+    setMessages(prev => [...prev, {
+      id: `temp-${Date.now()}`,
+      text: textToSend,
+      sender_role: 'agent',
+      created_at: timeString
+    }]);
+
+    await supabase
+      .from('chat_messages')
+      .insert([{
+        session_id: activeChat.id,
+        sender_id: currentUser.id,
+        sender_name: currentUser.name,
+        sender_role: 'agent',
+        text: textToSend
+      }]);
+      
+    await supabase
+      .from('chat_sessions')
+      .update({ updated_at: timeString })
+      .eq('id', activeChat.id);
+  };
+
+  const handleResolve = async () => {
+    if (!activeChat) return;
+    
+    await supabase
+      .from('chat_sessions')
+      .update({ status: 'resolved' })
+      .eq('id', activeChat.id);
+      
+    await supabase
+      .from('chat_messages')
+      .insert([{
+        session_id: activeChat.id,
+        sender_id: 'system',
+        sender_name: 'System',
+        sender_role: 'system_alert',
+        text: `El chat ha sido marcado como resuelto por ${currentUser.name}.`
+      }]);
+      
+    setActiveChat(null);
   };
 
   return (
@@ -109,17 +202,17 @@ const AgentDashboard = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-baseline mb-1">
-                  <h3 className="font-semibold text-gray-800 text-sm truncate">{chat.employeeName}</h3>
-                  <span className={`text-[10px] ${chat.unread > 0 ? 'text-[#0b1c3c] font-bold' : 'text-gray-400'}`}>
-                    {chat.time}
+                  <h3 className="font-semibold text-gray-800 text-sm truncate">{chat.employee_name}</h3>
+                  <span className="text-[10px] text-gray-400">
+                    {new Date(chat.updated_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <p className="text-xs text-gray-500 truncate pr-2">{chat.lastMessage}</p>
-                  {chat.unread > 0 && (
-                    <span className="bg-[#d4af37] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">
-                      {chat.unread}
-                    </span>
+                  <p className="text-xs text-gray-500 truncate pr-2">
+                    {chat.status === 'waiting' ? 'Esperando agente...' : `Atendido por ${chat.agent_name || 'Agente'}`}
+                  </p>
+                  {chat.status === 'waiting' && (
+                    <span className="bg-red-500 w-2.5 h-2.5 rounded-full shrink-0"></span>
                   )}
                 </div>
               </div>
@@ -138,15 +231,18 @@ const AgentDashboard = () => {
             <div className="bg-white px-6 py-3 border-b border-gray-200 flex items-center justify-between shrink-0 h-16 shadow-sm z-10">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold">
-                  {activeChat.employeeName.charAt(0)}
+                  {activeChat.employee_name.charAt(0)}
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-gray-800 leading-tight">{activeChat.employeeName}</span>
-                  <span className="text-xs text-gray-500">Depto: {activeChat.department}</span>
+                  <span className="font-bold text-gray-800 leading-tight">{activeChat.employee_name}</span>
+                  <span className="text-xs text-gray-500">Depto: {activeChat.employee_dept}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 hover:bg-green-200 transition-colors">
+                <button 
+                  onClick={handleResolve}
+                  className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 hover:bg-green-200 transition-colors"
+                >
                   <CheckCircle2 size={14} />
                   Marcar Resuelto
                 </button>
@@ -159,29 +255,36 @@ const AgentDashboard = () => {
             {/* Mensajes */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               
-              {/* Notificación de Sistema (Agente unido) */}
-              <div className="flex justify-center mb-6">
-                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs py-1.5 px-4 rounded-full font-medium shadow-sm">
-                  {currentUser?.name || 'Agente'} se ha unido al chat.
-                </div>
-              </div>
-
-              {messages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.sender === 'agent' ? 'justify-end' : 'justify-start'}`}>
-                  <div 
-                    className={`max-w-[70%] rounded-2xl p-3 shadow-sm relative ${
-                      msg.sender === 'agent' 
-                        ? 'bg-[#0b1c3c] text-white rounded-tr-sm' 
-                        : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
-                    }`}
-                  >
-                    <p className="text-sm">{msg.text}</p>
-                    <span className={`text-[10px] block text-right mt-1.5 ${msg.sender === 'agent' ? 'text-white/60' : 'text-gray-400'}`}>
-                      {msg.time}
-                    </span>
+              {messages.map((msg) => {
+                if (msg.sender_role === 'system_alert') {
+                  return (
+                    <div key={msg.id} className="flex justify-center mb-6">
+                      <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs py-1.5 px-4 rounded-full font-medium shadow-sm">
+                        {msg.text}
+                      </div>
+                    </div>
+                  );
+                }
+                
+                const isAgent = msg.sender_role === 'agent';
+                
+                return (
+                  <div key={msg.id} className={`flex ${isAgent ? 'justify-end' : 'justify-start'}`}>
+                    <div 
+                      className={`max-w-[70%] rounded-2xl p-3 shadow-sm relative ${
+                        isAgent 
+                          ? 'bg-[#0b1c3c] text-white rounded-tr-sm' 
+                          : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
+                      }`}
+                    >
+                      <p className="text-sm">{msg.text}</p>
+                      <span className={`text-[10px] block text-right mt-1.5 ${isAgent ? 'text-white/60' : 'text-gray-400'}`}>
+                        {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Input de Mensaje */}

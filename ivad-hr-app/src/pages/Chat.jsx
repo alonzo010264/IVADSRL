@@ -2,24 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, ArrowLeft, MoreVertical, Paperclip, BadgeCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
+import { supabase } from '../utils/supabaseClient';
 
 const Chat = () => {
   const navigate = useNavigate();
   const { currentUser } = useEmployees();
   const messagesEndRef = useRef(null);
   
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'system',
-      text: 'Gracias por escribir a Soporte IVAD. En un momento te atenderemos.',
-      time: '09:00',
-      isMe: false,
-      isSystemAlert: false
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [agentJoined, setAgentJoined] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -29,49 +21,135 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = (e) => {
+  // Inicializar chat (buscar sesión activa o cargar mensaje inicial)
+  useEffect(() => {
+    const initChat = async () => {
+      if (!currentUser) return;
+      
+      // Buscar si el empleado ya tiene una sesión abierta
+      const { data: session } = await supabase
+        .from('chat_sessions')
+        .select('*')
+        .eq('employee_id', currentUser.id)
+        .in('status', ['waiting', 'active'])
+        .single();
+        
+      if (session) {
+        setSessionId(session.id);
+        // Cargar mensajes existentes
+        const { data: msgData } = await supabase
+          .from('chat_messages')
+          .select('*')
+          .eq('session_id', session.id)
+          .order('created_at', { ascending: true });
+          
+        if (msgData) {
+          const formatted = msgData.map(m => formatMsg(m));
+          setMessages(formatted);
+        }
+      } else {
+        // Mostrar mensaje por defecto si no hay sesión
+        setMessages([{
+          id: 'sys-1',
+          sender: 'system',
+          text: 'Gracias por escribir a Soporte IVAD. Envíanos tu consulta y en un momento te atenderemos.',
+          time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+          isMe: false,
+          isSystemAlert: false
+        }]);
+      }
+    };
+    initChat();
+  }, [currentUser]);
+
+  // Suscribirse a mensajes nuevos
+  useEffect(() => {
+    if (!sessionId) return;
+    
+    const channel = supabase
+      .channel(`chat_${sessionId}`)
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'chat_messages',
+        filter: `session_id=eq.${sessionId}`
+      }, (payload) => {
+        const newMsg = payload.new;
+        // Solo agregar si no es mío (los míos ya los agregué al enviarlos para que sea instantáneo)
+        if (newMsg.sender_id !== currentUser.id) {
+          setMessages(prev => [...prev, formatMsg(newMsg)]);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [sessionId, currentUser]);
+
+  const formatMsg = (m) => {
+    const timeString = new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    return {
+      id: m.id,
+      sender: m.sender_name,
+      text: m.text,
+      time: timeString,
+      isMe: m.sender_id === currentUser.id,
+      isSystemAlert: m.sender_role === 'system_alert',
+      isAgent: m.sender_role === 'agent'
+    };
+  };
+
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !currentUser) return;
 
-    const now = new Date();
-    const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
+    const textToSend = newMessage;
+    setNewMessage('');
+    
+    // 1. Mostrar localmente de inmediato
+    const tempId = `temp-${Date.now()}`;
+    const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
     setMessages(prev => [...prev, {
-      id: Date.now(),
-      sender: currentUser?.name || 'Yo',
-      text: newMessage,
+      id: tempId,
+      sender: currentUser.name,
+      text: textToSend,
       time: timeString,
       isMe: true
     }]);
-    
-    setNewMessage('');
-    
-    // Si el agente no se ha unido, simular que se une después del primer mensaje del usuario
-    if (!agentJoined) {
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: Date.now() + 1,
-          sender: 'system_alert',
-          text: 'Luis se ha unido al chat.',
-          time: timeString,
-          isMe: false,
-          isSystemAlert: true
-        }]);
-        setAgentJoined(true);
+
+    let activeSessionId = sessionId;
+
+    // 2. Si no hay sesión, crearla
+    if (!activeSessionId) {
+      const { data: newSession } = await supabase
+        .from('chat_sessions')
+        .insert([{
+          employee_id: currentUser.id,
+          employee_name: currentUser.name,
+          employee_dept: currentUser.department || 'General'
+        }])
+        .select()
+        .single();
         
-        // Simular respuesta del agente
-        setTimeout(() => {
-          setMessages(prev => [...prev, {
-            id: Date.now() + 2,
-            sender: 'Soporte Luis',
-            text: '¡Hola! Soy Luis de Soporte IVAD. ¿Cómo te puedo ayudar con eso?',
-            time: timeString,
-            isMe: false,
-            isSystemAlert: false,
-            isAgent: true
-          }]);
-        }, 1500);
-      }, 1000);
+      if (newSession) {
+        activeSessionId = newSession.id;
+        setSessionId(newSession.id);
+      }
+    }
+
+    // 3. Enviar mensaje a la BD
+    if (activeSessionId) {
+      await supabase
+        .from('chat_messages')
+        .insert([{
+          session_id: activeSessionId,
+          sender_id: currentUser.id,
+          sender_name: currentUser.name,
+          sender_role: 'employee',
+          text: textToSend
+        }]);
     }
   };
 
