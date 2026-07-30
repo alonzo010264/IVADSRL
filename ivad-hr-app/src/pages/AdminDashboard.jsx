@@ -89,6 +89,21 @@ const AdminDashboard = () => {
               </div>
             </div>
           </button>
+          
+          <button 
+            onClick={() => navigate('/admin/agentes')}
+            className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow group cursor-pointer"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center text-yellow-600 group-hover:bg-[#d4af37] group-hover:text-white transition-colors">
+                <Users size={24} />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-[#1c2c4c] text-lg">Agentes</h3>
+                <p className="text-sm text-gray-500">Crear asesores para chat</p>
+              </div>
+            </div>
+          </button>
         </div>
         {/* Formulario de Nuevo Empleado */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8">

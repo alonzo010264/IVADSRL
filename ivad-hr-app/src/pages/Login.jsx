@@ -13,9 +13,13 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
-      navigate('/inicio');
+    const user = await login(email, password);
+    if (user) {
+      if (user.role === 'agent') {
+        navigate('/agente');
+      } else {
+        navigate('/inicio');
+      }
     } else {
       setError('Credenciales incorrectas');
     }

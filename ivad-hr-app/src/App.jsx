@@ -30,6 +30,8 @@ import Incidencias from './pages/Incidencias';
 import Iniciativas from './pages/Iniciativas';
 import FAQ from './pages/FAQ';
 import Configuracion from './pages/Configuracion';
+import AgentDashboard from './pages/AgentDashboard';
+import AdminAgentes from './pages/AdminAgentes';
 
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { currentUser } = useEmployees();
@@ -57,6 +59,7 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/nomina" element={<AdminPayroll />} />
             <Route path="/admin/verificaciones" element={<AdminVerifications />} />
+            <Route path="/admin/agentes" element={<AdminAgentes />} />
             <Route path="/crear-anuncio" element={<CreateAnnouncement />} />
           </Route>
         
@@ -79,6 +82,11 @@ function App() {
             <Route path="/solicitudes-varias" element={<MiscRequests />} />
             <Route path="/solicitar-verificacion" element={<VerificationRequest />} />
           </Route>
+        </Route>
+        
+        {/* Ruta para agentes de soporte (sin el Layout de empleado) */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/agente" element={<AgentDashboard />} />
         </Route>
 
         {/* Rutas sin el BottomNav */}

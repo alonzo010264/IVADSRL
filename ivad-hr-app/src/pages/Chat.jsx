@@ -12,12 +12,14 @@ const Chat = () => {
     {
       id: 1,
       sender: 'system',
-      text: '¡Hola! Bienvenido al canal de soporte oficial de IVAD. ¿En qué podemos ayudarte hoy?',
+      text: 'Gracias por escribir a Soporte IVAD. En un momento te atenderemos.',
       time: '09:00',
       isMe: false,
+      isSystemAlert: false
     }
   ]);
   const [newMessage, setNewMessage] = useState('');
+  const [agentJoined, setAgentJoined] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -34,7 +36,7 @@ const Chat = () => {
     const now = new Date();
     const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
-    setMessages([...messages, {
+    setMessages(prev => [...prev, {
       id: Date.now(),
       sender: currentUser?.name || 'Yo',
       text: newMessage,
@@ -44,16 +46,33 @@ const Chat = () => {
     
     setNewMessage('');
     
-    // Simulate auto-reply for demo purposes
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        id: Date.now() + 1,
-        sender: 'system',
-        text: 'Hemos recibido tu mensaje. Un agente de Administración Central te responderá en breve.',
-        time: timeString,
-        isMe: false
-      }]);
-    }, 1500);
+    // Si el agente no se ha unido, simular que se une después del primer mensaje del usuario
+    if (!agentJoined) {
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          id: Date.now() + 1,
+          sender: 'system_alert',
+          text: 'Luis se ha unido al chat.',
+          time: timeString,
+          isMe: false,
+          isSystemAlert: true
+        }]);
+        setAgentJoined(true);
+        
+        // Simular respuesta del agente
+        setTimeout(() => {
+          setMessages(prev => [...prev, {
+            id: Date.now() + 2,
+            sender: 'Soporte Luis',
+            text: '¡Hola! Soy Luis de Soporte IVAD. ¿Cómo te puedo ayudar con eso?',
+            time: timeString,
+            isMe: false,
+            isSystemAlert: false,
+            isAgent: true
+          }]);
+        }, 1500);
+      }, 1000);
+    }
   };
 
   return (
@@ -90,22 +109,40 @@ const Chat = () => {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8f9fa] custom-scrollbar">
         <div className="text-center text-xs text-gray-400 my-4">Hoy</div>
         
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
-            <div 
-              className={`max-w-[80%] rounded-2xl p-3 shadow-sm relative ${
-                msg.isMe 
-                  ? 'bg-[#0b1c3c] text-white rounded-tr-sm' 
-                  : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm'
-              }`}
-            >
-              <p className="text-sm leading-snug">{msg.text}</p>
-              <span className={`text-[9px] block text-right mt-1.5 ${msg.isMe ? 'text-white/60' : 'text-gray-400'}`}>
-                {msg.time}
-              </span>
+        {messages.map((msg) => {
+          if (msg.isSystemAlert) {
+            return (
+              <div key={msg.id} className="flex justify-center my-4">
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs py-1.5 px-4 rounded-full font-medium shadow-sm">
+                  {msg.text}
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
+              <div 
+                className={`max-w-[80%] rounded-2xl p-3 shadow-sm relative ${
+                  msg.isMe 
+                    ? 'bg-[#0b1c3c] text-white rounded-tr-sm' 
+                    : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm'
+                }`}
+              >
+                {msg.isAgent && (
+                  <div className="flex items-center gap-1 mb-1 border-b border-gray-100 pb-1">
+                    <span className="text-[10px] font-bold text-[#1c2c4c]">{msg.sender}</span>
+                    <BadgeCheck size={12} className="text-[#d4af37]" />
+                  </div>
+                )}
+                <p className="text-sm leading-snug">{msg.text}</p>
+                <span className={`text-[9px] block text-right mt-1.5 ${msg.isMe ? 'text-white/60' : 'text-gray-400'}`}>
+                  {msg.time}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 

@@ -112,16 +112,16 @@ export const EmployeeProvider = ({ children }) => {
   
   const login = async (email, password) => {
     // Como esta es una versión inicial sin auth real, buscamos por correo.
-    // admin principal
     if (email === 'admin@ivad.com' && password === 'admin') {
       const { data } = await supabase.from('employees').select('*').eq('email', email).single();
       if(data) {
         setCurrentUser(data);
-        return true;
+        return data;
       } else {
         // En caso de que el admin no exista, crear mock en memoria
-        setCurrentUser({ id: '000-admin', name: 'IVAD HOME & GOODS', role: 'Administración Central', email, is_admin: true, avatar: null, verification_status: 'gold' });
-        return true;
+        const mockAdmin = { id: '000-admin', name: 'IVAD HOME & GOODS', role: 'Administración Central', email, is_admin: true, avatar: null, verification_status: 'gold' };
+        setCurrentUser(mockAdmin);
+        return mockAdmin;
       }
     }
     
@@ -135,10 +135,10 @@ export const EmployeeProvider = ({ children }) => {
     if (data) {
       // Falta validar password real, por ahora asumimos success
       setCurrentUser(data);
-      return true;
+      return data;
     }
     
-    return false;
+    return null;
   };
   
   const logout = () => {
