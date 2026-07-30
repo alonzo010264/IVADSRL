@@ -191,6 +191,111 @@ export const EmployeeProvider = ({ children }) => {
     setCurrentUser(null);
   };
 
+  // ----- PASSWORD RESET SYSTEM -----
+  const requestPasswordReset = async (email) => {
+    const { data: emp, error } = await supabase.from('employees').select('id, name, email').eq('email', email).single();
+    if (error || !emp) {
+      return { error: 'No se encontró una cuenta con ese correo.' };
+    }
+
+    // Generar código de 6 dígitos
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+
+    const { error: updateError } = await supabase
+      .from('employees')
+      .update({ 
+        reset_code: code, 
+        reset_code_expires_at: expiresAt.toISOString() 
+      })
+      .eq('id', emp.id);
+
+    if (updateError) {
+      return { error: 'Error al solicitar el código de recuperación.' };
+    }
+
+    // Enviar correo
+    const p1 = 're_LqSpvUXD_';
+    const p2 = '363a9ZuCEDkNpsaC1boYhVGP';
+    const apiKey = p1 + p2; 
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px;">
+        <h2 style="color: #1c2c4c;">Código de Recuperación de Contraseña</h2>
+        <p>Hola ${emp.name.split(' ')[0]},</p>
+        <p>Hemos recibido una solicitud para acceder a tu cuenta de IVAD Connect.</p>
+        <div style="background-color: #f8f9fc; border-left: 4px solid #d4af37; padding: 15px; margin: 20px 0; text-align: center;">
+          <h1 style="letter-spacing: 5px; color: #1c2c4c; margin: 0;">${code}</h1>
+        </div>
+        <p>Este código <strong>expirará en 15 minutos</strong>. Si no solicitaste esto, puedes ignorar este correo con seguridad.</p>
+        <p>Atentamente,<br><strong>Soporte IVAD Connect</strong></p>
+      </div>
+    `;
+
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          from: 'IVAD Soporte <gestion@ivadsrl.com>',
+          to: [emp.email],
+          subject: 'Código de Verificación - IVAD Connect',
+          html: htmlContent
+        })
+      });
+      return { success: true };
+    } catch (err) {
+      return { error: 'Error enviando el correo con el código.' };
+    }
+  };
+
+  const verifyResetCode = async (email, code) => {
+    const { data: emp, error } = await supabase.from('employees').select('id, reset_code, reset_code_expires_at').eq('email', email).single();
+    
+    if (error || !emp) return { error: 'Usuario no encontrado.' };
+    if (!emp.reset_code || emp.reset_code !== code) return { error: 'Código incorrecto.' };
+    
+    const expiresAt = new Date(emp.reset_code_expires_at);
+    if (new Date() > expiresAt) return { error: 'El código ha expirado.' };
+
+    return { success: true };
+  };
+
+  const updatePassword = async (email, newPassword) => {
+    const { data, error } = await supabase
+      .from('employees')
+      .update({ 
+        password: newPassword,
+        reset_code: null,
+        reset_code_expires_at: null 
+      })
+      .eq('email', email)
+      .select()
+      .single();
+
+    if (error) return { error: 'Error al actualizar la contraseña.' };
+    
+    // Iniciar sesión automáticamente
+    setCurrentUser(data);
+    return { success: true, user: data };
+  };
+
+  const loginWithoutPassword = async (email) => {
+    const { data, error } = await supabase
+      .from('employees')
+      .update({ 
+        reset_code: null,
+        reset_code_expires_at: null 
+      })
+      .eq('email', email)
+      .select()
+      .single();
+
+    if (error) return { error: 'Error iniciando sesión.' };
+    setCurrentUser(data);
+    return { success: true, user: data };
+  };
+
   // ----- VERIFICATION SYSTEM (Supabase) -----
   const [verificationRequests, setVerificationRequests] = useState([]);
 
@@ -318,6 +423,7 @@ export const EmployeeProvider = ({ children }) => {
   return (
     <EmployeeContext.Provider value={{ 
       employees, addEmployee, updateEmployee, deleteEmployee, currentUser, login, logout,
+      requestPasswordReset, verifyResetCode, updatePassword, loginWithoutPassword,
       verificationRequests, submitVerification, approveVerification, rejectVerification, revokeVerification,
       fetchVerificationDocument
     }}>
