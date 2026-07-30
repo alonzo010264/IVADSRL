@@ -66,8 +66,8 @@ const Chat = () => {
             <ArrowLeft size={24} />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-full p-0.5 overflow-hidden border-2 border-[#d4af37]">
-              <img src="/logo.png" alt="IVAD" className="w-full h-full object-contain" />
+            <div className="w-14 h-14 flex items-center justify-center -ml-1">
+              <img src="/logo.png" alt="IVAD" className="w-full h-full object-contain drop-shadow-md" />
             </div>
             <div>
               <h1 className="font-bold text-lg leading-tight">Soporte IVAD</h1>
