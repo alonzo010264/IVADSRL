@@ -1,47 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { X, MessageSquare, AlertTriangle, Lightbulb, HelpCircle, Settings, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, MessageSquare, AlertTriangle, Lightbulb, HelpCircle, Settings, Download, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const MenuDrawer = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
-  // Intentar recuperar el evento si se guardó globalmente en window
-  useEffect(() => {
-    if (window.deferredPrompt) {
-      setDeferredPrompt(window.deferredPrompt);
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      window.deferredPrompt = e; // Guardar globalmente por si acaso
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-        window.deferredPrompt = null;
-      }
-    } else {
-      // Si no hay evento (iOS, o ya instalado, o PC), mostrar instrucciones
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      if (isIOS) {
-        alert("En tu iPhone/iPad:\n1. Toca el botón 'Compartir' (el cuadrado con la flecha hacia arriba) en Safari.\n2. Selecciona 'Agregar a Inicio'.");
-      } else {
-        alert("Para instalar:\nEn Android: Toca los 3 puntos del navegador y selecciona 'Instalar aplicación' o 'Agregar a la pantalla principal'.\nEn PC: Busca el ícono de descarga al lado de la barra de direcciones.");
-      }
-    }
-  };
+  // El APK estará alojado en la carpeta public cuando el usuario lo suba
+  const apkUrl = "/ivad-connect.apk";
 
   return (
     <>
@@ -151,18 +116,22 @@ const MenuDrawer = ({ isOpen, onClose }) => {
 
         </div>
 
-        {/* Botón de Instalar App (PWA) SIEMPRE VISIBLE */}
-        <div className="p-5 border-t border-gray-100 bg-gray-50/50">
-          <button 
-            onClick={handleInstallClick}
-            className="w-full bg-[#0b1c3c] hover:bg-[#0b1c3c]/90 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
+        {/* Botón de Instalar App (APK Seguro) */}
+        <div className="p-5 border-t border-gray-100 bg-[#f0f9ff]">
+          <a 
+            href={apkUrl}
+            download="ivad-connect.apk"
+            className="w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all flex flex-col items-center justify-center gap-1 active:scale-95"
           >
-            <Download size={20} className="text-[#d4af37]" />
-            <span>Descargar la App</span>
-          </button>
-          <p className="text-center text-[10px] text-gray-500 mt-3 px-2 leading-tight">
-            Instala IVAD Connect directamente en tu celular para un acceso más rápido.
-          </p>
+            <div className="flex items-center gap-2">
+              <Download size={18} />
+              <span className="text-sm">Descargar App Android</span>
+            </div>
+          </a>
+          <div className="flex items-center justify-center gap-1.5 mt-2.5">
+            <ShieldCheck size={14} className="text-[#10b981]" />
+            <span className="text-[10px] text-gray-500 font-medium">100% Seguro • Descarga directa oficial</span>
+          </div>
         </div>
       </div>
     </>
