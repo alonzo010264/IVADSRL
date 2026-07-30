@@ -3,11 +3,13 @@ import { User, Users, Calendar, ClipboardList, DollarSign, Megaphone, ArrowRight
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
+import MenuDrawer from '../components/MenuDrawer';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { currentUser, employees } = useEmployees();
   const [announcements, setAnnouncements] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -48,7 +50,10 @@ const Dashboard = () => {
         
         {/* Top Nav (Menu, Logo, Bell) */}
         <div className="flex justify-between items-center mb-10">
-          <button className="text-white hover:opacity-80 transition">
+          <button 
+            className="text-white hover:opacity-80 transition"
+            onClick={() => setIsMenuOpen(true)}
+          >
             <Menu size={28} strokeWidth={2} />
           </button>
           
@@ -231,6 +236,8 @@ const Dashboard = () => {
         )}
 
       </div>
+
+      <MenuDrawer isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </div>
   );
 };
