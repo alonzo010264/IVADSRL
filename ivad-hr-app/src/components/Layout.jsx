@@ -86,11 +86,12 @@ const Header = () => {
 
 const Layout = () => {
   const location = useLocation();
-  const isDashboard = location.pathname === '/inicio' || location.pathname === '/';
+  const noHeaderRoutes = ['/inicio', '/', '/chat', '/incidencias', '/iniciativas', '/faq', '/configuracion'];
+  const showHeader = !noHeaderRoutes.includes(location.pathname);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      {!isDashboard && <Header />}
+      {showHeader && <Header />}
       
       {/* Contenido principal con padding bottom para no tapar el menú */}
       <main className="flex-1 overflow-y-auto pb-24 bg-gray-50 w-full max-w-7xl mx-auto">

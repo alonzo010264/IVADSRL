@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, BadgeCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 
@@ -70,7 +70,10 @@ const Chat = () => {
               <img src="/logo.png" alt="IVAD" className="w-full h-full object-contain drop-shadow-md" />
             </div>
             <div>
-              <h1 className="font-bold text-lg leading-tight">Soporte IVAD</h1>
+              <h1 className="font-bold text-lg leading-tight flex items-center gap-1.5">
+                Soporte IVAD
+                <BadgeCheck size={18} className="text-[#d4af37] fill-white/10" />
+              </h1>
               <p className="text-[11px] text-[#d4af37] font-medium flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block"></span>
                 En línea
