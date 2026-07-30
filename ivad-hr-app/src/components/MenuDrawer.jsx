@@ -80,7 +80,10 @@ const MenuDrawer = ({ isOpen, onClose }) => {
         {/* Opciones del Menú */}
         <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 custom-scrollbar">
           
-          <button className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group">
+          <button 
+            onClick={() => { navigate('/chat'); onClose(); }}
+            className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group"
+          >
             <div className="bg-[#0b1c3c]/5 p-3 rounded-xl group-hover:bg-[#0b1c3c]/10 transition-colors text-[#0b1c3c]">
               <MessageSquare size={22} />
             </div>
@@ -90,7 +93,10 @@ const MenuDrawer = ({ isOpen, onClose }) => {
             </div>
           </button>
 
-          <button className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group">
+          <button 
+            onClick={() => { navigate('/incidencias'); onClose(); }}
+            className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group"
+          >
             <div className="bg-[#0b1c3c]/5 p-3 rounded-xl group-hover:bg-[#0b1c3c]/10 transition-colors text-[#0b1c3c]">
               <AlertTriangle size={22} />
             </div>
@@ -100,7 +106,10 @@ const MenuDrawer = ({ isOpen, onClose }) => {
             </div>
           </button>
 
-          <button className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group">
+          <button 
+            onClick={() => { navigate('/iniciativas'); onClose(); }}
+            className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group"
+          >
             <div className="bg-[#0b1c3c]/5 p-3 rounded-xl group-hover:bg-[#0b1c3c]/10 transition-colors text-[#0b1c3c]">
               <Lightbulb size={22} />
             </div>
@@ -110,7 +119,10 @@ const MenuDrawer = ({ isOpen, onClose }) => {
             </div>
           </button>
 
-          <button className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group">
+          <button 
+            onClick={() => { navigate('/faq'); onClose(); }}
+            className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group"
+          >
             <div className="bg-[#0b1c3c]/5 p-3 rounded-xl group-hover:bg-[#0b1c3c]/10 transition-colors text-[#0b1c3c]">
               <HelpCircle size={22} />
             </div>
@@ -122,7 +134,10 @@ const MenuDrawer = ({ isOpen, onClose }) => {
 
           <div className="h-px bg-gray-100 my-2 mx-2"></div>
 
-          <button className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group">
+          <button 
+            onClick={() => { navigate('/configuracion'); onClose(); }}
+            className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group"
+          >
             <div className="bg-gray-50 p-3 rounded-xl group-hover:bg-gray-100 transition-colors text-gray-600">
               <Settings size={22} />
             </div>

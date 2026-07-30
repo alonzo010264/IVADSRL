@@ -25,6 +25,11 @@ import Notifications from './pages/Notifications';
 import Policies from './pages/Policies';
 import Layout from './components/Layout';
 import { Outlet } from 'react-router-dom';
+import Chat from './pages/Chat';
+import Incidencias from './pages/Incidencias';
+import Iniciativas from './pages/Iniciativas';
+import FAQ from './pages/FAQ';
+import Configuracion from './pages/Configuracion';
 
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { currentUser } = useEmployees();
@@ -64,6 +69,13 @@ function App() {
             <Route path="/calendario" element={<CalendarView />} />
             <Route path="/mas" element={<RequestsApprovals />} />
             <Route path="/estatus-solicitudes" element={<LeaveApprovals />} />
+            
+            {/* Nuevas rutas del menú lateral */}
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/incidencias" element={<Incidencias />} />
+            <Route path="/iniciativas" element={<Iniciativas />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/configuracion" element={<Configuracion />} />
             <Route path="/solicitudes-varias" element={<MiscRequests />} />
             <Route path="/solicitar-verificacion" element={<VerificationRequest />} />
           </Route>
