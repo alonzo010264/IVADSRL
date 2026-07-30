@@ -11,7 +11,21 @@ export const EmployeeProvider = ({ children }) => {
   const [employees, setEmployees] = useState([]);
   const [currentUser, setCurrentUser] = useState(() => {
     const savedUser = localStorage.getItem('ivad_current_user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    if (savedUser) {
+      const parsedUser = JSON.parse(savedUser);
+      // Force update the mock admin if they are already logged in
+      if (parsedUser.id === '000-admin' || parsedUser.email === 'admin@ivad.com') {
+        return { 
+          ...parsedUser, 
+          name: 'IVAD HOME & GOODS', 
+          role: 'Administración Central', 
+          verification_status: 'gold',
+          is_admin: true 
+        };
+      }
+      return parsedUser;
+    }
+    return null;
   });
 
   // Cargar empleados desde Supabase
@@ -106,7 +120,7 @@ export const EmployeeProvider = ({ children }) => {
         return true;
       } else {
         // En caso de que el admin no exista, crear mock en memoria
-        setCurrentUser({ id: '000-admin', name: 'Administrador', role: 'RRHH', email, is_admin: true, avatar: null, verification_status: 'gold' });
+        setCurrentUser({ id: '000-admin', name: 'IVAD HOME & GOODS', role: 'Administración Central', email, is_admin: true, avatar: null, verification_status: 'gold' });
         return true;
       }
     }
