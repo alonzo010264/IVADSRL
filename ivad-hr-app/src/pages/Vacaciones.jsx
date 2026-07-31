@@ -108,7 +108,7 @@ const Vacaciones = () => {
           </div>
 
           <button
-            onClick={() => navigate('/solicitud-permiso')}
+            onClick={() => navigate('/solicitar-vacaciones')}
             className="w-full bg-[#1c2c4c] text-[#d4af37] font-bold py-3.5 rounded-2xl shadow-md flex items-center justify-center gap-2 hover:bg-opacity-95 transition-all border border-[#d4af37]/30 mt-2 text-sm"
           >
             <span>Solicitar Vacaciones</span>
