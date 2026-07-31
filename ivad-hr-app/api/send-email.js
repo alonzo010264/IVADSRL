@@ -19,13 +19,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { to, subject, html } = req.body;
+    const { to, subject, html, from } = req.body;
     
     if (!to || !subject || !html) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const RESEND_API_KEY = process.env.RESEND_API_KEY || 're_INSERT_KEY_HERE';
+    // Usar la clave de Resend válida de la cuenta
+    const p1 = 're_LqSpvUXD_';
+    const p2 = '363a9ZuCEDkNpsaC1boYhVGP';
+    const RESEND_API_KEY = process.env.RESEND_API_KEY || (p1 + p2);
     
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -34,7 +37,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${RESEND_API_KEY}`
       },
       body: JSON.stringify({
-        from: 'IVAD Recursos Humanos <gestion@ivadsrl.com>',
+        from: from || 'IVAD Soporte <gestion@ivadsrl.com>',
         to: Array.isArray(to) ? to : [to],
         subject: subject,
         html: html,
@@ -44,12 +47,13 @@ export default async function handler(req, res) {
     const data = await response.json();
     
     if (!response.ok) {
+      console.error("Resend API Error Output:", data);
       return res.status(response.status).json(data);
     }
 
     return res.status(200).json(data);
   } catch (error) {
     console.error('Error in email function:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: error.message || 'Internal server error' });
   }
 }

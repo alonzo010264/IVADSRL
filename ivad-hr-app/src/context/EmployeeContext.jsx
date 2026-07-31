@@ -103,9 +103,9 @@ export const EmployeeProvider = ({ children }) => {
         </div>
       `;
 
-      fetch('https://api.resend.com/emails', {
+      fetch('/api/send-email', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: 'IVAD Recursos Humanos <gestion@ivadsrl.com>',
           to: [employee.email],
@@ -225,11 +225,7 @@ export const EmployeeProvider = ({ children }) => {
       return { error: 'Error al generar el código de recuperación.' };
     }
 
-    // Enviar correo vía Resend
-    const p1 = 're_LqSpvUXD_';
-    const p2 = '363a9ZuCEDkNpsaC1boYhVGP';
-    const apiKey = p1 + p2; 
-
+    // Enviar correo usando la API interna /api/send-email para evitar bloqueo de CORS
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 25px; border: 1px solid #eaeaea; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <div style="text-align: center; margin-bottom: 20px;">
@@ -250,9 +246,9 @@ export const EmployeeProvider = ({ children }) => {
     `;
 
     try {
-      const resp = await fetch('https://api.resend.com/emails', {
+      const resp = await fetch('/api/send-email', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: 'IVAD Soporte <gestion@ivadsrl.com>',
           to: [emp.email],
@@ -260,14 +256,17 @@ export const EmployeeProvider = ({ children }) => {
           html: htmlContent
         })
       });
+      
+      const resData = await resp.json().catch(() => ({}));
+
       if (!resp.ok) {
-        const errText = await resp.text();
-        console.error("Resend API error:", errText);
+        console.error("Resend API error:", resData);
+        return { error: resData.message || resData.error || 'Error al enviar el correo con el código.' };
       }
       return { success: true };
     } catch (err) {
       console.error("Error sending resend email:", err);
-      return { error: 'Error al enviar el correo con el código.' };
+      return { error: 'Error de conexión al enviar el correo.' };
     }
   };
 
