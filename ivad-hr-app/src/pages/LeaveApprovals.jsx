@@ -90,10 +90,18 @@ const LeaveApprovals = () => {
                 <div className="py-4 border-b border-gray-100">
                   <h3 className="font-bold text-[#0b1b3d] mb-3">Revisado por</h3>
                   <div className="flex items-center gap-4">
-                    <img src={req.reviewerImg} alt={req.reviewer} className="w-14 h-14 rounded-full object-cover shadow-sm border border-gray-200" />
+                    <div className="w-14 h-14 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] p-[2px] shrink-0 shadow-sm">
+                      <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                        {req.reviewerImg ? (
+                          <img src={req.reviewerImg} alt={req.reviewer} className="w-full h-full object-cover scale-[1.35]" />
+                        ) : (
+                          <img src="/logo.png" alt="IVAD" className="w-full h-full object-cover p-1" />
+                        )}
+                      </div>
+                    </div>
                     <div>
                       <p className="font-bold text-gray-800 leading-tight">{req.reviewer}</p>
-                      <p className="text-sm text-gray-600">{req.reviewerRole}</p>
+                      <p className="text-xs text-[#d4af37] font-bold mt-0.5">{req.reviewerRole}</p>
                     </div>
                   </div>
                 </div>

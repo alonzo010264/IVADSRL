@@ -187,15 +187,19 @@ const AdminPermisos = () => {
                   {/* Revisado por */}
                   <div className="py-4 border-b border-gray-100">
                     <h3 className="font-bold text-[#1c2c4c] text-sm mb-3">Revisado por</h3>
-                    <div className="flex items-center gap-3">
-                      <img 
-                        src={req.reviewerImg || 'https://i.pravatar.cc/150?img=68'} 
-                        alt={req.reviewer || 'Revisor'} 
-                        className="w-12 h-12 rounded-full object-cover shadow-sm border-2 border-[#d4af37]/30"
-                      />
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-14 h-14 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] p-[2px] shrink-0 shadow-sm">
+                        <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                          {req.reviewerImg ? (
+                            <img src={req.reviewerImg} alt={req.reviewer} className="w-full h-full object-cover scale-[1.35]" />
+                          ) : (
+                            <img src="/logo.png" alt="IVAD" className="w-full h-full object-cover p-1" />
+                          )}
+                        </div>
+                      </div>
                       <div>
                         <p className="font-bold text-gray-800 text-sm leading-tight">{req.reviewer || currentUser?.name || 'Administración IVAD'}</p>
-                        <p className="text-xs text-[#d4af37] font-semibold">{req.reviewerRole || 'Recursos Humanos'}</p>
+                        <p className="text-xs text-[#d4af37] font-bold mt-0.5">{req.reviewerRole || 'Recursos Humanos'}</p>
                       </div>
                     </div>
                   </div>
