@@ -36,21 +36,14 @@ const SplashScreen = ({ onFinished }) => {
       {/* Logo Animado */}
       <div className="relative z-10 flex flex-col items-center">
         
-        {/* Contenedor circular con doble anillo de oro radiante */}
-        <div className="relative mb-6">
-          {/* Anillo exterior palpitante */}
-          <div className="absolute -inset-3 rounded-full border-2 border-[#d4af37]/40 animate-ping opacity-75" />
-          <div className="absolute -inset-1 rounded-full border border-[#d4af37]/60 animate-pulse" />
-
-          {/* Logo Principal con Marco de Oro */}
-          <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-2 border-[#d4af37] bg-[#0b1c3c] p-1.5 shadow-[0_0_25px_rgba(212,175,55,0.4)] flex items-center justify-center transform hover:scale-105 transition-transform duration-500">
-            <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center p-2">
-              <img 
-                src="/logo.png" 
-                alt="IVAD Connect" 
-                className="w-full h-full object-contain drop-shadow-md animate-fade-in"
-              />
-            </div>
+        {/* Logo Transparente Sin Marco Ni Fondo Blanco */}
+        <div className="relative mb-6 flex items-center justify-center">
+          <div className="w-36 h-36 sm:w-44 sm:h-44 relative flex items-center justify-center">
+            <img 
+              src="/logo.png" 
+              alt="IVAD Connect" 
+              className="w-full h-full object-contain filter drop-shadow-[0_8px_20px_rgba(212,175,55,0.4)] transform hover:scale-105 transition-transform duration-500"
+            />
           </div>
         </div>
 
