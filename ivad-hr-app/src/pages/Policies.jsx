@@ -164,21 +164,15 @@ const Policies = () => {
         {/* HOJA DE DOCUMENTO OFICIAL ESTILO PAPEL CORPORATIVO */}
         <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-gray-200 relative overflow-hidden">
           
-          {/* Marca de Agua Transparente de Fondo */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
-            <img src="/logo.png" alt="IVAD Watermark" className="w-[380px] h-[380px] object-contain" />
+          {/* Marca de Agua Transparente de Fondo con /sello-ivad.png */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none select-none">
+            <img src="/sello-ivad.png" alt="Sello de agua IVAD" className="w-[420px] h-[420px] object-contain" />
           </div>
 
-          {/* Sello Oficial de Autenticidad en la esquina superior derecha */}
+          {/* Sello Oficial /sello-ivad.png en la esquina superior derecha */}
           <div className="absolute top-6 right-6 sm:top-8 sm:right-8 flex flex-col items-center">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] p-1 shadow-md flex items-center justify-center text-center text-white relative group">
-              <div className="w-full h-full rounded-full border border-dashed border-[#d4af37]/80 flex flex-col items-center justify-center p-1 bg-[#1c2c4c]">
-                <ShieldCheck size={20} className="text-[#d4af37] mb-0.5" />
-                <span className="text-[7px] font-extrabold uppercase tracking-widest text-[#d4af37]">SELLO OFICIAL</span>
-                <span className="text-[6px] text-gray-300 font-bold leading-tight">IVAD CONNECT</span>
-              </div>
-            </div>
-            <span className="text-[9px] font-bold text-gray-400 mt-1 uppercase tracking-wider">Aprobado 2026</span>
+            <img src="/sello-ivad.png" alt="Sello Oficial IVAD Connect" className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md" />
+            <span className="text-[9px] font-bold text-gray-500 mt-1 uppercase tracking-wider">Documento Oficial</span>
           </div>
 
           {/* Encabezado del Documento */}
