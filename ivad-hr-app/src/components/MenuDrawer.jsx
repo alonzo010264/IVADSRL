@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, MessageSquare, AlertTriangle, Lightbulb, HelpCircle, Settings, Download, ShieldCheck } from 'lucide-react';
+import { X, MessageSquare, AlertTriangle, Lightbulb, HelpCircle, Settings, Download, ShieldCheck, Scale } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const MenuDrawer = ({ isOpen, onClose }) => {
@@ -83,6 +83,19 @@ const MenuDrawer = ({ isOpen, onClose }) => {
             <div>
               <h3 className="font-bold text-gray-800">Proponer Iniciativas</h3>
               <p className="text-[10px] text-gray-500 leading-tight">Servicios para ayudar a IVAD</p>
+            </div>
+          </button>
+
+          <button 
+            onClick={() => { navigate('/politicas'); onClose(); }}
+            className="w-full flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 transition-colors text-left group"
+          >
+            <div className="bg-[#0b1c3c]/5 p-3 rounded-xl group-hover:bg-[#0b1c3c]/10 transition-colors text-[#0b1c3c]">
+              <Scale size={22} />
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-800">Políticas de IVAD Connect</h3>
+              <p className="text-[10px] text-gray-500 leading-tight">Normativas oficiales de la empresa</p>
             </div>
           </button>
 
