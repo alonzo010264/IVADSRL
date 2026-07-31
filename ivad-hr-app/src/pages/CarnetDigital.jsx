@@ -112,7 +112,7 @@ const CarnetDigital = () => {
                   </div>
                   <div>
                     <span className="text-[9px] font-bold text-gray-400 block uppercase">Estatus Empleado</span>
-                    <span className="text-xs font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-200">
+                    <span className="text-[10px] font-bold text-[#d4af37] bg-[#1c2c4c] px-2 py-0.5 rounded border border-[#d4af37]/40">
                       ACTIVO / VERIFICADO
                     </span>
                   </div>
