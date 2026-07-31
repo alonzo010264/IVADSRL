@@ -11,9 +11,18 @@ export const EmployeeProvider = ({ children }) => {
   const [employees, setEmployees] = useState([]);
   const [currentUser, setCurrentUser] = useState(() => {
     const savedUser = localStorage.getItem('ivad_current_user');
+    const trustExpiration = localStorage.getItem('ivad_trust_expires_at');
+
     if (savedUser) {
+      // Si existe fecha de confianza, validar si no ha expirado (30 días)
+      if (trustExpiration) {
+        if (Date.now() > parseInt(trustExpiration, 10)) {
+          localStorage.removeItem('ivad_current_user');
+          localStorage.removeItem('ivad_trust_expires_at');
+          return null;
+        }
+      }
       const parsedUser = JSON.parse(savedUser);
-      // Force update the mock admin if they are already logged in
       if (parsedUser.id === '000-admin' || parsedUser.email === 'admin@ivad.com') {
         return { 
           ...parsedUser, 
@@ -150,18 +159,20 @@ export const EmployeeProvider = ({ children }) => {
     }
   };
   
-  const login = async (email, password) => {
+  const login = async (email, password, trustThisDevice = true) => {
     // Escapar para el admin hardcodeado en caso de emergencia
     if (email === 'admin@ivad.com' && password === 'admin') {
       const { data } = await supabase.from('employees').select('*').eq('email', email).single();
-      if(data) {
-        setCurrentUser(data);
-        return data;
-      } else {
-        const mockAdmin = { id: '000-admin', name: 'IVAD HOME & GOODS', role: 'Administración Central', email, is_admin: true, avatar: null, verification_status: 'gold' };
-        setCurrentUser(mockAdmin);
-        return mockAdmin;
+      const userObj = data || { id: '000-admin', name: 'IVAD HOME & GOODS', role: 'Administración Central', email, is_admin: true, avatar: null, verification_status: 'gold' };
+
+      if (trustThisDevice) {
+        const expirationTimestamp = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30 días
+        localStorage.setItem('ivad_trust_expires_at', expirationTimestamp.toString());
+        localStorage.setItem('ivad_remembered_email', email);
       }
+      
+      setCurrentUser(userObj);
+      return userObj;
     }
     
     // Buscar en la DB
@@ -175,14 +186,16 @@ export const EmployeeProvider = ({ children }) => {
       return null;
     }
     
-    // Validar contraseña
-    // Si el usuario no tiene contraseña en la DB, fallará a menos que la contraseña ingresada sea la temporal o nula.
-    // Para mayor seguridad, comparamos exactamente:
     if (data.password !== password) {
-      // Contraseña incorrecta
       return null;
     }
     
+    if (trustThisDevice) {
+      const expirationTimestamp = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30 días
+      localStorage.setItem('ivad_trust_expires_at', expirationTimestamp.toString());
+      localStorage.setItem('ivad_remembered_email', email);
+    }
+
     setCurrentUser(data);
     return data;
   };

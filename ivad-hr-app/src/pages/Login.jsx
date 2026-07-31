@@ -16,7 +16,7 @@ const Login = () => {
   // Views: 'login' | 'forgot_email' | 'forgot_code' | 'forgot_options' | 'forgot_new_pass'
   const [view, setView] = useState('login');
   
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(() => localStorage.getItem('ivad_remembered_email') || '');
   const [password, setPassword] = useState('');
   const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -25,6 +25,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [rememberDevice, setRememberDevice] = useState(true);
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     
-    const user = await login(email.trim(), password);
+    const user = await login(email.trim(), password, rememberDevice);
     if (user) {
       if (user.role === 'agent') {
         navigate('/agente');
@@ -184,7 +185,19 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="pt-4">
+            <div className="flex items-center justify-between text-xs px-1 pt-1">
+              <label className="flex items-center gap-2 text-gray-600 font-medium cursor-pointer select-none">
+                <input 
+                  type="checkbox" 
+                  checked={rememberDevice} 
+                  onChange={(e) => setRememberDevice(e.target.checked)}
+                  className="w-4 h-4 rounded text-[#1c2c4c] focus:ring-[#1c2c4c] border-gray-300 accent-[#1c2c4c]" 
+                />
+                <span>Confiar en este dispositivo por 30 días</span>
+              </label>
+            </div>
+
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={loading}
