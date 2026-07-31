@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, PlusCircle, Users, MoreHorizontal, Bell, ArrowLeft, Shield } from 'lucide-react';
+import { Home, Calendar, MessageCircle, Users, MoreHorizontal, Bell, ArrowLeft, Shield } from 'lucide-react';
 import { useEmployees } from '../context/EmployeeContext';
 
 const BottomNav = () => {
@@ -9,7 +9,7 @@ const BottomNav = () => {
   const navItems = [
     { id: 'inicio', icon: Home, label: 'Inicio', path: '/inicio' },
     { id: 'calendario', icon: Calendar, label: 'Calendario', path: '/calendario' },
-    { id: 'planeado', icon: PlusCircle, label: 'Planeado', path: '/solicitud-permiso', special: true },
+    { id: 'chat', icon: MessageCircle, label: 'Chat', path: '/chat', special: true },
     { id: 'equipo', icon: Users, label: 'Equipo', path: '/equipo' },
     { id: 'mas', icon: MoreHorizontal, label: 'Más', path: '/mas' },
   ];
@@ -26,16 +26,16 @@ const BottomNav = () => {
           }`}
         >
           {item.special ? (
-            <div className="bg-ivad-blue rounded-full p-2 text-white shadow-lg mb-1">
-              <item.icon size={28} strokeWidth={2} />
+            <div className="bg-[#1c2c4c] text-[#d4af37] rounded-full p-2.5 shadow-lg mb-1 border-2 border-white">
+              <item.icon size={26} strokeWidth={2.2} />
             </div>
           ) : (
             <item.icon 
               size={24} 
-              className={`mb-1 ${location.pathname === item.path ? 'text-ivad-blue' : 'text-gray-400'}`} 
+              className={`mb-1 ${location.pathname === item.path ? 'text-[#1c2c4c]' : 'text-gray-400'}`} 
             />
           )}
-          <span className={`text-[10px] ${location.pathname === item.path ? 'text-ivad-blue font-medium' : 'text-gray-500'}`}>
+          <span className={`text-[10px] ${location.pathname === item.path ? 'text-[#1c2c4c] font-bold' : 'text-gray-500'}`}>
             {item.label}
           </span>
         </button>
