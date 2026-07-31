@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useEmployees } from '../context/EmployeeContext';
-import { UserPlus, Users, ChevronLeft, Mail, ShieldAlert, AlertTriangle, FileSpreadsheet, Lightbulb, Scale } from 'lucide-react';
+import { UserPlus, Users, ChevronLeft, Mail, ShieldAlert, AlertTriangle, FileSpreadsheet, Lightbulb, Scale, ClipboardList, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { sendCredentialsEmail } from '../utils/resendClient';
 
@@ -54,6 +54,20 @@ const AdminDashboard = () => {
   };
 
   const adminActions = [
+    {
+      id: 'admin-tareas',
+      title: 'Asignar Tareas',
+      desc: 'Asignar y monitorear tareas a empleados',
+      icon: ClipboardList,
+      path: '/admin/tareas'
+    },
+    {
+      id: 'admin-asistencia',
+      title: 'Asistencia Mensual',
+      desc: 'Digitar asistencias, faltas y horas extra',
+      icon: Calendar,
+      path: '/admin/asistencia'
+    },
     {
       id: 'verificaciones',
       title: 'Verificaciones',

@@ -37,6 +37,8 @@ import AdminIncidencias from './pages/AdminIncidencias';
 import AdminPermisos from './pages/AdminPermisos';
 import AdminIniciativas from './pages/AdminIniciativas';
 import AdminPoliticas from './pages/AdminPoliticas';
+import AdminTareas from './pages/AdminTareas';
+import AdminAsistencia from './pages/AdminAsistencia';
 
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { currentUser } = useEmployees();
@@ -70,6 +72,8 @@ function App() {
             <Route path="/admin/permisos" element={<AdminPermisos />} />
             <Route path="/admin/iniciativas" element={<AdminIniciativas />} />
             <Route path="/admin/politicas" element={<AdminPoliticas />} />
+            <Route path="/admin/tareas" element={<AdminTareas />} />
+            <Route path="/admin/asistencia" element={<AdminAsistencia />} />
             <Route path="/crear-anuncio" element={<CreateAnnouncement />} />
           </Route>
         
