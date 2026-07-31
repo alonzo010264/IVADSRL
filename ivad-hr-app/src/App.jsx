@@ -24,6 +24,7 @@ import Payroll from './pages/Payroll';
 import Notifications from './pages/Notifications';
 import Policies from './pages/Policies';
 import Layout from './components/Layout';
+import SplashScreen from './components/SplashScreen';
 import { Outlet } from 'react-router-dom';
 import Chat from './pages/Chat';
 import Incidencias from './pages/Incidencias';
@@ -54,6 +55,7 @@ const ProtectedRoute = ({ adminOnly = false }) => {
 function App() {
   return (
     <EmployeeProvider>
+      <SplashScreen />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
