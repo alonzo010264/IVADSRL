@@ -218,22 +218,27 @@ const AdminDashboard = () => {
               <p className="text-gray-500 text-sm text-center py-4">No hay empleados registrados aún.</p>
             ) : (
               employees.map(emp => (
-                <div key={emp.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                  <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300 shrink-0 bg-white flex items-center justify-center">
-                    {emp.avatar ? (
-                      <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover scale-[1.35]" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
+                <div key={emp.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-11 h-11 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] p-[2px] shrink-0 shadow-sm">
+                      <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                        {emp.avatar ? (
+                          <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover scale-[1.35]" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                            <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-[#1c2c4c] text-sm leading-snug break-words">{emp.name}</p>
+                      <p className="text-xs text-[#d4af37] font-semibold mt-0.5">{emp.role}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-[#1c2c4c] text-sm truncate">{emp.name}</p>
-                    <p className="text-xs text-[#d4af37] truncate">{emp.role}</p>
-                  </div>
-                  <div className="shrink-0 text-xs text-gray-500 flex items-center gap-1">
-                     <Mail size={12} /> {emp.email}
+                  <div className="text-xs text-gray-600 flex items-center gap-1.5 pl-14 sm:pl-0 shrink-0">
+                     <Mail size={13} className="text-[#1c2c4c] shrink-0" />
+                     <span className="break-all font-medium">{emp.email}</span>
                   </div>
                 </div>
               ))

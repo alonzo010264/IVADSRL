@@ -127,14 +127,14 @@ const AdminAgentes = () => {
             
             <div className="space-y-3">
               {agentes.map(agente => (
-                <div key={agente.id} className="flex items-center justify-between p-3 rounded-2xl border border-gray-100 bg-gray-50">
-                  <div>
-                    <p className="font-bold text-sm text-gray-800">{agente.name}</p>
-                    <p className="text-xs text-gray-500">{agente.email}</p>
+                <div key={agente.id} className="flex items-center justify-between gap-3 p-3.5 rounded-2xl border border-gray-100 bg-gray-50">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-sm text-[#1c2c4c] break-words">{agente.name}</p>
+                    <p className="text-xs text-gray-500 break-all">{agente.email}</p>
                   </div>
                   <button 
                     onClick={() => handleDelete(agente.id)}
-                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0"
                   >
                     <Trash2 size={18} />
                   </button>
