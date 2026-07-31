@@ -32,6 +32,10 @@ import FAQ from './pages/FAQ';
 import Configuracion from './pages/Configuracion';
 import AgentDashboard from './pages/AgentDashboard';
 import AdminAgentes from './pages/AdminAgentes';
+import AdminIncidencias from './pages/AdminIncidencias';
+import AdminPermisos from './pages/AdminPermisos';
+import AdminIniciativas from './pages/AdminIniciativas';
+import AdminPoliticas from './pages/AdminPoliticas';
 
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { currentUser } = useEmployees();
@@ -60,6 +64,10 @@ function App() {
             <Route path="/admin/nomina" element={<AdminPayroll />} />
             <Route path="/admin/verificaciones" element={<AdminVerifications />} />
             <Route path="/admin/agentes" element={<AdminAgentes />} />
+            <Route path="/admin/incidencias" element={<AdminIncidencias />} />
+            <Route path="/admin/permisos" element={<AdminPermisos />} />
+            <Route path="/admin/iniciativas" element={<AdminIniciativas />} />
+            <Route path="/admin/politicas" element={<AdminPoliticas />} />
             <Route path="/crear-anuncio" element={<CreateAnnouncement />} />
           </Route>
         

@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useEmployees } from '../context/EmployeeContext';
-import { UserPlus, Users, ChevronLeft, Mail, ShieldAlert, Megaphone, Send } from 'lucide-react';
+import { UserPlus, Users, ChevronLeft, Mail, ShieldAlert, AlertTriangle, FileSpreadsheet, Lightbulb, Scale } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { sendCredentialsEmail } from '../utils/resendClient';
-import { supabase } from '../utils/supabaseClient';
 
 const AdminDashboard = () => {
   const { employees, addEmployee } = useEmployees();
@@ -22,8 +21,6 @@ const AdminDashboard = () => {
   
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,8 +53,53 @@ const AdminDashboard = () => {
     }
   };
 
+  const adminActions = [
+    {
+      id: 'verificaciones',
+      title: 'Verificaciones',
+      desc: 'Aprobar o rechazar checks azules',
+      icon: ShieldAlert,
+      path: '/admin/verificaciones'
+    },
+    {
+      id: 'agentes',
+      title: 'Agentes',
+      desc: 'Crear asesores para chat',
+      icon: Users,
+      path: '/admin/agentes'
+    },
+    {
+      id: 'incidencias',
+      title: 'Incidencias',
+      desc: 'Ver reportes de problemas o daños',
+      icon: AlertTriangle,
+      path: '/admin/incidencias'
+    },
+    {
+      id: 'permisos',
+      title: 'Permisos',
+      desc: 'Gestionar vacaciones y licencias',
+      icon: FileSpreadsheet,
+      path: '/admin/permisos'
+    },
+    {
+      id: 'iniciativas',
+      title: 'Iniciativas',
+      desc: 'Ver propuestas de colaboradores',
+      icon: Lightbulb,
+      path: '/admin/iniciativas'
+    },
+    {
+      id: 'politicas',
+      title: 'Políticas',
+      desc: 'Publicar normativas corporativas',
+      icon: Scale,
+      path: '/admin/politicas'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24 font-sans">
       {/* Header */}
       <div className="bg-[#1c2c4c] text-white pt-12 pb-6 px-4 rounded-b-[2rem] shadow-md relative">
         <div className="flex items-center">
@@ -66,57 +108,44 @@ const AdminDashboard = () => {
           </button>
           <div className="flex-1 text-center">
             <h1 className="text-xl font-bold">Panel de Administrador</h1>
-            <p className="text-sm text-[#d4af37]">Gestión de Empleados</p>
+            <p className="text-sm text-[#d4af37]">Gestión Central IVAD Connect</p>
           </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 mt-6">
         
-        {/* Acciones Rápidas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <button 
-            onClick={() => navigate('/admin/verificaciones')}
-            className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow group cursor-pointer"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <ShieldAlert size={24} />
+        {/* Módulos de Administración IVAD */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {adminActions.map((action) => (
+            <button 
+              key={action.id}
+              onClick={() => navigate(action.path)}
+              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md hover:border-[#1c2c4c]/20 transition-all group cursor-pointer text-left"
+            >
+              <div className="w-12 h-12 bg-[#1c2c4c] text-[#d4af37] rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-sm">
+                <action.icon size={22} />
               </div>
-              <div className="text-left">
-                <h3 className="font-bold text-[#1c2c4c] text-lg">Verificaciones</h3>
-                <p className="text-sm text-gray-500">Aprobar o rechazar checks azules</p>
+              <div className="min-w-0">
+                <h3 className="font-bold text-[#1c2c4c] text-base leading-snug">{action.title}</h3>
+                <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{action.desc}</p>
               </div>
-            </div>
-          </button>
-          
-          <button 
-            onClick={() => navigate('/admin/agentes')}
-            className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow group cursor-pointer"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center text-yellow-600 group-hover:bg-[#d4af37] group-hover:text-white transition-colors">
-                <Users size={24} />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-[#1c2c4c] text-lg">Agentes</h3>
-                <p className="text-sm text-gray-500">Crear asesores para chat</p>
-              </div>
-            </div>
-          </button>
+            </button>
+          ))}
         </div>
+
         {/* Formulario de Nuevo Empleado */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8">
           <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
-            <div className="w-10 h-10 bg-[#f8f9fc] rounded-full flex items-center justify-center">
-              <UserPlus className="text-[#1c2c4c]" size={20} />
+            <div className="w-10 h-10 bg-[#1c2c4c]/10 text-[#1c2c4c] rounded-full flex items-center justify-center">
+              <UserPlus size={20} />
             </div>
             <h2 className="text-lg font-bold text-[#1c2c4c]">Registrar Nuevo Empleado</h2>
           </div>
 
           {message && (
-            <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-xl font-medium text-sm flex items-center gap-2 border border-green-100">
-               <ShieldAlert size={16} className="text-green-600" />
+            <div className="mb-6 p-4 bg-blue-50 text-[#1c2c4c] rounded-xl font-medium text-sm flex items-center gap-2 border border-blue-100">
+               <ShieldAlert size={16} className="text-[#d4af37]" />
                {message}
             </div>
           )}
@@ -130,7 +159,7 @@ const AdminDashboard = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico (Corporativo)</label>
-                <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none" placeholder="juan.perez@ivad.com.do" />
+                <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none" placeholder="juan.perez@ivadsrl.com" />
               </div>
 
               <div>
@@ -165,25 +194,23 @@ const AdminDashboard = () => {
 
             <div className="pt-4 border-t border-gray-100 mt-6">
               <button disabled={isSubmitting} type="submit" className="w-full bg-[#1c2c4c] text-white font-bold py-4 rounded-xl shadow-md hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
-                <UserPlus size={20} />
+                <UserPlus size={20} className="text-[#d4af37]" />
                 {isSubmitting ? 'Registrando y enviando correo...' : 'Crear Empleado y Generar Credenciales'}
               </button>
             </div>
           </form>
         </div>
 
-
-
         {/* Resumen de Empleados */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#f8f9fc] rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#1c2c4c]/10 rounded-full flex items-center justify-center">
                 <Users className="text-[#1c2c4c]" size={20} />
               </div>
               <h2 className="text-lg font-bold text-[#1c2c4c]">Empleados Registrados</h2>
             </div>
-            <span className="bg-[#1c2c4c] text-white text-xs font-bold px-3 py-1 rounded-full">{employees.length}</span>
+            <span className="bg-[#1c2c4c] text-[#d4af37] text-xs font-bold px-3 py-1 rounded-full">{employees.length}</span>
           </div>
           
           <div className="space-y-3">
