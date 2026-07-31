@@ -1,261 +1,286 @@
-import { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, BadgeCheck } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Circle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
 
 const Chat = () => {
   const navigate = useNavigate();
-  const { currentUser } = useEmployees();
+  const { currentUser, employees } = useEmployees();
   const messagesEndRef = useRef(null);
-  
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [sessionId, setSessionId] = useState(null);
 
+  // Seleccionar primer empleado disponible que no sea el usuario actual
+  const otherEmployees = employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString());
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [messages, setMessages] = useState({});
+  const [newMessageText, setNewMessageText] = useState('');
+
+  useEffect(() => {
+    if (otherEmployees.length > 0 && !selectedContact) {
+      setSelectedContact(otherEmployees[0]);
+    }
+  }, [otherEmployees]);
+
+  // Autoscroll al final del chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, selectedContact]);
 
-  // Inicializar chat (buscar sesión activa o cargar mensaje inicial)
+  // Cargar mensajes directos entre empleados
   useEffect(() => {
-    const initChat = async () => {
-      if (!currentUser) return;
-      
-      // Buscar si el empleado ya tiene una sesión abierta
-      const { data: session } = await supabase
-        .from('chat_sessions')
+    const fetchDirectMessages = async () => {
+      if (!currentUser || !selectedContact) return;
+
+      const { data, error } = await supabase
+        .from('direct_messages')
         .select('*')
-        .eq('employee_id', currentUser.id)
-        .in('status', ['waiting', 'active'])
-        .single();
-        
-      if (session) {
-        setSessionId(session.id);
-        // Cargar mensajes existentes
-        const { data: msgData } = await supabase
-          .from('chat_messages')
-          .select('*')
-          .eq('session_id', session.id)
-          .order('created_at', { ascending: true });
-          
-        if (msgData) {
-          const formatted = msgData.map(m => formatMsg(m));
-          setMessages(formatted);
-        }
+        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${selectedContact.id}),and(sender_id.eq.${selectedContact.id},receiver_id.eq.${currentUser.id})`)
+        .order('created_at', { ascending: true });
+
+      if (data) {
+        setMessages(prev => ({
+          ...prev,
+          [selectedContact.id]: data.map(m => ({
+            id: m.id,
+            text: m.message,
+            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isMe: m.sender_id.toString() === currentUser.id.toString()
+          }))
+        }));
       } else {
-        // Mostrar mensaje por defecto si no hay sesión
-        setMessages([{
-          id: 'sys-1',
-          sender: 'system',
-          text: 'Gracias por escribir a Soporte IVAD. Envíanos tu consulta y en un momento te atenderemos.',
-          time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-          isMe: false,
-          isSystemAlert: false
-        }]);
-      }
-    };
-    initChat();
-  }, [currentUser]);
-
-  // Suscribirse a mensajes nuevos
-  useEffect(() => {
-    if (!sessionId) return;
-    
-    const channel = supabase
-      .channel(`chat_${sessionId}`)
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'chat_messages',
-        filter: `session_id=eq.${sessionId}`
-      }, (payload) => {
-        const newMsg = payload.new;
-        // Solo agregar si no es mío (los míos ya los agregué al enviarlos para que sea instantáneo)
-        if (newMsg.sender_id !== currentUser.id) {
-          setMessages(prev => [...prev, formatMsg(newMsg)]);
+        // Mock inicial de conversación interna
+        if (!messages[selectedContact.id]) {
+          setMessages(prev => ({
+            ...prev,
+            [selectedContact.id]: [
+              { id: '1', text: `Hola ${currentUser?.name ? currentUser.name.split(' ')[0] : ''}, ¿cómo va todo en la sucursal hoy?`, time: '09:15 AM', isMe: false },
+              { id: '2', text: '¡Todo bien! Saludos.', time: '09:18 AM', isMe: true }
+            ]
+          }));
         }
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [sessionId, currentUser]);
-
-  const formatMsg = (m) => {
-    const timeString = new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    return {
-      id: m.id,
-      sender: m.sender_name,
-      text: m.text,
-      time: timeString,
-      isMe: m.sender_id === currentUser.id,
-      isSystemAlert: m.sender_role === 'system_alert',
-      isAgent: m.sender_role === 'agent'
-    };
-  };
-
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !currentUser) return;
-
-    const textToSend = newMessage;
-    setNewMessage('');
-    
-    // 1. Mostrar localmente de inmediato
-    const tempId = `temp-${Date.now()}`;
-    const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    
-    setMessages(prev => [...prev, {
-      id: tempId,
-      sender: currentUser.name,
-      text: textToSend,
-      time: timeString,
-      isMe: true
-    }]);
-
-    let activeSessionId = sessionId;
-
-    // 2. Si no hay sesión, crearla
-    if (!activeSessionId) {
-      const { data: newSession } = await supabase
-        .from('chat_sessions')
-        .insert([{
-          employee_id: currentUser.id,
-          employee_name: currentUser.name,
-          employee_dept: currentUser.department || 'General'
-        }])
-        .select()
-        .single();
-        
-      if (newSession) {
-        activeSessionId = newSession.id;
-        setSessionId(newSession.id);
       }
-    }
+    };
 
-    // 3. Enviar mensaje a la BD
-    if (activeSessionId) {
-      await supabase
-        .from('chat_messages')
-        .insert([{
-          session_id: activeSessionId,
-          sender_id: currentUser.id,
-          sender_name: currentUser.name,
-          sender_role: 'employee',
-          text: textToSend
-        }]);
-    }
+    fetchDirectMessages();
+  }, [selectedContact, currentUser]);
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessageText.trim() || !selectedContact) return;
+
+    const textToSend = newMessageText.trim();
+    setNewMessageText('');
+    const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const newMsgObj = {
+      id: Date.now().toString(),
+      text: textToSend,
+      time: timeNow,
+      isMe: true
+    };
+
+    // Actualizar vista local
+    setMessages(prev => ({
+      ...prev,
+      [selectedContact.id]: [...(prev[selectedContact.id] || []), newMsgObj]
+    }));
+
+    // Enviar a Supabase
+    await supabase.from('direct_messages').insert([{
+      sender_id: currentUser?.id,
+      receiver_id: selectedContact.id,
+      message: textToSend,
+      created_at: new Date().toISOString()
+    }]);
   };
+
+  const filteredContacts = otherEmployees.filter(emp => 
+    emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (emp.role && emp.role.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const activeMessages = selectedContact ? (messages[selectedContact.id] || []) : [];
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 font-sans">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-16 md:pb-0">
       
-      {/* Header */}
-      <div className="bg-[#0b1c3c] text-white px-4 py-4 flex items-center justify-between shadow-md relative z-10 shrink-0 pt-8">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white hover:bg-white/10 rounded-full transition-colors">
-            <ArrowLeft size={24} />
-          </button>
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 flex items-center justify-center -ml-1">
-              <img src="/logo.png" alt="IVAD" className="w-full h-full object-contain drop-shadow-md" />
-            </div>
-            <div>
-              <h1 className="font-bold text-lg leading-tight flex items-center gap-1.5">
-                Soporte IVAD
-                <BadgeCheck size={18} className="text-[#d4af37] fill-white/10" />
-              </h1>
-              <p className="text-[11px] text-[#d4af37] font-medium flex items-center gap-1">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block"></span>
-                En línea
-              </p>
-            </div>
-          </div>
-        </div>
-        <button className="p-2 text-white/80 hover:text-white rounded-full hover:bg-white/10 transition-colors">
-          <MoreVertical size={24} />
-        </button>
-      </div>
-
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8f9fa] custom-scrollbar">
-        <div className="text-center text-xs text-gray-400 my-4">Hoy</div>
+      {/* COLUMNA IZQUIERDA: LISTA DE CONTACTOS / EMPLEADOS IVAD (Estilo WhatsApp) */}
+      <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col h-full ${selectedContact ? 'hidden md:flex' : 'flex'}`}>
         
-        {messages.map((msg) => {
-          if (msg.isSystemAlert) {
-            return (
-              <div key={msg.id} className="flex justify-center my-4">
-                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs py-1.5 px-4 rounded-full font-medium shadow-sm">
-                  {msg.text}
-                </div>
-              </div>
-            );
-          }
+        {/* Header Lista de Empleados */}
+        <div className="bg-[#1c2c4c] text-white p-4 pt-10 flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate(-1)} className="p-1 text-white hover:bg-white/10 rounded-full md:hidden">
+              <ArrowLeft size={22} />
+            </button>
+            <h1 className="font-bold text-base">Chat Interno IVAD</h1>
+          </div>
+          <span className="text-[11px] font-bold text-[#d4af37] bg-white/10 px-2.5 py-1 rounded-full border border-[#d4af37]/30">
+            {otherEmployees.length} Compañeros
+          </span>
+        </div>
 
-          return (
-            <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
-              <div 
-                className={`max-w-[80%] rounded-2xl p-3 shadow-sm relative ${
-                  msg.isMe 
-                    ? 'bg-[#0b1c3c] text-white rounded-tr-sm' 
-                    : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm'
-                }`}
-              >
-                {msg.isAgent && (
-                  <div className="flex items-center gap-1 mb-1 border-b border-gray-100 pb-1">
-                    <span className="text-[10px] font-bold text-[#1c2c4c]">{msg.sender}</span>
-                    <BadgeCheck size={12} className="text-[#d4af37]" />
-                  </div>
-                )}
-                <p className="text-sm leading-snug">{msg.text}</p>
-                <span className={`text-[9px] block text-right mt-1.5 ${msg.isMe ? 'text-white/60' : 'text-gray-400'}`}>
-                  {msg.time}
-                </span>
-              </div>
-            </div>
-          );
-        })}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input Area */}
-      <div className="bg-white border-t border-gray-200 p-3 pb-8 shrink-0">
-        <form onSubmit={handleSend} className="flex items-end gap-2 max-w-4xl mx-auto relative">
-          <button type="button" className="p-3 text-gray-400 hover:text-gray-600 transition-colors shrink-0">
-            <Paperclip size={22} />
-          </button>
-          
-          <div className="flex-1 bg-gray-100 rounded-[1.5rem] relative">
-            <textarea
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Escribe tu mensaje aquí..."
-              className="w-full bg-transparent border-none focus:ring-0 resize-none py-3 px-4 max-h-32 text-sm text-gray-800"
-              rows={1}
-              style={{ minHeight: '44px' }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend(e);
-                }
-              }}
+        {/* Buscador de Empleados */}
+        <div className="p-3 bg-gray-50 border-b border-gray-100">
+          <div className="relative flex items-center">
+            <Search size={16} className="absolute left-3 text-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Buscar compañero por nombre o área..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none"
             />
           </div>
-          
-          <button 
-            type="submit" 
-            disabled={!newMessage.trim()}
-            className="w-11 h-11 bg-[#d4af37] text-white rounded-full flex items-center justify-center shrink-0 shadow-md hover:bg-[#c8985c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Send size={18} className="ml-1" />
-          </button>
-        </form>
+        </div>
+
+        {/* Lista de Contactos */}
+        <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
+          {filteredContacts.length === 0 ? (
+            <p className="text-center text-xs text-gray-400 py-8">No se encontraron colaboradores.</p>
+          ) : (
+            filteredContacts.map(emp => (
+              <button
+                key={emp.id}
+                onClick={() => setSelectedContact(emp)}
+                className={`w-full p-3.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${
+                  selectedContact?.id === emp.id ? 'bg-blue-50/60 border-l-4 border-[#1c2c4c]' : ''
+                }`}
+              >
+                {/* Avatar con anillo dorado */}
+                <div className="relative shrink-0">
+                  <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] p-[2px] shadow-sm">
+                    <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                      {emp.avatar ? (
+                        <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover scale-[1.35]" />
+                      ) : (
+                        <User size={20} className="text-gray-400" />
+                      )}
+                    </div>
+                  </div>
+                  <span className="w-3 h-3 bg-green-500 rounded-full border-2 border-white absolute bottom-0 right-0"></span>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <h3 className="font-bold text-[#1c2c4c] text-xs truncate">{emp.name}</h3>
+                    <span className="text-[9px] text-gray-400 font-medium">En línea</span>
+                  </div>
+                  <p className="text-[11px] text-gray-500 truncate">{emp.role || emp.department || 'Colaborador IVAD'}</p>
+                </div>
+              </button>
+            ))
+          )}
+        </div>
+
+      </div>
+
+      {/* COLUMNA DERECHA: PANTALLA DE CHAT ACTIVO (Estilo WhatsApp) */}
+      <div className={`flex-1 flex flex-col h-full bg-[#f4f6f9] ${!selectedContact ? 'hidden md:flex items-center justify-center' : 'flex'}`}>
+        
+        {!selectedContact ? (
+          <div className="text-center p-8">
+            <div className="w-16 h-16 rounded-full bg-[#1c2c4c]/10 text-[#1c2c4c] flex items-center justify-center mx-auto mb-3">
+              <User size={32} />
+            </div>
+            <h2 className="font-bold text-[#1c2c4c] text-base">Selecciona un compañero para chatear</h2>
+            <p className="text-xs text-gray-500 mt-1">Comunicación interna directa entre colaboradores de IVAD SRL.</p>
+          </div>
+        ) : (
+          <>
+            {/* Header del Chat Activo */}
+            <div className="bg-[#1c2c4c] text-white px-4 py-3 flex items-center justify-between shadow-sm shrink-0 pt-8 md:pt-3">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setSelectedContact(null)} className="p-1.5 text-white hover:bg-white/10 rounded-full md:hidden">
+                  <ArrowLeft size={20} />
+                </button>
+
+                <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-white p-[1.5px] overflow-hidden shrink-0">
+                  {selectedContact.avatar ? (
+                    <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover scale-[1.35]" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
+                      <User size={18} />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h2 className="font-bold text-sm leading-tight text-white">{selectedContact.name}</h2>
+                  <p className="text-[10px] text-[#d4af37] font-semibold">{selectedContact.role} • En línea</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button className="p-2 text-white/80 hover:text-white rounded-full hover:bg-white/10 transition-colors">
+                  <MoreVertical size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Mensajes (Lista estilo WhatsApp) */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+              <div className="text-center my-2">
+                <span className="text-[10px] bg-gray-200 text-gray-600 px-3 py-1 rounded-full font-bold">
+                  Mensajes cifrados • IVAD SRL
+                </span>
+              </div>
+
+              {activeMessages.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
+                  <div 
+                    className={`max-w-[80%] sm:max-w-[70%] rounded-2xl p-3 shadow-sm relative ${
+                      msg.isMe 
+                        ? 'bg-[#1c2c4c] text-white rounded-tr-sm' 
+                        : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
+                    }`}
+                  >
+                    <p className="text-xs leading-relaxed">{msg.text}</p>
+                    <div className="flex items-center justify-end gap-1 mt-1">
+                      <span className={`text-[9px] ${msg.isMe ? 'text-[#d4af37]' : 'text-gray-400'}`}>
+                        {msg.time}
+                      </span>
+                      {msg.isMe && <CheckCheck size={12} className="text-[#d4af37]" />}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input de Mensaje */}
+            <div className="bg-white border-t border-gray-200 p-3 shrink-0">
+              <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto">
+                <button type="button" className="p-2 text-gray-400 hover:text-[#1c2c4c] transition-colors shrink-0">
+                  <Paperclip size={20} />
+                </button>
+
+                <input 
+                  type="text" 
+                  value={newMessageText}
+                  onChange={(e) => setNewMessageText(e.target.value)}
+                  placeholder={`Escribe un mensaje para ${selectedContact.name.split(' ')[0]}...`}
+                  className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none text-gray-800"
+                />
+
+                <button 
+                  type="submit" 
+                  disabled={!newMessageText.trim()}
+                  className="w-10 h-10 bg-[#1c2c4c] text-[#d4af37] rounded-full flex items-center justify-center shrink-0 shadow-md hover:bg-opacity-90 transition-all disabled:opacity-50"
+                >
+                  <Send size={16} />
+                </button>
+              </form>
+            </div>
+
+          </>
+        )}
+
       </div>
 
     </div>

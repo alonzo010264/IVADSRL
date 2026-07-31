@@ -26,7 +26,7 @@ const BottomNav = () => {
           }`}
         >
           {item.special ? (
-            <div className="bg-[#1c2c4c] text-[#d4af37] rounded-full p-2.5 shadow-lg mb-1 border-2 border-white">
+            <div className="bg-[#1c2c4c] text-white rounded-full p-2.5 shadow-lg mb-1 border-2 border-white">
               <item.icon size={26} strokeWidth={2.2} />
             </div>
           ) : (
