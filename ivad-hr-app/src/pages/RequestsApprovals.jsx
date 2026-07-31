@@ -8,10 +8,10 @@ const RequestsApprovals = () => {
   const { logout } = useEmployees();
 
   const requestTypes = [
+    { id: 'mis_vacaciones', label: 'Mis Vacaciones & Programación', path: '/vacaciones' },
     { id: 'varias', label: 'Solicitudes Varias', path: '/solicitudes-varias' },
     { id: 'permisos', label: 'Solicitudes Permisos', path: '/solicitud-permiso' },
     { id: 'aprobacion_permisos', label: 'Aprobación Permisos', path: '/estatus-solicitudes' },
-    { id: 'aprobacion_vacaciones', label: 'Aprobación Vacaciones', path: '/estatus-solicitudes' },
     { id: 'solicitudes_licencias', label: 'Solicitudes Licencias', path: '/solicitud-licencia' },
     { id: 'politicas', label: 'Políticas de la Empresa', path: '/politicas' },
   ];

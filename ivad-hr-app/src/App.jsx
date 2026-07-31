@@ -40,6 +40,7 @@ import AdminPoliticas from './pages/AdminPoliticas';
 import AdminTareas from './pages/AdminTareas';
 import AdminAsistencia from './pages/AdminAsistencia';
 import LicenseRequest from './pages/LicenseRequest';
+import Vacaciones from './pages/Vacaciones';
 
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { currentUser } = useEmployees();
@@ -97,6 +98,7 @@ function App() {
             <Route path="/solicitudes-varias" element={<MiscRequests />} />
             <Route path="/solicitar-verificacion" element={<VerificationRequest />} />
             <Route path="/solicitud-licencia" element={<LicenseRequest />} />
+            <Route path="/vacaciones" element={<Vacaciones />} />
           </Route>
         </Route>
         
