@@ -15,7 +15,7 @@ const BottomNav = () => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2 flex justify-center md:justify-around items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#1c2c4c] border-t border-[#d4af37]/30 px-6 py-2 flex justify-center md:justify-around items-center z-50 shadow-[0_-4px_16px_rgba(0,0,0,0.25)]">
       <div className="flex justify-between items-center w-full max-w-5xl">
       {navItems.map((item) => (
         <button
@@ -26,16 +26,16 @@ const BottomNav = () => {
           }`}
         >
           {item.special ? (
-            <div className="bg-ivad-blue rounded-full p-2 text-white shadow-lg mb-1">
-              <item.icon size={28} strokeWidth={2} />
+            <div className="bg-[#d4af37] text-[#1c2c4c] rounded-full p-2.5 shadow-lg mb-1 border-2 border-[#1c2c4c]">
+              <item.icon size={26} strokeWidth={2.2} />
             </div>
           ) : (
             <item.icon 
               size={24} 
-              className={`mb-1 ${location.pathname === item.path ? 'text-ivad-blue' : 'text-gray-400'}`} 
+              className={`mb-1 transition-colors ${location.pathname === item.path ? 'text-[#d4af37]' : 'text-white/60'}`} 
             />
           )}
-          <span className={`text-[10px] ${location.pathname === item.path ? 'text-ivad-blue font-medium' : 'text-gray-500'}`}>
+          <span className={`text-[10px] ${location.pathname === item.path ? 'text-[#d4af37] font-bold' : 'text-white/70'}`}>
             {item.label}
           </span>
         </button>

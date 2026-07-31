@@ -115,24 +115,6 @@ const MenuDrawer = ({ isOpen, onClose }) => {
           </button>
 
         </div>
-
-        {/* Botón de Instalar App (APK Seguro) */}
-        <div className="p-5 border-t border-gray-100 bg-[#f8fafc]">
-          <a 
-            href={apkUrl}
-            download="ivad-connect.apk"
-            className="w-full bg-[#1c2c4c] hover:bg-opacity-95 text-white font-bold py-3.5 px-4 rounded-2xl shadow-md transition-all flex flex-col items-center justify-center gap-1 active:scale-95 border border-[#d4af37]/30"
-          >
-            <div className="flex items-center gap-2">
-              <Download size={18} className="text-[#d4af37]" />
-              <span className="text-sm font-bold">Descargar App Android</span>
-            </div>
-          </a>
-          <div className="flex items-center justify-center gap-1.5 mt-3">
-            <ShieldCheck size={14} className="text-[#d4af37]" />
-            <span className="text-[10px] text-gray-500 font-medium">100% Seguro • Descarga directa oficial</span>
-          </div>
-        </div>
       </div>
     </>
   );
