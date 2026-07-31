@@ -13,7 +13,7 @@ const RequestsApprovals = () => {
     { id: 'permisos', label: 'Solicitudes Permisos', path: '/solicitud-permiso' },
     { id: 'aprobacion_permisos', label: 'Aprobación Permisos', path: '/estatus-solicitudes' },
     { id: 'solicitudes_licencias', label: 'Solicitudes Licencias', path: '/solicitud-licencia' },
-    { id: 'politicas', label: 'Políticas de la Empresa', path: '/politicas' },
+    { id: 'politicas', label: 'Políticas de la Empresa', path: '/politicas-empresa' },
   ];
 
   return (

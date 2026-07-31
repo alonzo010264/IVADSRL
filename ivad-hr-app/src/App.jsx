@@ -42,6 +42,7 @@ import AdminAsistencia from './pages/AdminAsistencia';
 import LicenseRequest from './pages/LicenseRequest';
 import Vacaciones from './pages/Vacaciones';
 import VacationRequest from './pages/VacationRequest';
+import CompanyPolicies from './pages/CompanyPolicies';
 
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { currentUser } = useEmployees();
@@ -101,6 +102,7 @@ function App() {
             <Route path="/solicitud-licencia" element={<LicenseRequest />} />
             <Route path="/vacaciones" element={<Vacaciones />} />
             <Route path="/solicitar-vacaciones" element={<VacationRequest />} />
+            <Route path="/politicas-empresa" element={<CompanyPolicies />} />
           </Route>
         </Route>
         
