@@ -37,6 +37,8 @@ import AdminIncidencias from './pages/AdminIncidencias';
 import AdminPermisos from './pages/AdminPermisos';
 import AdminIniciativas from './pages/AdminIniciativas';
 import AdminPoliticas from './pages/AdminPoliticas';
+import CarnetDigital from './pages/CarnetDigital';
+import Horarios from './pages/Horarios';
 
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { currentUser } = useEmployees();
@@ -91,6 +93,8 @@ function App() {
             <Route path="/configuracion" element={<Configuracion />} />
             <Route path="/solicitudes-varias" element={<MiscRequests />} />
             <Route path="/solicitar-verificacion" element={<VerificationRequest />} />
+            <Route path="/carnet" element={<CarnetDigital />} />
+            <Route path="/horarios" element={<Horarios />} />
           </Route>
         </Route>
         

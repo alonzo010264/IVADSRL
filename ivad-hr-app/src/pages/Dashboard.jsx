@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Users, Calendar, ClipboardList, DollarSign, Megaphone, ArrowRight, Menu, Bell } from 'lucide-react';
+import { User, Users, Calendar, ClipboardList, DollarSign, Megaphone, ArrowRight, Menu, Bell, QrCode, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -28,6 +28,8 @@ const Dashboard = () => {
   }, []);
   
   const quickActions = [
+    { id: 'carnet', icon: QrCode, label: 'Carnet Digital', path: '/carnet' },
+    { id: 'horarios', icon: Clock, label: 'Horarios & Almuerzo', path: '/horarios' },
     { id: 'perfil', icon: User, label: 'Mi Perfil', path: '/datos-personales' },
     { id: 'equipo', icon: Users, label: 'Equipo', path: '/equipo' },
     { id: 'asistencia', icon: Calendar, label: 'Asistencia', path: '/asistencia' },
