@@ -35,8 +35,8 @@ const Incidencias = () => {
         
         {isSubmitted ? (
           <div className="bg-white rounded-3xl p-8 shadow-md border border-gray-100 flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle2 size={32} />
+            <div className="w-16 h-16 bg-[#1c2c4c]/10 text-[#1c2c4c] border border-[#d4af37]/40 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle2 size={32} className="text-[#d4af37]" />
             </div>
             <h2 className="text-xl font-bold text-[#0b1c3c] mb-2">Reporte Enviado</h2>
             <p className="text-gray-500 text-sm mb-6">
