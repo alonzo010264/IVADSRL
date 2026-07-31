@@ -192,11 +192,21 @@ export const EmployeeProvider = ({ children }) => {
   };
 
   // ----- PASSWORD RESET SYSTEM -----
-  const requestPasswordReset = async (email) => {
-    const { data: emp, error } = await supabase.from('employees').select('id, name, email').eq('email', email).single();
-    if (error || !emp) {
-      return { error: 'No se encontró una cuenta con ese correo.' };
+  const requestPasswordReset = async (rawEmail) => {
+    if (!rawEmail) return { error: 'Ingresa un correo electrónico.' };
+    const cleanEmail = rawEmail.trim().toLowerCase();
+
+    // Buscar el empleado por correo (insensible a mayúsculas)
+    const { data: emps, error } = await supabase
+      .from('employees')
+      .select('*')
+      .ilike('email', cleanEmail);
+
+    if (error || !emps || emps.length === 0) {
+      return { error: 'No se encontró ningún empleado registrado con este correo.' };
     }
+
+    const emp = emps[0];
 
     // Generar código de 6 dígitos
     const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -211,57 +221,94 @@ export const EmployeeProvider = ({ children }) => {
       .eq('id', emp.id);
 
     if (updateError) {
-      return { error: 'Error al solicitar el código de recuperación.' };
+      console.error("Error updating reset code:", updateError);
+      return { error: 'Error al generar el código de recuperación.' };
     }
 
-    // Enviar correo
+    // Enviar correo vía Resend
     const p1 = 're_LqSpvUXD_';
     const p2 = '363a9ZuCEDkNpsaC1boYhVGP';
     const apiKey = p1 + p2; 
 
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px;">
-        <h2 style="color: #1c2c4c;">Código de Recuperación de Contraseña</h2>
-        <p>Hola ${emp.name.split(' ')[0]},</p>
-        <p>Hemos recibido una solicitud para acceder a tu cuenta de IVAD Connect.</p>
-        <div style="background-color: #f8f9fc; border-left: 4px solid #d4af37; padding: 15px; margin: 20px 0; text-align: center;">
-          <h1 style="letter-spacing: 5px; color: #1c2c4c; margin: 0;">${code}</h1>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 25px; border: 1px solid #eaeaea; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h2 style="color: #1c2c4c; margin: 0;">Código de Verificación</h2>
+          <p style="color: #666; font-size: 14px; margin-top: 5px;">IVAD Connect · Gestión de Personal</p>
         </div>
-        <p>Este código <strong>expirará en 15 minutos</strong>. Si no solicitaste esto, puedes ignorar este correo con seguridad.</p>
-        <p>Atentamente,<br><strong>Soporte IVAD Connect</strong></p>
+        <p>Hola <strong>${emp.name}</strong>,</p>
+        <p>Recibimos una solicitud para verificar tu identidad y acceder a tu cuenta.</p>
+        <div style="background-color: #f4f6fa; border: 2px dashed #d4af37; padding: 20px; margin: 20px 0; text-align: center; border-radius: 10px;">
+          <span style="font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Tu código de seguridad:</span>
+          <h1 style="letter-spacing: 8px; color: #1c2c4c; font-size: 36px; margin: 0; font-family: monospace;">${code}</h1>
+          <span style="font-size: 12px; color: #999; margin-top: 5px; display: block;">Válido por 15 minutos</span>
+        </div>
+        <p style="font-size: 13px; color: #666;">Si no solicitaste este código, puedes ignorar este mensaje de forma segura.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 25px 0;" />
+        <p style="font-size: 12px; color: #999; text-align: center; margin: 0;">Atentamente,<br><strong>Administración IVAD Home & Goods</strong></p>
       </div>
     `;
 
     try {
-      await fetch('https://api.resend.com/emails', {
+      const resp = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
         body: JSON.stringify({
           from: 'IVAD Soporte <gestion@ivadsrl.com>',
           to: [emp.email],
-          subject: 'Código de Verificación - IVAD Connect',
+          subject: `${code} es tu código de verificación - IVAD Connect`,
           html: htmlContent
         })
       });
+      if (!resp.ok) {
+        const errText = await resp.text();
+        console.error("Resend API error:", errText);
+      }
       return { success: true };
     } catch (err) {
-      return { error: 'Error enviando el correo con el código.' };
+      console.error("Error sending resend email:", err);
+      return { error: 'Error al enviar el correo con el código.' };
     }
   };
 
-  const verifyResetCode = async (email, code) => {
-    const { data: emp, error } = await supabase.from('employees').select('id, reset_code, reset_code_expires_at').eq('email', email).single();
+  const verifyResetCode = async (rawEmail, code) => {
+    if (!rawEmail || !code) return { error: 'Correo y código son requeridos.' };
+    const cleanEmail = rawEmail.trim().toLowerCase();
+
+    const { data: emps, error } = await supabase
+      .from('employees')
+      .select('*')
+      .ilike('email', cleanEmail);
     
-    if (error || !emp) return { error: 'Usuario no encontrado.' };
-    if (!emp.reset_code || emp.reset_code !== code) return { error: 'Código incorrecto.' };
+    if (error || !emps || emps.length === 0) return { error: 'Empleado no encontrado.' };
+    const emp = emps[0];
+
+    if (!emp.reset_code || emp.reset_code.trim() !== code.trim()) {
+      return { error: 'El código de verificación es incorrecto.' };
+    }
     
     const expiresAt = new Date(emp.reset_code_expires_at);
-    if (new Date() > expiresAt) return { error: 'El código ha expirado.' };
+    if (new Date() > expiresAt) {
+      return { error: 'El código ha expirado. Por favor solicita uno nuevo.' };
+    }
 
     return { success: true };
   };
 
-  const updatePassword = async (email, newPassword) => {
+  const updatePassword = async (rawEmail, newPassword) => {
+    if (!rawEmail) return { error: 'Correo inválido.' };
+    const cleanEmail = rawEmail.trim().toLowerCase();
+
+    const { data: emps, error: searchError } = await supabase
+      .from('employees')
+      .select('*')
+      .ilike('email', cleanEmail);
+
+    if (searchError || !emps || emps.length === 0) {
+      return { error: 'No se encontró la cuenta.' };
+    }
+    const emp = emps[0];
+
     const { data, error } = await supabase
       .from('employees')
       .update({ 
@@ -269,7 +316,7 @@ export const EmployeeProvider = ({ children }) => {
         reset_code: null,
         reset_code_expires_at: null 
       })
-      .eq('email', email)
+      .eq('id', emp.id)
       .select()
       .single();
 
@@ -280,14 +327,27 @@ export const EmployeeProvider = ({ children }) => {
     return { success: true, user: data };
   };
 
-  const loginWithoutPassword = async (email) => {
+  const loginWithoutPassword = async (rawEmail) => {
+    if (!rawEmail) return { error: 'Correo inválido.' };
+    const cleanEmail = rawEmail.trim().toLowerCase();
+
+    const { data: emps, error: searchError } = await supabase
+      .from('employees')
+      .select('*')
+      .ilike('email', cleanEmail);
+
+    if (searchError || !emps || emps.length === 0) {
+      return { error: 'No se encontró la cuenta.' };
+    }
+    const emp = emps[0];
+
     const { data, error } = await supabase
       .from('employees')
       .update({ 
         reset_code: null,
         reset_code_expires_at: null 
       })
-      .eq('email', email)
+      .eq('id', emp.id)
       .select()
       .single();
 

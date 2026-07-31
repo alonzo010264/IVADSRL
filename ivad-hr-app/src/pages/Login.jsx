@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, EyeOff, KeyRound, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, KeyRound, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useEmployees } from '../context/EmployeeContext';
 
 const Login = () => {
@@ -22,6 +22,10 @@ const Login = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
@@ -31,7 +35,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     
-    const user = await login(email, password);
+    const user = await login(email.trim(), password);
     if (user) {
       if (user.role === 'agent') {
         navigate('/agente');
@@ -46,18 +50,19 @@ const Login = () => {
 
   const handleRequestReset = async (e) => {
     e.preventDefault();
-    if (!email) {
+    const cleanEmail = email.trim();
+    if (!cleanEmail) {
       setError('Ingresa tu correo para continuar.');
       return;
     }
     setError('');
     setLoading(true);
     
-    const res = await requestPasswordReset(email);
+    const res = await requestPasswordReset(cleanEmail);
     if (res.error) {
       setError(res.error);
     } else {
-      setSuccessMsg('Hemos enviado un código a tu correo.');
+      setSuccessMsg('Hemos enviado un código de 6 dígitos a tu correo.');
       setView('forgot_code');
     }
     setLoading(false);
@@ -65,14 +70,15 @@ const Login = () => {
 
   const handleVerifyCode = async (e) => {
     e.preventDefault();
-    if (!resetCode) {
+    const cleanCode = resetCode.trim();
+    if (!cleanCode) {
       setError('Ingresa el código.');
       return;
     }
     setError('');
     setLoading(true);
     
-    const res = await verifyResetCode(email, resetCode);
+    const res = await verifyResetCode(email.trim(), cleanCode);
     if (res.error) {
       setError(res.error);
     } else {
@@ -83,8 +89,9 @@ const Login = () => {
   };
 
   const handleLoginWithoutPassword = async () => {
+    setError('');
     setLoading(true);
-    const res = await loginWithoutPassword(email);
+    const res = await loginWithoutPassword(email.trim());
     if (res.error) {
       setError(res.error);
       setLoading(false);
@@ -100,7 +107,7 @@ const Login = () => {
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setError('Las contraseñas no coinciden.');
+      setError('Las contraseñas no coinciden. Repítela exactamente dos veces.');
       return;
     }
     if (newPassword.length < 6) {
@@ -111,7 +118,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     
-    const res = await updatePassword(email, newPassword);
+    const res = await updatePassword(email.trim(), newPassword);
     if (res.error) {
       setError(res.error);
       setLoading(false);
@@ -158,15 +165,22 @@ const Login = () => {
                 <Lock className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Contraseña"
                 className="block w-full pl-12 pr-12 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
                 required
               />
-              <div className="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer">
-                <EyeOff className="h-5 w-5 text-gray-400" />
+              <div 
+                className="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <Eye className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                )}
               </div>
             </div>
 
@@ -197,7 +211,7 @@ const Login = () => {
           <form onSubmit={handleRequestReset} className="space-y-4 fade-in">
             <h3 className="text-xl font-semibold text-center text-ivad-blue mb-2">Recuperar Acceso</h3>
             <p className="text-sm text-gray-500 text-center mb-6">
-              Ingresa el correo asociado a tu cuenta y te enviaremos un código de verificación.
+              Ingresa el correo con el que te registraron y te enviaremos un código de autenticación.
             </p>
             {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>}
             
@@ -268,7 +282,7 @@ const Login = () => {
                 disabled={loading || resetCode.length < 6}
                 className="w-full flex justify-center items-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-ivad-blue hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ivad-blue disabled:opacity-50 transition-all"
               >
-                {loading ? 'Verificando...' : 'Verificar'}
+                {loading ? 'Verificando...' : 'Verificar Código'}
                 {!loading && <CheckCircle2 className="ml-2 w-5 h-5" />}
               </button>
               <button
@@ -291,7 +305,7 @@ const Login = () => {
               </div>
               <h3 className="text-xl font-semibold text-ivad-blue mb-2">¡Identidad Verificada!</h3>
               <p className="text-sm text-gray-500">
-                Selecciona cómo deseas continuar:
+                Selecciona cómo deseas acceder a tu cuenta:
               </p>
             </div>
             
@@ -303,7 +317,7 @@ const Login = () => {
                 disabled={loading}
                 className="w-full flex justify-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none transition-all disabled:opacity-50"
               >
-                {loading ? 'Iniciando...' : 'Entrar ahora sin contraseña'}
+                {loading ? 'Iniciando...' : 'Entrar directamente a mi cuenta'}
               </button>
               
               <div className="relative my-2">
@@ -320,7 +334,7 @@ const Login = () => {
                 disabled={loading}
                 className="w-full flex justify-center py-4 px-4 border-2 border-ivad-blue rounded-full shadow-sm text-lg font-medium text-ivad-blue bg-white hover:bg-blue-50 focus:outline-none transition-all disabled:opacity-50"
               >
-                Actualizar mi contraseña
+                Actualizar la contraseña
               </button>
             </div>
           </div>
@@ -331,7 +345,7 @@ const Login = () => {
           <form onSubmit={handleUpdatePassword} className="space-y-4 fade-in">
             <h3 className="text-xl font-semibold text-center text-ivad-blue mb-2">Nueva Contraseña</h3>
             <p className="text-sm text-gray-500 text-center mb-6">
-              Crea una nueva contraseña segura para tu cuenta.
+              Ingresa y confirma tu nueva contraseña (debes repetirla dos veces).
             </p>
             
             {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>}
@@ -341,14 +355,24 @@ const Login = () => {
                 <Lock className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                type="password"
+                type={showNewPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Nueva contraseña"
-                className="block w-full pl-12 pr-4 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
+                className="block w-full pl-12 pr-12 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
                 required
                 minLength={6}
               />
+              <div 
+                className="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+              >
+                {showNewPassword ? (
+                  <Eye className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                )}
+              </div>
             </div>
 
             <div className="relative">
@@ -356,14 +380,24 @@ const Login = () => {
                 <Lock className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                type="password"
+                type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirmar contraseña"
-                className="block w-full pl-12 pr-4 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
+                placeholder="Repetir nueva contraseña"
+                className="block w-full pl-12 pr-12 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
                 required
                 minLength={6}
               />
+              <div 
+                className="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? (
+                  <Eye className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                )}
+              </div>
             </div>
 
             <div className="pt-4">
@@ -372,7 +406,7 @@ const Login = () => {
                 disabled={loading}
                 className="w-full flex justify-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-ivad-blue hover:bg-opacity-90 focus:outline-none transition-all disabled:opacity-50"
               >
-                {loading ? 'Actualizando...' : 'Actualizar y Entrar'}
+                {loading ? 'Actualizando...' : 'Actualizar e Iniciar Sesión'}
               </button>
             </div>
           </form>
