@@ -258,7 +258,7 @@ const Login = () => {
             </p>
             <p className="font-medium text-center text-gray-800 mb-6">{email}</p>
             
-            {successMsg && <p className="text-green-600 text-sm text-center bg-green-50 p-2 rounded-lg">{successMsg}</p>}
+            {successMsg && <p className="text-ivad-blue font-medium text-sm text-center bg-blue-50 p-3 rounded-xl border border-blue-100">{successMsg}</p>}
             {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>}
             
             <div className="relative">
@@ -283,7 +283,7 @@ const Login = () => {
                 className="w-full flex justify-center items-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-ivad-blue hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ivad-blue disabled:opacity-50 transition-all"
               >
                 {loading ? 'Verificando...' : 'Verificar Código'}
-                {!loading && <CheckCircle2 className="ml-2 w-5 h-5" />}
+                {!loading && <CheckCircle2 className="ml-2 w-5 h-5 text-gold" />}
               </button>
               <button
                 type="button"
@@ -300,8 +300,8 @@ const Login = () => {
         {view === 'forgot_options' && (
           <div className="space-y-6 fade-in">
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-8 h-8 text-green-600" />
+              <div className="w-16 h-16 bg-blue-50 border-2 border-ivad-blue/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="w-8 h-8 text-ivad-blue" />
               </div>
               <h3 className="text-xl font-semibold text-ivad-blue mb-2">¡Identidad Verificada!</h3>
               <p className="text-sm text-gray-500">
@@ -315,7 +315,7 @@ const Login = () => {
               <button
                 onClick={handleLoginWithoutPassword}
                 disabled={loading}
-                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none transition-all disabled:opacity-50"
+                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-ivad-blue hover:bg-opacity-95 focus:outline-none transition-all disabled:opacity-50"
               >
                 {loading ? 'Iniciando...' : 'Entrar directamente a mi cuenta'}
               </button>

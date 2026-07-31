@@ -227,21 +227,26 @@ export const EmployeeProvider = ({ children }) => {
 
     // Enviar correo usando la API interna /api/send-email para evitar bloqueo de CORS
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 25px; border: 1px solid #eaeaea; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <h2 style="color: #1c2c4c; margin: 0;">Código de Verificación</h2>
-          <p style="color: #666; font-size: 14px; margin-top: 5px;">IVAD Connect · Gestión de Personal</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06);">
+        <div style="background-color: #1c2c4c; padding: 30px; text-align: center; border-bottom: 4px solid #d4af37;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;">IVAD Connect</h1>
+          <p style="color: #d4af37; margin: 6px 0 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Gestión de Personal & Acceso</p>
         </div>
-        <p>Hola <strong>${emp.name}</strong>,</p>
-        <p>Recibimos una solicitud para verificar tu identidad y acceder a tu cuenta.</p>
-        <div style="background-color: #f4f6fa; border: 2px dashed #d4af37; padding: 20px; margin: 20px 0; text-align: center; border-radius: 10px;">
-          <span style="font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Tu código de seguridad:</span>
-          <h1 style="letter-spacing: 8px; color: #1c2c4c; font-size: 36px; margin: 0; font-family: monospace;">${code}</h1>
-          <span style="font-size: 12px; color: #999; margin-top: 5px; display: block;">Válido por 15 minutos</span>
+        <div style="padding: 30px; color: #333333; line-height: 1.6;">
+          <h3 style="color: #1c2c4c; margin-top: 0; font-size: 18px;">Código de Verificación de Acceso</h3>
+          <p>Hola <strong>${emp.name}</strong>,</p>
+          <p>Recibimos una solicitud para verificar tu cuenta e iniciar sesión en el portal <strong>IVAD Connect</strong>.</p>
+          <div style="background-color: #f8fafc; border: 2px dashed #d4af37; border-radius: 12px; padding: 25px; margin: 25px 0; text-align: center;">
+            <span style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; display: block; margin-bottom: 8px;">Código de Autenticación</span>
+            <h1 style="letter-spacing: 10px; color: #1c2c4c; font-size: 40px; margin: 0; font-family: 'Courier New', monospace; font-weight: 800;">${code}</h1>
+            <span style="font-size: 12px; color: #94a3b8; margin-top: 8px; display: block;">⏰ Este código expira en 15 minutos</span>
+          </div>
+          <p style="font-size: 13px; color: #64748b;">Si no realizaste esta solicitud, puedes ignorar este mensaje. Tu cuenta se mantiene protegida.</p>
         </div>
-        <p style="font-size: 13px; color: #666;">Si no solicitaste este código, puedes ignorar este mensaje de forma segura.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 25px 0;" />
-        <p style="font-size: 12px; color: #999; text-align: center; margin: 0;">Atentamente,<br><strong>Administración IVAD Home & Goods</strong></p>
+        <div style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0;">
+          <p style="margin: 0 0 4px 0; font-weight: 700; color: #1c2c4c;">IVAD Home & Goods · IVAD Connect</p>
+          <p style="margin: 0;">Calidad y Excelencia Corporativa © 2026</p>
+        </div>
       </div>
     `;
 
@@ -252,7 +257,7 @@ export const EmployeeProvider = ({ children }) => {
         body: JSON.stringify({
           from: 'IVAD Soporte <gestion@ivadsrl.com>',
           to: [emp.email],
-          subject: `${code} es tu código de verificación - IVAD Connect`,
+          subject: `${code} - Código de Verificación IVAD Connect`,
           html: htmlContent
         })
       });
