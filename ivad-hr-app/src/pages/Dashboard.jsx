@@ -28,8 +28,6 @@ const Dashboard = () => {
   }, []);
   
   const quickActions = [
-    { id: 'carnet', icon: QrCode, label: 'Carnet Digital', path: '/carnet' },
-    { id: 'horarios', icon: Clock, label: 'Horarios & Almuerzo', path: '/horarios' },
     { id: 'perfil', icon: User, label: 'Mi Perfil', path: '/datos-personales' },
     { id: 'equipo', icon: Users, label: 'Equipo', path: '/equipo' },
     { id: 'asistencia', icon: Calendar, label: 'Asistencia', path: '/asistencia' },
