@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import { ChevronLeft, QrCode, ShieldCheck, Download, RotateCw, Sparkles, Building2, UserCheck } from 'lucide-react';
+import { ChevronLeft, QrCode, ShieldCheck, Download, RotateCw, Building2, UserCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 
 const CarnetDigital = () => {
   const navigate = useNavigate();
   const { currentUser } = useEmployees();
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [activeSide, setActiveSide] = useState('front'); // 'front' | 'back'
 
   const empName = currentUser?.name || 'Empleado IVAD';
   const empRole = currentUser?.role || 'Colaborador';
   const empDept = currentUser?.department || currentUser?.dept || 'Operaciones';
-  const empCode = currentUser?.id ? `EMP-${currentUser.id.toString().padStart(4, '0')}` : 'EMP-2026-084';
+  
+  // Código corto para evitar desbordamientos
+  const rawId = currentUser?.id ? String(currentUser.id) : '084';
+  const empCode = rawId.length > 8 ? `EMP-${rawId.slice(0, 6).toUpperCase()}` : `EMP-${rawId.padStart(4, '0')}`;
+  
   const empEmail = currentUser?.email || 'empleado@ivadsrl.com';
   const empPhone = currentUser?.phone || '+1 (809) 555-0199';
 
@@ -42,38 +46,58 @@ const CarnetDigital = () => {
       {/* Contenedor del Carnet Interactivo */}
       <div className="w-full max-w-sm px-4 -mt-10 relative z-20 flex flex-col items-center">
         
-        {/* Botón para girar el carnet */}
-        <button
-          onClick={() => setIsFlipped(!isFlipped)}
-          className="mb-4 flex items-center gap-2 bg-white text-[#1c2c4c] px-4 py-2 rounded-full shadow-md border border-gray-200 text-xs font-bold hover:bg-gray-50 transition-all active:scale-95"
-        >
-          <RotateCw size={14} className="text-[#d4af37]" />
-          <span>Girar Carnet (Ver {isFlipped ? 'Frente' : 'Reverso'})</span>
-        </button>
+        {/* Selector / Botón para Girar Carnet */}
+        <div className="mb-4 bg-white p-1 rounded-full shadow-md border border-gray-200 flex gap-1">
+          <button
+            onClick={() => setActiveSide('front')}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+              activeSide === 'front' ? 'bg-[#1c2c4c] text-[#d4af37]' : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Frente
+          </button>
+          <button
+            onClick={() => setActiveSide('back')}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+              activeSide === 'back' ? 'bg-[#1c2c4c] text-[#d4af37]' : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Reverso
+          </button>
+          <button
+            onClick={() => setActiveSide(activeSide === 'front' ? 'back' : 'front')}
+            className="p-1.5 rounded-full bg-gray-100 text-[#1c2c4c] hover:bg-gray-200 transition-colors ml-1"
+            title="Girar Carnet"
+          >
+            <RotateCw size={14} className="text-[#d4af37]" />
+          </button>
+        </div>
 
-        {/* Tarjeta del Carnet (Efecto 3D Flip) */}
-        <div className="w-full aspect-[1/1.58] max-w-[340px] perspective-1000">
-          <div className={`w-full h-full relative transition-transform duration-700 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-            
-            {/* LADO FRONTAL DEL CARNET */}
-            <div className="absolute inset-0 w-full h-full bg-white rounded-3xl shadow-2xl border-2 border-gray-200 overflow-hidden flex flex-col justify-between p-6 backface-hidden">
-              
+        {/* Tarjeta del Carnet */}
+        <div className="w-full aspect-[1/1.58] max-w-[340px] relative">
+          
+          {/* LADO FRONTAL DEL CARNET */}
+          {activeSide === 'front' && (
+            <div 
+              style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+              className="w-full h-full bg-white rounded-3xl shadow-2xl border-2 border-gray-200 overflow-hidden flex flex-col justify-between p-6 animate-fade-in relative"
+            >
               {/* Fondo con marca de agua y trama dorada */}
               <div className="absolute inset-0 opacity-[0.04] pointer-events-none flex items-center justify-center">
                 <img src="/sello-ivad.png" alt="Sello de agua" className="w-[300px] h-[300px] object-contain" />
               </div>
 
               {/* Banda Superior IVAD */}
-              <div className="flex items-center justify-between border-b-2 border-[#1c2c4c] pb-4 relative z-10">
+              <div className="flex items-center justify-between border-b-2 border-[#1c2c4c] pb-3 relative z-10">
                 <div className="flex items-center gap-2">
-                  <img src="/logo.png" alt="IVAD Logo" className="h-9 object-contain" />
+                  <img src="/logo.png" alt="IVAD Logo" className="h-8 object-contain" />
                   <div>
-                    <h2 className="text-sm font-black text-[#1c2c4c] leading-none uppercase tracking-wider">IVAD SRL</h2>
-                    <p className="text-[9px] text-[#d4af37] font-bold tracking-widest uppercase mt-0.5">Home & Goods</p>
+                    <h2 className="text-xs font-black text-[#1c2c4c] leading-none uppercase tracking-wider">IVAD SRL</h2>
+                    <p className="text-[8px] text-[#d4af37] font-bold tracking-widest uppercase mt-0.5">Home & Goods</p>
                   </div>
                 </div>
 
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <span className="inline-block bg-[#1c2c4c] text-[#d4af37] font-mono text-[9px] font-bold px-2 py-0.5 rounded">
                     {empCode}
                   </span>
@@ -81,7 +105,7 @@ const CarnetDigital = () => {
               </div>
 
               {/* Foto de Perfil con Marco de Oro IVAD */}
-              <div className="flex flex-col items-center my-auto relative z-10">
+              <div className="flex flex-col items-center my-auto relative z-10 py-2">
                 <div className="relative mb-3">
                   <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-[#d4af37] bg-[#1c2c4c] p-[3px] shadow-lg">
                     <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
@@ -99,46 +123,50 @@ const CarnetDigital = () => {
                   </div>
                 </div>
 
-                <h3 className="text-lg font-black text-[#1c2c4c] text-center leading-tight">{empName}</h3>
+                <h3 className="text-base sm:text-lg font-black text-[#1c2c4c] text-center leading-tight break-words max-w-[260px]">{empName}</h3>
                 <p className="text-xs font-bold text-[#d4af37] uppercase tracking-wider text-center mt-0.5">{empRole}</p>
                 <p className="text-[11px] text-gray-500 font-medium text-center">{empDept}</p>
               </div>
 
               {/* Código de Barras / QR en la parte inferior */}
-              <div className="border-t border-gray-200 pt-4 flex items-center justify-between relative z-10">
+              <div className="border-t border-gray-200 pt-3 flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-2">
                   <div className="bg-gray-100 p-2 rounded-xl text-[#1c2c4c]">
-                    <QrCode size={32} />
+                    <QrCode size={28} />
                   </div>
                   <div>
                     <span className="text-[9px] font-bold text-gray-400 block uppercase">Estatus Empleado</span>
-                    <span className="text-[10px] font-bold text-[#d4af37] bg-[#1c2c4c] px-2 py-0.5 rounded border border-[#d4af37]/40">
+                    <span className="text-[10px] font-bold text-[#d4af37] bg-[#1c2c4c] px-2 py-0.5 rounded border border-[#d4af37]/40 inline-block">
                       ACTIVO / VERIFICADO
                     </span>
                   </div>
                 </div>
-                <img src="/sello-ivad.png" alt="Sello Oficial" className="w-12 h-12 object-contain opacity-90" />
+                <img src="/sello-ivad.png" alt="Sello Oficial" className="w-10 h-10 object-contain opacity-90" />
               </div>
 
             </div>
+          )}
 
-            {/* LADO REVERSO DEL CARNET */}
-            <div className="absolute inset-0 w-full h-full bg-[#1c2c4c] text-white rounded-3xl shadow-2xl border-2 border-[#d4af37]/50 overflow-hidden flex flex-col justify-between p-6 rotate-y-180 backface-hidden">
-              
+          {/* LADO REVERSO DEL CARNET */}
+          {activeSide === 'back' && (
+            <div 
+              style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+              className="w-full h-full bg-[#1c2c4c] text-white rounded-3xl shadow-2xl border-2 border-[#d4af37]/50 overflow-hidden flex flex-col justify-between p-6 animate-fade-in relative"
+            >
               {/* Encabezado Reverso */}
               <div className="border-b border-[#d4af37]/30 pb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Building2 size={20} className="text-[#d4af37]" />
+                  <Building2 size={18} className="text-[#d4af37]" />
                   <span className="text-xs font-bold uppercase tracking-wider text-white">IVAD Home & Goods SRL</span>
                 </div>
-                <span className="text-[9px] text-[#d4af37] font-mono">RNC: 1-32-45678-9</span>
+                <span className="text-[9px] text-[#d4af37] font-mono shrink-0">RNC: 1-32-45678-9</span>
               </div>
 
               {/* Información Corporativa */}
-              <div className="space-y-3 my-auto text-xs">
+              <div className="space-y-3 my-auto text-xs py-2">
                 <div className="bg-white/5 p-3 rounded-xl border border-white/10">
                   <span className="text-[10px] text-[#d4af37] font-bold uppercase block mb-0.5">Correo Corporativo</span>
-                  <span className="font-mono text-white text-xs">{empEmail}</span>
+                  <span className="font-mono text-white text-xs break-all">{empEmail}</span>
                 </div>
 
                 <div className="bg-white/5 p-3 rounded-xl border border-white/10">
@@ -164,8 +192,8 @@ const CarnetDigital = () => {
               </div>
 
             </div>
+          )}
 
-          </div>
         </div>
 
         {/* Acciones Adicionales */}
