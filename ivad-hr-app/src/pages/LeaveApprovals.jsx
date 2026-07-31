@@ -41,22 +41,22 @@ const LeaveApprovals = () => {
     switch (status) {
       case 'Aprobado':
         return {
-          bg: 'bg-[#4caf50]',
-          icon: <CheckCircle2 size={20} className="text-white mr-1.5" />
+          bg: 'bg-[#1c2c4c] text-[#d4af37] border border-[#d4af37]/40',
+          icon: <CheckCircle2 size={20} className="text-[#d4af37] mr-1.5" />
         };
       case 'Pendiente':
         return {
-          bg: 'bg-[#f5a623]',
-          icon: <Clock size={20} className="text-white mr-1.5" />
+          bg: 'bg-[#1c2c4c]/90 text-amber-300 border border-amber-400/30',
+          icon: <Clock size={20} className="text-amber-300 mr-1.5" />
         };
       case 'Denegado':
         return {
-          bg: 'bg-[#f44336]',
-          icon: <XCircle size={20} className="text-white mr-1.5" />
+          bg: 'bg-gray-800 text-gray-200 border border-gray-600',
+          icon: <XCircle size={20} className="text-red-400 mr-1.5" />
         };
       default:
         return {
-          bg: 'bg-gray-500',
+          bg: 'bg-[#1c2c4c] text-white',
           icon: null
         };
     }
