@@ -1,166 +1,215 @@
-import { useState } from 'react';
-import { useEmployees } from '../context/EmployeeContext';
-import { ChevronLeft, Check, X, Search, FileText } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, Check, X, FileText, BadgeCheck, ShieldAlert, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useEmployees } from '../context/EmployeeContext';
+import { supabase } from '../utils/supabaseClient';
 
 const AdminVerifications = () => {
   const navigate = useNavigate();
-  const { employees, verificationRequests, approveVerification, rejectVerification, revokeVerification, fetchVerificationDocument } = useEmployees();
+  const { employees, refreshEmployees } = useEmployees();
   
   const [activeTab, setActiveTab] = useState('pending'); // 'pending' | 'verified'
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [documentImage, setDocumentImage] = useState(null);
-  const [isLoadingDoc, setIsLoadingDoc] = useState(false);
   const [rejectComment, setRejectComment] = useState('');
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const [selectedEmployeeToRevoke, setSelectedEmployeeToRevoke] = useState(null);
-  const [revokeReason, setRevokeReason] = useState('');
-  const [showRevokeModal, setShowRevokeModal] = useState(false);
+  const fetchRequests = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('verification_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  const pendingRequests = verificationRequests
-    .filter(req => req.status === 'pending')
-    .map(req => {
-      const emp = employees.find(e => e.id === req.employee_id);
-      return { ...req, employee: emp || { name: 'Desconocido', email: 'N/A' } };
-    });
-
-  const verifiedEmployees = employees.filter(e => e.verification_status === 'verified');
-
-  const handleApprove = (id) => {
-    if (window.confirm("¿Estás seguro de otorgar la Verificación Azul a este empleado?")) {
-      approveVerification(id);
-      setSelectedRequest(null);
-      setDocumentImage(null);
+    if (data) {
+      setRequests(data);
+    } else {
+      setRequests([]);
     }
+    setLoading(false);
   };
 
-  const handleViewDocumentClick = async (req) => {
-    setSelectedRequest(req);
-    setIsLoadingDoc(true);
-    setDocumentImage(null);
-    const docBase64 = await fetchVerificationDocument(req.id);
-    setDocumentImage(docBase64);
-    setIsLoadingDoc(false);
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const pendingRequests = requests.filter(r => r.status === 'Pendiente' || r.status === 'pending');
+  const verifiedEmployees = employees.filter(e => e.verification_status === 'verificado' || e.is_admin);
+
+  // Aprobar con tipo de insignia (Azul o Dorada)
+  const handleApprove = async (req, badgeType = 'azul') => {
+    if (!window.confirm(`¿Estás seguro de otorgar la Verificación ${badgeType === 'dorada' ? 'Dorada' : 'Azul'} a ${req.employee_name}?`)) return;
+
+    setIsProcessing(true);
+
+    // 1. Actualizar estado de solicitud
+    await supabase
+      .from('verification_requests')
+      .update({ status: 'Aprobado', badge_type: badgeType })
+      .eq('id', req.id);
+
+    // 2. Actualizar empleado en Supabase
+    await supabase
+      .from('employees')
+      .update({ 
+        verification_status: 'verificado',
+        verification_type: badgeType
+      })
+      .eq('id', req.employee_id);
+
+    // 3. Crear notificación
+    await supabase.from('notifications').insert([{
+      user_id: req.employee_id,
+      title: '¡Cuenta Verificada!',
+      message: `Tus documentos han sido aprobados por Recursos Humanos. Se te ha asignado la Insignia ${badgeType === 'dorada' ? 'Dorada' : 'Azul'}.`,
+      type: 'success',
+      created_at: new Date().toISOString()
+    }]);
+
+    await fetchRequests();
+    if (refreshEmployees) await refreshEmployees();
+    setSelectedRequest(null);
+    setIsProcessing(false);
   };
 
-  const handleRejectClick = (req) => {
-    setSelectedRequest(req);
-    setShowRejectModal(true);
-  };
-
-  const confirmReject = () => {
-    if (!rejectComment.trim()) {
-      alert("Debes escribir un motivo para el rechazo.");
+  const handleReject = async () => {
+    if (!rejectComment.trim() || !selectedRequest) {
+      alert("Debes ingresar el motivo de rechazo.");
       return;
     }
-    rejectVerification(selectedRequest.id, rejectComment);
+
+    setIsProcessing(true);
+
+    // 1. Actualizar solicitud
+    await supabase
+      .from('verification_requests')
+      .update({ status: 'Rechazado', comment: rejectComment })
+      .eq('id', selectedRequest.id);
+
+    // 2. Notificación
+    await supabase.from('notifications').insert([{
+      user_id: selectedRequest.employee_id,
+      title: 'Solicitud de Verificación Rechazada',
+      message: `Tu solicitud fue rechazada. Motivo: ${rejectComment}`,
+      type: 'warning',
+      created_at: new Date().toISOString()
+    }]);
+
+    await fetchRequests();
     setShowRejectModal(false);
     setSelectedRequest(null);
-    setDocumentImage(null);
     setRejectComment('');
+    setIsProcessing(false);
   };
 
-  const handleRevokeClick = (emp) => {
-    setSelectedEmployeeToRevoke(emp);
-    setShowRevokeModal(true);
-  };
+  const handleRevoke = async (emp) => {
+    if (!window.confirm(`¿Revocar la verificación a ${emp.name}?`)) return;
 
-  const confirmRevoke = () => {
-    if (!revokeReason.trim()) {
-      alert("Debes escribir un motivo para la revocación o suspensión.");
-      return;
-    }
-    revokeVerification(selectedEmployeeToRevoke.id, revokeReason);
-    setShowRevokeModal(false);
-    setSelectedEmployeeToRevoke(null);
-    setRevokeReason('');
+    await supabase
+      .from('employees')
+      .update({ verification_status: 'no_verificado', verification_type: null })
+      .eq('id', emp.id);
+
+    if (refreshEmployees) await refreshEmployees();
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen flex justify-center pb-24">
+    <div className="bg-gray-50 min-h-screen flex justify-center pb-24 font-sans text-gray-800">
       <div className="w-full max-w-4xl flex flex-col">
         
-        {/* Header Específico */}
-        <div className="bg-[#1c2c4c] rounded-b-[2rem] shadow-sm h-24 relative mb-6">
-          <div className="text-white p-4 flex items-center h-full">
-            <button onClick={() => navigate(-1)} className="p-1 mr-2 z-10 hover:bg-white/10 rounded-full">
-              <ChevronLeft size={24} />
+        {/* Header */}
+        <div className="bg-[#1c2c4c] text-white pt-10 pb-6 px-4 rounded-b-[2rem] shadow-sm mb-6">
+          <div className="flex items-center">
+            <button onClick={() => navigate('/admin')} className="p-2 text-white hover:bg-white/10 rounded-full mr-2">
+              <ChevronLeft size={22} />
             </button>
-            <h2 className="font-bold text-xl flex-1 text-center z-10 pr-8">Gestión de Verificaciones</h2>
+            <h2 className="font-bold text-lg flex-1 text-center pr-8">Gestión de Verificaciones</h2>
           </div>
         </div>
 
         <div className="px-4">
           
-          {/* Tabs */}
-          <div className="flex gap-4 mb-6">
+          {/* Tabs: Pendientes vs Verificados */}
+          <div className="flex gap-3 mb-6">
             <button 
               onClick={() => setActiveTab('pending')}
-              className={`flex-1 py-3 rounded-xl font-bold transition-colors ${activeTab === 'pending' ? 'bg-[#1c2c4c] text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200'}`}
+              className={`flex-1 py-3 rounded-2xl font-bold text-xs transition-all ${
+                activeTab === 'pending' 
+                  ? 'bg-[#1c2c4c] text-white shadow-md' 
+                  : 'bg-white text-gray-500 border border-gray-200'
+              }`}
             >
               Pendientes ({pendingRequests.length})
             </button>
+            
             <button 
               onClick={() => setActiveTab('verified')}
-              className={`flex-1 py-3 rounded-xl font-bold transition-colors ${activeTab === 'verified' ? 'bg-[#1c2c4c] text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200'}`}
+              className={`flex-1 py-3 rounded-2xl font-bold text-xs transition-all ${
+                activeTab === 'verified' 
+                  ? 'bg-[#1c2c4c] text-white shadow-md' 
+                  : 'bg-white text-gray-500 border border-gray-200'
+              }`}
             >
               Verificados ({verifiedEmployees.length})
             </button>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+            
+            {/* TAB PENDIENTES */}
             {activeTab === 'pending' && (
               <>
-                <h3 className="font-bold text-[#1c2c4c] mb-4 text-lg">Solicitudes Pendientes</h3>
+                <h3 className="font-bold text-[#1c2c4c] mb-4 text-base">Solicitudes Pendientes de Revisión</h3>
 
-                {pendingRequests.length === 0 ? (
-                  <div className="text-center py-10 text-gray-400">
-                    <FileText size={48} className="mx-auto mb-3 opacity-20" />
-                    <p>No hay solicitudes de verificación pendientes.</p>
+                {loading ? (
+                  <p className="text-center text-xs text-gray-400 py-10">Cargando solicitudes...</p>
+                ) : pendingRequests.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    <FileText size={40} className="mx-auto mb-2 opacity-20" />
+                    <p className="text-xs">No hay solicitudes de verificación pendientes.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {pendingRequests.map(req => (
-                      <div key={req.id} className="border border-gray-100 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/50">
+                      <div key={req.id} className="border border-gray-100 rounded-2xl p-4 bg-gray-50/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         
-                        <div className="flex items-center gap-4">
-                          {req.employee.avatar ? (
-                            <img src={req.employee.avatar} alt="avatar" className="w-12 h-12 rounded-full object-cover border" />
-                          ) : (
-                            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500">
-                              {req.employee.name.charAt(0)}
-                            </div>
-                          )}
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 bg-[#1c2c4c] text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">
+                            {req.employee_name ? req.employee_name.charAt(0) : 'U'}
+                          </div>
                           <div>
-                            <h4 className="font-bold text-[#1c2c4c]">{req.employee.name}</h4>
-                            <p className="text-sm text-gray-500">{req.employee.email}</p>
-                            <p className="text-xs text-gray-400 mt-1">Solicitado: {new Date(req.submittedAt).toLocaleDateString()}</p>
+                            <h4 className="font-bold text-[#1c2c4c] text-sm">{req.employee_name}</h4>
+                            <p className="text-xs text-gray-500">{req.employee_email}</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">
+                              Enviado: {new Date(req.created_at || Date.now()).toLocaleDateString()}
+                            </p>
                           </div>
                         </div>
 
-                        <div className="flex flex-col md:flex-row items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
                           <button 
-                            onClick={() => handleViewDocumentClick(req)}
-                            className="text-sm text-ivad-blue font-medium underline"
+                            onClick={() => { setSelectedRequest(req); setShowRejectModal(true); }}
+                            className="bg-red-50 text-red-700 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition flex items-center gap-1 border border-red-200"
                           >
-                            Ver Documento
+                            <X size={14} /> Rechazar
                           </button>
-                          <div className="flex gap-2">
-                            <button 
-                              onClick={() => handleRejectClick(req)}
-                              className="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-100 transition flex items-center gap-1"
-                            >
-                              <X size={16} /> Rechazar
-                            </button>
-                            <button 
-                              onClick={() => handleApprove(req.id)}
-                              className="bg-green-50 text-green-600 px-4 py-2 rounded-lg font-bold hover:bg-green-100 transition flex items-center gap-1"
-                            >
-                              <Check size={16} /> Aprobar
-                            </button>
-                          </div>
+                          
+                          <button 
+                            onClick={() => handleApprove(req, 'azul')}
+                            className="bg-blue-50 text-[#1d9bf0] border border-blue-200 px-3 py-2 rounded-xl text-xs font-bold hover:bg-blue-100 transition flex items-center gap-1"
+                          >
+                            <BadgeCheck size={16} className="text-[#1d9bf0]" /> Insignia Azul
+                          </button>
+
+                          <button 
+                            onClick={() => handleApprove(req, 'dorada')}
+                            className="bg-[#1c2c4c] text-[#d4af37] border border-[#d4af37]/40 px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90 transition flex items-center gap-1 shadow-sm"
+                          >
+                            <BadgeCheck size={16} className="text-[#d4af37]" /> Insignia Dorada
+                          </button>
                         </div>
 
                       </div>
@@ -170,161 +219,88 @@ const AdminVerifications = () => {
               </>
             )}
 
+            {/* TAB VERIFICADOS */}
             {activeTab === 'verified' && (
               <>
-                <h3 className="font-bold text-[#1c2c4c] mb-4 text-lg">Cuentas Verificadas</h3>
+                <h3 className="font-bold text-[#1c2c4c] mb-4 text-base">Personal con Insignia Activa</h3>
 
                 {verifiedEmployees.length === 0 ? (
-                  <div className="text-center py-10 text-gray-400">
-                    <Check size={48} className="mx-auto mb-3 opacity-20" />
-                    <p>No hay cuentas verificadas actualmente.</p>
+                  <div className="text-center py-12 text-gray-400">
+                    <BadgeCheck size={40} className="mx-auto mb-2 opacity-20 text-[#d4af37]" />
+                    <p className="text-xs">No hay cuentas verificadas en este momento.</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {verifiedEmployees.map(emp => (
-                      <div key={emp.id} className="border border-gray-100 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/50">
-                        
-                        <div className="flex items-center gap-4">
-                          {emp.avatar ? (
-                            <img src={emp.avatar} alt="avatar" className="w-12 h-12 rounded-full object-cover border" />
-                          ) : (
-                            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500">
-                              {emp.name.charAt(0)}
+                  <div className="space-y-3">
+                    {verifiedEmployees.map(emp => {
+                      const isGold = emp.verification_type === 'dorada' || emp.is_admin;
+                      
+                      return (
+                        <div key={emp.id} className="border border-gray-100 rounded-2xl p-4 bg-gray-50/60 flex items-center justify-between">
+                          
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] p-[2px] shrink-0">
+                              <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                                {emp.avatar ? (
+                                  <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover scale-[1.35]" />
+                                ) : (
+                                  <span className="font-bold text-xs text-[#1c2c4c]">{emp.name.charAt(0)}</span>
+                                )}
+                              </div>
                             </div>
-                          )}
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-bold text-[#1c2c4c]">{emp.name}</h4>
-                              <Check size={14} className="bg-blue-500 text-white rounded-full p-[2px]" />
+                            
+                            <div>
+                              <h4 className="font-bold text-[#1c2c4c] text-xs flex items-center gap-1">
+                                <span>{emp.name}</span>
+                                <BadgeCheck size={16} className={isGold ? "text-[#d4af37] fill-[#1c2c4c]" : "text-[#1d9bf0] fill-[#1c2c4c]"} />
+                              </h4>
+                              <p className="text-[11px] text-gray-500">{emp.role} • Insignia {isGold ? 'Dorada' : 'Azul'}</p>
                             </div>
-                            <p className="text-sm text-gray-500">{emp.email}</p>
-                            <p className="text-xs text-gray-400 mt-1">{emp.role}</p>
                           </div>
-                        </div>
 
-                        <button 
-                          onClick={() => handleRevokeClick(emp)}
-                          className="bg-gray-100 text-gray-700 border border-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition flex items-center gap-1"
-                        >
-                          Suspender / Revocar
-                        </button>
-                      </div>
-                    ))}
+                          <button 
+                            onClick={() => handleRevoke(emp)}
+                            className="text-xs text-red-500 font-bold hover:underline"
+                          >
+                            Revocar
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </>
             )}
+
           </div>
         </div>
 
       </div>
 
-      {/* Modal para ver documento */}
-      {selectedRequest && !showRejectModal && (
+      {/* Modal Rechazar */}
+      {showRejectModal && selectedRequest && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-              <h3 className="font-bold text-[#1c2c4c]">Documento de Identidad</h3>
-              <button onClick={() => { setSelectedRequest(null); setDocumentImage(null); }} className="text-gray-500 hover:text-gray-800">
-                <X size={24} />
-              </button>
-            </div>
-            <div className="p-4 flex-1 overflow-auto bg-gray-100 flex items-center justify-center min-h-[300px]">
-              {isLoadingDoc ? (
-                <div className="text-center text-gray-500">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1c2c4c] mx-auto mb-3"></div>
-                  <p>Cargando documento...</p>
-                </div>
-              ) : documentImage && documentImage.startsWith('data:image') ? (
-                <img src={documentImage} alt="Documento" className="max-w-full h-auto rounded shadow-sm" />
-              ) : (
-                <div className="text-center p-8 bg-white rounded shadow-sm">
-                  <FileText size={48} className="mx-auto text-gray-400 mb-2" />
-                  <p className="text-gray-600">Documento PDF o no visualizable directamente.</p>
-                  {documentImage && (
-                    <a href={documentImage} download="documento" className="text-ivad-blue underline mt-2 inline-block">Descargar Archivo</a>
-                  )}
-                </div>
-              )}
-            </div>
-            <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-white">
-              <button 
-                onClick={() => handleRejectClick(selectedRequest)}
-                className="px-4 py-2 bg-red-50 text-red-600 font-bold rounded-lg hover:bg-red-100"
-              >
-                Rechazar
-              </button>
-              <button 
-                onClick={() => handleApprove(selectedRequest.id)}
-                className="px-4 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600"
-              >
-                Aprobar Verificación
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal para motivo de rechazo */}
-      {showRejectModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <h3 className="font-bold text-xl text-[#1c2c4c] mb-2">Motivo del Rechazo</h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Este mensaje será enviado a {selectedRequest?.employee?.name} para que pueda corregir su solicitud.
-            </p>
+          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-xl space-y-4">
+            <h3 className="font-bold text-base text-[#1c2c4c]">Motivo de Rechazo</h3>
+            <p className="text-xs text-gray-500">Escribe la razón para informar a {selectedRequest.employee_name}:</p>
             <textarea
-              className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-red-500 h-32 resize-none"
-              placeholder="Ej: La imagen está borrosa, no se lee el número de cédula..."
+              className="w-full border border-gray-200 rounded-xl p-3 text-xs focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none h-28 resize-none"
+              placeholder="Ej: La imagen del documento no es legible..."
               value={rejectComment}
               onChange={(e) => setRejectComment(e.target.value)}
-            ></textarea>
-            <div className="flex gap-3 mt-4 justify-end">
+            />
+            <div className="flex gap-2 justify-end">
               <button 
                 onClick={() => { setShowRejectModal(false); setSelectedRequest(null); }}
-                className="px-4 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg"
+                className="px-4 py-2 text-xs text-gray-600 font-bold hover:bg-gray-100 rounded-xl"
               >
                 Cancelar
               </button>
               <button 
-                onClick={confirmReject}
-                className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700"
+                disabled={isProcessing}
+                onClick={handleReject}
+                className="px-4 py-2 bg-red-600 text-white font-bold rounded-xl text-xs hover:bg-red-700 disabled:opacity-50"
               >
-                Enviar Rechazo
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal para suspender / revocar */}
-      {showRevokeModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <h3 className="font-bold text-xl text-red-600 mb-2 flex items-center gap-2">
-              <X size={24} /> Suspender / Revocar
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Estás a punto de quitarle la Verificación Azul a <strong>{selectedEmployeeToRevoke?.name}</strong>. Escribe el motivo de la suspensión o revocación según las políticas:
-            </p>
-            <textarea
-              className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-red-500 h-32 resize-none"
-              placeholder="Ej: Se detectó un cambio no autorizado en la información de identidad, o se ha cometido una falta grave..."
-              value={revokeReason}
-              onChange={(e) => setRevokeReason(e.target.value)}
-            ></textarea>
-            <div className="flex gap-3 mt-4 justify-end">
-              <button 
-                onClick={() => { setShowRevokeModal(false); setSelectedEmployeeToRevoke(null); }}
-                className="px-4 py-2 text-gray-600 font-medium hover:bg-gray-100 rounded-lg"
-              >
-                Cancelar
-              </button>
-              <button 
-                onClick={confirmRevoke}
-                className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700"
-              >
-                Confirmar Revocación
+                Confirmar Rechazo
               </button>
             </div>
           </div>
