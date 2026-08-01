@@ -177,7 +177,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos (Fotos ajustadas limpias sin padding innecesario) */}
+        {/* Lista de Contactos (Avatares idénticos al Header de Inicio: anillo dorado + fondo azul marino + icono blanco/logo) */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron canales.</p>
@@ -190,11 +190,11 @@ const Chat = () => {
                   selectedContact?.id === emp.id ? 'bg-blue-50/60 border-l-4 border-[#1c2c4c]' : ''
                 } ${emp.isSupportChannel ? 'bg-blue-50/30' : ''}`}
               >
-                {/* Avatar con encuadre perfecto */}
+                {/* Avatar oficial con estilo del Header del Inicio */}
                 <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shadow-sm flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] flex items-center justify-center overflow-hidden p-1 shadow-sm">
                     {emp.avatar ? (
-                      <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover" />
+                      <img src={emp.avatar} alt={emp.name} className="w-full h-full object-contain" />
                     ) : (
                       <User size={22} className="text-white" />
                     )}
@@ -240,9 +240,9 @@ const Chat = () => {
                   <ArrowLeft size={20} />
                 </button>
 
-                <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shrink-0 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] flex items-center justify-center overflow-hidden p-0.5 shrink-0">
                   {selectedContact.avatar ? (
-                    <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover" />
+                    <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-contain" />
                   ) : (
                     <User size={18} className="text-white" />
                   )}
