@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Image as ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -9,6 +9,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const { currentUser, employees } = useEmployees();
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Canal Oficial de Soporte IVAD SRL (Siempre en primer lugar con Insignia Dorada)
   const SOPORTE_CONTACT = {
@@ -28,11 +29,15 @@ const Chat = () => {
     ...employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString())
   ];
   
-  // En móvil/teléfono NO entra a ningún chat automáticamente por defecto
+  // Estado local del Chat
   const [selectedContact, setSelectedContact] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [messages, setMessages] = useState({});
   const [newMessageText, setNewMessageText] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Lightbox / Vista Previa Modal de Imagen
+  const [activePreviewImage, setActivePreviewImage] = useState(null);
 
   // Autoscroll al final del chat
   const scrollToBottom = () => {
@@ -60,6 +65,9 @@ const Chat = () => {
           [selectedContact.id]: data.map(m => ({
             id: m.id,
             text: m.message,
+            mediaUrl: m.media_url || null,
+            mediaType: m.media_type || (m.media_url ? (m.media_url.startsWith('data:image') ? 'image' : 'document') : null),
+            fileName: m.file_name || 'Archivo adjunto',
             time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             isMe: m.sender_id.toString() === currentUser.id.toString()
           }))
@@ -93,6 +101,9 @@ const Chat = () => {
               {
                 id: newMsg.id,
                 text: newMsg.message,
+                mediaUrl: newMsg.media_url || null,
+                mediaType: newMsg.media_type || (newMsg.media_url ? (newMsg.media_url.startsWith('data:image') ? 'image' : 'document') : null),
+                fileName: newMsg.file_name || 'Archivo adjunto',
                 time: new Date(newMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 isMe: false
               }
@@ -107,6 +118,7 @@ const Chat = () => {
     };
   }, [selectedContact, currentUser]);
 
+  // Enviar mensaje de texto
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessageText.trim() || !selectedContact) return;
@@ -118,6 +130,8 @@ const Chat = () => {
     const newMsgObj = {
       id: Date.now().toString(),
       text: textToSend,
+      mediaUrl: null,
+      mediaType: null,
       time: timeNow,
       isMe: true
     };
@@ -135,6 +149,62 @@ const Chat = () => {
       message: textToSend,
       created_at: new Date().toISOString()
     }]);
+  };
+
+  // Adjuntar y Enviar Imagen o Documento
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !selectedContact) return;
+
+    setIsUploading(true);
+
+    try {
+      // Convertir archivo a Base64 para vista previa inmediata
+      const base64Data = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+
+      const isImage = file.type.startsWith('image/');
+      const mediaType = isImage ? 'image' : 'document';
+      const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const newMsgObj = {
+        id: Date.now().toString(),
+        text: isImage ? '📷 Imagen adjunta' : `📄 ${file.name}`,
+        mediaUrl: base64Data,
+        mediaType: mediaType,
+        fileName: file.name,
+        time: timeNow,
+        isMe: true
+      };
+
+      // Mostrar de inmediato en la UI
+      setMessages(prev => ({
+        ...prev,
+        [selectedContact.id]: [...(prev[selectedContact.id] || []), newMsgObj]
+      }));
+
+      // Guardar en Supabase Cloud con metadatos del archivo
+      await supabase.from('direct_messages').insert([{
+        sender_id: currentUser?.id,
+        receiver_id: selectedContact.id,
+        message: isImage ? '📷 Imagen adjunta' : `📄 ${file.name}`,
+        media_url: base64Data,
+        media_type: mediaType,
+        file_name: file.name,
+        created_at: new Date().toISOString()
+      }]);
+
+    } catch (err) {
+      console.error("Error subiendo archivo:", err);
+      alert("Hubo un problema al adjuntar el archivo.");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   const filteredContacts = otherEmployees.filter(emp => 
@@ -177,7 +247,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos (Avatares idénticos al Header de Inicio: anillo dorado + fondo azul marino + icono blanco/logo) */}
+        {/* Lista de Contactos (Fotos amplias y completas abarcando el círculo) */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron canales.</p>
@@ -190,11 +260,11 @@ const Chat = () => {
                   selectedContact?.id === emp.id ? 'bg-blue-50/60 border-l-4 border-[#1c2c4c]' : ''
                 } ${emp.isSupportChannel ? 'bg-blue-50/30' : ''}`}
               >
-                {/* Avatar oficial con estilo del Header del Inicio */}
+                {/* Avatar completo y bien encuadrado */}
                 <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] flex items-center justify-center overflow-hidden p-1 shadow-sm">
+                  <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shadow-sm flex items-center justify-center">
                     {emp.avatar ? (
-                      <img src={emp.avatar} alt={emp.name} className="w-full h-full object-contain" />
+                      <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover scale-[1.25]" />
                     ) : (
                       <User size={22} className="text-white" />
                     )}
@@ -240,9 +310,9 @@ const Chat = () => {
                   <ArrowLeft size={20} />
                 </button>
 
-                <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] flex items-center justify-center overflow-hidden p-0.5 shrink-0">
+                <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shrink-0 flex items-center justify-center">
                   {selectedContact.avatar ? (
-                    <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-contain" />
+                    <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover scale-[1.25]" />
                   ) : (
                     <User size={18} className="text-white" />
                   )}
@@ -272,25 +342,65 @@ const Chat = () => {
               </span>
             </div>
 
-            {/* Mensajes en Tiempo Real */}
+            {/* Mensajes en Tiempo Real con Soporte de Imágenes y Documentos */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
                   {selectedContact.isSupportChannel 
-                    ? "Bienvenido a Soporte IVAD SRL. Escribe tu consulta a continuación para ayudarte."
+                    ? "Bienvenido a Soporte IVAD SRL. Puedes enviarnos mensajes, imágenes o documentos para ayudarte."
                     : "No hay mensajes guardados en este chat. Escribe el primer mensaje a continuación."}
                 </div>
               ) : (
                 activeMessages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
                     <div 
-                      className={`max-w-[80%] sm:max-w-[70%] rounded-2xl p-3 shadow-sm relative ${
+                      className={`max-w-[85%] sm:max-w-[70%] rounded-2xl p-3 shadow-sm relative space-y-2 ${
                         msg.isMe 
                           ? 'bg-[#1c2c4c] text-white rounded-tr-sm' 
                           : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
                       }`}
                     >
-                      <p className="text-xs leading-relaxed">{msg.text}</p>
+                      {/* VISTA PREVIA DE IMAGEN ADJUNTA CON CLICK PARA ABRIR LIGHTBOX */}
+                      {msg.mediaType === 'image' && msg.mediaUrl && (
+                        <div 
+                          onClick={() => setActivePreviewImage(msg.mediaUrl)}
+                          className="relative rounded-xl overflow-hidden cursor-pointer group border border-white/20 bg-black/10 max-h-60 flex items-center justify-center"
+                        >
+                          <img 
+                            src={msg.mediaUrl} 
+                            alt="Imagen adjunta" 
+                            className="w-full h-auto max-h-60 object-cover group-hover:scale-105 transition-transform duration-200" 
+                          />
+                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold">
+                            <Eye size={18} /> Ver Completa
+                          </div>
+                        </div>
+                      )}
+
+                      {/* TARJETA DE DOCUMENTO ADJUNTO */}
+                      {msg.mediaType === 'document' && msg.mediaUrl && (
+                        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/10 border border-white/20">
+                          <FileText size={24} className={msg.isMe ? 'text-[#d4af37]' : 'text-[#1c2c4c]'} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold truncate">{msg.fileName}</p>
+                            <p className="text-[9px] opacity-75">Documento adjunto</p>
+                          </div>
+                          <a 
+                            href={msg.mediaUrl} 
+                            download={msg.fileName}
+                            className="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition shrink-0"
+                            title="Descargar archivo"
+                          >
+                            <Download size={16} />
+                          </a>
+                        </div>
+                      )}
+
+                      {/* TEXTO DEL MENSAJE */}
+                      {msg.text && (
+                        <p className="text-xs leading-relaxed break-words">{msg.text}</p>
+                      )}
+
                       <div className="flex items-center justify-end gap-1 mt-1">
                         <span className={`text-[9px] ${msg.isMe ? 'text-[#d4af37]' : 'text-gray-400'}`}>
                           {msg.time}
@@ -304,11 +414,32 @@ const Chat = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input de Mensaje */}
+            {/* Input de Mensaje y Botón de Adjuntar Archivo */}
             <div className="bg-white border-t border-gray-200 p-3 shrink-0">
               <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto">
-                <button type="button" className="p-2 text-gray-400 hover:text-[#1c2c4c] transition-colors shrink-0">
-                  <Paperclip size={20} />
+                
+                {/* Input Oculto de Archivos */}
+                <input 
+                  type="file" 
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  accept="image/*,.pdf,.doc,.docx,.txt"
+                  className="hidden"
+                />
+
+                {/* Botón Clip para Adjuntar Imágenes/Documentos */}
+                <button 
+                  type="button" 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="p-2 text-gray-400 hover:text-[#1c2c4c] hover:bg-gray-100 rounded-full transition-colors shrink-0 disabled:opacity-50"
+                  title="Adjuntar imagen o documento"
+                >
+                  {isUploading ? (
+                    <span className="w-5 h-5 block animate-spin rounded-full border-2 border-[#1c2c4c] border-t-transparent"></span>
+                  ) : (
+                    <Paperclip size={20} />
+                  )}
                 </button>
 
                 <input 
@@ -333,6 +464,42 @@ const Chat = () => {
         )}
 
       </div>
+
+      {/* LIGHTBOX / MODAL DE VISTA PREVIA DE IMAGEN EN PANTALLA COMPLETA */}
+      {activePreviewImage && (
+        <div className="fixed inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center p-4">
+          <div className="relative max-w-4xl max-h-[85vh] flex items-center justify-center">
+            <button 
+              onClick={() => setActivePreviewImage(null)}
+              className="absolute -top-12 right-0 text-white hover:bg-white/20 p-2 rounded-full transition"
+            >
+              <X size={24} />
+            </button>
+            
+            <img 
+              src={activePreviewImage} 
+              alt="Vista previa completa" 
+              className="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl"
+            />
+          </div>
+          
+          <div className="mt-4 flex gap-4">
+            <a 
+              href={activePreviewImage} 
+              download="imagen-ivad-connect.png"
+              className="bg-[#d4af37] text-[#1c2c4c] px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-yellow-500 transition shadow-md"
+            >
+              <Download size={16} /> Descargar Imagen
+            </a>
+            <button 
+              onClick={() => setActivePreviewImage(null)}
+              className="bg-white/20 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-white/30 transition"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );
