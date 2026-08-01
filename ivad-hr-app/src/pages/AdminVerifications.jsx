@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Check, X, FileText, BadgeCheck, ShieldAlert, Award } from 'lucide-react';
+import { ChevronLeft, Check, X, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
+import { VerificationBadge } from '../components/VerificationBadge';
 
 const AdminVerifications = () => {
   const navigate = useNavigate();
@@ -199,16 +200,16 @@ const AdminVerifications = () => {
                           
                           <button 
                             onClick={() => handleApprove(req, 'azul')}
-                            className="bg-blue-50 text-[#1d9bf0] border border-blue-200 px-3 py-2 rounded-xl text-xs font-bold hover:bg-blue-100 transition flex items-center gap-1"
+                            className="bg-blue-50 text-[#1d9bf0] border border-blue-200 px-3 py-2 rounded-xl text-xs font-bold hover:bg-blue-100 transition flex items-center gap-1.5"
                           >
-                            <BadgeCheck size={16} className="text-[#1d9bf0]" /> Insignia Azul
+                            <VerificationBadge type="azul" size={16} /> Insignia Azul
                           </button>
 
                           <button 
                             onClick={() => handleApprove(req, 'dorada')}
-                            className="bg-[#1c2c4c] text-[#d4af37] border border-[#d4af37]/40 px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90 transition flex items-center gap-1 shadow-sm"
+                            className="bg-[#1c2c4c] text-[#d4af37] border border-[#d4af37]/40 px-3 py-2 rounded-xl text-xs font-bold hover:bg-opacity-90 transition flex items-center gap-1.5 shadow-sm"
                           >
-                            <BadgeCheck size={16} className="text-[#d4af37]" /> Insignia Dorada
+                            <VerificationBadge type="dorada" size={16} /> Insignia Dorada
                           </button>
                         </div>
 
@@ -226,13 +227,13 @@ const AdminVerifications = () => {
 
                 {verifiedEmployees.length === 0 ? (
                   <div className="text-center py-12 text-gray-400">
-                    <BadgeCheck size={40} className="mx-auto mb-2 opacity-20 text-[#d4af37]" />
+                    <VerificationBadge type="dorada" size={40} className="mx-auto mb-2 opacity-30" />
                     <p className="text-xs">No hay cuentas verificadas en este momento.</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {verifiedEmployees.map(emp => {
-                      const isGold = emp.verification_type === 'dorada' || emp.is_admin;
+                      const badgeType = (emp.verification_type === 'dorada' || emp.is_admin) ? 'dorada' : 'azul';
                       
                       return (
                         <div key={emp.id} className="border border-gray-100 rounded-2xl p-4 bg-gray-50/60 flex items-center justify-between">
@@ -249,11 +250,11 @@ const AdminVerifications = () => {
                             </div>
                             
                             <div>
-                              <h4 className="font-bold text-[#1c2c4c] text-xs flex items-center gap-1">
+                              <h4 className="font-bold text-[#1c2c4c] text-xs flex items-center gap-1.5">
                                 <span>{emp.name}</span>
-                                <BadgeCheck size={16} className={isGold ? "text-[#d4af37] fill-[#1c2c4c]" : "text-[#1d9bf0] fill-[#1c2c4c]"} />
+                                <VerificationBadge type={badgeType} size={16} />
                               </h4>
-                              <p className="text-[11px] text-gray-500">{emp.role} • Insignia {isGold ? 'Dorada' : 'Azul'}</p>
+                              <p className="text-[11px] text-gray-500">{emp.role} • Insignia {badgeType === 'dorada' ? 'Dorada' : 'Azul'}</p>
                             </div>
                           </div>
 

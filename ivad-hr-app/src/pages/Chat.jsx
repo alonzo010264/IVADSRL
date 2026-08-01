@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, BadgeCheck, Lock } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
+import { VerificationBadge } from '../components/VerificationBadge';
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -127,20 +128,13 @@ const Chat = () => {
 
   const activeMessages = selectedContact ? (messages[selectedContact.id] || []) : [];
 
-  // Helper para renderizar la insignia según estatus y tipo adquirido
+  // Helper para renderizar la insignia con fondo sólido (Azul o Dorada)
   const renderBadge = (emp) => {
     const isVerified = emp.verification_status === 'verificado' || emp.is_admin;
     if (!isVerified) return null;
 
-    const isGold = emp.verification_type === 'dorada' || emp.is_admin;
-    
-    return (
-      <BadgeCheck 
-        size={15} 
-        className={`shrink-0 ${isGold ? 'text-[#d4af37] fill-[#1c2c4c]' : 'text-[#1d9bf0] fill-[#1c2c4c]'}`} 
-        title={isGold ? "Verificación Dorada IVAD" : "Verificación Azul IVAD"}
-      />
-    );
+    const badgeType = (emp.verification_type === 'dorada' || emp.is_admin) ? 'dorada' : 'azul';
+    return <VerificationBadge type={badgeType} size={16} />;
   };
 
   return (
@@ -176,7 +170,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos (Muestra insignia SOLAMENTE a verificados) */}
+        {/* Lista de Contactos (Con Insignia con fondo sólido azul/dorado) */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron colaboradores.</p>
@@ -205,8 +199,8 @@ const Chat = () => {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    {/* Nombre del colaborador con Insignia ÚNICAMENTE si está verificado */}
-                    <h3 className="font-bold text-[#1c2c4c] text-xs truncate flex items-center gap-1">
+                    {/* Nombre del colaborador con Insignia con Fondo Sólido */}
+                    <h3 className="font-bold text-[#1c2c4c] text-xs truncate flex items-center gap-1.5">
                       <span>{emp.name}</span>
                       {renderBadge(emp)}
                     </h3>
@@ -234,7 +228,7 @@ const Chat = () => {
           </div>
         ) : (
           <>
-            {/* Header del Chat Activo (Con Insignia correspondiente) */}
+            {/* Header del Chat Activo */}
             <div className="bg-[#1c2c4c] text-white px-4 py-3 flex items-center justify-between shadow-sm shrink-0 pt-8 md:pt-3">
               <div className="flex items-center gap-3">
                 <button onClick={() => setSelectedContact(null)} className="p-1.5 text-white hover:bg-white/10 rounded-full md:hidden">
@@ -252,7 +246,7 @@ const Chat = () => {
                 </div>
 
                 <div>
-                  <h2 className="font-bold text-sm leading-tight text-white flex items-center gap-1">
+                  <h2 className="font-bold text-sm leading-tight text-white flex items-center gap-1.5">
                     <span>{selectedContact.name}</span>
                     {renderBadge(selectedContact)}
                   </h2>
