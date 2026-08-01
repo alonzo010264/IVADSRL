@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, BadgeCheck, ShieldCheck, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -11,7 +11,7 @@ const Chat = () => {
 
   const otherEmployees = employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString());
   
-  // Por defecto NO entra a ningún chat automáticamente en móvil
+  // En móvil/teléfono NO entra a ningún chat automáticamente por defecto
   const [selectedContact, setSelectedContact] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [messages, setMessages] = useState({});
@@ -26,12 +26,12 @@ const Chat = () => {
     scrollToBottom();
   }, [messages, selectedContact]);
 
-  // Cargar mensajes directos reales desde Supabase
+  // Cargar mensajes directos reales desde Supabase y suscribirse en TIEMPO REAL
   useEffect(() => {
-    const fetchDirectMessages = async () => {
-      if (!currentUser || !selectedContact) return;
+    if (!currentUser || !selectedContact) return;
 
-      const { data, error } = await supabase
+    const fetchDirectMessages = async () => {
+      const { data } = await supabase
         .from('direct_messages')
         .select('*')
         .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${selectedContact.id}),and(sender_id.eq.${selectedContact.id},receiver_id.eq.${currentUser.id})`)
@@ -56,6 +56,38 @@ const Chat = () => {
     };
 
     fetchDirectMessages();
+
+    // Suscripción en Tiempo Real Supabase
+    const channel = supabase
+      .channel(`direct_chat_${currentUser.id}_${selectedContact.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'direct_messages'
+      }, (payload) => {
+        const newMsg = payload.new;
+        if (
+          (newMsg.sender_id.toString() === selectedContact.id.toString() && newMsg.receiver_id.toString() === currentUser.id.toString())
+        ) {
+          setMessages(prev => ({
+            ...prev,
+            [selectedContact.id]: [
+              ...(prev[selectedContact.id] || []),
+              {
+                id: newMsg.id,
+                text: newMsg.message,
+                time: new Date(newMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                isMe: false
+              }
+            ]
+          }));
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [selectedContact, currentUser]);
 
   const handleSendMessage = async (e) => {
@@ -73,7 +105,7 @@ const Chat = () => {
       isMe: true
     };
 
-    // Actualizar vista local de inmediato
+    // Mostrar de inmediato en la UI
     setMessages(prev => ({
       ...prev,
       [selectedContact.id]: [...(prev[selectedContact.id] || []), newMsgObj]
@@ -98,7 +130,7 @@ const Chat = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-16 md:pb-0">
       
-      {/* COLUMNA IZQUIERDA: LISTA DE EMPLEADOS / CONTACTOS (Selección principal en móvil) */}
+      {/* COLUMNA IZQUIERDA: PANTALLA PRINCIPAL EN TELÉFONO DE SELECCIÓN DE CHAT */}
       <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col h-full ${selectedContact ? 'hidden md:flex' : 'flex'}`}>
         
         {/* Header Lista de Empleados */}
@@ -128,7 +160,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos WhatsApp-Style */}
+        {/* Lista de Contactos con Insignia de Verificación */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron colaboradores.</p>
@@ -157,7 +189,11 @@ const Chat = () => {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    <h3 className="font-bold text-[#1c2c4c] text-xs truncate">{emp.name}</h3>
+                    {/* Nombre del colaborador con Insignia de Verificación Azul/Dorada */}
+                    <h3 className="font-bold text-[#1c2c4c] text-xs truncate flex items-center gap-1">
+                      <span>{emp.name}</span>
+                      <BadgeCheck size={15} className="text-[#d4af37] fill-[#1c2c4c] shrink-0" />
+                    </h3>
                     <span className="text-[9px] text-gray-400 font-medium">En línea</span>
                   </div>
                   <p className="text-[11px] text-gray-500 truncate">{emp.role || emp.department || 'Colaborador IVAD'}</p>
@@ -182,7 +218,7 @@ const Chat = () => {
           </div>
         ) : (
           <>
-            {/* Header del Chat Activo (Con botón de regresar en móvil) */}
+            {/* Header del Chat Activo (Con Insignia de Verificación) */}
             <div className="bg-[#1c2c4c] text-white px-4 py-3 flex items-center justify-between shadow-sm shrink-0 pt-8 md:pt-3">
               <div className="flex items-center gap-3">
                 <button onClick={() => setSelectedContact(null)} className="p-1.5 text-white hover:bg-white/10 rounded-full md:hidden">
@@ -200,7 +236,10 @@ const Chat = () => {
                 </div>
 
                 <div>
-                  <h2 className="font-bold text-sm leading-tight text-white">{selectedContact.name}</h2>
+                  <h2 className="font-bold text-sm leading-tight text-white flex items-center gap-1">
+                    <span>{selectedContact.name}</span>
+                    <BadgeCheck size={16} className="text-[#d4af37] fill-[#1c2c4c] shrink-0" />
+                  </h2>
                   <p className="text-[10px] text-[#d4af37] font-semibold">{selectedContact.role} • En línea</p>
                 </div>
               </div>
@@ -212,14 +251,16 @@ const Chat = () => {
               </div>
             </div>
 
-            {/* Mensajes reales (Sin datos simulados) */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-              <div className="text-center my-2">
-                <span className="text-[10px] bg-gray-200 text-gray-600 px-3 py-1 rounded-full font-bold">
-                  Mensajes cifrados • IVAD SRL
-                </span>
-              </div>
+            {/* Banner de Privacidad y Cifrado */}
+            <div className="bg-amber-50/90 border-b border-amber-200/80 px-4 py-2 text-center flex items-center justify-center gap-2 text-[11px] text-amber-900 shrink-0">
+              <Lock size={13} className="text-[#1c2c4c] shrink-0" />
+              <span>
+                Conversación cifrada. Los mensajes se guardan de forma privada y segura en IVAD Connect únicamente entre los participantes autorizados.
+              </span>
+            </div>
 
+            {/* Mensajes en Tiempo Real */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
                   No hay mensajes guardados en este chat.<br />Escribe el primer mensaje a continuación.
