@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Image as ImageIcon } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Check, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -11,7 +11,7 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Canal Oficial de Soporte IVAD SRL (Siempre en primer lugar con Insignia Dorada)
+  // Canal Oficial de Soporte IVAD SRL
   const SOPORTE_CONTACT = {
     id: 'soporte-ivad-official',
     name: 'Soporte IVAD SRL',
@@ -35,6 +35,10 @@ const Chat = () => {
   const [messages, setMessages] = useState({});
   const [newMessageText, setNewMessageText] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+
+  // Modal de Eliminación de Mensajes
+  const [selectedMsgToDelete, setSelectedMsgToDelete] = useState(null);
+  const [deletedForMeIds, setDeletedForMeIds] = useState(new Set());
 
   // Lightbox / Vista Previa Modal de Imagen
   const [activePreviewImage, setActivePreviewImage] = useState(null);
@@ -60,6 +64,18 @@ const Chat = () => {
         .order('created_at', { ascending: true });
 
       if (data) {
+        // Marcar automáticamente como leídos los mensajes que recibo
+        const unreadIds = data
+          .filter(m => m.receiver_id.toString() === currentUser.id.toString() && !m.is_read)
+          .map(m => m.id);
+
+        if (unreadIds.length > 0) {
+          await supabase
+            .from('direct_messages')
+            .update({ is_read: true })
+            .in('id', unreadIds);
+        }
+
         setMessages(prev => ({
           ...prev,
           [selectedContact.id]: data.map(m => ({
@@ -68,6 +84,9 @@ const Chat = () => {
             mediaUrl: m.media_url || null,
             mediaType: m.media_type || (m.media_url ? (m.media_url.startsWith('data:image') ? 'image' : 'document') : null),
             fileName: m.file_name || 'Archivo adjunto',
+            isRead: m.is_read || false,
+            createdAt: m.created_at,
+            isDeletedForEveryone: m.is_deleted_for_everyone || false,
             time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             isMe: m.sender_id.toString() === currentUser.id.toString()
           }))
@@ -86,28 +105,55 @@ const Chat = () => {
     const channel = supabase
       .channel(`direct_chat_${currentUser.id}_${selectedContact.id}`)
       .on('postgres_changes', {
-        event: 'INSERT',
+        event: '*',
         schema: 'public',
         table: 'direct_messages'
       }, (payload) => {
-        const newMsg = payload.new;
-        if (
-          (newMsg.sender_id.toString() === selectedContact.id.toString() && newMsg.receiver_id.toString() === currentUser.id.toString())
-        ) {
+        if (payload.eventType === 'INSERT') {
+          const newMsg = payload.new;
+          if (
+            (newMsg.sender_id.toString() === selectedContact.id.toString() && newMsg.receiver_id.toString() === currentUser.id.toString()) ||
+            (newMsg.sender_id.toString() === currentUser.id.toString() && newMsg.receiver_id.toString() === selectedContact.id.toString())
+          ) {
+            setMessages(prev => ({
+              ...prev,
+              [selectedContact.id]: [
+                ...(prev[selectedContact.id] || []).filter(m => m.id !== newMsg.id.toString()),
+                {
+                  id: newMsg.id,
+                  text: newMsg.message,
+                  mediaUrl: newMsg.media_url || null,
+                  mediaType: newMsg.media_type || (newMsg.media_url ? (newMsg.media_url.startsWith('data:image') ? 'image' : 'document') : null),
+                  fileName: newMsg.file_name || 'Archivo adjunto',
+                  isRead: newMsg.is_read || false,
+                  createdAt: newMsg.created_at,
+                  isDeletedForEveryone: newMsg.is_deleted_for_everyone || false,
+                  time: new Date(newMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                  isMe: newMsg.sender_id.toString() === currentUser.id.toString()
+                }
+              ]
+            }));
+          }
+        } else if (payload.eventType === 'UPDATE') {
+          const updatedMsg = payload.new;
           setMessages(prev => ({
             ...prev,
-            [selectedContact.id]: [
-              ...(prev[selectedContact.id] || []),
-              {
-                id: newMsg.id,
-                text: newMsg.message,
-                mediaUrl: newMsg.media_url || null,
-                mediaType: newMsg.media_type || (newMsg.media_url ? (newMsg.media_url.startsWith('data:image') ? 'image' : 'document') : null),
-                fileName: newMsg.file_name || 'Archivo adjunto',
-                time: new Date(newMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                isMe: false
-              }
-            ]
+            [selectedContact.id]: (prev[selectedContact.id] || []).map(m => 
+              m.id.toString() === updatedMsg.id.toString() 
+                ? { 
+                    ...m, 
+                    isRead: updatedMsg.is_read, 
+                    text: updatedMsg.is_deleted_for_everyone ? '🚫 Este mensaje fue eliminado' : updatedMsg.message,
+                    isDeletedForEveryone: updatedMsg.is_deleted_for_everyone
+                  }
+                : m
+            )
+          }));
+        } else if (payload.eventType === 'DELETE') {
+          const deletedId = payload.old.id;
+          setMessages(prev => ({
+            ...prev,
+            [selectedContact.id]: (prev[selectedContact.id] || []).filter(m => m.id.toString() !== deletedId.toString())
           }));
         }
       })
@@ -132,6 +178,8 @@ const Chat = () => {
       text: textToSend,
       mediaUrl: null,
       mediaType: null,
+      isRead: false,
+      createdAt: new Date().toISOString(),
       time: timeNow,
       isMe: true
     };
@@ -147,11 +195,12 @@ const Chat = () => {
       sender_id: currentUser?.id,
       receiver_id: selectedContact.id,
       message: textToSend,
+      is_read: false,
       created_at: new Date().toISOString()
     }]);
   };
 
-  // Adjuntar y Enviar Imagen o Documento
+  // Adjuntar y Enviar Imagen o Documento (SIN texto automático de "Imagen adjunta")
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file || !selectedContact) return;
@@ -171,12 +220,18 @@ const Chat = () => {
       const mediaType = isImage ? 'image' : 'document';
       const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+      // Solo si el usuario escribió texto como comentario se incluye texto
+      const textComment = newMessageText.trim();
+      setNewMessageText('');
+
       const newMsgObj = {
         id: Date.now().toString(),
-        text: isImage ? '📷 Imagen adjunta' : `📄 ${file.name}`,
+        text: textComment, // Si no escribió comentario, queda totalmente vacío (estilo WhatsApp)
         mediaUrl: base64Data,
         mediaType: mediaType,
         fileName: file.name,
+        isRead: false,
+        createdAt: new Date().toISOString(),
         time: timeNow,
         isMe: true
       };
@@ -191,10 +246,11 @@ const Chat = () => {
       await supabase.from('direct_messages').insert([{
         sender_id: currentUser?.id,
         receiver_id: selectedContact.id,
-        message: isImage ? '📷 Imagen adjunta' : `📄 ${file.name}`,
+        message: textComment,
         media_url: base64Data,
         media_type: mediaType,
         file_name: file.name,
+        is_read: false,
         created_at: new Date().toISOString()
       }]);
 
@@ -207,17 +263,51 @@ const Chat = () => {
     }
   };
 
+  // Eliminar solo para mí
+  const handleDeleteForMe = (msgId) => {
+    setDeletedForMeIds(prev => new Set(prev).add(msgId.toString()));
+    setSelectedMsgToDelete(null);
+  };
+
+  // Eliminar para todos (Solo si es mi mensaje y el destinatario NO lo ha visto aún)
+  const handleDeleteForEveryone = async (msg) => {
+    if (!msg.isMe) return;
+    if (msg.isRead) {
+      alert("No se puede eliminar para todos porque la otra persona ya vio el mensaje.");
+      return;
+    }
+
+    // Actualizar en Supabase para que a la otra persona le aparezca "Este mensaje fue eliminado"
+    await supabase
+      .from('direct_messages')
+      .update({ message: '🚫 Este mensaje fue eliminado', media_url: null, media_type: null, is_deleted_for_everyone: true })
+      .eq('id', msg.id);
+
+    // Actualizar estado local
+    setMessages(prev => ({
+      ...prev,
+      [selectedContact.id]: (prev[selectedContact.id] || []).map(m => 
+        m.id.toString() === msg.id.toString() 
+          ? { ...m, text: '🚫 Este mensaje fue eliminado', mediaUrl: null, mediaType: null, isDeletedForEveryone: true }
+          : m
+      )
+    }));
+
+    setSelectedMsgToDelete(null);
+  };
+
   const filteredContacts = otherEmployees.filter(emp => 
     emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (emp.role && emp.role.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const activeMessages = selectedContact ? (messages[selectedContact.id] || []) : [];
+  const activeMessages = (selectedContact ? (messages[selectedContact.id] || []) : [])
+    .filter(m => !deletedForMeIds.has(m.id.toString()));
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-16 md:pb-0">
       
-      {/* COLUMNA IZQUIERDA: PANTALLA PRINCIPAL EN TELÉFONO DE SELECCIÓN DE CHAT */}
+      {/* COLUMNA IZQUIERDA: SELECCIÓN DE CHAT EN MÓVIL/DESKTOP */}
       <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col h-full ${selectedContact ? 'hidden md:flex' : 'flex'}`}>
         
         {/* Header Lista de Empleados */}
@@ -233,7 +323,7 @@ const Chat = () => {
           </span>
         </div>
 
-        {/* Buscador de Empleados */}
+        {/* Buscador */}
         <div className="p-3 bg-gray-50 border-b border-gray-100">
           <div className="relative flex items-center">
             <Search size={16} className="absolute left-3 text-gray-400" />
@@ -247,7 +337,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos (Fotos amplias y completas abarcando el círculo) */}
+        {/* Lista de Contactos */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron canales.</p>
@@ -260,7 +350,6 @@ const Chat = () => {
                   selectedContact?.id === emp.id ? 'bg-blue-50/60 border-l-4 border-[#1c2c4c]' : ''
                 } ${emp.isSupportChannel ? 'bg-blue-50/30' : ''}`}
               >
-                {/* Avatar completo y bien encuadrado */}
                 <div className="relative shrink-0">
                   <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shadow-sm flex items-center justify-center">
                     {emp.avatar ? (
@@ -274,7 +363,6 @@ const Chat = () => {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    {/* Nombre con insignia si aplica */}
                     <h3 className="font-bold text-[#1c2c4c] text-xs truncate flex items-center gap-1.5">
                       <span>{emp.name}</span>
                       <VerificationBadge emp={emp} size={16} />
@@ -338,48 +426,62 @@ const Chat = () => {
             <div className="bg-amber-50/90 border-b border-amber-200/80 px-4 py-2 text-center flex items-center justify-center gap-2 text-[11px] text-amber-900 shrink-0">
               <Lock size={13} className="text-[#1c2c4c] shrink-0" />
               <span>
-                Conversación cifrada. Los mensajes se guardan de forma privada y segura en IVAD Connect únicamente entre los participantes autorizados.
+                Conversación cifrada. Los mensajes se guardan de forma privada y segura en IVAD Connect.
               </span>
             </div>
 
-            {/* Mensajes en Tiempo Real con Soporte de Imágenes y Documentos */}
+            {/* Lista de Mensajes con Formato WhatsApp Limpio */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
                   {selectedContact.isSupportChannel 
-                    ? "Bienvenido a Soporte IVAD SRL. Puedes enviarnos mensajes, imágenes o documentos para ayudarte."
+                    ? "Bienvenido a Soporte IVAD SRL. Escribe tu consulta a continuación."
                     : "No hay mensajes guardados en este chat. Escribe el primer mensaje a continuación."}
                 </div>
               ) : (
                 activeMessages.map((msg) => (
-                  <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
+                  <div key={msg.id} className={`flex group relative ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
+                    
+                    {/* Botón de opciones/eliminar mensaje */}
+                    {!msg.isDeletedForEveryone && (
+                      <button 
+                        onClick={() => setSelectedMsgToDelete(msg)}
+                        className={`absolute top-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-black/40 text-white hover:bg-black/60 ${
+                          msg.isMe ? '-left-7' : '-right-7'
+                        }`}
+                        title="Opciones de mensaje"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+
                     <div 
-                      className={`max-w-[85%] sm:max-w-[70%] rounded-2xl p-3 shadow-sm relative space-y-2 ${
+                      className={`max-w-[85%] sm:max-w-[70%] rounded-2xl p-2.5 shadow-sm relative ${
                         msg.isMe 
                           ? 'bg-[#1c2c4c] text-white rounded-tr-sm' 
                           : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
-                      }`}
+                      } ${msg.isDeletedForEveryone ? 'italic text-gray-400 opacity-75' : ''}`}
                     >
-                      {/* VISTA PREVIA DE IMAGEN ADJUNTA CON CLICK PARA ABRIR LIGHTBOX */}
-                      {msg.mediaType === 'image' && msg.mediaUrl && (
+                      {/* VISTA PREVIA DE IMAGEN (SIN TEXTO FORZADO ABAJO) */}
+                      {msg.mediaType === 'image' && msg.mediaUrl && !msg.isDeletedForEveryone && (
                         <div 
                           onClick={() => setActivePreviewImage(msg.mediaUrl)}
-                          className="relative rounded-xl overflow-hidden cursor-pointer group border border-white/20 bg-black/10 max-h-60 flex items-center justify-center"
+                          className="relative rounded-xl overflow-hidden cursor-pointer group/img border border-white/20 bg-black/10 flex items-center justify-center"
                         >
                           <img 
                             src={msg.mediaUrl} 
                             alt="Imagen adjunta" 
-                            className="w-full h-auto max-h-60 object-cover group-hover:scale-105 transition-transform duration-200" 
+                            className="w-full h-auto max-h-64 object-cover group-hover/img:scale-105 transition-transform duration-200" 
                           />
-                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold">
+                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold">
                             <Eye size={18} /> Ver Completa
                           </div>
                         </div>
                       )}
 
                       {/* TARJETA DE DOCUMENTO ADJUNTO */}
-                      {msg.mediaType === 'document' && msg.mediaUrl && (
-                        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/10 border border-white/20">
+                      {msg.mediaType === 'document' && msg.mediaUrl && !msg.isDeletedForEveryone && (
+                        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/10 border border-white/20 my-1">
                           <FileText size={24} className={msg.isMe ? 'text-[#d4af37]' : 'text-[#1c2c4c]'} />
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-bold truncate">{msg.fileName}</p>
@@ -396,17 +498,27 @@ const Chat = () => {
                         </div>
                       )}
 
-                      {/* TEXTO DEL MENSAJE */}
+                      {/* COMENTARIO / TEXTO DEL MENSAJE (Solo si existe texto escrito por el usuario) */}
                       {msg.text && (
-                        <p className="text-xs leading-relaxed break-words">{msg.text}</p>
+                        <p className="text-xs leading-relaxed break-words px-1 pt-1">{msg.text}</p>
                       )}
 
-                      <div className="flex items-center justify-end gap-1 mt-1">
+                      {/* HORA Y PALOMITAS DEL VISTO (WhatsApp Double Check) */}
+                      <div className="flex items-center justify-end gap-1 mt-1 px-1">
                         <span className={`text-[9px] ${msg.isMe ? 'text-[#d4af37]' : 'text-gray-400'}`}>
                           {msg.time}
                         </span>
-                        {msg.isMe && <CheckCheck size={12} className="text-[#d4af37]" />}
+                        
+                        {/* Indicadores de Estado de Lectura / Visto */}
+                        {msg.isMe && !msg.isDeletedForEveryone && (
+                          msg.isRead ? (
+                            <CheckCheck size={14} className="text-[#1d9bf0] font-bold" title="Visto" />
+                          ) : (
+                            <CheckCheck size={14} className="text-gray-400/80" title="Entregado" />
+                          )
+                        )}
                       </div>
+
                     </div>
                   </div>
                 ))
@@ -414,11 +526,10 @@ const Chat = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input de Mensaje y Botón de Adjuntar Archivo */}
+            {/* Input de Mensaje y Adjuntos */}
             <div className="bg-white border-t border-gray-200 p-3 shrink-0">
               <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto">
                 
-                {/* Input Oculto de Archivos */}
                 <input 
                   type="file" 
                   ref={fileInputRef}
@@ -427,7 +538,6 @@ const Chat = () => {
                   className="hidden"
                 />
 
-                {/* Botón Clip para Adjuntar Imágenes/Documentos */}
                 <button 
                   type="button" 
                   onClick={() => fileInputRef.current?.click()}
@@ -465,7 +575,62 @@ const Chat = () => {
 
       </div>
 
-      {/* LIGHTBOX / MODAL DE VISTA PREVIA DE IMAGEN EN PANTALLA COMPLETA */}
+      {/* MODAL / POPUP DE ELIMINAR MENSAJE (Estilo WhatsApp) */}
+      {selectedMsgToDelete && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl space-y-4">
+            
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <h3 className="font-bold text-sm text-[#1c2c4c]">¿Deseas eliminar este mensaje?</h3>
+              <button onClick={() => setSelectedMsgToDelete(null)} className="text-gray-400 hover:text-gray-600">
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Aviso si la otra persona ya vio el mensaje */}
+            {selectedMsgToDelete.isMe && selectedMsgToDelete.isRead && (
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-start gap-2 text-[11px] text-amber-800">
+                <AlertCircle size={16} className="shrink-0 text-amber-600 mt-0.5" />
+                <span>
+                  El destinatario <strong>ya vio</strong> este mensaje. Solo puedes eliminarlo para ti.
+                </span>
+              </div>
+            )}
+
+            <div className="space-y-2 pt-1">
+              
+              {/* Botón Eliminar para todos (Solo si es mi mensaje y NO ha sido leído) */}
+              {selectedMsgToDelete.isMe && !selectedMsgToDelete.isRead && (
+                <button
+                  onClick={() => handleDeleteForEveryone(selectedMsgToDelete)}
+                  className="w-full py-3 bg-red-600 text-white font-bold text-xs rounded-2xl hover:bg-red-700 transition shadow-sm"
+                >
+                  Eliminar para todos
+                </button>
+              )}
+
+              {/* Botón Eliminar para mí (Siempre disponible) */}
+              <button
+                onClick={() => handleDeleteForMe(selectedMsgToDelete.id)}
+                className="w-full py-3 bg-gray-100 text-[#1c2c4c] font-bold text-xs rounded-2xl hover:bg-gray-200 transition"
+              >
+                Eliminar para mí
+              </button>
+
+              <button
+                onClick={() => setSelectedMsgToDelete(null)}
+                className="w-full py-2.5 text-gray-500 font-bold text-xs hover:bg-gray-50 rounded-2xl"
+              >
+                Cancelar
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* LIGHTBOX / MODAL DE VISTA PREVIA DE IMAGEN */}
       {activePreviewImage && (
         <div className="fixed inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center p-4">
           <div className="relative max-w-4xl max-h-[85vh] flex items-center justify-center">
