@@ -1,17 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 /**
- * Insignia de Verificación Oficial con Fondo Relleno Sólido (Azul o Dorada) y Cotejo Blanco
+ * Componente de Insignia de Verificación Oficial con Fondo Relleno Sólido (Azul o Dorada)
+ * Muestra tooltip al pasar el cursor y un popover informativo explicativo al hacer clic.
  */
 export const VerificationBadge = ({ type = 'azul', size = 16, className = '' }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
   const isGold = type === 'dorada' || type === 'gold';
-  // Azul oficial de verificación (#1d9bf0) o Dorado de alta calidad (#d4af37)
+  
+  // Colores oficiales
   const badgeColor = isGold ? '#d4af37' : '#1d9bf0';
+  const label = isGold 
+    ? "Verificación Oficial de Administración IVAD SRL" 
+    : "Cuenta de Colaborador Verificada por Recursos Humanos";
 
   return (
     <span 
-      className={`inline-flex items-center justify-center shrink-0 ${className}`} 
-      title={isGold ? "Verificación Dorada IVAD" : "Verificación Azul IVAD"}
+      className={`relative inline-flex items-center justify-center shrink-0 cursor-pointer ${className}`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setShowTooltip(!showTooltip);
+      }}
+      title={label}
     >
       <svg 
         width={size} 
@@ -19,7 +31,7 @@ export const VerificationBadge = ({ type = 'azul', size = 16, className = '' }) 
         viewBox="0 0 24 24" 
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="drop-shadow-sm"
+        className="drop-shadow-sm hover:scale-110 transition-transform"
       >
         {/* Fondo Sólido de Sello Redondeado (Starburst Verification Seal) */}
         <path 
@@ -32,10 +44,19 @@ export const VerificationBadge = ({ type = 'azul', size = 16, className = '' }) 
           fill="#ffffff" 
         />
       </svg>
+
+      {/* Popover flotante explicativo */}
+      {showTooltip && (
+        <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 z-50 whitespace-nowrap bg-[#1c2c4c] text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-xl border border-[#d4af37]/40 pointer-events-none transition-all">
+          <span className="flex items-center gap-1">
+            <span className={`w-1.5 h-1.5 rounded-full ${isGold ? 'bg-[#d4af37]' : 'bg-[#1d9bf0]'}`}></span>
+            {label}
+          </span>
+        </span>
+      )}
     </span>
   );
 };
 
 export const CustomVerificationBadge = VerificationBadge;
-
 export default VerificationBadge;

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -10,7 +10,23 @@ const Chat = () => {
   const { currentUser, employees } = useEmployees();
   const messagesEndRef = useRef(null);
 
-  const otherEmployees = employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString());
+  // Canal Oficial de Soporte IVAD SRL (Siempre en primer lugar con Insignia Dorada)
+  const SOPORTE_CONTACT = {
+    id: 'soporte-ivad-official',
+    name: 'Soporte IVAD SRL',
+    role: 'Soporte Técnico & Atención al Colaborador',
+    department: 'Recursos Humanos & Sistemas',
+    avatar: '/logo.png',
+    verification_status: 'verificado',
+    verification_type: 'dorada',
+    is_admin: true,
+    isSupportChannel: true
+  };
+
+  const otherEmployees = [
+    SOPORTE_CONTACT,
+    ...employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString())
+  ];
   
   // En móvil/teléfono NO entra a ningún chat automáticamente por defecto
   const [selectedContact, setSelectedContact] = useState(null);
@@ -128,12 +144,12 @@ const Chat = () => {
 
   const activeMessages = selectedContact ? (messages[selectedContact.id] || []) : [];
 
-  // Helper para renderizar la insignia con fondo sólido (Azul o Dorada)
+  // Helper para renderizar la insignia según estatus y tipo adquirido (con tooltip)
   const renderBadge = (emp) => {
-    const isVerified = emp.verification_status === 'verificado' || emp.is_admin;
+    const isVerified = emp.verification_status === 'verificado' || emp.is_admin || emp.isSupportChannel;
     if (!isVerified) return null;
 
-    const badgeType = (emp.verification_type === 'dorada' || emp.is_admin) ? 'dorada' : 'azul';
+    const badgeType = (emp.verification_type === 'dorada' || emp.is_admin || emp.isSupportChannel) ? 'dorada' : 'azul';
     return <VerificationBadge type={badgeType} size={16} />;
   };
 
@@ -149,10 +165,10 @@ const Chat = () => {
             <button onClick={() => navigate(-1)} className="p-1 text-white hover:bg-white/10 rounded-full md:hidden">
               <ArrowLeft size={22} />
             </button>
-            <h1 className="font-bold text-base">Chat Interno IVAD</h1>
+            <h1 className="font-bold text-base">Chat Interno / Ayuda</h1>
           </div>
           <span className="text-[11px] font-bold text-[#d4af37] bg-white/10 px-2.5 py-1 rounded-full border border-[#d4af37]/30">
-            {otherEmployees.length} Compañeros
+            {otherEmployees.length} Canales
           </span>
         </div>
 
@@ -162,7 +178,7 @@ const Chat = () => {
             <Search size={16} className="absolute left-3 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Buscar compañero por nombre o área..." 
+              placeholder="Buscar compañero o Soporte IVAD..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none"
@@ -170,10 +186,10 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos (Con Insignia con fondo sólido azul/dorado) */}
+        {/* Lista de Contactos (Soporte IVAD de primero con Insignia Dorada + Empleados Verificados) */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
-            <p className="text-center text-xs text-gray-400 py-8">No se encontraron colaboradores.</p>
+            <p className="text-center text-xs text-gray-400 py-8">No se encontraron canales.</p>
           ) : (
             filteredContacts.map(emp => (
               <button
@@ -181,14 +197,14 @@ const Chat = () => {
                 onClick={() => setSelectedContact(emp)}
                 className={`w-full p-3.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${
                   selectedContact?.id === emp.id ? 'bg-blue-50/60 border-l-4 border-[#1c2c4c]' : ''
-                }`}
+                } ${emp.isSupportChannel ? 'bg-blue-50/30' : ''}`}
               >
                 {/* Avatar con anillo dorado */}
                 <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] p-[2px] shadow-sm">
-                    <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                  <div className={`w-12 h-12 rounded-full border-2 p-[2px] shadow-sm ${emp.isSupportChannel ? 'border-[#d4af37] bg-[#1c2c4c]' : 'border-[#d4af37] bg-[#1c2c4c]'}`}>
+                    <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center p-1">
                       {emp.avatar ? (
-                        <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover scale-[1.35]" />
+                        <img src={emp.avatar} alt={emp.name} className="w-full h-full object-contain" />
                       ) : (
                         <User size={20} className="text-gray-400" />
                       )}
@@ -199,7 +215,7 @@ const Chat = () => {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    {/* Nombre del colaborador con Insignia con Fondo Sólido */}
+                    {/* Nombre del colaborador o Soporte con Insignia correspondiente */}
                     <h3 className="font-bold text-[#1c2c4c] text-xs truncate flex items-center gap-1.5">
                       <span>{emp.name}</span>
                       {renderBadge(emp)}
@@ -221,10 +237,10 @@ const Chat = () => {
         {!selectedContact ? (
           <div className="text-center p-8">
             <div className="w-16 h-16 rounded-full bg-[#1c2c4c]/10 text-[#1c2c4c] flex items-center justify-center mx-auto mb-3">
-              <User size={32} />
+              <Headphones size={32} />
             </div>
-            <h2 className="font-bold text-[#1c2c4c] text-base">Selecciona un compañero para chatear</h2>
-            <p className="text-xs text-gray-500 mt-1">Elige a un colaborador de la lista para iniciar una conversación privada.</p>
+            <h2 className="font-bold text-[#1c2c4c] text-base">Selecciona un canal para chatear</h2>
+            <p className="text-xs text-gray-500 mt-1">Elige entre Soporte IVAD SRL o un colaborador para iniciar la conversación.</p>
           </div>
         ) : (
           <>
@@ -237,7 +253,7 @@ const Chat = () => {
 
                 <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-white p-[1.5px] overflow-hidden shrink-0">
                   {selectedContact.avatar ? (
-                    <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover scale-[1.35]" />
+                    <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-contain p-0.5" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
                       <User size={18} />
@@ -273,7 +289,9 @@ const Chat = () => {
             <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
-                  No hay mensajes guardados en este chat.<br />Escribe el primer mensaje a continuación.
+                  {selectedContact.isSupportChannel 
+                    ? "Bienvenido a Soporte IVAD SRL. Escribe tu consulta a continuación para ayudarte."
+                    : "No hay mensajes guardados en este chat. Escribe el primer mensaje a continuación."}
                 </div>
               ) : (
                 activeMessages.map((msg) => (
