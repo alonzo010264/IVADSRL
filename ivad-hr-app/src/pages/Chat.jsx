@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Circle } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -9,18 +9,13 @@ const Chat = () => {
   const { currentUser, employees } = useEmployees();
   const messagesEndRef = useRef(null);
 
-  // Seleccionar primer empleado disponible que no sea el usuario actual
   const otherEmployees = employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString());
+  
+  // Por defecto NO entra a ningún chat automáticamente en móvil
   const [selectedContact, setSelectedContact] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [messages, setMessages] = useState({});
   const [newMessageText, setNewMessageText] = useState('');
-
-  useEffect(() => {
-    if (otherEmployees.length > 0 && !selectedContact) {
-      setSelectedContact(otherEmployees[0]);
-    }
-  }, [otherEmployees]);
 
   // Autoscroll al final del chat
   const scrollToBottom = () => {
@@ -31,7 +26,7 @@ const Chat = () => {
     scrollToBottom();
   }, [messages, selectedContact]);
 
-  // Cargar mensajes directos entre empleados
+  // Cargar mensajes directos reales desde Supabase
   useEffect(() => {
     const fetchDirectMessages = async () => {
       if (!currentUser || !selectedContact) return;
@@ -53,16 +48,10 @@ const Chat = () => {
           }))
         }));
       } else {
-        // Mock inicial de conversación interna
-        if (!messages[selectedContact.id]) {
-          setMessages(prev => ({
-            ...prev,
-            [selectedContact.id]: [
-              { id: '1', text: `Hola ${currentUser?.name ? currentUser.name.split(' ')[0] : ''}, ¿cómo va todo en la sucursal hoy?`, time: '09:15 AM', isMe: false },
-              { id: '2', text: '¡Todo bien! Saludos.', time: '09:18 AM', isMe: true }
-            ]
-          }));
-        }
+        setMessages(prev => ({
+          ...prev,
+          [selectedContact.id]: []
+        }));
       }
     };
 
@@ -84,13 +73,13 @@ const Chat = () => {
       isMe: true
     };
 
-    // Actualizar vista local
+    // Actualizar vista local de inmediato
     setMessages(prev => ({
       ...prev,
       [selectedContact.id]: [...(prev[selectedContact.id] || []), newMsgObj]
     }));
 
-    // Enviar a Supabase
+    // Guardar en Supabase Cloud
     await supabase.from('direct_messages').insert([{
       sender_id: currentUser?.id,
       receiver_id: selectedContact.id,
@@ -109,7 +98,7 @@ const Chat = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-16 md:pb-0">
       
-      {/* COLUMNA IZQUIERDA: LISTA DE CONTACTOS / EMPLEADOS IVAD (Estilo WhatsApp) */}
+      {/* COLUMNA IZQUIERDA: LISTA DE EMPLEADOS / CONTACTOS (Selección principal en móvil) */}
       <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col h-full ${selectedContact ? 'hidden md:flex' : 'flex'}`}>
         
         {/* Header Lista de Empleados */}
@@ -139,7 +128,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos */}
+        {/* Lista de Contactos WhatsApp-Style */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron colaboradores.</p>
@@ -180,7 +169,7 @@ const Chat = () => {
 
       </div>
 
-      {/* COLUMNA DERECHA: PANTALLA DE CHAT ACTIVO (Estilo WhatsApp) */}
+      {/* COLUMNA DERECHA: VENTANA DE CHAT ACTIVO (Estilo WhatsApp) */}
       <div className={`flex-1 flex flex-col h-full bg-[#f4f6f9] ${!selectedContact ? 'hidden md:flex items-center justify-center' : 'flex'}`}>
         
         {!selectedContact ? (
@@ -189,11 +178,11 @@ const Chat = () => {
               <User size={32} />
             </div>
             <h2 className="font-bold text-[#1c2c4c] text-base">Selecciona un compañero para chatear</h2>
-            <p className="text-xs text-gray-500 mt-1">Comunicación interna directa entre colaboradores de IVAD SRL.</p>
+            <p className="text-xs text-gray-500 mt-1">Elige a un colaborador de la lista para iniciar una conversación privada.</p>
           </div>
         ) : (
           <>
-            {/* Header del Chat Activo */}
+            {/* Header del Chat Activo (Con botón de regresar en móvil) */}
             <div className="bg-[#1c2c4c] text-white px-4 py-3 flex items-center justify-between shadow-sm shrink-0 pt-8 md:pt-3">
               <div className="flex items-center gap-3">
                 <button onClick={() => setSelectedContact(null)} className="p-1.5 text-white hover:bg-white/10 rounded-full md:hidden">
@@ -223,7 +212,7 @@ const Chat = () => {
               </div>
             </div>
 
-            {/* Mensajes (Lista estilo WhatsApp) */}
+            {/* Mensajes reales (Sin datos simulados) */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
               <div className="text-center my-2">
                 <span className="text-[10px] bg-gray-200 text-gray-600 px-3 py-1 rounded-full font-bold">
@@ -231,25 +220,31 @@ const Chat = () => {
                 </span>
               </div>
 
-              {activeMessages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
-                  <div 
-                    className={`max-w-[80%] sm:max-w-[70%] rounded-2xl p-3 shadow-sm relative ${
-                      msg.isMe 
-                        ? 'bg-[#1c2c4c] text-white rounded-tr-sm' 
-                        : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
-                    }`}
-                  >
-                    <p className="text-xs leading-relaxed">{msg.text}</p>
-                    <div className="flex items-center justify-end gap-1 mt-1">
-                      <span className={`text-[9px] ${msg.isMe ? 'text-[#d4af37]' : 'text-gray-400'}`}>
-                        {msg.time}
-                      </span>
-                      {msg.isMe && <CheckCheck size={12} className="text-[#d4af37]" />}
+              {activeMessages.length === 0 ? (
+                <div className="text-center py-12 text-gray-400 text-xs">
+                  No hay mensajes guardados en este chat.<br />Escribe el primer mensaje a continuación.
+                </div>
+              ) : (
+                activeMessages.map((msg) => (
+                  <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
+                    <div 
+                      className={`max-w-[80%] sm:max-w-[70%] rounded-2xl p-3 shadow-sm relative ${
+                        msg.isMe 
+                          ? 'bg-[#1c2c4c] text-white rounded-tr-sm' 
+                          : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
+                      }`}
+                    >
+                      <p className="text-xs leading-relaxed">{msg.text}</p>
+                      <div className="flex items-center justify-end gap-1 mt-1">
+                        <span className={`text-[9px] ${msg.isMe ? 'text-[#d4af37]' : 'text-gray-400'}`}>
+                          {msg.time}
+                        </span>
+                        {msg.isMe && <CheckCheck size={12} className="text-[#d4af37]" />}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
               <div ref={messagesEndRef} />
             </div>
 

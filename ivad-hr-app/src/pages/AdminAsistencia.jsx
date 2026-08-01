@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Calendar, Save, CheckCircle2, User, Search, Award, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, Calendar, Save, CheckCircle2, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -10,24 +10,40 @@ const AdminAsistencia = () => {
 
   const [selectedMonth, setSelectedMonth] = useState('2026-07');
   const [attendanceData, setAttendanceData] = useState({});
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [savingEmpId, setSavingEmpId] = useState(null);
 
+  // Cargar datos reales desde Supabase o inicializar en 0
   useEffect(() => {
-    // Inicializar o cargar datos del mes para cada empleado
-    const initialMap = {};
-    employees.forEach(emp => {
-      initialMap[emp.id] = {
-        days_worked: 22,
-        tardanzas: 0,
-        justified_absences: 0,
-        unjustified_absences: 0,
-        overtime_hours: 0,
-        performance_status: 'Excelente'
-      };
-    });
-    setAttendanceData(initialMap);
+    const fetchAttendance = async () => {
+      const { data } = await supabase
+        .from('attendance_records')
+        .select('*')
+        .eq('month_period', selectedMonth);
+
+      const dbMap = {};
+      if (data && data.length > 0) {
+        data.forEach(item => {
+          dbMap[item.employee_id] = item;
+        });
+      }
+
+      const map = {};
+      employees.forEach(emp => {
+        map[emp.id] = dbMap[emp.id] || {
+          days_worked: 0,
+          tardanzas: 0,
+          justified_absences: 0,
+          unjustified_absences: 0,
+          overtime_hours: 0,
+          performance_status: 'Excelente'
+        };
+      });
+
+      setAttendanceData(map);
+    };
+
+    fetchAttendance();
   }, [employees, selectedMonth]);
 
   const handleInputChange = (empId, field, value) => {
@@ -52,11 +68,11 @@ const AdminAsistencia = () => {
       updated_at: new Date().toISOString()
     };
 
-    const { data, error } = await supabase
+    await supabase
       .from('attendance_records')
       .upsert([record], { onConflict: 'employee_id,month_period' });
 
-    setMessage(`¡Asistencia de ${emp.name} guardada correctamente para ${selectedMonth}!`);
+    setMessage(`¡Asistencia de ${emp.name} guardada en Supabase para el período ${selectedMonth}!`);
     setSavingEmpId(null);
     setTimeout(() => setMessage(''), 4000);
   };
@@ -112,7 +128,7 @@ const AdminAsistencia = () => {
         <div className="space-y-4">
           {employees.map(emp => {
             const empData = attendanceData[emp.id] || {
-              days_worked: 22,
+              days_worked: 0,
               tardanzas: 0,
               justified_absences: 0,
               unjustified_absences: 0,

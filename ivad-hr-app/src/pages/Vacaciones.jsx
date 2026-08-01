@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
+import { supabase } from '../utils/supabaseClient';
 
 const Vacaciones = () => {
   const navigate = useNavigate();
   const { currentUser } = useEmployees();
+  const [vacationHistory, setVacationHistory] = useState([]);
 
   const empName = currentUser?.name || 'Empleado IVAD';
-  const hireDateStr = currentUser?.hire_date || currentUser?.created_at || '2023-05-15';
+  const hireDateStr = currentUser?.hire_date || currentUser?.created_at || new Date().toISOString().split('T')[0];
   
   // Calcular fecha sugerida de vacaciones (según fecha de ingreso)
   const hireDate = new Date(hireDateStr);
@@ -29,10 +31,27 @@ const Vacaciones = () => {
   const daysTaken = currentUser?.vacation_taken ?? 0;
   const daysRemaining = Math.max(0, daysAvailable - daysTaken);
 
-  const vacationHistory = [
-    { period: `${currentYear} - ${currentYear + 1}`, days: 14, status: 'Disponible', suggested: formattedSuggestedDate },
-    { period: `${currentYear - 1} - ${currentYear}`, days: 14, status: 'Tomado', suggested: '15 de Mayo de 2025' }
-  ];
+  // Cargar solicitudes reales de vacaciones desde Supabase Cloud
+  useEffect(() => {
+    const fetchVacationHistory = async () => {
+      if (!currentUser) return;
+
+      const { data, error } = await supabase
+        .from('leave_requests')
+        .select('*')
+        .eq('employee_id', currentUser.id)
+        .eq('type', 'Vacaciones')
+        .order('created_at', { ascending: false });
+
+      if (data && data.length > 0) {
+        setVacationHistory(data);
+      } else {
+        setVacationHistory([]);
+      }
+    };
+
+    fetchVacationHistory();
+  }, [currentUser]);
 
   return (
     <div className="bg-[#f4f6f9] min-h-screen pb-24 font-sans text-gray-800 flex flex-col items-center">
@@ -58,7 +77,7 @@ const Vacaciones = () => {
       {/* Contenedor Principal */}
       <div className="w-full max-w-xl px-4 -mt-10 relative z-20 space-y-4">
         
-        {/* Resumen de Días Disponibles - Diseño Limpio Moderno */}
+        {/* Resumen de Días Disponibles */}
         <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 space-y-4">
           <div className="flex items-center justify-between border-b border-gray-100 pb-3">
             <div>
@@ -116,30 +135,35 @@ const Vacaciones = () => {
           </button>
         </div>
 
-        {/* Historial de Períodos Anuales (Limpio) */}
+        {/* Historial de Períodos Real desde Supabase */}
         <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 space-y-3">
-          <h3 className="text-sm font-bold text-[#1c2c4c]">Historial de Períodos</h3>
+          <h3 className="text-sm font-bold text-[#1c2c4c]">Historial de Solicitudes</h3>
 
-          <div className="space-y-2.5">
-            {vacationHistory.map((item, index) => (
-              <div key={index} className="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between text-xs">
-                <div>
-                  <span className="font-bold text-[#1c2c4c] text-sm block">Período {item.period}</span>
-                  <span className="text-gray-500">Fecha asignada: {item.suggested}</span>
+          {vacationHistory.length === 0 ? (
+            <div className="text-center py-6 text-xs text-gray-400">
+              No tienes solicitudes de vacaciones registradas.
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {vacationHistory.map((item) => (
+                <div key={item.id} className="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between text-xs">
+                  <div>
+                    <span className="font-bold text-[#1c2c4c] text-sm block">Vacaciones ({item.total_days} Días)</span>
+                    <span className="text-gray-500">Del {item.start_date} al {item.end_date}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className={`font-bold px-2.5 py-0.5 rounded-full text-[10px] ${
+                      item.status === 'Aprobada' ? 'bg-green-100 text-green-800' :
+                      item.status === 'Rechazada' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {item.status}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className={`font-bold px-2.5 py-0.5 rounded-full text-[10px] ${
-                    item.status === 'Disponible' 
-                      ? 'bg-blue-50 text-[#1c2c4c] border border-blue-200' 
-                      : 'bg-gray-200 text-gray-700'
-                  }`}>
-                    {item.status}
-                  </span>
-                  <span className="block text-gray-600 font-medium mt-1">{item.days} Días</span>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </div>

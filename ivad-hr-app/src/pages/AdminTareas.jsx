@@ -31,11 +31,7 @@ const AdminTareas = () => {
     if (data) {
       setTasks(data);
     } else {
-      // Mock fallback if table not yet created
-      setTasks([
-        { id: '1', employee_id: employees[0]?.id || '1', title: 'Inventario de Vitrina Principal', description: 'Realizar el recuento físico de los artículos en la sala de exhibición A.', due_date: '2026-08-05', priority: 'Alta', status: 'Pendiente' },
-        { id: '2', employee_id: employees[1]?.id || '2', title: 'Revisión de Facturas de Caja', description: 'Auditar los comprobantes fiscales del turno de la tarde.', due_date: '2026-08-02', priority: 'Media', status: 'Completada' }
-      ]);
+      setTasks([]);
     }
     setLoading(false);
   };
