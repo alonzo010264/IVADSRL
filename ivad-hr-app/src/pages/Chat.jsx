@@ -144,15 +144,6 @@ const Chat = () => {
 
   const activeMessages = selectedContact ? (messages[selectedContact.id] || []) : [];
 
-  // Helper para renderizar la insignia según estatus y tipo adquirido (con tooltip)
-  const renderBadge = (emp) => {
-    const isVerified = emp.verification_status === 'verificado' || emp.is_admin || emp.isSupportChannel;
-    if (!isVerified) return null;
-
-    const badgeType = (emp.verification_type === 'dorada' || emp.is_admin || emp.isSupportChannel) ? 'dorada' : 'azul';
-    return <VerificationBadge type={badgeType} size={16} />;
-  };
-
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-16 md:pb-0">
       
@@ -186,7 +177,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos (Soporte IVAD de primero con Insignia Dorada + Empleados Verificados) */}
+        {/* Lista de Contactos (Fotos ajustadas limpias sin padding innecesario) */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron canales.</p>
@@ -199,26 +190,24 @@ const Chat = () => {
                   selectedContact?.id === emp.id ? 'bg-blue-50/60 border-l-4 border-[#1c2c4c]' : ''
                 } ${emp.isSupportChannel ? 'bg-blue-50/30' : ''}`}
               >
-                {/* Avatar con anillo dorado */}
+                {/* Avatar con encuadre perfecto */}
                 <div className="relative shrink-0">
-                  <div className={`w-12 h-12 rounded-full border-2 p-[2px] shadow-sm ${emp.isSupportChannel ? 'border-[#d4af37] bg-[#1c2c4c]' : 'border-[#d4af37] bg-[#1c2c4c]'}`}>
-                    <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center p-1">
-                      {emp.avatar ? (
-                        <img src={emp.avatar} alt={emp.name} className="w-full h-full object-contain" />
-                      ) : (
-                        <User size={20} className="text-gray-400" />
-                      )}
-                    </div>
+                  <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shadow-sm flex items-center justify-center">
+                    {emp.avatar ? (
+                      <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <User size={22} className="text-white" />
+                    )}
                   </div>
                   <span className="w-3 h-3 bg-green-500 rounded-full border-2 border-white absolute bottom-0 right-0"></span>
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    {/* Nombre del colaborador o Soporte con Insignia correspondiente */}
+                    {/* Nombre con insignia si aplica */}
                     <h3 className="font-bold text-[#1c2c4c] text-xs truncate flex items-center gap-1.5">
                       <span>{emp.name}</span>
-                      {renderBadge(emp)}
+                      <VerificationBadge emp={emp} size={16} />
                     </h3>
                     <span className="text-[9px] text-gray-400 font-medium">En línea</span>
                   </div>
@@ -251,20 +240,18 @@ const Chat = () => {
                   <ArrowLeft size={20} />
                 </button>
 
-                <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-white p-[1.5px] overflow-hidden shrink-0">
+                <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shrink-0 flex items-center justify-center">
                   {selectedContact.avatar ? (
-                    <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-contain p-0.5" />
+                    <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
-                      <User size={18} />
-                    </div>
+                    <User size={18} className="text-white" />
                   )}
                 </div>
 
                 <div>
                   <h2 className="font-bold text-sm leading-tight text-white flex items-center gap-1.5">
                     <span>{selectedContact.name}</span>
-                    {renderBadge(selectedContact)}
+                    <VerificationBadge emp={selectedContact} size={16} />
                   </h2>
                   <p className="text-[10px] text-[#d4af37] font-semibold">{selectedContact.role} • En línea</p>
                 </div>
