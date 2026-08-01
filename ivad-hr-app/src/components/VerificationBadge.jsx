@@ -36,4 +36,6 @@ export const VerificationBadge = ({ type = 'azul', size = 16, className = '' }) 
   );
 };
 
+export const CustomVerificationBadge = VerificationBadge;
+
 export default VerificationBadge;
