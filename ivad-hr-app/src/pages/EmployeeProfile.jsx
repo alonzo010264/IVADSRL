@@ -1,7 +1,7 @@
 import { ChevronLeft, Mail, Phone, Calendar, MapPin } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
-import { CustomVerificationBadge } from '../components/VerificationBadge';
+import { VerificationBadge } from '../components/VerificationBadge';
 
 const EmployeeProfile = () => {
   const navigate = useNavigate();
@@ -19,9 +19,6 @@ const EmployeeProfile = () => {
       </div>
     );
   }
-
-  // Lógica temporal para asignar verificación (a Alonzo)
-  const isVerified = employee.verification_status;
 
   // Si es el usuario actual, redirigirlo a su perfil privado
   if (currentUser && currentUser.id === employee.id) {
@@ -61,7 +58,7 @@ const EmployeeProfile = () => {
             
             <div className="mt-4 flex items-center justify-center gap-1.5 flex-wrap text-center w-full">
               <h1 className="text-2xl font-bold text-[#1c2c4c] leading-tight">{employee.name}</h1>
-              <CustomVerificationBadge status={isVerified} className="w-6 h-6 shrink-0" />
+              <VerificationBadge emp={employee} size={22} className="shrink-0" />
             </div>
             <p className="text-[#d4af37] font-medium text-sm mt-1.5 text-center">{employee.role}</p>
             <p className="text-gray-500 text-xs mt-0.5 text-center">{employee.department}</p>

@@ -1,13 +1,40 @@
 import React, { useState } from 'react';
 
 /**
- * Componente de Insignia de Verificación Oficial con Fondo Relleno Sólido (Azul o Dorada)
- * Muestra tooltip al pasar el cursor y un popover informativo explicativo al hacer clic.
+ * Componente de Insignia de Verificación Oficial (Azul o Dorada)
+ * Muestra popover explicativo flotante al pasar el cursor o hacer clic.
+ * 
+ * Reglas de Verificación:
+ * - Insignia Dorada: Solo Administración (admin@ivad.com o is_admin=true o verification_type='dorada')
+ * - Insignia Azul: Solo empleados con verification_status === 'verificado' o verification_type === 'azul'
+ * - Sin Insignia: Si no cumple ninguna de las condiciones anteriores, NO se muestra ninguna insignia.
  */
-export const VerificationBadge = ({ type = 'azul', size = 16, className = '' }) => {
+export const VerificationBadge = ({ type, status, emp, size = 16, className = '' }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const isGold = type === 'dorada' || type === 'gold';
-  
+
+  // Determinar el estatus real y tipo de insignia
+  let isVerified = false;
+  let isGold = false;
+
+  if (emp) {
+    isVerified = emp.verification_status === 'verificado' || emp.is_admin || emp.email === 'admin@ivad.com' || emp.isSupportChannel;
+    isGold = emp.verification_type === 'dorada' || emp.is_admin || emp.email === 'admin@ivad.com' || emp.isSupportChannel;
+  } else if (status) {
+    if (typeof status === 'object') {
+      isVerified = status.verification_status === 'verificado' || status.is_admin || status.email === 'admin@ivad.com';
+      isGold = status.verification_type === 'dorada' || status.is_admin || status.email === 'admin@ivad.com';
+    } else if (typeof status === 'string') {
+      isVerified = status === 'verificado' || status === 'dorada' || status === 'azul';
+      isGold = status === 'dorada';
+    }
+  } else if (type) {
+    isVerified = true;
+    isGold = type === 'dorada' || type === 'gold';
+  }
+
+  // SI NO ESTÁ VERIFICADO, NO RENDERIZAR NADA
+  if (!isVerified) return null;
+
   // Colores oficiales
   const badgeColor = isGold ? '#d4af37' : '#1d9bf0';
   const label = isGold 

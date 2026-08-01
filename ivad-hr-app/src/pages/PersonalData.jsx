@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { useRef, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
-import { CustomVerificationBadge } from '../components/VerificationBadge';
+import { VerificationBadge } from '../components/VerificationBadge';
 
 const PersonalData = () => {
   const navigate = useNavigate();
@@ -106,7 +106,7 @@ const PersonalData = () => {
             
             <div className="mt-3 flex items-center justify-center gap-1.5">
               <h1 className="text-2xl font-bold text-[#1c2c4c]">{userData.name}</h1>
-              <CustomVerificationBadge status={userData.verification_status} className="w-6 h-6" />
+              <VerificationBadge emp={userData} size={22} />
             </div>
             <p className="text-[#d4af37] font-medium text-sm">{userData.role}</p>
           </div>

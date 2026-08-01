@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Search, Mail, Phone, Plus, Edit, Trash2, X } from 'lucide-react';
 import { useEmployees } from '../context/EmployeeContext';
 import { Link } from 'react-router-dom';
-import { CustomVerificationBadge } from '../components/VerificationBadge';
+import { VerificationBadge } from '../components/VerificationBadge';
 
 const Directory = () => {
   const [activeTab, setActiveTab] = useState('Todos');
@@ -49,42 +49,38 @@ const Directory = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
-            <input
-              type="text"
-              placeholder="Buscar por nombre, cargo o área..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-200 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-ivad-blue"
-            />
+              <input
+                type="text"
+                placeholder="Buscar por nombre, cargo o área..."
+                className="block w-full pl-10 pr-3 py-2 border border-gray-200 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-ivad-blue"
+              />
+            </div>
+            <button className="text-ivad-blue font-medium px-2">Filtros</button>
           </div>
-          <button className="text-ivad-blue font-medium px-2">Filtros</button>
-        </div>
 
-        {/* Tabs */}
-        <div className="flex bg-gray-100 p-1 rounded-lg">
-          {['Todos', 'Por Área', 'Aniversarios'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                activeTab === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          {/* Tabs */}
+          <div className="flex bg-gray-100 p-1 rounded-lg">
+            {['Todos', 'Por Área', 'Aniversarios'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Lista de Empleados */}
+      {/* Lista de Empleados (Mostrar insignia SOLAMENTE a verificados u administradores) */}
       <div className="p-4 pb-24 max-w-5xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {employees
             .filter(emp => emp.id !== currentUser?.id) // Ocultar al usuario actual
             .map((emp) => {
-              // Asignación de verificación temporal (para Alonzo u otros)
-              // En un entorno real esto vendría de emp.verification_status
-              const isVerified = emp.verification_status;
-
               return (
                 <div key={emp.id} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow relative">
                 
@@ -101,7 +97,7 @@ const Directory = () => {
                 <div className="flex-1 min-w-0">
                   <Link to={`/empleado/${emp.id}`} className="flex items-center gap-1 hover:underline">
                     <h3 className="font-bold text-ivad-blue truncate">{emp.name}</h3>
-                    <CustomVerificationBadge status={isVerified} className="w-[18px] h-[18px] shrink-0" />
+                    <VerificationBadge emp={emp} size={18} className="shrink-0" />
                   </Link>
                   <p className="text-xs text-ivad-gold font-medium truncate">{emp.role}</p>
                   <p className="text-[11px] text-gray-500 truncate">{emp.department}</p>
@@ -120,7 +116,7 @@ const Directory = () => {
                 </div>
 
               </div>
-            )
+            );
           })}
         </div>
       </div>
