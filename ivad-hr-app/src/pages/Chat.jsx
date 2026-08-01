@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Check, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -52,7 +52,7 @@ const Chat = () => {
     scrollToBottom();
   }, [messages, selectedContact]);
 
-  // Cargar mensajes directos reales desde Supabase y suscribirse en TIEMPO REAL
+  // Cargar mensajes directos reales e imágenes desde Supabase Cloud y suscribirse en TIEMPO REAL
   useEffect(() => {
     if (!currentUser || !selectedContact) return;
 
@@ -101,7 +101,7 @@ const Chat = () => {
 
     fetchDirectMessages();
 
-    // Suscripción en Tiempo Real Supabase
+    // Suscripción en Tiempo Real Supabase para nuevos mensajes e imágenes
     const channel = supabase
       .channel(`direct_chat_${currentUser.id}_${selectedContact.id}`)
       .on('postgres_changes', {
@@ -144,6 +144,8 @@ const Chat = () => {
                     ...m, 
                     isRead: updatedMsg.is_read, 
                     text: updatedMsg.is_deleted_for_everyone ? '🚫 Este mensaje fue eliminado' : updatedMsg.message,
+                    mediaUrl: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_url,
+                    mediaType: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_type,
                     isDeletedForEveryone: updatedMsg.is_deleted_for_everyone
                   }
                 : m
@@ -164,6 +166,45 @@ const Chat = () => {
     };
   }, [selectedContact, currentUser]);
 
+  // Helper para optimizar y comprimir imágenes antes de guardarlas en Supabase
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  };
+
   // Enviar mensaje de texto
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -173,34 +214,37 @@ const Chat = () => {
     setNewMessageText('');
     const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    const newMsgObj = {
-      id: Date.now().toString(),
-      text: textToSend,
-      mediaUrl: null,
-      mediaType: null,
-      isRead: false,
-      createdAt: new Date().toISOString(),
-      time: timeNow,
-      isMe: true
-    };
-
-    // Mostrar de inmediato en la UI
-    setMessages(prev => ({
-      ...prev,
-      [selectedContact.id]: [...(prev[selectedContact.id] || []), newMsgObj]
-    }));
-
-    // Guardar en Supabase Cloud
-    await supabase.from('direct_messages').insert([{
+    // Guardar en Supabase Cloud de forma permanente
+    const { data } = await supabase.from('direct_messages').insert([{
       sender_id: currentUser?.id,
       receiver_id: selectedContact.id,
       message: textToSend,
       is_read: false,
       created_at: new Date().toISOString()
-    }]);
+    }]).select();
+
+    if (data && data[0]) {
+      const inserted = data[0];
+      setMessages(prev => ({
+        ...prev,
+        [selectedContact.id]: [
+          ...(prev[selectedContact.id] || []).filter(m => m.id !== inserted.id.toString()),
+          {
+            id: inserted.id,
+            text: inserted.message,
+            mediaUrl: null,
+            mediaType: null,
+            isRead: false,
+            createdAt: inserted.created_at,
+            time: timeNow,
+            isMe: true
+          }
+        ]
+      }));
+    }
   };
 
-  // Adjuntar y Enviar Imagen o Documento (SIN texto automático de "Imagen adjunta")
+  // Adjuntar y Guardar Imagen o Documento de Forma PERMANENTE en Supabase Cloud
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file || !selectedContact) return;
@@ -208,55 +252,66 @@ const Chat = () => {
     setIsUploading(true);
 
     try {
-      // Convertir archivo a Base64 para vista previa inmediata
-      const base64Data = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-
       const isImage = file.type.startsWith('image/');
+      let fileDataUrl = '';
+
+      if (isImage) {
+        // Comprimir imagen para almacenamiento ultra rápido y permanente en Supabase
+        fileDataUrl = await compressImage(file);
+      } else {
+        // Para documentos (PDF, DOCX, TXT), leer como data URL
+        fileDataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+        });
+      }
+
       const mediaType = isImage ? 'image' : 'document';
       const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      // Solo si el usuario escribió texto como comentario se incluye texto
       const textComment = newMessageText.trim();
       setNewMessageText('');
 
-      const newMsgObj = {
-        id: Date.now().toString(),
-        text: textComment, // Si no escribió comentario, queda totalmente vacío (estilo WhatsApp)
-        mediaUrl: base64Data,
-        mediaType: mediaType,
-        fileName: file.name,
-        isRead: false,
-        createdAt: new Date().toISOString(),
-        time: timeNow,
-        isMe: true
-      };
-
-      // Mostrar de inmediato en la UI
-      setMessages(prev => ({
-        ...prev,
-        [selectedContact.id]: [...(prev[selectedContact.id] || []), newMsgObj]
-      }));
-
-      // Guardar en Supabase Cloud con metadatos del archivo
-      await supabase.from('direct_messages').insert([{
+      // Guardar PERMANENTEMENTE en la base de datos de Supabase Cloud
+      const { data, error } = await supabase.from('direct_messages').insert([{
         sender_id: currentUser?.id,
         receiver_id: selectedContact.id,
         message: textComment,
-        media_url: base64Data,
+        media_url: fileDataUrl,
         media_type: mediaType,
         file_name: file.name,
         is_read: false,
         created_at: new Date().toISOString()
-      }]);
+      }]).select();
+
+      if (error) {
+        console.error("Error guardando imagen en Supabase:", error);
+        alert("Error al guardar la imagen en la base de datos.");
+      } else if (data && data[0]) {
+        const inserted = data[0];
+        setMessages(prev => ({
+          ...prev,
+          [selectedContact.id]: [
+            ...(prev[selectedContact.id] || []).filter(m => m.id !== inserted.id.toString()),
+            {
+              id: inserted.id,
+              text: inserted.message,
+              mediaUrl: inserted.media_url,
+              mediaType: inserted.media_type,
+              fileName: inserted.file_name,
+              isRead: false,
+              createdAt: inserted.created_at,
+              time: timeNow,
+              isMe: true
+            }
+          ]
+        }));
+      }
 
     } catch (err) {
-      console.error("Error subiendo archivo:", err);
-      alert("Hubo un problema al adjuntar el archivo.");
+      console.error("Error procesando archivo:", err);
+      alert("Hubo un problema al procesar y guardar la imagen.");
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -430,7 +485,7 @@ const Chat = () => {
               </span>
             </div>
 
-            {/* Lista de Mensajes con Formato WhatsApp Limpio */}
+            {/* Lista de Mensajes con Almacenamiento Permanente de Imágenes */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
@@ -462,15 +517,15 @@ const Chat = () => {
                           : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
                       } ${msg.isDeletedForEveryone ? 'italic text-gray-400 opacity-75' : ''}`}
                     >
-                      {/* VISTA PREVIA DE IMAGEN (SIN TEXTO FORZADO ABAJO) */}
+                      {/* VISTA PREVIA DE IMAGEN DE ALMACENAMIENTO PERMANENTE */}
                       {msg.mediaType === 'image' && msg.mediaUrl && !msg.isDeletedForEveryone && (
                         <div 
                           onClick={() => setActivePreviewImage(msg.mediaUrl)}
-                          className="relative rounded-xl overflow-hidden cursor-pointer group/img border border-white/20 bg-black/10 flex items-center justify-center"
+                          className="relative rounded-xl overflow-hidden cursor-pointer group/img border border-white/20 bg-black/10 flex items-center justify-center min-h-[140px]"
                         >
                           <img 
                             src={msg.mediaUrl} 
-                            alt="Imagen adjunta" 
+                            alt="Imagen adjunta guardada" 
                             className="w-full h-auto max-h-64 object-cover group-hover/img:scale-105 transition-transform duration-200" 
                           />
                           <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold">
@@ -498,7 +553,7 @@ const Chat = () => {
                         </div>
                       )}
 
-                      {/* COMENTARIO / TEXTO DEL MENSAJE (Solo si existe texto escrito por el usuario) */}
+                      {/* COMENTARIO / TEXTO DEL MENSAJE */}
                       {msg.text && (
                         <p className="text-xs leading-relaxed break-words px-1 pt-1">{msg.text}</p>
                       )}
@@ -575,7 +630,7 @@ const Chat = () => {
 
       </div>
 
-      {/* MODAL / POPUP DE ELIMINAR MENSAJE (Estilo WhatsApp) */}
+      {/* MODAL / POPUP DE ELIMINAR MENSAJE */}
       {selectedMsgToDelete && (
         <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl space-y-4">
