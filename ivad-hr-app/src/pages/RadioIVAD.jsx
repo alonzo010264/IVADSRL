@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Radio, Mic, Volume2, VolumeX, ArrowLeft, Users, User, Clock, Play, Pause, AlertCircle, CheckCircle2, Smartphone, Laptop } from 'lucide-react';
+import { Radio, Mic, Volume2, VolumeX, ArrowLeft, Users, User, Clock, Play, Pause, AlertCircle, CheckCircle2, Smartphone, ShieldCheck, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -20,6 +20,10 @@ const RadioIVAD = () => {
 
   const [transmissions, setTransmissions] = useState([]);
   const [currentlyPlayingId, setCurrentlyPlayingId] = useState(null);
+
+  const [notifPermissionGranted, setNotifPermissionGranted] = useState(() => {
+    return 'Notification' in window && Notification.permission === 'granted';
+  });
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -47,12 +51,25 @@ const RadioIVAD = () => {
     ...employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString())
   ];
 
-  useEffect(() => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(() => console.log("Permiso de micrófono concedido."))
-        .catch(err => console.log("Permiso de micrófono denegado:", err));
+  // Solicitar permiso de micrófono y notificaciones
+  const requestAllPermissions = async () => {
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      const perm = await Notification.requestPermission();
+      setNotifPermissionGranted(perm === 'granted');
     }
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("Micrófono concedido.");
+      } catch (err) {
+        console.log("Micrófono denegado:", err);
+      }
+    }
+  };
+
+  useEffect(() => {
+    requestAllPermissions();
   }, []);
 
   const fetchRecentTransmissions = async () => {
@@ -75,7 +92,7 @@ const RadioIVAD = () => {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel(`radio_page_live_${currentUser.id}_v3`)
+      .channel(`radio_page_live_${currentUser.id}_v4`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -216,7 +233,6 @@ const RadioIVAD = () => {
     }
   };
 
-  // Teclado de computadora (Barra espaciadora o tecla R)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (['Space', 'KeyR'].includes(e.code)) {
@@ -256,7 +272,7 @@ const RadioIVAD = () => {
   return (
     <div className="min-h-screen bg-[#f8fafc] text-gray-800 pb-24 font-sans">
       
-      {/* Única Cabecera Oficial IVAD */}
+      {/* Cabecera Oficial IVAD */}
       <div className="bg-[#1c2c4c] text-white pt-10 pb-8 px-6 rounded-b-[2.5rem] shadow-md relative z-10">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -290,6 +306,27 @@ const RadioIVAD = () => {
       </div>
 
       <div className="max-w-4xl mx-auto px-5 -mt-4 relative z-20 space-y-6">
+
+        {/* Banner de Permisos de Segundo Plano */}
+        {!notifPermissionGranted && (
+          <div className="bg-amber-50 border border-amber-200 rounded-3xl p-4 flex items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-2xl bg-amber-100 text-amber-800">
+                <Bell size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-xs text-amber-900">Activar Notificaciones de Voz en Segundo Plano</h3>
+                <p className="text-[11px] text-amber-700">Permite que la radio reproduzca transmisiones entrantes aunque tengas la app cerrada o minimizada.</p>
+              </div>
+            </div>
+            <button 
+              onClick={requestAllPermissions}
+              className="px-3.5 py-2 bg-[#1c2c4c] text-white text-xs font-bold rounded-2xl shrink-0 hover:bg-blue-900 transition shadow-xs"
+            >
+              Conceder Permisos
+            </button>
+          </div>
+        )}
 
         {/* Tarjeta de Indicaciones con Texto Limpio */}
         <div className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex items-center justify-between gap-3">

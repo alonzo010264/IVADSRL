@@ -35,7 +35,7 @@ export const GlobalChatNotificationListener = () => {
       badge: '/logo.png',
       tag,
       renotify: true,
-      vibrate: [200, 100, 200],
+      vibrate: [300, 100, 300, 100, 300], // Patrón de vibración física para notificaciones de voz
       data: { url: targetUrl }
     };
 
@@ -65,6 +65,7 @@ export const GlobalChatNotificationListener = () => {
   useEffect(() => {
     if (!currentUser) return;
 
+    // Solicitar automáticamente permisos de notificación al iniciar la app
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
@@ -109,9 +110,9 @@ export const GlobalChatNotificationListener = () => {
       .subscribe();
 
     // 2. Canal Global Real-Time para Transmisiones de Radio IVAD Walkie-Talkie
-    // (Reproduce el audio de voz en altavoz automáticamente aunque estés en otra sección de la app)
+    // (Reproduce el audio de voz en altavoz automáticamente y emite notificación push en segundo plano / pantalla apagada)
     const radioChannel = supabase
-      .channel(`app_wide_radio_listener_${currentUser.id}`)
+      .channel(`app_wide_radio_listener_${currentUser.id}_v2`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -123,25 +124,22 @@ export const GlobalChatNotificationListener = () => {
           const isForMe = newTrans.target_type === 'general' || newTrans.receiver_id?.toString() === currentUser.id.toString();
           
           if (isForMe && newTrans.audio_url) {
-            const isCurrentRouteRadio = window.location.pathname === '/radio';
-
-            // Si NO estamos dentro de la pantalla de radio, reproducir el audio de voz por el altavoz automáticamente
-            if (!isCurrentRouteRadio) {
-              try {
-                const radioAudio = new Audio(newTrans.audio_url);
-                radioAudio.play().catch(err => console.log("Background radio play error:", err));
-              } catch (e) {
-                console.log("Radio audio play error:", e);
-              }
-
-              triggerPushNotification(
-                `Transmisión de Voz - Radio IVAD`,
-                `${newTrans.sender_name} ha transmitido un mensaje de voz por radio`,
-                '/logo.png',
-                `radio-trans-${newTrans.id}`,
-                '/radio'
-              );
+            // Reproducir siempre el audio de voz en vivo en altavoz
+            try {
+              const radioAudio = new Audio(newTrans.audio_url);
+              radioAudio.play().catch(err => console.log("Background radio audio error:", err));
+            } catch (e) {
+              console.log("Radio audio execution error:", e);
             }
+
+            // Disparar Notificación Push con Vibración para segundo plano o app cerrada
+            triggerPushNotification(
+              `Transmisión de Voz - Radio IVAD`,
+              `${newTrans.sender_name} ha transmitido un mensaje de voz por radio`,
+              '/logo.png',
+              `radio-trans-${newTrans.id}`,
+              '/radio'
+            );
           }
         }
       })
