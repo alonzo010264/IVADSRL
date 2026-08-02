@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { EmployeeProvider } from './context/EmployeeContext';
 import { useEmployees } from './context/EmployeeContext';
+import { GlobalChatNotificationListener } from './components/GlobalChatNotificationListener';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminPayroll from './pages/AdminPayroll';
@@ -62,6 +63,7 @@ function App() {
   return (
     <EmployeeProvider>
       <SplashScreen />
+      <GlobalChatNotificationListener />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
