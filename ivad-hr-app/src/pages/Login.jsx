@@ -1,17 +1,31 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, KeyRound, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useEmployees } from '../context/EmployeeContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { 
+    currentUser,
     login, 
     requestPasswordReset, 
     verifyResetCode, 
     updatePassword, 
     loginWithoutPassword 
   } = useEmployees();
+
+  // Auto-redirección si ya hay una sesión activa guardada y no está en modo "Agregar cuenta"
+  useEffect(() => {
+    const isAddingAccount = searchParams.get('addAccount') === 'true';
+    if (currentUser && !isAddingAccount) {
+      if (currentUser.role === 'agent') {
+        navigate('/agente', { replace: true });
+      } else {
+        navigate('/inicio', { replace: true });
+      }
+    }
+  }, [currentUser, searchParams, navigate]);
   
   // Views: 'login' | 'forgot_email' | 'forgot_code' | 'forgot_options' | 'forgot_new_pass'
   const [view, setView] = useState('login');
@@ -39,9 +53,9 @@ const Login = () => {
     const user = await login(email.trim(), password, rememberDevice);
     if (user) {
       if (user.role === 'agent') {
-        navigate('/agente');
+        navigate('/agente', { replace: true });
       } else {
-        navigate('/inicio');
+        navigate('/inicio', { replace: true });
       }
     } else {
       setError('Credenciales incorrectas');
@@ -58,370 +72,360 @@ const Login = () => {
     }
     setError('');
     setLoading(true);
-    
+
     const res = await requestPasswordReset(cleanEmail);
+    setLoading(false);
+
     if (res.error) {
       setError(res.error);
     } else {
-      setSuccessMsg('Hemos enviado un código de 6 dígitos a tu correo.');
       setView('forgot_code');
     }
-    setLoading(false);
   };
 
   const handleVerifyCode = async (e) => {
     e.preventDefault();
-    const cleanCode = resetCode.trim();
-    if (!cleanCode) {
-      setError('Ingresa el código.');
+    if (!resetCode.trim()) {
+      setError('Ingresa el código de 6 dígitos.');
       return;
     }
     setError('');
     setLoading(true);
-    
-    const res = await verifyResetCode(email.trim(), cleanCode);
+
+    const res = await verifyResetCode(email, resetCode);
+    setLoading(false);
+
     if (res.error) {
       setError(res.error);
     } else {
-      setSuccessMsg('');
       setView('forgot_options');
     }
-    setLoading(false);
   };
 
-  const handleLoginWithoutPassword = async () => {
-    setError('');
+  const handleChooseDirectLogin = async () => {
     setLoading(true);
-    const res = await loginWithoutPassword(email.trim());
+    const res = await loginWithoutPassword(email);
+    setLoading(false);
+
     if (res.error) {
       setError(res.error);
-      setLoading(false);
     } else {
       if (res.user.role === 'agent') {
-        navigate('/agente');
+        navigate('/agente', { replace: true });
       } else {
-        navigate('/inicio');
+        navigate('/inicio', { replace: true });
       }
     }
   };
 
-  const handleUpdatePassword = async (e) => {
+  const handleSaveNewPassword = async (e) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      setError('Las contraseñas no coinciden. Repítela exactamente dos veces.');
-      return;
-    }
     if (newPassword.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres.');
       return;
     }
-    
-    setError('');
+    if (newPassword !== confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      return;
+    }
+
     setLoading(true);
-    
-    const res = await updatePassword(email.trim(), newPassword);
+    const res = await updatePassword(email, newPassword);
+    setLoading(false);
+
     if (res.error) {
       setError(res.error);
-      setLoading(false);
     } else {
-      if (res.user.role === 'agent') {
-        navigate('/agente');
-      } else {
-        navigate('/inicio');
-      }
+      setSuccessMsg('¡Contraseña actualizada! Entrando al sistema...');
+      setTimeout(() => {
+        if (res.user.role === 'agent') {
+          navigate('/agente', { replace: true });
+        } else {
+          navigate('/inicio', { replace: true });
+        }
+      }, 1500);
     }
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-sm">
+    <div className="bg-[#1c2c4c] min-h-screen flex items-center justify-center p-4 font-sans relative overflow-hidden">
+      
+      {/* Círculos decorativos de fondo */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#d4af37] opacity-10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#d4af37] opacity-10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl relative z-10">
         
-        {/* Logo */}
-        <div className="flex justify-center mb-12">
-          <div className="w-64 h-auto flex items-center justify-center cursor-pointer" onClick={() => { setView('login'); setError(''); setSuccessMsg(''); }}>
-            <img src="/logo.png" alt="IVAD Logo" className="w-full h-auto object-contain" />
+        {/* LOGO E IDENTIDAD CORPORATIVA */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-3 shadow-lg flex items-center justify-center bg-[#1c2c4c] border-2 border-[#d4af37]">
+            <img src="/logo.png" alt="IVAD Logo" className="w-full h-full object-cover scale-125" />
           </div>
+          <h1 className="text-2xl font-bold text-[#1c2c4c] tracking-tight">IVAD Connect</h1>
+          <p className="text-xs text-gray-500 font-medium mt-1">Gestión de Personal & Portal de Colaboradores</p>
         </div>
 
-        {/* View: Login */}
+        {/* MENSAJES DE ERROR O ÉXITO */}
+        {error && (
+          <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-3 rounded-r-xl text-red-700 text-xs font-semibold">
+            {error}
+          </div>
+        )}
+
+        {successMsg && (
+          <div className="mb-4 bg-green-50 border-l-4 border-green-500 p-3 rounded-r-xl text-green-700 text-xs font-semibold flex items-center gap-2">
+            <CheckCircle2 size={16} />
+            {successMsg}
+          </div>
+        )}
+
+        {/* VISTA 1: FORMULARIO DE LOGIN PRINCIPAL */}
         {view === 'login' && (
-          <form onSubmit={handleLogin} className="space-y-4 fade-in">
-            {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>}
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Correo electrónico"
-                className="block w-full pl-12 pr-4 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
-                required
-              />
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contraseña"
-                className="block w-full pl-12 pr-12 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
-                required
-              />
-              <div 
-                className="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <Eye className="h-5 w-5 text-gray-500" />
-                ) : (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-xs px-1 pt-1">
-              <label className="flex items-center gap-2 text-gray-600 font-medium cursor-pointer select-none">
-                <input 
-                  type="checkbox" 
-                  checked={rememberDevice} 
-                  onChange={(e) => setRememberDevice(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#1c2c4c] focus:ring-[#1c2c4c] border-gray-300 accent-[#1c2c4c]" 
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Correo Electrónico</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="ejemplo@ivad.com"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none text-gray-800 font-medium"
                 />
-                <span>Confiar en este dispositivo por 30 días</span>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">Contraseña</label>
+                <button
+                  type="button"
+                  onClick={() => { setError(''); setView('forgot_email'); }}
+                  className="text-[11px] font-bold text-[#1c2c4c] hover:underline"
+                >
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none text-gray-800 font-medium"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Checkbox de Reconocer Dispositivo */}
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberDevice}
+                  onChange={(e) => setRememberDevice(e.target.checked)}
+                  className="w-4 h-4 text-[#1c2c4c] rounded focus:ring-[#1c2c4c] border-gray-300"
+                />
+                <span className="text-xs text-gray-600 font-medium">Recordar este dispositivo por 30 días</span>
               </label>
             </div>
 
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-ivad-blue hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ivad-blue disabled:opacity-50 transition-all"
-              >
-                {loading ? 'Iniciando...' : 'Iniciar sesión'}
-              </button>
-            </div>
-
-            <div className="mt-6 text-center">
-              <button 
-                type="button"
-                onClick={() => { setView('forgot_email'); setError(''); setSuccessMsg(''); }}
-                className="text-sm text-gray-500 hover:text-ivad-blue hover:underline transition-colors"
-              >
-                ¿Olvidaste tu contraseña?
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 bg-[#1c2c4c] text-white font-bold text-xs rounded-2xl hover:bg-opacity-95 transition shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
+            >
+              {loading ? 'Iniciando sesión...' : 'Ingresar al Portal'}
+              {!loading && <ArrowRight size={16} className="text-[#d4af37]" />}
+            </button>
           </form>
         )}
 
-        {/* View: Forgot Email */}
+        {/* VISTA 2: INGRESAR CORREO PARA RECUPERACIÓN */}
         {view === 'forgot_email' && (
-          <form onSubmit={handleRequestReset} className="space-y-4 fade-in">
-            <h3 className="text-xl font-semibold text-center text-ivad-blue mb-2">Recuperar Acceso</h3>
-            <p className="text-sm text-gray-500 text-center mb-6">
-              Ingresa el correo con el que te registraron y te enviaremos un código de autenticación.
-            </p>
-            {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>}
-            
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Correo electrónico"
-                className="block w-full pl-12 pr-4 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
-                required
-              />
+          <form onSubmit={handleRequestReset} className="space-y-5">
+            <div className="text-center mb-4">
+              <h2 className="font-bold text-base text-[#1c2c4c]">Recuperar Acceso</h2>
+              <p className="text-xs text-gray-500 mt-1">Ingresa tu correo registrado para enviarte un código de verificación.</p>
             </div>
 
-            <div className="pt-4 flex flex-col gap-3">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center items-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-ivad-blue hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ivad-blue disabled:opacity-50 transition-all"
-              >
-                {loading ? 'Enviando...' : 'Enviar Código'}
-                {!loading && <ArrowRight className="ml-2 w-5 h-5" />}
-              </button>
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase">Correo Registrado</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="ejemplo@ivad.com"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
               <button
                 type="button"
-                onClick={() => setView('login')}
-                className="w-full flex justify-center py-4 px-4 border border-gray-300 rounded-full shadow-sm text-lg font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none transition-all"
+                onClick={() => { setError(''); setView('login'); }}
+                className="flex-1 py-3 bg-gray-100 text-gray-600 font-bold text-xs rounded-2xl hover:bg-gray-200 transition"
               >
                 Volver
               </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 py-3 bg-[#1c2c4c] text-white font-bold text-xs rounded-2xl hover:bg-opacity-95 transition disabled:opacity-50"
+              >
+                {loading ? 'Enviando...' : 'Enviar Código'}
+              </button>
             </div>
           </form>
         )}
 
-        {/* View: Forgot Code */}
+        {/* VISTA 3: INGRESAR CÓDIGO DE VERIFICACIÓN DE 6 DÍGITOS */}
         {view === 'forgot_code' && (
-          <form onSubmit={handleVerifyCode} className="space-y-4 fade-in">
-            <h3 className="text-xl font-semibold text-center text-ivad-blue mb-2">Verificar Código</h3>
-            <p className="text-sm text-gray-500 text-center mb-2">
-              Ingresa el código de 6 dígitos que enviamos a:
-            </p>
-            <p className="font-medium text-center text-gray-800 mb-6">{email}</p>
-            
-            {successMsg && <p className="text-ivad-blue font-medium text-sm text-center bg-blue-50 p-3 rounded-xl border border-blue-100">{successMsg}</p>}
-            {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>}
-            
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <KeyRound className="h-5 w-5 text-gray-400" />
+          <form onSubmit={handleVerifyCode} className="space-y-5">
+            <div className="text-center mb-2">
+              <div className="w-12 h-12 bg-amber-100 text-[#1c2c4c] rounded-full flex items-center justify-center mx-auto mb-2">
+                <KeyRound size={24} />
               </div>
+              <h2 className="font-bold text-base text-[#1c2c4c]">Código de Verificación</h2>
+              <p className="text-xs text-gray-500 mt-1">Enviamos un código de 6 dígitos a <strong>{email}</strong>.</p>
+            </div>
+
+            <div>
               <input
                 type="text"
                 maxLength={6}
+                required
                 value={resetCode}
                 onChange={(e) => setResetCode(e.target.value.replace(/\D/g, ''))}
-                placeholder="Código de 6 dígitos"
-                className="block w-full pl-12 pr-4 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400 text-center tracking-widest text-lg font-semibold"
-                required
+                placeholder="123456"
+                className="w-full text-center text-2xl font-mono tracking-[10px] py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none"
+                autoFocus
               />
             </div>
 
-            <div className="pt-4 flex flex-col gap-3">
-              <button
-                type="submit"
-                disabled={loading || resetCode.length < 6}
-                className="w-full flex justify-center items-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-ivad-blue hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ivad-blue disabled:opacity-50 transition-all"
-              >
-                {loading ? 'Verificando...' : 'Verificar Código'}
-                {!loading && <CheckCircle2 className="ml-2 w-5 h-5 text-gold" />}
-              </button>
+            <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => setView('login')}
-                className="w-full flex justify-center py-4 px-4 border border-gray-300 rounded-full shadow-sm text-lg font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none transition-all"
+                onClick={() => { setError(''); setView('forgot_email'); }}
+                className="flex-1 py-3 bg-gray-100 text-gray-600 font-bold text-xs rounded-2xl hover:bg-gray-200 transition"
               >
-                Cancelar
+                Reenviar
+              </button>
+              <button
+                type="submit"
+                disabled={loading || resetCode.length !== 6}
+                className="flex-1 py-3 bg-[#1c2c4c] text-white font-bold text-xs rounded-2xl hover:bg-opacity-95 transition disabled:opacity-50"
+              >
+                {loading ? 'Verificando...' : 'Verificar'}
               </button>
             </div>
           </form>
         )}
 
-        {/* View: Forgot Options */}
+        {/* VISTA 4: OPCIONES TRAS VERIFICAR (ENTRAR DIRECTO O CAMBIAR CONTRASEÑA) */}
         {view === 'forgot_options' && (
-          <div className="space-y-6 fade-in">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-50 border-2 border-ivad-blue/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-8 h-8 text-ivad-blue" />
-              </div>
-              <h3 className="text-xl font-semibold text-ivad-blue mb-2">¡Identidad Verificada!</h3>
-              <p className="text-sm text-gray-500">
-                Selecciona cómo deseas acceder a tu cuenta:
-              </p>
+          <div className="space-y-4 text-center">
+            <div className="w-12 h-12 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto mb-1">
+              <CheckCircle2 size={28} />
             </div>
-            
-            {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>}
-            
-            <div className="flex flex-col gap-3">
+            <h2 className="font-bold text-base text-[#1c2c4c]">¡Verificación Exitosa!</h2>
+            <p className="text-xs text-gray-500">¿Qué deseas hacer a continuación?</p>
+
+            <div className="space-y-2.5 pt-2">
               <button
-                onClick={handleLoginWithoutPassword}
+                type="button"
+                onClick={handleChooseDirectLogin}
                 disabled={loading}
-                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-ivad-blue hover:bg-opacity-95 focus:outline-none transition-all disabled:opacity-50"
+                className="w-full py-3.5 bg-[#1c2c4c] text-[#d4af37] font-bold text-xs rounded-2xl hover:bg-opacity-95 transition shadow-md flex items-center justify-center gap-2"
               >
-                {loading ? 'Iniciando...' : 'Entrar directamente a mi cuenta'}
+                Ingresar al sistema directamente
               </button>
-              
-              <div className="relative my-2">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">O</span>
-                </div>
-              </div>
 
               <button
+                type="button"
                 onClick={() => setView('forgot_new_pass')}
-                disabled={loading}
-                className="w-full flex justify-center py-4 px-4 border-2 border-ivad-blue rounded-full shadow-sm text-lg font-medium text-ivad-blue bg-white hover:bg-blue-50 focus:outline-none transition-all disabled:opacity-50"
+                className="w-full py-3 bg-gray-100 text-gray-800 font-bold text-xs rounded-2xl hover:bg-gray-200 transition"
               >
-                Actualizar la contraseña
+                Crear una nueva contraseña
               </button>
             </div>
           </div>
         )}
 
-        {/* View: Forgot New Password */}
+        {/* VISTA 5: ESTABLECER NUEVA CONTRASEÑA */}
         {view === 'forgot_new_pass' && (
-          <form onSubmit={handleUpdatePassword} className="space-y-4 fade-in">
-            <h3 className="text-xl font-semibold text-center text-ivad-blue mb-2">Nueva Contraseña</h3>
-            <p className="text-sm text-gray-500 text-center mb-6">
-              Ingresa y confirma tu nueva contraseña (debes repetirla dos veces).
-            </p>
-            
-            {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>}
-            
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type={showNewPassword ? 'text' : 'password'}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Nueva contraseña"
-                className="block w-full pl-12 pr-12 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
-                required
-                minLength={6}
-              />
-              <div 
-                className="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-              >
-                {showNewPassword ? (
-                  <Eye className="h-5 w-5 text-gray-500" />
-                ) : (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
-                )}
+          <form onSubmit={handleSaveNewPassword} className="space-y-4">
+            <div className="text-center mb-2">
+              <h2 className="font-bold text-base text-[#1c2c4c]">Nueva Contraseña</h2>
+              <p className="text-xs text-gray-500 mt-1">Escribe tu nueva clave de acceso.</p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1">Nueva Contraseña</label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                  className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Repetir nueva contraseña"
-                className="block w-full pl-12 pr-12 py-4 border border-gray-300 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-ivad-blue focus:border-transparent placeholder-gray-400"
-                required
-                minLength={6}
-              />
-              <div 
-                className="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {showConfirmPassword ? (
-                  <Eye className="h-5 w-5 text-gray-500" />
-                ) : (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
-                )}
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1">Confirmar Contraseña</label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repite la clave"
+                  className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs focus:ring-2 focus:ring-[#1c2c4c] focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
-            <div className="pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-full shadow-sm text-lg font-medium text-white bg-ivad-blue hover:bg-opacity-90 focus:outline-none transition-all disabled:opacity-50"
-              >
-                {loading ? 'Actualizando...' : 'Actualizar e Iniciar Sesión'}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 bg-[#1c2c4c] text-white font-bold text-xs rounded-2xl hover:bg-opacity-95 transition shadow-lg disabled:opacity-50 mt-2"
+            >
+              {loading ? 'Guardando...' : 'Guardar y Entrar'}
+            </button>
           </form>
         )}
 

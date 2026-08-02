@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { EmployeeProvider } from './context/EmployeeContext';
-import { useEmployees } from './context/EmployeeContext';
+import { EmployeeProvider, useEmployees } from './context/EmployeeContext';
 import { GlobalChatNotificationListener } from './components/GlobalChatNotificationListener';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
@@ -46,6 +45,17 @@ import VacationRequest from './pages/VacationRequest';
 import CompanyPolicies from './pages/CompanyPolicies';
 import RadioIVAD from './pages/RadioIVAD';
 
+// Componente inteligente de redirección inicial en la raíz '/'
+const RootRedirect = () => {
+  const { currentUser } = useEmployees();
+  
+  if (currentUser) {
+    return <Navigate to={currentUser.role === 'agent' ? "/agente" : "/inicio"} replace />;
+  }
+  
+  return <Navigate to="/login" replace />;
+};
+
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { currentUser } = useEmployees();
   
@@ -67,7 +77,8 @@ function App() {
       <GlobalChatNotificationListener />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* Ruta raíz '/' inteligente que comprueba si hay sesión guardada */}
+          <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<Login />} />
           
           <Route element={<ProtectedRoute adminOnly={true} />}>
@@ -94,7 +105,7 @@ function App() {
             <Route path="/mas" element={<RequestsApprovals />} />
             <Route path="/estatus-solicitudes" element={<LeaveApprovals />} />
             
-            {/* Nuevas rutas del menú lateral y Radio */}
+            {/* Rutas del menú lateral y Radio */}
             <Route path="/chat" element={<Chat />} />
             <Route path="/radio" element={<RadioIVAD />} />
             <Route path="/incidencias" element={<Incidencias />} />
@@ -110,12 +121,12 @@ function App() {
           </Route>
         </Route>
         
-        {/* Ruta para agentes de soporte (sin el Layout de empleado) */}
+        {/* Ruta para agentes de soporte */}
         <Route element={<ProtectedRoute />}>
           <Route path="/agente" element={<AgentDashboard />} />
         </Route>
 
-        {/* Rutas sin el BottomNav */}
+        {/* Rutas secundarias */}
         <Route element={<ProtectedRoute />}>
           <Route path="/chat-rrhh" element={<HRChat />} />
           <Route path="/certificado" element={<CertificateRequest />} />
@@ -128,7 +139,7 @@ function App() {
           <Route path="/politicas" element={<Policies />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/inicio" replace />} />
+        <Route path="*" element={<RootRedirect />} />
         </Routes>
       </BrowserRouter>
     </EmployeeProvider>
