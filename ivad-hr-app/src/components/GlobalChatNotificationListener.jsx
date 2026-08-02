@@ -29,14 +29,15 @@ export const GlobalChatNotificationListener = () => {
   const triggerPushNotification = async (title, body, icon, tag, senderId) => {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
+    const targetUrl = `/chat?contact=${senderId}`;
     const notificationOptions = {
       body,
       icon: icon || '/logo.png',
       badge: '/logo.png',
       tag,
       renotify: true,
-      vibrate: [200, 100, 200], // Vibración física en teléfonos celulares Android
-      data: { url: '/chat', senderId }
+      vibrate: [200, 100, 200], // Vibración física en teléfono móvil
+      data: { url: targetUrl, senderId }
     };
 
     // 1. ServiceWorker Registration (Requisito obligatorio en Chrome Android y PWAs)
@@ -57,7 +58,7 @@ export const GlobalChatNotificationListener = () => {
       const notif = new Notification(title, notificationOptions);
       notif.onclick = () => {
         window.focus();
-        window.location.href = '/chat';
+        window.location.href = targetUrl;
       };
     } catch (err) {
       console.log("Desktop Notification error:", err);
@@ -84,7 +85,6 @@ export const GlobalChatNotificationListener = () => {
         const newMsg = payload.new;
 
         if (newMsg && newMsg.sender_id.toString() !== currentUser.id.toString()) {
-          // Buscar datos del remitente
           let senderObj = null;
           if (newMsg.sender_id.toString() === 'soporte-ivad-official') {
             senderObj = { name: 'Soporte IVAD SRL', avatar: '/logo.png' };
@@ -95,11 +95,9 @@ export const GlobalChatNotificationListener = () => {
           const senderName = senderObj ? senderObj.name : 'Colaborador IVAD';
           const bodyText = newMsg.message || (newMsg.media_url ? 'Envió una imagen' : 'Envió un archivo');
 
-          // Comprobar si el usuario está fuera del chat o con la app minimizada/otra pestaña
           const isCurrentRouteChat = window.location.pathname === '/chat';
           const isDocumentHidden = document.hidden;
 
-          // Si está en otra vista (/inicio, /equipo, etc.), o si la app está en segundo plano / minimizada
           if (!isCurrentRouteChat || isDocumentHidden) {
             playNotificationSound();
             triggerPushNotification(

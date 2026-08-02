@@ -9,12 +9,22 @@ export const useEmployees = () => {
 
 export const EmployeeProvider = ({ children }) => {
   const [employees, setEmployees] = useState([]);
+  
+  // Lista de Cuentas Guardadas (Multicuenta estilo Instagram/WhatsApp)
+  const [storedAccounts, setStoredAccounts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ivad_stored_accounts');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
   const [currentUser, setCurrentUser] = useState(() => {
     const savedUser = localStorage.getItem('ivad_current_user');
     const trustExpiration = localStorage.getItem('ivad_trust_expires_at');
 
     if (savedUser) {
-      // Si existe fecha de confianza, validar si no ha expirado (30 días)
       if (trustExpiration) {
         if (Date.now() > parseInt(trustExpiration, 10)) {
           localStorage.removeItem('ivad_current_user');
@@ -36,6 +46,51 @@ export const EmployeeProvider = ({ children }) => {
     }
     return null;
   });
+
+  // Guardar cuenta actual en la lista de Multicuentas guardadas
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('ivad_current_user', JSON.stringify(currentUser));
+      setStoredAccounts(prev => {
+        const exists = prev.some(acc => acc.id.toString() === currentUser.id.toString());
+        let updated;
+        if (exists) {
+          updated = prev.map(acc => acc.id.toString() === currentUser.id.toString() ? currentUser : acc);
+        } else {
+          updated = [...prev, currentUser];
+        }
+        localStorage.setItem('ivad_stored_accounts', JSON.stringify(updated));
+        return updated;
+      });
+    } else {
+      localStorage.removeItem('ivad_current_user');
+    }
+  }, [currentUser]);
+
+  // Cambiar entre cuentas (Switch Account)
+  const switchAccount = (accountId) => {
+    const target = storedAccounts.find(acc => acc.id.toString() === accountId.toString());
+    if (target) {
+      setCurrentUser(target);
+      return true;
+    }
+    return false;
+  };
+
+  // Eliminar una cuenta de la lista guardada
+  const removeStoredAccount = (accountId) => {
+    const updated = storedAccounts.filter(acc => acc.id.toString() !== accountId.toString());
+    setStoredAccounts(updated);
+    localStorage.setItem('ivad_stored_accounts', JSON.stringify(updated));
+    
+    if (currentUser && currentUser.id.toString() === accountId.toString()) {
+      if (updated.length > 0) {
+        setCurrentUser(updated[0]);
+      } else {
+        setCurrentUser(null);
+      }
+    }
+  };
 
   // Cargar empleados desde Supabase
   const fetchEmployees = async () => {
@@ -59,19 +114,10 @@ export const EmployeeProvider = ({ children }) => {
     fetchEmployees();
   }, []);
 
-  useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem('ivad_current_user', JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem('ivad_current_user');
-    }
-  }, [currentUser]);
-
   const addEmployee = async (employee) => {
     const isAdmin = employee.accessLevel === 'Administrador' || employee.accessLevel === 'Gerencia';
     const initialVerificationStatus = isAdmin ? 'gold' : null;
     
-    // Si no se proporcionó contraseña (ej. desde Directorio), generamos una temporal
     const password = employee.password || Math.random().toString(36).slice(-8) + Math.floor(Math.random() * 10);
 
     const { data, error } = await supabase
@@ -93,8 +139,6 @@ export const EmployeeProvider = ({ children }) => {
     if (data) {
       setEmployees([...employees, data[0]]);
       
-      // Enviar correo con credenciales vía Resend automáticamente
-      // Obfuscated to avoid GitHub Secret Scanning blocking the push
       const p1 = 're_LqSpvUXD_';
       const p2 = '363a9ZuCEDkNpsaC1boYhVGP';
       const apiKey = p1 + p2; 
@@ -154,19 +198,19 @@ export const EmployeeProvider = ({ children }) => {
 
     if (!error) {
       setEmployees(employees.filter(emp => emp.id !== id));
+      removeStoredAccount(id);
     } else {
       console.error("Error deleting employee:", error);
     }
   };
   
   const login = async (email, password, trustThisDevice = true) => {
-    // Escapar para el admin hardcodeado en caso de emergencia
     if (email === 'admin@ivad.com' && password === 'admin') {
       const { data } = await supabase.from('employees').select('*').eq('email', email).single();
       const userObj = data || { id: '000-admin', name: 'IVAD HOME & GOODS', role: 'Administración Central', email, is_admin: true, avatar: null, verification_status: 'gold' };
 
       if (trustThisDevice) {
-        const expirationTimestamp = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30 días
+        const expirationTimestamp = Date.now() + 30 * 24 * 60 * 60 * 1000;
         localStorage.setItem('ivad_trust_expires_at', expirationTimestamp.toString());
         localStorage.setItem('ivad_remembered_email', email);
       }
@@ -175,7 +219,6 @@ export const EmployeeProvider = ({ children }) => {
       return userObj;
     }
     
-    // Buscar en la DB
     const { data, error } = await supabase
       .from('employees')
       .select('*')
@@ -191,7 +234,7 @@ export const EmployeeProvider = ({ children }) => {
     }
     
     if (trustThisDevice) {
-      const expirationTimestamp = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30 días
+      const expirationTimestamp = Date.now() + 30 * 24 * 60 * 60 * 1000;
       localStorage.setItem('ivad_trust_expires_at', expirationTimestamp.toString());
       localStorage.setItem('ivad_remembered_email', email);
     }
@@ -201,6 +244,15 @@ export const EmployeeProvider = ({ children }) => {
   };
   
   const logout = () => {
+    if (currentUser) {
+      removeStoredAccount(currentUser.id);
+    }
+    setCurrentUser(null);
+  };
+
+  const logoutAll = () => {
+    setStoredAccounts([]);
+    localStorage.removeItem('ivad_stored_accounts');
     setCurrentUser(null);
   };
 
@@ -209,7 +261,6 @@ export const EmployeeProvider = ({ children }) => {
     if (!rawEmail) return { error: 'Ingresa un correo electrónico.' };
     const cleanEmail = rawEmail.trim().toLowerCase();
 
-    // Buscar el empleado por correo (insensible a mayúsculas)
     const { data: emps, error } = await supabase
       .from('employees')
       .select('*')
@@ -220,10 +271,8 @@ export const EmployeeProvider = ({ children }) => {
     }
 
     const emp = emps[0];
-
-    // Generar código de 6 dígitos
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
     const { error: updateError } = await supabase
       .from('employees')
@@ -238,27 +287,26 @@ export const EmployeeProvider = ({ children }) => {
       return { error: 'Error al generar el código de recuperación.' };
     }
 
-    // Enviar correo usando la API interna /api/send-email para evitar bloqueo de CORS
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06);">
         <div style="background-color: #1c2c4c; padding: 30px; text-align: center; border-bottom: 4px solid #d4af37;">
           <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;">IVAD Connect</h1>
-          <p style="color: #d4af37; margin: 6px 0 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Gestión de Personal & Acceso</p>
+          <p style="color: #d4af37; margin: 6px 0 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Seguridad de la Cuenta</p>
         </div>
         <div style="padding: 30px; color: #333333; line-height: 1.6;">
-          <h3 style="color: #1c2c4c; margin-top: 0; font-size: 18px;">Código de Verificación de Acceso</h3>
+          <h3 style="color: #1c2c4c; margin-top: 0; font-size: 18px;">Código de Verificación para Cambio de Contraseña</h3>
           <p>Hola <strong>${emp.name}</strong>,</p>
-          <p>Recibimos una solicitud para verificar tu cuenta e iniciar sesión en el portal <strong>IVAD Connect</strong>.</p>
+          <p>Has solicitado cambiar tu contraseña en <strong>IVAD Connect</strong>. Introduce el siguiente código de 6 dígitos para continuar:</p>
           <div style="background-color: #f8fafc; border: 2px dashed #d4af37; border-radius: 12px; padding: 25px; margin: 25px 0; text-align: center;">
-            <span style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; display: block; margin-bottom: 8px;">Código de Autenticación</span>
+            <span style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; display: block; margin-bottom: 8px;">Código de Seguridad</span>
             <h1 style="letter-spacing: 10px; color: #1c2c4c; font-size: 40px; margin: 0; font-family: 'Courier New', monospace; font-weight: 800;">${code}</h1>
             <span style="font-size: 12px; color: #94a3b8; margin-top: 8px; display: block;">⏰ Este código expira en 15 minutos</span>
           </div>
-          <p style="font-size: 13px; color: #64748b;">Si no realizaste esta solicitud, puedes ignorar este mensaje. Tu cuenta se mantiene protegida.</p>
+          <p style="font-size: 13px; color: #64748b;">Si no solicitaste este cambio, por favor ponte en contacto de inmediato con el Administrador.</p>
         </div>
         <div style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0;">
           <p style="margin: 0 0 4px 0; font-weight: 700; color: #1c2c4c;">IVAD Home & Goods · IVAD Connect</p>
-          <p style="margin: 0;">Calidad y Excelencia Corporativa © 2026</p>
+          <p style="margin: 0;">Seguridad y Control de Acceso © 2026</p>
         </div>
       </div>
     `;
@@ -268,9 +316,9 @@ export const EmployeeProvider = ({ children }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'IVAD Soporte <gestion@ivadsrl.com>',
+          from: 'IVAD Seguridad <gestion@ivadsrl.com>',
           to: [emp.email],
-          subject: `${code} - Código de Verificación IVAD Connect`,
+          subject: `${code} es tu código para cambiar la contraseña - IVAD Connect`,
           html: htmlContent
         })
       });
@@ -339,36 +387,6 @@ export const EmployeeProvider = ({ children }) => {
 
     if (error) return { error: 'Error al actualizar la contraseña.' };
     
-    // Iniciar sesión automáticamente
-    setCurrentUser(data);
-    return { success: true, user: data };
-  };
-
-  const loginWithoutPassword = async (rawEmail) => {
-    if (!rawEmail) return { error: 'Correo inválido.' };
-    const cleanEmail = rawEmail.trim().toLowerCase();
-
-    const { data: emps, error: searchError } = await supabase
-      .from('employees')
-      .select('*')
-      .ilike('email', cleanEmail);
-
-    if (searchError || !emps || emps.length === 0) {
-      return { error: 'No se encontró la cuenta.' };
-    }
-    const emp = emps[0];
-
-    const { data, error } = await supabase
-      .from('employees')
-      .update({ 
-        reset_code: null,
-        reset_code_expires_at: null 
-      })
-      .eq('id', emp.id)
-      .select()
-      .single();
-
-    if (error) return { error: 'Error iniciando sesión.' };
     setCurrentUser(data);
     return { success: true, user: data };
   };
@@ -404,7 +422,6 @@ export const EmployeeProvider = ({ children }) => {
   }, []);
 
   const submitVerification = async (employeeId, fileBase64) => {
-    // Primero, verificamos si ya existe una solicitud para este empleado
     const existingIndex = verificationRequests.findIndex(r => r.employee_id === employeeId);
     
     const requestData = {
@@ -417,7 +434,6 @@ export const EmployeeProvider = ({ children }) => {
     let response;
     
     if (existingIndex >= 0) {
-      // Actualizar la existente
       const existingId = verificationRequests[existingIndex].id;
       response = await supabase
         .from('verification_requests')
@@ -425,7 +441,6 @@ export const EmployeeProvider = ({ children }) => {
         .eq('id', existingId)
         .select();
     } else {
-      // Crear nueva
       response = await supabase
         .from('verification_requests')
         .insert([requestData])
@@ -436,7 +451,7 @@ export const EmployeeProvider = ({ children }) => {
       console.error("Error submitting verification:", response.error);
       return { error: response.error };
     } else if (response.data) {
-      await fetchVerificationRequests(); // Recargar solicitudes
+      await fetchVerificationRequests();
       return { data: response.data };
     }
   };
@@ -444,17 +459,15 @@ export const EmployeeProvider = ({ children }) => {
   const approveVerification = async (requestId) => {
     const req = verificationRequests.find(r => r.id === requestId);
     if (req) {
-      // 1. Actualizar la solicitud en Supabase
       const { error: reqError } = await supabase
         .from('verification_requests')
         .update({ status: 'approved' })
         .eq('id', requestId);
         
       if (!reqError) {
-        // 2. Actualizar el empleado en Supabase
         await updateEmployee(req.employee_id, { verification_status: 'verified' });
         await fetchVerificationRequests();
-        await fetchEmployees(); // Asegurarnos de recargar la lista de empleados
+        await fetchEmployees();
       } else {
         console.error("Error approving request:", reqError);
       }
@@ -475,10 +488,8 @@ export const EmployeeProvider = ({ children }) => {
   };
 
   const revokeVerification = async (employeeId, reason) => {
-    // 1. Quitar el estatus verificado del empleado en base de datos
     await updateEmployee(employeeId, { verification_status: null });
     
-    // 2. Si tenía una solicitud previa, marcarla como rechazada con el motivo
     const req = verificationRequests.find(r => r.employee_id === employeeId);
     if (req) {
       const { error } = await supabase
@@ -492,15 +503,14 @@ export const EmployeeProvider = ({ children }) => {
         console.error("Error revoking request:", error);
       }
     }
-    
-    // Recargar empleados
     await fetchEmployees();
   };
 
   return (
     <EmployeeContext.Provider value={{ 
-      employees, addEmployee, updateEmployee, deleteEmployee, currentUser, login, logout,
-      requestPasswordReset, verifyResetCode, updatePassword, loginWithoutPassword,
+      employees, addEmployee, updateEmployee, deleteEmployee, currentUser, login, logout, logoutAll,
+      storedAccounts, switchAccount, removeStoredAccount,
+      requestPasswordReset, verifyResetCode, updatePassword,
       verificationRequests, submitVerification, approveVerification, rejectVerification, revokeVerification,
       fetchVerificationDocument
     }}>

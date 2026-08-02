@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
 import { VerificationBadge } from '../components/VerificationBadge';
@@ -31,6 +31,7 @@ const formatRelativeDate = (dateString) => {
 
 const Chat = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { currentUser, employees } = useEmployees();
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -59,6 +60,17 @@ const Chat = () => {
   const [messages, setMessages] = useState({});
   const [newMessageText, setNewMessageText] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+
+  // Abrir chat directo si viene parámetro de URL ?contact=id o ?sender=id (ej. al tocar una notificación)
+  useEffect(() => {
+    const contactParam = searchParams.get('contact') || searchParams.get('sender');
+    if (contactParam && otherEmployees.length > 0) {
+      const found = otherEmployees.find(e => e.id.toString() === contactParam.toString());
+      if (found) {
+        setSelectedContact(found);
+      }
+    }
+  }, [searchParams, otherEmployees]);
 
   // Menú de Opciones del Header (Los 3 puntitos)
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
@@ -96,21 +108,21 @@ const Chat = () => {
     }
   };
 
-  // Función Híbrida de Notificaciones Push (Compatible con Chrome Android Mobile + PWA + Desktop)
+  // Notificación Push Híbrida (Service Worker para Chrome Android + PWA + Desktop)
   const triggerMobileAndDesktopNotification = async (title, body, icon, tag, senderObj) => {
     if (!('Notification' in window) || Notification.permission !== 'granted' || isMuted) return;
 
+    const targetUrl = `/chat?contact=${senderObj?.id}`;
     const notificationOptions = {
       body,
       icon: icon || '/logo.png',
       badge: '/logo.png',
       tag,
       renotify: true,
-      vibrate: [200, 100, 200], // Vibración en teléfonos celulares Android
-      data: { url: '/chat', contactId: senderObj?.id }
+      vibrate: [200, 100, 200],
+      data: { url: targetUrl, contactId: senderObj?.id }
     };
 
-    // 1. Intentar ServiceWorker (Obligatorio para Chrome Android y Apps PWA instaladas)
     if ('serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.ready;
@@ -119,11 +131,10 @@ const Chat = () => {
           return;
         }
       } catch (err) {
-        console.log("SW notification failed, falling back to window.Notification:", err);
+        console.log("SW notification failed, falling back:", err);
       }
     }
 
-    // 2. Fallback para navegador Desktop tradicional
     try {
       const notif = new Notification(title, notificationOptions);
       notif.onclick = () => {
@@ -138,11 +149,7 @@ const Chat = () => {
   // Solicitar permiso de notificaciones del navegador al montar
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          console.log("Permiso de notificaciones concedido.");
-        }
-      });
+      Notification.requestPermission();
     }
   }, []);
 
@@ -155,7 +162,7 @@ const Chat = () => {
     scrollToBottom();
   }, [messages, selectedContact]);
 
-  // Cargar TODOS los mensajes directos para todos los contactos (para badges y previews en la izquierda)
+  // Cargar TODOS los mensajes directos para todos los contactos
   const fetchAllDirectMessages = async () => {
     if (!currentUser) return;
 
@@ -236,7 +243,7 @@ const Chat = () => {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel(`global_direct_chat_${currentUser.id}_v5`)
+      .channel(`global_direct_chat_${currentUser.id}_v6`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
@@ -272,7 +279,7 @@ const Chat = () => {
               ]
             }));
 
-            // Notificación sonora y Push Híbrida de Navegador (Mobile + Desktop) si me envían un mensaje
+            // Notificación sonora y Push Híbrida de Navegador si me envían un mensaje
             if (isReceiverMe) {
               playNotificationSound();
 
