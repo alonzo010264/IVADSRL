@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon, Sparkles, Bot } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
 import { VerificationBadge } from '../components/VerificationBadge';
+import { getMimiResponse } from '../utils/mimiAI';
 
 const EMOJI_REACTIONS = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
 
@@ -36,12 +37,12 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Canal Oficial de Soporte IVAD SRL
+  // Canal Oficial de Soporte IA Mimi (IVAD SRL)
   const SOPORTE_CONTACT = {
     id: 'soporte-ivad-official',
-    name: 'Soporte IVAD SRL',
-    role: 'Soporte Técnico & Atención al Colaborador',
-    department: 'Recursos Humanos & Sistemas',
+    name: 'Mimi - Soporte IA IVAD SRL',
+    role: 'Asistente de Soporte IA & Atención Corporativa',
+    department: 'Inteligencia Artificial & RRHH',
     avatar: '/logo.png',
     verification_status: 'verificado',
     verification_type: 'dorada',
@@ -378,6 +379,9 @@ const Chat = () => {
     });
   };
 
+  const [isMimiTyping, setIsMimiTyping] = useState(false);
+  const [typingUsers, setTypingUsers] = useState({});
+
   // Enviar mensaje de texto
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -415,6 +419,50 @@ const Chat = () => {
           }
         ]
       }));
+
+      // Si el mensaje fue enviado a Mimi (Soporte IA)
+      if (selectedContact.id.toString() === 'soporte-ivad-official') {
+        setIsMimiTyping(true);
+        try {
+          const currentChatHistory = messages['soporte-ivad-official'] || [];
+          const mimiReplyText = await getMimiResponse(currentChatHistory, textToSend, currentUser);
+
+          // Insertar respuesta de Mimi en Supabase
+          const { data: mimiData } = await supabase.from('direct_messages').insert([{
+            sender_id: 'soporte-ivad-official',
+            receiver_id: currentUser?.id,
+            message: mimiReplyText,
+            is_read: true,
+            reactions: [],
+            created_at: new Date().toISOString()
+          }]).select();
+
+          if (mimiData && mimiData[0]) {
+            const mimiMsg = mimiData[0];
+            setMessages(prev => ({
+              ...prev,
+              'soporte-ivad-official': [
+                ...(prev['soporte-ivad-official'] || []).filter(m => m.id !== mimiMsg.id.toString()),
+                {
+                  id: mimiMsg.id,
+                  text: mimiMsg.message,
+                  mediaUrl: null,
+                  mediaType: null,
+                  reactions: [],
+                  isRead: true,
+                  createdAt: mimiMsg.created_at,
+                  time: new Date(mimiMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                  isMe: false
+                }
+              ]
+            }));
+          }
+        } catch (mimiErr) {
+          console.error("Error generando respuesta de Mimi:", mimiErr);
+        } finally {
+          setIsMimiTyping(false);
+        }
+      }
     }
   };
 
@@ -679,9 +727,16 @@ const Chat = () => {
                     </div>
 
                     <div className="flex items-center justify-between gap-1">
-                      <p className={`text-[11px] truncate flex-1 ${unreadCount > 0 ? 'font-bold text-[#1c2c4c]' : 'text-gray-500'}`}>
-                        {lastMsgSnippet}
-                      </p>
+                      {((emp.id.toString() === 'soporte-ivad-official' && isMimiTyping) || typingUsers[emp.id.toString()]) ? (
+                        <p className="text-[11px] font-bold text-[#1c2c4c] flex items-center gap-1 animate-pulse">
+                          <Sparkles size={12} className="text-[#d4af37] animate-spin" />
+                          <span>Escribiendo...</span>
+                        </p>
+                      ) : (
+                        <p className={`text-[11px] truncate flex-1 ${unreadCount > 0 ? 'font-bold text-[#1c2c4c]' : 'text-gray-500'}`}>
+                          {lastMsgSnippet}
+                        </p>
+                      )}
                       
                       {unreadCount > 0 && (
                         <span className="bg-[#d4af37] text-[#1c2c4c] text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-xs shrink-0 animate-bounce">
@@ -1009,6 +1064,24 @@ const Chat = () => {
                     </React.Fragment>
                   );
                 })
+              )}
+              {/* Indicador de 3 Puntitos Animados Escribiendo... */}
+              {((isMimiTyping && selectedContact?.id?.toString() === 'soporte-ivad-official') || typingUsers[selectedContact?.id?.toString()]) && (
+                <div className="flex items-center gap-2.5 bg-white border border-gray-100 p-3 rounded-2xl w-max shadow-sm animate-fade-in my-2">
+                  <div className="w-7 h-7 rounded-full bg-[#1c2c4c] border border-[#d4af37] flex items-center justify-center text-white shrink-0 overflow-hidden">
+                    {selectedContact?.avatar ? (
+                      <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <Bot size={14} className="text-[#d4af37]" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="w-2 h-2 bg-[#1c2c4c] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-2 h-2 bg-[#d4af37] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-2 h-2 bg-[#1c2c4c] rounded-full animate-bounce"></span>
+                  </div>
+                  <span className="text-xs text-gray-600 font-semibold ml-1">Escribiendo...</span>
+                </div>
               )}
               <div ref={messagesEndRef} />
             </div>

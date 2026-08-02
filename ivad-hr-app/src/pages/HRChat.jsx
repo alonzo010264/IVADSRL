@@ -1,87 +1,103 @@
-import { useState } from 'react';
-import { Send, ChevronLeft } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Send, ChevronLeft, Bot, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useEmployees } from '../context/EmployeeContext';
+import { getMimiResponse } from '../utils/mimiAI';
 
 const HRChat = () => {
   const navigate = useNavigate();
+  const { currentUser } = useEmployees();
+  const messagesEndRef = useRef(null);
+
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'hr',
-      text: '¡Saludos!\nBienvenido al chat con Recursos Humanos. ¿En qué podemos ayudarte hoy?',
-      time: '09:30 a.m.',
-      date: '21/05/2024'
-    },
-    {
-      id: 2,
-      sender: 'user',
-      text: 'Hola, buen día.',
-      time: '09:32 a.m.',
-      status: 'read'
-    },
-    {
-      id: 3,
-      sender: 'user',
-      text: 'Quisiera saber cómo solicitar vacaciones.',
-      time: '09:33 a.m.',
-      status: 'read'
-    },
-    {
-      id: 4,
-      sender: 'hr',
-      text: 'Con gusto te ayudamos.\nPuedes realizar tu solicitud desde la opción "Solicitudes" en el menú principal, luego selecciona "Vacaciones" y completa el formulario.',
-      time: '09:35 a.m.'
-    },
-    {
-      id: 5,
-      sender: 'user',
-      text: 'Perfecto, muchas gracias.',
-      time: '09:36 a.m.',
-      status: 'read'
-    },
-    {
-      id: 6,
-      sender: 'hr',
-      text: '¡De nada! Estamos aquí para apoyarte.\nSi tienes alguna otra consulta, no dudes en escribirnos.',
-      time: '10:01 a.m.',
-      date: '22/05/2024'
+      text: '¡Hola! 👋 Soy Mimi, tu Asistente de Soporte IA e Inteligencia Corporativa de IVAD SRL.\n\n¿En qué puedo ayudarte hoy? Puedes preguntarme sobre vacaciones, permisos, nómina, el uso de la Radio IVAD o cualquier inquietud.',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: new Date().toLocaleDateString('es-ES')
     }
   ]);
   
   const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
-  const handleSend = (e) => {
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isTyping) return;
     
-    setMessages([
-      ...messages,
-      {
-        id: messages.length + 1,
-        sender: 'user',
-        text: inputValue,
-        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-        status: 'sent'
-      }
-    ]);
+    const userText = inputValue.trim();
+    const newMsgObj = {
+      id: Date.now(),
+      sender: 'user',
+      text: userText,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: 'sent'
+    };
+
+    const updatedMessages = [...messages, newMsgObj];
+    setMessages(updatedMessages);
     setInputValue('');
+    setIsTyping(true);
+
+    try {
+      // Obtener respuesta inteligente de Mimi usando OpenRouter AI
+      const mimiReplyText = await getMimiResponse(updatedMessages, userText, currentUser);
+
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          sender: 'hr',
+          text: mimiReplyText,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+    } catch (err) {
+      console.error("Error obteniendo respuesta de Mimi:", err);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          sender: 'hr',
+          text: '¡Hola! Tuve un pequeño contratiempo de conexión, pero dime en qué puedo orientarte sobre IVAD Connect.',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen flex flex-col items-center">
+    <div className="bg-gray-50 min-h-screen flex flex-col items-center font-sans">
       <div className="w-full max-w-3xl flex flex-col h-screen pb-20">
         
-        {/* Header Específico del Chat */}
-        <div className="bg-[#0b1b3d] text-white p-4 sticky top-[72px] z-30 shadow-md">
+        {/* Header Oficial Mimi Soporte IA */}
+        <div className="bg-[#1c2c4c] text-white p-4 sticky top-[72px] z-30 shadow-md">
           <div className="flex items-center">
-            <button onClick={() => navigate(-1)} className="p-1 mr-2">
+            <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white hover:bg-white/10 rounded-full transition">
               <ChevronLeft size={24} />
             </button>
-            <div className="flex-1 text-center pr-8">
-              <h2 className="font-bold text-lg">Chat con RR.HH.</h2>
-              <div className="flex items-center justify-center text-xs text-gray-300">
-                <div className="w-2 h-2 rounded-full bg-[#4caf50] mr-2"></div>
-                Departamento de Recursos Humanos
+            
+            <div className="flex items-center gap-3 ml-2 flex-1">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#d4af37] to-amber-200 border-2 border-white flex items-center justify-center shadow-xs relative">
+                <img src="/logo.png" alt="Mimi" className="w-full h-full object-cover rounded-full" />
+                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></span>
+              </div>
+              <div>
+                <h2 className="font-bold text-sm flex items-center gap-1.5">
+                  Mimi <Sparkles size={14} className="text-[#d4af37]" />
+                </h2>
+                <p className="text-[11px] text-amber-200 font-medium">Asistente IA de Soporte & RR.HH. IVAD SRL</p>
               </div>
             </div>
           </div>
@@ -90,74 +106,54 @@ const HRChat = () => {
         {/* Área de Mensajes */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((msg, index) => {
-            const showDate = msg.date && (index === 0 || messages[index - 1].date !== msg.date);
+            const isMe = msg.sender === 'user';
             
             return (
-              <div key={msg.id} className="flex flex-col">
-                
-                {/* Etiqueta de Fecha */}
-                {showDate && (
-                  <div className="flex justify-center my-4">
-                    <span className="bg-white border border-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full shadow-sm font-medium">
-                      {msg.date}
-                    </span>
-                  </div>
-                )}
-                
-                {/* Burbuja de mensaje */}
-                <div className={`flex flex-col max-w-[80%] ${msg.sender === 'user' ? 'self-end' : 'self-start'}`}>
-                  <div className={`rounded-2xl p-4 shadow-sm ${
-                    msg.sender === 'user' 
-                      ? 'bg-[#e8f3ef] text-gray-800 rounded-tr-sm' 
-                      : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
-                  }`}>
-                    {msg.sender === 'hr' && index > 0 && messages[index-1].sender !== 'hr' && (
-                       <div className="font-bold text-[#0b1b3d] mb-1 text-sm">RR.HH.</div>
-                    )}
-                    <p className="text-[15px] whitespace-pre-wrap">{msg.text}</p>
-                    
-                    <div className="flex justify-end items-center gap-1 mt-2">
-                      <span className="text-[10px] text-gray-400">{msg.time}</span>
-                      {msg.sender === 'user' && (
-                        <div className="flex">
-                          {/* Doble check (visto) */}
-                          <svg className="w-3 h-3 text-[#0b1b3d]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                          {msg.status === 'read' && (
-                            <svg className="w-3 h-3 text-[#0b1b3d] -ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                        </div>
-                      )}
+              <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                <div className={`max-w-[85%] rounded-2xl p-3.5 shadow-xs text-xs leading-relaxed whitespace-pre-wrap ${
+                  isMe 
+                    ? 'bg-[#1c2c4c] text-white rounded-tr-none' 
+                    : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
+                }`}>
+                  {!isMe && (
+                    <div className="font-bold text-[10px] text-[#1c2c4c] mb-1 flex items-center gap-1">
+                      <Bot size={12} className="text-[#d4af37]" /> Mimi (Soporte IA)
                     </div>
-                  </div>
+                  )}
+                  {msg.text}
                 </div>
-                
+                <span className="text-[10px] text-gray-400 mt-1 px-1">{msg.time}</span>
               </div>
             );
           })}
+
+          {isTyping && (
+            <div className="flex items-center gap-2 text-xs text-gray-400 italic bg-white p-3 rounded-2xl w-max border border-gray-100">
+              <Sparkles size={14} className="animate-spin text-[#d4af37]" />
+              <span>Mimi está escribiendo una respuesta...</span>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Input de Mensaje */}
-        <div className="bg-white p-3 border-t border-gray-200">
-          <form onSubmit={handleSend} className="flex gap-2 relative">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Escribe un mensaje..."
-              className="flex-1 bg-white border border-gray-200 rounded-full py-3 px-5 text-[15px] shadow-sm focus:outline-none focus:border-[#0b1b3d] focus:ring-1 focus:ring-[#0b1b3d]"
-            />
-            <button 
-              type="submit" 
-              className="bg-[#0b1b3d] text-white w-12 h-12 rounded-full flex justify-center items-center shrink-0 shadow-md hover:bg-[#152240] transition-colors"
-            >
-              <Send size={20} className="ml-1" />
-            </button>
-          </form>
-        </div>
+        {/* Formulario de envío */}
+        <form onSubmit={handleSend} className="p-3 bg-white border-t border-gray-200 flex gap-2 items-center">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Escribe tu consulta a Mimi..."
+            className="flex-1 p-3 text-xs bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1c2c4c]"
+          />
+          <button
+            type="submit"
+            disabled={!inputValue.trim() || isTyping}
+            className="p-3 bg-[#1c2c4c] text-white rounded-2xl hover:bg-blue-950 transition disabled:opacity-40"
+          >
+            <Send size={18} />
+          </button>
+        </form>
 
       </div>
     </div>
