@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, FileCheck } from 'lucide-react';
+import { ChevronRight, FileCheck, Radio } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 
@@ -8,6 +8,7 @@ const RequestsApprovals = () => {
   const { logout } = useEmployees();
 
   const requestTypes = [
+    { id: 'radio_ivad', label: 'Radio IVAD Walkie-Talkie', path: '/radio', highlight: true },
     { id: 'mis_vacaciones', label: 'Mis Vacaciones & Programación', path: '/vacaciones' },
     { id: 'varias', label: 'Solicitudes Varias', path: '/solicitudes-varias' },
     { id: 'permisos', label: 'Solicitudes Permisos', path: '/solicitud-permiso' },
@@ -22,27 +23,35 @@ const RequestsApprovals = () => {
         
         {/* Banner principal */}
         <div className="bg-[#1c2c4c] text-white rounded-2xl p-8 mb-6 flex flex-col items-center justify-center text-center shadow-lg relative overflow-hidden">
-          <h1 className="text-2xl font-bold mb-6 relative z-10">Solicitudes y Aprobaciones</h1>
+          <h1 className="text-2xl font-bold mb-6 relative z-10">Solicitudes & Herramientas</h1>
           <div className="bg-white/10 p-4 rounded-2xl relative z-10">
             <FileCheck size={64} className="text-[#d4af37]" strokeWidth={1.5} />
           </div>
-          {/* Círculo decorativo */}
           <div className="absolute top-[-50%] right-[-10%] w-64 h-64 bg-white opacity-5 rounded-full blur-2xl pointer-events-none"></div>
         </div>
 
         {/* Título de sección */}
-        <h2 className="text-xl font-bold text-[#1c2c4c] mb-4 px-1">Tipos de solicitud</h2>
+        <h2 className="text-xl font-bold text-[#1c2c4c] mb-4 px-1">Secciones y herramientas</h2>
 
-        {/* Lista de solicitudes (Estilo limpio original sin iconos innecesarios) */}
+        {/* Lista de solicitudes y herramientas */}
         <div className="space-y-3">
           {requestTypes.map((item) => (
             <Link 
               key={item.id}
               to={item.path}
-              className="bg-white rounded-xl p-4 flex justify-between items-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+              className={`rounded-xl p-4 flex justify-between items-center shadow-sm border transition-all ${
+                item.highlight
+                  ? 'bg-gradient-to-r from-[#1c2c4c] to-blue-900 text-white border-[#d4af37]'
+                  : 'bg-white text-gray-800 border-gray-100 hover:shadow-md'
+              }`}
             >
-              <span className="text-gray-800 font-medium text-lg">{item.label}</span>
-              <ChevronRight className="text-gray-800" size={24} />
+              <div className="flex items-center gap-3">
+                {item.highlight && <Radio size={22} className="text-[#d4af37] animate-pulse" />}
+                <span className={`font-semibold text-lg ${item.highlight ? 'text-white' : 'text-gray-800'}`}>
+                  {item.label}
+                </span>
+              </div>
+              <ChevronRight className={item.highlight ? 'text-[#d4af37]' : 'text-gray-800'} size={24} />
             </Link>
           ))}
         </div>

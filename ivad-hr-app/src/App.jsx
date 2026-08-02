@@ -44,6 +44,7 @@ import LicenseRequest from './pages/LicenseRequest';
 import Vacaciones from './pages/Vacaciones';
 import VacationRequest from './pages/VacationRequest';
 import CompanyPolicies from './pages/CompanyPolicies';
+import RadioIVAD from './pages/RadioIVAD';
 
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { currentUser } = useEmployees();
@@ -93,8 +94,9 @@ function App() {
             <Route path="/mas" element={<RequestsApprovals />} />
             <Route path="/estatus-solicitudes" element={<LeaveApprovals />} />
             
-            {/* Nuevas rutas del menú lateral */}
+            {/* Nuevas rutas del menú lateral y Radio */}
             <Route path="/chat" element={<Chat />} />
+            <Route path="/radio" element={<RadioIVAD />} />
             <Route path="/incidencias" element={<Incidencias />} />
             <Route path="/iniciativas" element={<Iniciativas />} />
             <Route path="/faq" element={<FAQ />} />
