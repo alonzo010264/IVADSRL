@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Radio, Mic, Volume2, VolumeX, ArrowLeft, Users, User, Clock, Play, Pause, AlertCircle, CheckCircle2, Smartphone, ShieldCheck, Bell } from 'lucide-react';
+import { Radio, Mic, Volume2, VolumeX, ArrowLeft, Users, User, Clock, Play, Pause, AlertCircle, CheckCircle2, Smartphone, ShieldCheck, Bell, Wifi, WifiOff, RadioTower, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -10,6 +10,11 @@ const RadioIVAD = () => {
 
   const [isPowerOn, setIsPowerOn] = useState(true);
   const [testModeOverride, setTestModeOverride] = useState(true);
+  
+  // Selección de Modo de Conexión: 'internet' (Nube 4G/5G) vs 'offline_signal' (Señal Directa / Sin Internet)
+  const [connectionMode, setConnectionMode] = useState('internet');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
   const [targetType, setTargetType] = useState('general');
   const [selectedReceiver, setSelectedReceiver] = useState(null);
 
@@ -19,6 +24,15 @@ const RadioIVAD = () => {
   const [activeSpeakerName, setActiveSpeakerName] = useState('');
 
   const [transmissions, setTransmissions] = useState([]);
+  const [offlineQueue, setOfflineQueue] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ivad_radio_offline_queue');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
   const [currentlyPlayingId, setCurrentlyPlayingId] = useState(null);
 
   const [notifPermissionGranted, setNotifPermissionGranted] = useState(() => {
@@ -34,6 +48,57 @@ const RadioIVAD = () => {
   useEffect(() => {
     isRecordingStateRef.current = isRecording;
   }, [isRecording]);
+
+  // Escuchar estado de conexión de red del dispositivo
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncOfflineQueue();
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      setConnectionMode('offline_signal');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [offlineQueue]);
+
+  // Sincronizar transmisiones guardadas sin internet una vez restablecida la señal
+  const syncOfflineQueue = async () => {
+    try {
+      const savedQueueStr = localStorage.getItem('ivad_radio_offline_queue');
+      if (!savedQueueStr) return;
+      const queue = JSON.parse(savedQueueStr);
+
+      if (queue && queue.length > 0) {
+        console.log("⚡ Sincronizando transmisiones fuera de línea:", queue.length);
+        
+        for (const item of queue) {
+          await supabase.from('radio_transmissions').insert([{
+            sender_id: item.sender_id,
+            sender_name: item.sender_name,
+            target_type: item.target_type,
+            receiver_id: item.receiver_id,
+            audio_url: item.audio_url,
+            duration_seconds: item.duration_seconds,
+            created_at: item.created_at
+          }]);
+        }
+
+        localStorage.removeItem('ivad_radio_offline_queue');
+        setOfflineQueue([]);
+        fetchRecentTransmissions();
+      }
+    } catch (e) {
+      console.log("Error sincronizando cola offline:", e);
+    }
+  };
 
   const isWithinBusinessHours = () => {
     const now = new Date();
@@ -51,7 +116,6 @@ const RadioIVAD = () => {
     ...employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString())
   ];
 
-  // Solicitar permiso de micrófono y notificaciones
   const requestAllPermissions = async () => {
     if ('Notification' in window && Notification.permission !== 'granted') {
       const perm = await Notification.requestPermission();
@@ -73,6 +137,7 @@ const RadioIVAD = () => {
   }, []);
 
   const fetchRecentTransmissions = async () => {
+    if (!navigator.onLine) return;
     const { data } = await supabase
       .from('radio_transmissions')
       .select('*')
@@ -89,10 +154,10 @@ const RadioIVAD = () => {
   }, []);
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser || connectionMode === 'offline_signal') return;
 
     const channel = supabase
-      .channel(`radio_page_live_${currentUser.id}_v4`)
+      .channel(`radio_page_live_${currentUser.id}_v5`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -115,7 +180,7 @@ const RadioIVAD = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [currentUser, isPowerOn]);
+  }, [currentUser, isPowerOn, connectionMode]);
 
   const playAudioTransmission = (audioUrl, speakerName, transId) => {
     if (!isPowerOn) return;
@@ -205,8 +270,8 @@ const RadioIVAD = () => {
         reader.readAsDataURL(audioBlob);
         reader.onloadend = async () => {
           const base64Audio = reader.result;
-
-          const { data, error } = await supabase.from('radio_transmissions').insert([{
+          const newTransObj = {
+            id: 'offline-' + Date.now(),
             sender_id: currentUser?.id,
             sender_name: currentUser?.name || 'Colaborador IVAD',
             target_type: targetType,
@@ -214,13 +279,38 @@ const RadioIVAD = () => {
             audio_url: base64Audio,
             duration_seconds: recordingSeconds || 1,
             created_at: new Date().toISOString()
-          }]).select();
+          };
 
-          if (error) {
-            console.error("Error enviando voz por Radio:", error);
-            alert("Error al enviar la transmisión.");
-          } else if (data && data[0]) {
-            setTransmissions(prev => [data[0], ...prev]);
+          // SI ESTAMOS SIN INTERNET O EN MODO SEÑAL LOCAL
+          if (!isOnline || connectionMode === 'offline_signal') {
+            const updatedQueue = [...offlineQueue, newTransObj];
+            setOfflineQueue(updatedQueue);
+            localStorage.setItem('ivad_radio_offline_queue', JSON.stringify(updatedQueue));
+            setTransmissions(prev => [newTransObj, ...prev]);
+
+            alert("Transmisión guardada en Modo Señal Sin Internet. Se transmitirá automáticamente en cuanto se restablezca la conexión.");
+          } else {
+            // MODO NUBE ONLINE POR SUPABASE
+            const { data, error } = await supabase.from('radio_transmissions').insert([{
+              sender_id: currentUser?.id,
+              sender_name: currentUser?.name || 'Colaborador IVAD',
+              target_type: targetType,
+              receiver_id: targetType === 'direct' ? selectedReceiver?.id : null,
+              audio_url: base64Audio,
+              duration_seconds: recordingSeconds || 1,
+              created_at: new Date().toISOString()
+            }]).select();
+
+            if (error) {
+              console.error("Error enviando voz por Radio:", error);
+              // Fallback a cola offline
+              const updatedQueue = [...offlineQueue, newTransObj];
+              setOfflineQueue(updatedQueue);
+              localStorage.setItem('ivad_radio_offline_queue', JSON.stringify(updatedQueue));
+              setTransmissions(prev => [newTransObj, ...prev]);
+            } else if (data && data[0]) {
+              setTransmissions(prev => [data[0], ...prev]);
+            }
           }
         };
 
@@ -259,7 +349,7 @@ const RadioIVAD = () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [targetType, selectedReceiver, isPowerOn, isOperational]);
+  }, [targetType, selectedReceiver, isPowerOn, isOperational, connectionMode, isOnline]);
 
   const handleButtonClick = () => {
     if (isRecording) {
@@ -286,7 +376,7 @@ const RadioIVAD = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold tracking-tight">Radio IVAD Walkie-Talkie</h1>
-                <p className="text-xs text-[#d4af37] font-semibold">Comunicación de Voz en Tiempo Real</p>
+                <p className="text-xs text-[#d4af37] font-semibold">Comunicación Híbrida (Internet & Señal Directa)</p>
               </div>
             </div>
           </div>
@@ -306,6 +396,71 @@ const RadioIVAD = () => {
       </div>
 
       <div className="max-w-4xl mx-auto px-5 -mt-4 relative z-20 space-y-6">
+
+        {/* SELECTOR DE MODO DE CONEXIÓN (CON INTERNET vs SEÑAL SIN INTERNET) */}
+        <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-extrabold text-gray-400 uppercase tracking-wider">
+              Modo de Conexión y Red
+            </h2>
+
+            <span className={`text-[10px] font-extrabold px-3 py-0.5 rounded-full flex items-center gap-1.5 ${
+              isOnline ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-800'
+            }`}>
+              {isOnline ? <Wifi size={12} /> : <WifiOff size={12} />}
+              {isOnline ? 'Conectado a Internet' : 'Modo Fuera de Línea / Sin Internet'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              onClick={() => setConnectionMode('internet')}
+              className={`p-3.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border transition ${
+                connectionMode === 'internet'
+                  ? 'bg-[#1c2c4c] text-white border-[#1c2c4c] shadow-sm'
+                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+              }`}
+            >
+              <Wifi size={18} className={connectionMode === 'internet' ? 'text-[#d4af37]' : 'text-gray-500'} />
+              <div className="text-left">
+                <span className="block font-bold">Modo Nube (Con Internet)</span>
+                <span className="text-[10px] opacity-80 font-normal">Transmisión instantánea por datos 4G/5G o Wi-Fi</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setConnectionMode('offline_signal')}
+              className={`p-3.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border transition ${
+                connectionMode === 'offline_signal'
+                  ? 'bg-[#1c2c4c] text-white border-[#1c2c4c] shadow-sm'
+                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+              }`}
+            >
+              <RadioTower size={18} className={connectionMode === 'offline_signal' ? 'text-[#d4af37]' : 'text-gray-500'} />
+              <div className="text-left">
+                <span className="block font-bold">Modo Señal Directa (Sin Internet)</span>
+                <span className="text-[10px] opacity-80 font-normal">Almacena audio offline y sincroniza sin perder datos</span>
+              </div>
+            </button>
+          </div>
+
+          {offlineQueue.length > 0 && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-2 text-xs text-amber-900 font-semibold">
+              <div className="flex items-center gap-2">
+                <RefreshCw size={16} className="text-amber-600 animate-spin shrink-0" />
+                <span>Tienes <strong>{offlineQueue.length}</strong> mensaje(s) de voz almacenados sin internet.</span>
+              </div>
+              {isOnline && (
+                <button 
+                  onClick={syncOfflineQueue}
+                  className="px-3 py-1 bg-[#1c2c4c] text-white text-[11px] font-bold rounded-xl hover:bg-blue-900 transition shrink-0"
+                >
+                  Sincronizar Ahora
+                </button>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Banner de Permisos de Segundo Plano */}
         {!notifPermissionGranted && (
@@ -328,29 +483,10 @@ const RadioIVAD = () => {
           </div>
         )}
 
-        {/* Tarjeta de Indicaciones con Texto Limpio */}
-        <div className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-blue-50 text-[#1c2c4c]">
-              <Smartphone size={20} />
-            </div>
-            <div>
-              <h3 className="font-bold text-xs text-[#1c2c4c]">Instrucciones de Uso de la Radio</h3>
-              <p className="text-[11px] text-gray-500">
-                En celulares mantén presionado el botón circular para hablar. En computadoras puedes usar la Barra Espaciadora o hacer clic.
-              </p>
-            </div>
-          </div>
-
-          <span className="text-[10px] bg-green-100 text-green-700 font-extrabold px-3 py-1 rounded-full shrink-0">
-            En Línea
-          </span>
-        </div>
-
-        {/* SELECCIÓN DE CANAL DE TRANSMISIÓN */}
+        {/* SELECCIÓN DE CANAL DE TRANSMISIÓN (GENERAL O PRIVADO) */}
         <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 space-y-4">
           <h2 className="text-xs font-extrabold text-gray-400 uppercase tracking-wider">
-            Selección de Canal
+            Destinatario del Audio
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -456,7 +592,7 @@ const RadioIVAD = () => {
                     PRESIONAR PARA HABLAR
                   </span>
                   <span className="text-[9px] text-[#d4af37] font-semibold mt-1">
-                    (Mantén o haz Clic)
+                    ({connectionMode === 'internet' ? 'Modo Nube' : 'Señal Sin Internet'})
                   </span>
                 </>
               )}
@@ -482,9 +618,10 @@ const RadioIVAD = () => {
               <p className="text-center text-xs text-gray-400 py-8">No hay mensajes de voz recientes en la radio.</p>
             ) : (
               transmissions.map(item => {
-                const isMe = item.sender_id.toString() === currentUser?.id?.toString();
+                const isMe = item.sender_id?.toString() === currentUser?.id?.toString();
                 const timeStr = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 const isPlayingThis = currentlyPlayingId === item.id;
+                const isOfflineSaved = item.id?.toString().startsWith('offline-');
 
                 return (
                   <div key={item.id} className="py-3 flex items-center justify-between gap-3">
@@ -511,6 +648,7 @@ const RadioIVAD = () => {
                           <span>{item.target_type === 'general' ? 'Canal General' : 'Canal Privado'}</span>
                           <span>•</span>
                           <span>{item.duration_seconds || 1} seg</span>
+                          {isOfflineSaved && <span className="text-amber-600 font-bold">• Guardado Sin Internet</span>}
                         </p>
                       </div>
                     </div>
