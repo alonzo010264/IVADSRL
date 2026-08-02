@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -630,7 +630,7 @@ const Chat = () => {
               </span>
             </div>
 
-            {/* Lista de Mensajes */}
+            {/* Lista de Mensajes con Dos Colores Distintos & Foto de Perfil al Visto */}
             <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar relative z-20">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
@@ -659,15 +659,26 @@ const Chat = () => {
                       key={msg.id} 
                       onMouseEnter={() => setHoveredMsgId(msg.id)}
                       onMouseLeave={() => setHoveredMsgId(null)}
-                      className={`flex group relative ${msg.isMe ? 'justify-end' : 'justify-start'}`}
+                      className={`flex items-end gap-2 group relative ${msg.isMe ? 'justify-end' : 'justify-start'}`}
                     >
                       
+                      {/* AVATAR A LA IZQUIERDA PARA MENSAJES RECIBIDOS */}
+                      {!msg.isMe && (
+                        <div className="w-7 h-7 rounded-full border border-[#d4af37] bg-[#1c2c4c] overflow-hidden shrink-0 self-end mb-0.5 flex items-center justify-center shadow-xs">
+                          {selectedContact.avatar ? (
+                            <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover scale-[1.25]" />
+                          ) : (
+                            <User size={14} className="text-white" />
+                          )}
+                        </div>
+                      )}
+
                       {/* BARRA FLOTANTE DE REACCIONES RÁPIDAS */}
                       {!msg.isDeletedForEveryone && (hoveredMsgId === msg.id || activeReactionPickerMsgId === msg.id) && (
                         <div 
                           className={`absolute z-[60] bg-white rounded-full shadow-2xl border border-gray-200 px-2 py-1 flex items-center gap-1.5 animate-in fade-in duration-150 ${
                             isTopMessage ? 'top-full mt-1' : '-top-10'
-                          } ${msg.isMe ? 'right-0' : 'left-0'}`}
+                          } ${msg.isMe ? 'right-0' : 'left-9'}`}
                         >
                           {EMOJI_REACTIONS.map(emoji => (
                             <button
@@ -692,18 +703,19 @@ const Chat = () => {
                         </div>
                       )}
 
+                      {/* BURBUJA DEL MENSAJE (COLOR AZUL SUAVE PARA ENVIADO, GRIS SUAVE PARA RECIBIDO) */}
                       <div 
-                        className={`max-w-[85%] sm:max-w-[70%] rounded-2xl p-2.5 shadow-sm relative ${
+                        className={`max-w-[82%] sm:max-w-[68%] rounded-2xl p-2.5 shadow-xs relative ${
                           msg.isMe 
-                            ? 'bg-[#1c2c4c] text-white rounded-tr-sm' 
-                            : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
+                            ? 'bg-[#d3e3fd] text-[#041e49] rounded-tr-xs' 
+                            : 'bg-[#f1f3f4] text-[#1c2c4c] rounded-tl-xs'
                         } ${msg.isDeletedForEveryone ? 'italic text-gray-400 opacity-75' : ''}`}
                       >
                         {/* VISTA PREVIA DE IMAGEN */}
                         {msg.mediaType === 'image' && msg.mediaUrl && !msg.isDeletedForEveryone && (
                           <div 
                             onClick={() => setActivePreviewImage(msg.mediaUrl)}
-                            className="relative rounded-xl overflow-hidden cursor-pointer group/img border border-white/20 bg-black/10 flex items-center justify-center min-h-[140px]"
+                            className="relative rounded-xl overflow-hidden cursor-pointer group/img border border-gray-200/50 bg-black/5 flex items-center justify-center min-h-[140px]"
                           >
                             <img 
                               src={msg.mediaUrl} 
@@ -718,40 +730,46 @@ const Chat = () => {
 
                         {/* TARJETA DE DOCUMENTO ADJUNTO */}
                         {msg.mediaType === 'document' && msg.mediaUrl && !msg.isDeletedForEveryone && (
-                          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/10 border border-white/20 my-1">
-                            <FileText size={24} className={msg.isMe ? 'text-[#d4af37]' : 'text-[#1c2c4c]'} />
+                          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/60 border border-gray-200 my-1">
+                            <FileText size={24} className="text-[#1c2c4c]" />
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold truncate">{msg.fileName}</p>
-                              <p className="text-[9px] opacity-75">Documento adjunto</p>
+                              <p className="text-xs font-bold truncate text-[#1c2c4c]">{msg.fileName}</p>
+                              <p className="text-[9px] text-gray-500">Documento adjunto</p>
                             </div>
                             <a 
                               href={msg.mediaUrl} 
                               download={msg.fileName}
-                              className="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition shrink-0"
+                              className="p-1.5 bg-white hover:bg-gray-100 rounded-lg transition shrink-0 border border-gray-200"
                               title="Descargar archivo"
                             >
-                              <Download size={16} />
+                              <Download size={16} className="text-[#1c2c4c]" />
                             </a>
                           </div>
                         )}
 
                         {/* TEXTO DEL MENSAJE */}
                         {msg.text && (
-                          <p className="text-xs leading-relaxed break-words px-1 pt-1">{msg.text}</p>
+                          <p className="text-xs leading-relaxed break-words px-1 pt-1 font-normal">{msg.text}</p>
                         )}
 
-                        {/* HORA Y PALOMITAS DEL VISTO */}
-                        <div className="flex items-center justify-end gap-1 mt-1 px-1">
-                          <span className={`text-[9px] ${msg.isMe ? 'text-[#d4af37]' : 'text-gray-400'}`}>
+                        {/* HORA Y FOTO DE PERFIL DEL DESTINATARIO CUANDO LO VE (EN LUGAR DEL VISTO WHATSAPP) */}
+                        <div className="flex items-center justify-end gap-1.5 mt-1 px-1">
+                          <span className={`text-[9px] font-medium ${msg.isMe ? 'text-[#041e49]/70' : 'text-gray-500'}`}>
                             {msg.time}
                           </span>
                           
-                          {msg.isMe && !msg.isDeletedForEveryone && (
-                            msg.isRead ? (
-                              <CheckCheck size={14} className="text-[#1d9bf0] font-bold" title="Visto" />
-                            ) : (
-                              <CheckCheck size={14} className="text-gray-400/80" title="Entregado" />
-                            )
+                          {/* SI ES MI MENSAJE Y FUE VISTO (isRead === true), MOSTRAR LA FOTO DE PERFIL DEL RECEPTOR */}
+                          {msg.isMe && !msg.isDeletedForEveryone && msg.isRead && (
+                            <div 
+                              className="w-4 h-4 rounded-full border border-white overflow-hidden shrink-0 bg-[#1c2c4c] flex items-center justify-center shadow-xs"
+                              title={`Visto por ${selectedContact.name}`}
+                            >
+                              {selectedContact.avatar ? (
+                                <img src={selectedContact.avatar} alt="Visto" className="w-full h-full object-cover scale-[1.25]" />
+                              ) : (
+                                <User size={10} className="text-white" />
+                              )}
+                            </div>
                           )}
                         </div>
 
