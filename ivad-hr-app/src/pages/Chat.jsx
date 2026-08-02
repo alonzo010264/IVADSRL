@@ -7,6 +7,28 @@ import { VerificationBadge } from '../components/VerificationBadge';
 
 const EMOJI_REACTIONS = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
 
+// Formateador de Fecha Relativa Estilo WhatsApp (Hoy, Ayer, Viernes, 12 de julio)
+const formatRelativeDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const now = new Date();
+  
+  const dateMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const diffTime = nowMidnight - dateMidnight;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return 'Hoy';
+  if (diffDays === 1) return 'Ayer';
+  if (diffDays > 1 && diffDays < 7) {
+    const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    return daysOfWeek[date.getDay()];
+  }
+
+  return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+};
+
 const Chat = () => {
   const navigate = useNavigate();
   const { currentUser, employees } = useEmployees();
@@ -171,7 +193,7 @@ const Chat = () => {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel(`global_direct_chat_${currentUser.id}_v3`)
+      .channel(`global_direct_chat_${currentUser.id}_v4`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
@@ -207,7 +229,7 @@ const Chat = () => {
               ]
             }));
 
-            // Notificación sonora y Push de Navegador (SIN EMOJIS) si me envían un mensaje
+            // Notificación sonora y Push de Navegador si me envían un mensaje
             if (isReceiverMe) {
               playNotificationSound();
 
@@ -560,7 +582,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos con Conteo de No Leídos y Último Mensaje tipo WhatsApp (Sin Emojis en snippets) */}
+        {/* Lista de Contactos con Conteo de No Leídos y Último Mensaje con Fecha Relativa tipo WhatsApp */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron canales.</p>
@@ -582,6 +604,8 @@ const Chat = () => {
                   lastMsgSnippet = (lastMsg.isMe ? 'Tú: ' : '') + 'Documento';
                 }
               }
+
+              const formattedDateStr = lastMsg ? formatRelativeDate(lastMsg.createdAt) : null;
 
               return (
                 <button
@@ -608,9 +632,9 @@ const Chat = () => {
                         <span>{emp.name}</span>
                         <VerificationBadge emp={emp} size={16} position="bottom" />
                       </h3>
-                      {lastMsg && (
-                        <span className="text-[9px] text-gray-400 font-medium shrink-0 ml-1">
-                          {lastMsg.time}
+                      {formattedDateStr && (
+                        <span className="text-[9px] text-gray-400 font-semibold shrink-0 ml-1">
+                          {formattedDateStr === 'Hoy' ? lastMsg.time : formattedDateStr}
                         </span>
                       )}
                     </div>
@@ -763,7 +787,7 @@ const Chat = () => {
               </span>
             </div>
 
-            {/* Lista de Mensajes con Visto en Texto Pequeño */}
+            {/* Lista de Mensajes con Separador de Fechas Relativo Estilo WhatsApp (Hoy, Ayer, Viernes...) */}
             <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar relative z-20">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
@@ -778,6 +802,12 @@ const Chat = () => {
                   const hasReactions = Array.isArray(msg.reactions) && msg.reactions.length > 0;
                   const isTopMessage = index === 0;
                   
+                  // Agrupación por Fecha Relativa WhatsApp (Hoy, Ayer, Viernes, etc.)
+                  const msgDateStr = formatRelativeDate(msg.createdAt);
+                  const prevMsg = activeMessages[index - 1];
+                  const prevDateStr = prevMsg ? formatRelativeDate(prevMsg.createdAt) : null;
+                  const showDateDivider = msgDateStr && msgDateStr !== prevDateStr;
+
                   const groupedReactions = (msg.reactions || []).reduce((acc, r) => {
                     acc[r.emoji] = (acc[r.emoji] || 0) + 1;
                     return acc;
@@ -788,145 +818,156 @@ const Chat = () => {
                     .map(r => r.emoji);
 
                   return (
-                    <div 
-                      key={msg.id} 
-                      onMouseEnter={() => setHoveredMsgId(msg.id)}
-                      onMouseLeave={() => setHoveredMsgId(null)}
-                      className={`flex items-end gap-2 group relative ${msg.isMe ? 'justify-end' : 'justify-start'}`}
-                    >
+                    <React.Fragment key={msg.id}>
                       
-                      {/* AVATAR A LA IZQUIERDA PARA MENSAJES RECIBIDOS */}
-                      {!msg.isMe && (
-                        <div className="w-7 h-7 rounded-full border border-[#d4af37] bg-[#1c2c4c] overflow-hidden shrink-0 self-end mb-0.5 flex items-center justify-center shadow-xs">
-                          {selectedContact.avatar ? (
-                            <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover scale-[1.25]" />
-                          ) : (
-                            <User size={14} className="text-white" />
-                          )}
-                        </div>
-                      )}
-
-                      {/* BARRA FLOTANTE DE REACCIONES RÁPIDAS */}
-                      {!msg.isDeletedForEveryone && (hoveredMsgId === msg.id || activeReactionPickerMsgId === msg.id) && (
-                        <div 
-                          className={`absolute z-[60] bg-white rounded-full shadow-2xl border border-gray-200 px-2 py-1 flex items-center gap-1.5 animate-in fade-in duration-150 ${
-                            isTopMessage ? 'top-full mt-1' : '-top-10'
-                          } ${msg.isMe ? 'right-0' : 'left-9'}`}
-                        >
-                          {EMOJI_REACTIONS.map(emoji => (
-                            <button
-                              key={emoji}
-                              onClick={() => handleToggleReaction(msg, emoji)}
-                              className={`text-base hover:scale-125 transition-transform px-1 py-0.5 rounded-full ${
-                                myReactedEmojis.includes(emoji) ? 'bg-blue-100' : 'hover:bg-gray-100'
-                              }`}
-                              title={`Reaccionar con ${emoji}`}
-                            >
-                              {emoji}
-                            </button>
-                          ))}
-                          
-                          <button
-                            onClick={() => setSelectedMsgToDelete(msg)}
-                            className="text-gray-400 hover:text-red-500 p-1 border-l border-gray-200 ml-1 transition"
-                            title="Eliminar mensaje"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      )}
-
-                      {/* BURBUJA DEL MENSAJE (COLOR AZUL SUAVE PARA ENVIADO, GRIS SUAVE PARA RECIBIDO) */}
-                      <div 
-                        className={`max-w-[82%] sm:max-w-[68%] rounded-2xl p-2.5 shadow-xs relative ${
-                          msg.isMe 
-                            ? 'bg-[#d3e3fd] text-[#041e49] rounded-tr-xs' 
-                            : 'bg-[#f1f3f4] text-[#1c2c4c] rounded-tl-xs'
-                        } ${msg.isDeletedForEveryone ? 'italic text-gray-400 opacity-75' : ''}`}
-                      >
-                        {/* VISTA PREVIA DE IMAGEN */}
-                        {msg.mediaType === 'image' && msg.mediaUrl && !msg.isDeletedForEveryone && (
-                          <div 
-                            onClick={() => setActivePreviewImage(msg.mediaUrl)}
-                            className="relative rounded-xl overflow-hidden cursor-pointer group/img border border-gray-200/50 bg-black/5 flex items-center justify-center min-h-[140px]"
-                          >
-                            <img 
-                              src={msg.mediaUrl} 
-                              alt="Imagen adjunta guardada" 
-                              className="w-full h-auto max-h-64 object-cover group-hover/img:scale-105 transition-transform duration-200" 
-                            />
-                            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold">
-                              <Eye size={18} /> Ver Completa
-                            </div>
-                          </div>
-                        )}
-
-                        {/* TARJETA DE DOCUMENTO ADJUNTO */}
-                        {msg.mediaType === 'document' && msg.mediaUrl && !msg.isDeletedForEveryone && (
-                          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/60 border border-gray-200 my-1">
-                            <FileText size={24} className="text-[#1c2c4c]" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold truncate text-[#1c2c4c]">{msg.fileName}</p>
-                              <p className="text-[9px] text-gray-500">Documento adjunto</p>
-                            </div>
-                            <a 
-                              href={msg.mediaUrl} 
-                              download={msg.fileName}
-                              className="p-1.5 bg-white hover:bg-gray-100 rounded-lg transition shrink-0 border border-gray-200"
-                              title="Descargar archivo"
-                            >
-                              <Download size={16} className="text-[#1c2c4c]" />
-                            </a>
-                          </div>
-                        )}
-
-                        {/* TEXTO DEL MENSAJE */}
-                        {msg.text && (
-                          <p className="text-xs leading-relaxed break-words px-1 pt-1 font-normal">{msg.text}</p>
-                        )}
-
-                        {/* HORA Y VISTO EN TEXTO PEQUEÑO */}
-                        <div className="flex items-center justify-end gap-1.5 mt-1 px-1">
-                          <span className={`text-[9px] font-medium ${msg.isMe ? 'text-[#041e49]/70' : 'text-gray-500'}`}>
-                            {msg.time}
+                      {/* DIVISOR ENCABEZADO DE FECHA ESTILO WHATSAPP (Hoy, Ayer, Viernes...) */}
+                      {showDateDivider && (
+                        <div className="flex justify-center my-3 z-10">
+                          <span className="bg-white/90 shadow-xs border border-gray-200/80 text-[#1c2c4c] font-extrabold text-[10px] uppercase px-3.5 py-1 rounded-full tracking-wider">
+                            {msgDateStr}
                           </span>
-                          
-                          {/* SI ES MI MENSAJE, MOSTRAR ESTADO EN TEXTO PEQUEÑO */}
-                          {msg.isMe && !msg.isDeletedForEveryone && (
-                            msg.isRead ? (
-                              <span className="text-[9px] font-bold text-blue-600 tracking-tight">Visto</span>
-                            ) : (
-                              <span className="text-[9px] font-medium text-gray-400/80">Entregado</span>
-                            )
-                          )}
                         </div>
+                      )}
 
-                        {/* BADGES DE REACCIONES */}
-                        {hasReactions && !msg.isDeletedForEveryone && (
-                          <div className={`absolute -bottom-3.5 ${msg.isMe ? 'left-2' : 'right-2'} flex gap-1 z-20`}>
-                            {Object.entries(groupedReactions).map(([emoji, count]) => {
-                              const isMyReaction = myReactedEmojis.includes(emoji);
-                              return (
-                                <button
-                                  key={emoji}
-                                  onClick={() => handleToggleReaction(msg, emoji)}
-                                  className={`px-1.5 py-0.5 rounded-full text-[11px] font-bold flex items-center gap-0.5 shadow-sm border border-gray-200 transition-all ${
-                                    isMyReaction 
-                                      ? 'bg-blue-50 text-[#1c2c4c] border-blue-300 scale-105' 
-                                      : 'bg-white text-gray-700 hover:bg-gray-50'
-                                  }`}
-                                  title={`Reaccionado por ${count} persona(s)`}
-                                >
-                                  <span>{emoji}</span>
-                                  {count > 1 && <span className="text-[9px] text-gray-500 font-semibold">{count}</span>}
-                                </button>
-                              );
-                            })}
+                      <div 
+                        onMouseEnter={() => setHoveredMsgId(msg.id)}
+                        onMouseLeave={() => setHoveredMsgId(null)}
+                        className={`flex items-end gap-2 group relative ${msg.isMe ? 'justify-end' : 'justify-start'}`}
+                      >
+                        
+                        {/* AVATAR A LA IZQUIERDA PARA MENSAJES RECIBIDOS */}
+                        {!msg.isMe && (
+                          <div className="w-7 h-7 rounded-full border border-[#d4af37] bg-[#1c2c4c] overflow-hidden shrink-0 self-end mb-0.5 flex items-center justify-center shadow-xs">
+                            {selectedContact.avatar ? (
+                              <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover scale-[1.25]" />
+                            ) : (
+                              <User size={14} className="text-white" />
+                            )}
                           </div>
                         )}
 
+                        {/* BARRA FLOTANTE DE REACCIONES RÁPIDAS */}
+                        {!msg.isDeletedForEveryone && (hoveredMsgId === msg.id || activeReactionPickerMsgId === msg.id) && (
+                          <div 
+                            className={`absolute z-[60] bg-white rounded-full shadow-2xl border border-gray-200 px-2 py-1 flex items-center gap-1.5 animate-in fade-in duration-150 ${
+                              isTopMessage ? 'top-full mt-1' : '-top-10'
+                            } ${msg.isMe ? 'right-0' : 'left-9'}`}
+                          >
+                            {EMOJI_REACTIONS.map(emoji => (
+                              <button
+                                key={emoji}
+                                onClick={() => handleToggleReaction(msg, emoji)}
+                                className={`text-base hover:scale-125 transition-transform px-1 py-0.5 rounded-full ${
+                                  myReactedEmojis.includes(emoji) ? 'bg-blue-100' : 'hover:bg-gray-100'
+                                }`}
+                                title={`Reaccionar con ${emoji}`}
+                              >
+                                {emoji}
+                              </button>
+                            ))}
+                            
+                            <button
+                              onClick={() => setSelectedMsgToDelete(msg)}
+                              className="text-gray-400 hover:text-red-500 p-1 border-l border-gray-200 ml-1 transition"
+                              title="Eliminar mensaje"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        )}
+
+                        {/* BURBUJA DEL MENSAJE (COLOR AZUL SUAVE PARA ENVIADO, GRIS SUAVE PARA RECIBIDO) */}
+                        <div 
+                          className={`max-w-[82%] sm:max-w-[68%] rounded-2xl p-2.5 shadow-xs relative ${
+                            msg.isMe 
+                              ? 'bg-[#d3e3fd] text-[#041e49] rounded-tr-xs' 
+                              : 'bg-[#f1f3f4] text-[#1c2c4c] rounded-tl-xs'
+                          } ${msg.isDeletedForEveryone ? 'italic text-gray-400 opacity-75' : ''}`}
+                        >
+                          {/* VISTA PREVIA DE IMAGEN */}
+                          {msg.mediaType === 'image' && msg.mediaUrl && !msg.isDeletedForEveryone && (
+                            <div 
+                              onClick={() => setActivePreviewImage(msg.mediaUrl)}
+                              className="relative rounded-xl overflow-hidden cursor-pointer group/img border border-gray-200/50 bg-black/5 flex items-center justify-center min-h-[140px]"
+                            >
+                              <img 
+                                src={msg.mediaUrl} 
+                                alt="Imagen adjunta guardada" 
+                                className="w-full h-auto max-h-64 object-cover group-hover/img:scale-105 transition-transform duration-200" 
+                              />
+                              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold">
+                                <Eye size={18} /> Ver Completa
+                              </div>
+                            </div>
+                          )}
+
+                          {/* TARJETA DE DOCUMENTO ADJUNTO */}
+                          {msg.mediaType === 'document' && msg.mediaUrl && !msg.isDeletedForEveryone && (
+                            <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/60 border border-gray-200 my-1">
+                              <FileText size={24} className="text-[#1c2c4c]" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold truncate text-[#1c2c4c]">{msg.fileName}</p>
+                                <p className="text-[9px] text-gray-500">Documento adjunto</p>
+                              </div>
+                              <a 
+                                href={msg.mediaUrl} 
+                                download={msg.fileName}
+                                className="p-1.5 bg-white hover:bg-gray-100 rounded-lg transition shrink-0 border border-gray-200"
+                                title="Descargar archivo"
+                              >
+                                <Download size={16} className="text-[#1c2c4c]" />
+                              </a>
+                            </div>
+                          )}
+
+                          {/* TEXTO DEL MENSAJE */}
+                          {msg.text && (
+                            <p className="text-xs leading-relaxed break-words px-1 pt-1 font-normal">{msg.text}</p>
+                          )}
+
+                          {/* HORA Y VISTO EN TEXTO PEQUEÑO */}
+                          <div className="flex items-center justify-end gap-1.5 mt-1 px-1">
+                            <span className={`text-[9px] font-medium ${msg.isMe ? 'text-[#041e49]/70' : 'text-gray-500'}`}>
+                              {msg.time}
+                            </span>
+                            
+                            {/* SI ES MI MENSAJE, MOSTRAR ESTADO EN TEXTO PEQUEÑO */}
+                            {msg.isMe && !msg.isDeletedForEveryone && (
+                              msg.isRead ? (
+                                <span className="text-[9px] font-bold text-blue-600 tracking-tight">Visto</span>
+                              ) : (
+                                <span className="text-[9px] font-medium text-gray-400/80">Entregado</span>
+                              )
+                            )}
+                          </div>
+
+                          {/* BADGES DE REACCIONES */}
+                          {hasReactions && !msg.isDeletedForEveryone && (
+                            <div className={`absolute -bottom-3.5 ${msg.isMe ? 'left-2' : 'right-2'} flex gap-1 z-20`}>
+                              {Object.entries(groupedReactions).map(([emoji, count]) => {
+                                const isMyReaction = myReactedEmojis.includes(emoji);
+                                return (
+                                  <button
+                                    key={emoji}
+                                    onClick={() => handleToggleReaction(msg, emoji)}
+                                    className={`px-1.5 py-0.5 rounded-full text-[11px] font-bold flex items-center gap-0.5 shadow-sm border border-gray-200 transition-all ${
+                                      isMyReaction 
+                                        ? 'bg-blue-50 text-[#1c2c4c] border-blue-300 scale-105' 
+                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                    }`}
+                                    title={`Reaccionado por ${count} persona(s)`}
+                                  >
+                                    <span>{emoji}</span>
+                                    {count > 1 && <span className="text-[9px] text-gray-500 font-semibold">{count}</span>}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                        </div>
                       </div>
-                    </div>
+                    </React.Fragment>
                   );
                 })
               )}
