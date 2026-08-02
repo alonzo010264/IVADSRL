@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, Smile } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -106,7 +106,7 @@ const Chat = () => {
 
     fetchDirectMessages();
 
-    // Suscripción en Tiempo Real Supabase para nuevos mensajes, imágenes y reacciones
+    // Suscripción en Tiempo Real Supabase
     const channel = supabase
       .channel(`direct_chat_${currentUser.id}_${selectedContact.id}`)
       .on('postgres_changes', {
@@ -332,14 +332,11 @@ const Chat = () => {
     let currentReactions = Array.isArray(msg.reactions) ? [...msg.reactions] : [];
     const userIdStr = currentUser.id.toString();
 
-    // Comprobar si el usuario ya reaccionó con este emoji
     const existingIndex = currentReactions.findIndex(r => r.user_id?.toString() === userIdStr && r.emoji === emoji);
 
     if (existingIndex > -1) {
-      // Eliminar reacción si ya existía
       currentReactions.splice(existingIndex, 1);
     } else {
-      // Reemplazar reacción previa del mismo usuario o agregar nueva
       currentReactions = currentReactions.filter(r => r.user_id?.toString() !== userIdStr);
       currentReactions.push({
         emoji,
@@ -348,7 +345,6 @@ const Chat = () => {
       });
     }
 
-    // Actualizar de inmediato en estado local UI
     setMessages(prev => ({
       ...prev,
       [selectedContact.id]: (prev[selectedContact.id] || []).map(m => 
@@ -360,7 +356,6 @@ const Chat = () => {
 
     setActiveReactionPickerMsgId(null);
 
-    // Guardar permanentemente en Supabase Cloud
     await supabase
       .from('direct_messages')
       .update({ reactions: currentReactions })
@@ -467,7 +462,7 @@ const Chat = () => {
                   <div className="flex items-center justify-between mb-0.5">
                     <h3 className="font-bold text-[#1c2c4c] text-xs truncate flex items-center gap-1.5">
                       <span>{emp.name}</span>
-                      <VerificationBadge emp={emp} size={16} />
+                      <VerificationBadge emp={emp} size={16} position="bottom" />
                     </h3>
                     <span className="text-[9px] text-gray-400 font-medium">En línea</span>
                   </div>
@@ -494,7 +489,7 @@ const Chat = () => {
         ) : (
           <>
             {/* Header del Chat Activo */}
-            <div className="bg-[#1c2c4c] text-white px-4 py-3 flex items-center justify-between shadow-sm shrink-0 pt-8 md:pt-3">
+            <div className="bg-[#1c2c4c] text-white px-4 py-3 flex items-center justify-between shadow-sm shrink-0 pt-8 md:pt-3 z-30">
               <div className="flex items-center gap-3">
                 <button onClick={() => setSelectedContact(null)} className="p-1.5 text-white hover:bg-white/10 rounded-full md:hidden">
                   <ArrowLeft size={20} />
@@ -511,7 +506,7 @@ const Chat = () => {
                 <div>
                   <h2 className="font-bold text-sm leading-tight text-white flex items-center gap-1.5">
                     <span>{selectedContact.name}</span>
-                    <VerificationBadge emp={selectedContact} size={16} />
+                    <VerificationBadge emp={selectedContact} size={16} position="bottom" />
                   </h2>
                   <p className="text-[10px] text-[#d4af37] font-semibold">{selectedContact.role} • En línea</p>
                 </div>
@@ -525,15 +520,15 @@ const Chat = () => {
             </div>
 
             {/* Banner de Privacidad y Cifrado */}
-            <div className="bg-amber-50/90 border-b border-amber-200/80 px-4 py-2 text-center flex items-center justify-center gap-2 text-[11px] text-amber-900 shrink-0">
+            <div className="bg-amber-50/90 border-b border-amber-200/80 px-4 py-2 text-center flex items-center justify-center gap-2 text-[11px] text-amber-900 shrink-0 z-10">
               <Lock size={13} className="text-[#1c2c4c] shrink-0" />
               <span>
                 Conversación cifrada. Los mensajes se guardan de forma privada y segura en IVAD Connect.
               </span>
             </div>
 
-            {/* Lista de Mensajes con Reacciones Estilo WhatsApp / Instagram */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+            {/* Lista de Mensajes con Reacciones Visibles (Sin solapamientos ni recortes) */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar relative z-20">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
                   {selectedContact.isSupportChannel 
@@ -541,8 +536,9 @@ const Chat = () => {
                     : "No hay mensajes guardados en este chat. Escribe el primer mensaje a continuación."}
                 </div>
               ) : (
-                activeMessages.map((msg) => {
+                activeMessages.map((msg, index) => {
                   const hasReactions = Array.isArray(msg.reactions) && msg.reactions.length > 0;
+                  const isTopMessage = index === 0; // Si es el primer mensaje, colocar reacción debajo
                   
                   // Agrupar reacciones por emoji
                   const groupedReactions = (msg.reactions || []).reduce((acc, r) => {
@@ -562,12 +558,12 @@ const Chat = () => {
                       className={`flex group relative ${msg.isMe ? 'justify-end' : 'justify-start'}`}
                     >
                       
-                      {/* BARRA FLOTANTE DE REACCIONES RÁPIDAS (WhatsApp / Instagram Style) */}
+                      {/* BARRA FLOTANTE DE REACCIONES RÁPIDAS (Visible con z-[60] por encima del banner) */}
                       {!msg.isDeletedForEveryone && (hoveredMsgId === msg.id || activeReactionPickerMsgId === msg.id) && (
                         <div 
-                          className={`absolute -top-10 z-30 bg-white rounded-full shadow-lg border border-gray-200 px-2 py-1 flex items-center gap-1.5 animate-in fade-in duration-150 ${
-                            msg.isMe ? 'right-0' : 'left-0'
-                          }`}
+                          className={`absolute z-[60] bg-white rounded-full shadow-2xl border border-gray-200 px-2 py-1 flex items-center gap-1.5 animate-in fade-in duration-150 ${
+                            isTopMessage ? 'top-full mt-1' : '-top-10'
+                          } ${msg.isMe ? 'right-0' : 'left-0'}`}
                         >
                           {EMOJI_REACTIONS.map(emoji => (
                             <button
@@ -655,7 +651,7 @@ const Chat = () => {
                           )}
                         </div>
 
-                        {/* BADGES DE REACCIONES EN EL CORNER DEL MENSAJE (Estilo WhatsApp) */}
+                        {/* BADGES DE REACCIONES EN EL CORNER DEL MENSAJE */}
                         {hasReactions && !msg.isDeletedForEveryone && (
                           <div className={`absolute -bottom-3.5 ${msg.isMe ? 'left-2' : 'right-2'} flex gap-1 z-20`}>
                             {Object.entries(groupedReactions).map(([emoji, count]) => {
@@ -688,7 +684,7 @@ const Chat = () => {
             </div>
 
             {/* Input de Mensaje y Adjuntos */}
-            <div className="bg-white border-t border-gray-200 p-3 shrink-0">
+            <div className="bg-white border-t border-gray-200 p-3 shrink-0 z-30">
               <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto">
                 
                 <input 

@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 
 /**
- * Componente de Insignia de Verificación Oficial (Azul o Dorada)
- * Muestra popover explicativo flotante al pasar el cursor o hacer clic.
- * 
- * Reglas de Verificación:
- * - Insignia Dorada: Solo Administración (admin@ivad.com o is_admin=true o verification_type='dorada')
- * - Insignia Azul: Solo empleados con verification_status === 'verificado' o verification_type === 'azul'
- * - Sin Insignia: Si no cumple ninguna de las condiciones anteriores, NO se muestra ninguna insignia.
+ * Componente de Insignia de Verificación Oficial con Fondo Relleno Sólido (Azul o Dorada)
+ * Muestra popover flotante explicativo con colores corporativos IVAD sin recortes.
  */
-export const VerificationBadge = ({ type, status, emp, size = 16, className = '' }) => {
+export const VerificationBadge = ({ type, status, emp, size = 16, className = '', position = 'auto' }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
-  // Determinar el estatus real y tipo de insignia
   let isVerified = false;
   let isGold = false;
 
@@ -32,10 +26,8 @@ export const VerificationBadge = ({ type, status, emp, size = 16, className = ''
     isGold = type === 'dorada' || type === 'gold';
   }
 
-  // SI NO ESTÁ VERIFICADO, NO RENDERIZAR NADA
   if (!isVerified) return null;
 
-  // Colores oficiales
   const badgeColor = isGold ? '#d4af37' : '#1d9bf0';
   const label = isGold 
     ? "Verificación Oficial de Administración IVAD SRL" 
@@ -50,7 +42,6 @@ export const VerificationBadge = ({ type, status, emp, size = 16, className = ''
         e.stopPropagation();
         setShowTooltip(!showTooltip);
       }}
-      title={label}
     >
       <svg 
         width={size} 
@@ -58,7 +49,7 @@ export const VerificationBadge = ({ type, status, emp, size = 16, className = ''
         viewBox="0 0 24 24" 
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="drop-shadow-sm hover:scale-110 transition-transform"
+        className="drop-shadow-sm hover:scale-110 transition-transform shrink-0"
       >
         {/* Fondo Sólido de Sello Redondeado (Starburst Verification Seal) */}
         <path 
@@ -72,12 +63,18 @@ export const VerificationBadge = ({ type, status, emp, size = 16, className = ''
         />
       </svg>
 
-      {/* Popover flotante explicativo */}
+      {/* Popover flotante sin recortes con Colores Oficiales IVAD */}
       {showTooltip && (
-        <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 z-50 whitespace-nowrap bg-[#1c2c4c] text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-xl border border-[#d4af37]/40 pointer-events-none transition-all">
-          <span className="flex items-center gap-1">
-            <span className={`w-1.5 h-1.5 rounded-full ${isGold ? 'bg-[#d4af37]' : 'bg-[#1d9bf0]'}`}></span>
-            {label}
+        <span 
+          className={`absolute z-[100] whitespace-nowrap bg-[#1c2c4c] text-white text-[11px] font-semibold px-3 py-1.5 rounded-xl shadow-2xl border border-[#d4af37] pointer-events-none transition-all ${
+            position === 'bottom' 
+              ? 'top-full mt-2.5 left-0' 
+              : 'bottom-full mb-2 left-1/2 -translate-x-1/2'
+          }`}
+        >
+          <span className="flex items-center gap-1.5">
+            <span className={`w-2 h-2 rounded-full shrink-0 ${isGold ? 'bg-[#d4af37]' : 'bg-[#1d9bf0]'}`}></span>
+            <span>{label}</span>
           </span>
         </span>
       )}
