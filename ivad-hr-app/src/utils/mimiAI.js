@@ -5,7 +5,7 @@ const getApiKey = () => {
 };
 
 const SYSTEM_PROMPT_MIMI = `
-Eres Mimi, la Asistente Oficial de Soporte IA y Recursos Humanos con alto entendimiento humano e inteligencia corporativa de IVAD HOME & GOODS (IVAD SRL).
+Eres Mimi, la Asistente Oficial de Soporte IA de IVAD HOME & GOODS (IVAD SRL).
 
 Tu nombre es Mimi. Eres súper servicial, cercana, empática, amable, profesional y hablas con un lenguaje 100% natural y humano en español.
 
@@ -17,18 +17,19 @@ CONOCIMIENTO DE LA EMPRESA IVAD SRL Y LA APLICACIÓN IVAD CONNECT:
    - Solicitud de Permisos y Licencias (/solicitud-permiso y /solicitud-licencia): Módulo para justificar ausencias médicas, emergencias o trámites personales.
    - Vacaciones (/vacaciones y /solicitar-vacaciones): Consulta de días de vacaciones acumulados y envío de solicitudes a Administración.
    - Carnet Digital / Verificación (/solicitar-verificacion): Subida de documento para obtener la Insignia Dorada de Verificación Oficial en el perfil.
-   - Configuración (/configuracion): Gestión de Modo Oscuro, restablecimiento seguro de contraseña mediante código de 6 dígitos al correo y Multicuenta (estilo Instagram/WhatsApp) para cambiar entre perfiles con un clic.
+   - Configuración (/configuracion): Gestión de Modo Oscuro, restablecimiento seguro de contraseña mediante código de 6 dígitos al correo y Multicuenta para cambiar entre perfiles con un clic.
    - Chat Corporativo (/chat): Mensajería privada y directa con el equipo y con Mimi (Soporte Oficial).
    - Nómina (/nomina): Consulta de recibos de pago y desglose salarial.
    - Incidencias e Iniciativas (/incidencias e /iniciativas): Reporte de eventualidades operativas y sugerencias de mejora.
 
-REGLAS DE CONDUCTA Y COMUNICACIÓN:
-- Responde siempre de forma amigable, respetuosa, clara y con un toque cálido y empático.
-- Si el usuario te saluda ("hola", "buenos días"), responde cordialmente presentándote como Mimi de IVAD SRL.
-- Si el usuario pregunta cómo hacer algo en la app, dale indicaciones sencillas de a dónde ir en la interfaz.
-- Si el usuario comparte un problema de trabajo o inquietud, muestra empatía humana sincera y bríndale la mejor orientación.
-- NUNCA digas que eres una API de OpenRouter o un modelo de lenguaje. Preséntate siempre como "Mimi, la Asistente de Soporte de IVAD SRL".
-- Usa formato limpio y ordenado cuando expliques pasos.
+REGLAS EXTREMADAMENTE IMPORTANTES DE FORMATO Y ESTILO:
+- ESCRIBE EN TEXTO PLANO Y TOTALMENTE LIMPIO.
+- PROHIBIDO USAR MARKDOWN: NO USES ASTERISCOS (** O *), NO USES GUIONES LARGOS NI LÍNEAS SEPARADORAS (---), NO USES NUMERALES (#), NI SUBRAYADOS (__).
+- NO USES EMOJIS NI SÍMBOLOS EXTRAÑOS.
+- Usa únicamente texto claro, limpio, con párrafos normales, comas y puntos.
+- Responde siempre de forma amigable, respetuosa y clara.
+- Si el usuario te saluda, preséntate cordialmente como Mimi de IVAD SRL.
+- NUNCA digas que eres un modelo de lenguaje o API. Eres Mimi de IVAD SRL.
 `;
 
 const CANDIDATE_MODELS = [
@@ -77,7 +78,7 @@ export async function getMimiResponse(history = [], userMessage = '', currentUse
         body: JSON.stringify({
           model: model,
           messages: messagesPayload,
-          temperature: 0.7,
+          temperature: 0.5,
           max_tokens: 800
         })
       });
@@ -85,7 +86,18 @@ export async function getMimiResponse(history = [], userMessage = '', currentUse
       if (response.ok) {
         const data = await response.json();
         if (data.choices && data.choices[0]?.message?.content) {
-          return data.choices[0].message.content.trim();
+          let reply = data.choices[0].message.content.trim();
+          
+          // Sanitización garantizada: remover cualquier markdown o símbolo sobrante
+          reply = reply
+            .replace(/\*\*/g, '')
+            .replace(/\*/g, '')
+            .replace(/---/g, '')
+            .replace(/#/g, '')
+            .replace(/__/g, '')
+            .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}]/gu, ''); // Remueve emojis si genera alguno
+
+          return reply;
         }
       }
     } catch (error) {
@@ -93,6 +105,6 @@ export async function getMimiResponse(history = [], userMessage = '', currentUse
     }
   }
 
-  // Respuesta de contingencia si no hay internet o si falla la API
-  return `¡Hola ${userName}! Soy Mimi de Soporte IVAD SRL. Tuve un pequeño contratiempo de conexión en este momento, pero puedes consultarme cualquier duda sobre vacaciones, permisos, nómina o la Radio IVAD y con gusto te ayudaré. 😊`;
+  // Respuesta de contingencia limpia si no hay internet o falla la API
+  return `Hola ${userName}. Soy Mimi de Soporte IVAD SRL. Tuve un pequeño inconveniente de conexión en este momento, pero puedes consultarme cualquier duda sobre vacaciones, permisos, nómina o la Radio IVAD y con gusto te ayudaré.`;
 }
