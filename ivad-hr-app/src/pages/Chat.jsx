@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon, ShieldAlert } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -555,38 +555,38 @@ const Chat = () => {
                   <MoreVertical size={20} />
                 </button>
 
-                {/* MENÚ DESPLEGABLE DE LOS 3 PUNTITOS */}
+                {/* MENÚ DESPLEGABLE CON ICONOS AZUL MARINO OFICIAL DE IVAD (#1c2c4c) */}
                 {showHeaderMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-50 text-gray-700 animate-in fade-in duration-150">
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-50 text-[#1c2c4c] animate-in fade-in duration-150">
                     
                     {!selectedContact.isSupportChannel && (
                       <button 
                         onClick={() => { setShowHeaderMenu(false); navigate(`/empleado/${selectedContact.id}`); }}
-                        className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 font-bold text-xs flex items-center gap-2 text-[#1c2c4c]"
+                        className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-blue-50/60 font-bold text-xs flex items-center gap-2.5 text-[#1c2c4c]"
                       >
-                        <User size={16} className="text-[#d4af37]" /> Ver Perfil Completo
+                        <User size={16} className="text-[#1c2c4c]" /> Ver Perfil Completo
                       </button>
                     )}
 
                     <button 
                       onClick={() => { setShowHeaderMenu(false); setShowMediaGallery(true); }}
-                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 font-bold text-xs flex items-center gap-2 text-gray-700"
+                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-blue-50/60 font-bold text-xs flex items-center gap-2.5 text-[#1c2c4c]"
                     >
-                      <ImageIcon size={16} className="text-blue-500" /> Archivos y Fotos ({sharedMediaList.length})
+                      <ImageIcon size={16} className="text-[#1c2c4c]" /> Archivos y Fotos ({sharedMediaList.length})
                     </button>
 
                     <button 
                       onClick={() => { setShowHeaderMenu(false); setShowInChatSearch(!showInChatSearch); }}
-                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 font-bold text-xs flex items-center gap-2 text-gray-700"
+                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-blue-50/60 font-bold text-xs flex items-center gap-2.5 text-[#1c2c4c]"
                     >
-                      <Search size={16} className="text-gray-500" /> Buscar en la Conversación
+                      <Search size={16} className="text-[#1c2c4c]" /> Buscar en la Conversación
                     </button>
 
                     <button 
                       onClick={() => { setIsMuted(!isMuted); setShowHeaderMenu(false); }}
-                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 font-bold text-xs flex items-center gap-2 text-gray-700"
+                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-blue-50/60 font-bold text-xs flex items-center gap-2.5 text-[#1c2c4c]"
                     >
-                      {isMuted ? <Bell size={16} className="text-green-600" /> : <BellOff size={16} className="text-amber-600" />} 
+                      {isMuted ? <Bell size={16} className="text-[#1c2c4c]" /> : <BellOff size={16} className="text-[#1c2c4c]" />} 
                       {isMuted ? 'Activar Notificaciones' : 'Silenciar Notificaciones'}
                     </button>
 
@@ -594,9 +594,9 @@ const Chat = () => {
 
                     <button 
                       onClick={handleClearChatHistory}
-                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-red-50 font-bold text-xs flex items-center gap-2 text-red-600"
+                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-red-50 font-bold text-xs flex items-center gap-2.5 text-red-600"
                     >
-                      <Trash2 size={16} /> Vaciar Conversación
+                      <Trash2 size={16} className="text-red-500" /> Vaciar Conversación
                     </button>
 
                   </div>
