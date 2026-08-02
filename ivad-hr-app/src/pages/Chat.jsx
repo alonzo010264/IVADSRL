@@ -1103,14 +1103,14 @@ const Chat = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Botón Flotante con Flecha Abajo en la esquina para bajar manualmente */}
+            {/* Botón Flotante Pequeño con Flecha Abajo en la esquina para bajar manualmente */}
             {showScrollDownBtn && (
               <button
                 onClick={() => scrollToBottom('smooth')}
-                className="absolute bottom-20 right-4 sm:right-6 z-40 bg-[#1c2c4c] text-[#d4af37] p-2.5 rounded-full shadow-2xl border-2 border-[#d4af37] hover:scale-110 active:scale-95 transition-all flex items-center justify-center animate-bounce"
+                className="absolute bottom-16 right-3 sm:right-5 z-40 bg-[#1c2c4c] text-[#d4af37] w-8 h-8 rounded-full shadow-lg border border-[#d4af37]/80 hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
                 title="Bajar al último mensaje"
               >
-                <ChevronDown size={22} />
+                <ChevronDown size={16} />
               </button>
             )}
 
