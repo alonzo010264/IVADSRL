@@ -1,16 +1,24 @@
-# React + Vite
+# IVAD Connect - Sistema de Recursos Humanos & Chat en Tiempo Real
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Plataforma integral de gestión de talento y comunicación institucional para **IVAD SRL**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌟 Características Principales del Chat Interno
 
-## React Compiler
+- ⚡ **Sincronización en Tiempo Real Supabase**: Réplica mediante WebSockets (`supabase_realtime`) e hilo de refresco continuo de respaldo.
+- 📅 **Encabezados de Fecha por Día (Estilo WhatsApp)**: Agrupación inteligente de mensajes en cápsulas flotantes (*"Hoy"*, *"Ayer"*, *"Viernes"*, *"12 jul"*).
+- 🔔 **Notificaciones Push y Sonido Web Audio**: Push de navegador sin emojis molestos, con título limpio y síntesis sonora de aviso.
+- 🔵 **Burbuja de Mensajes de Doble Color**: Azul suave (`#d3e3fd`) para enviados y gris suave (`#f1f3f4`) para recibidos.
+- 👁️ **Confirmación de Lectura ("Visto")**: Etiqueta legible en texto azul en lugar de íconos ambiguos.
+- 📂 **Galería de Archivos y Fotos Compartidas**: Galería interactiva con visor Lightbox integrado.
+- 🗑️ **Eliminación de Mensajes**: *Eliminar para mí* y *Eliminar para todos* (con límite si el mensaje no ha sido leído).
+- 🏷️ **Verificación Oficial IVAD**: Insignias doradas y azul oficial para el canal de Soporte y colaboradores verificados.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 🚀 Despliegue en Producción
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- **Dominio Principal**: [https://connect.ivadsrl.com](https://connect.ivadsrl.com)
+- **Vercel Direct URL**: [https://ivad-hr-app.vercel.app](https://ivad-hr-app.vercel.app)
+- **Entorno Local**: `http://localhost:3000`
