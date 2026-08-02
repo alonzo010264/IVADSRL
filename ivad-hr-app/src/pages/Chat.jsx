@@ -131,7 +131,6 @@ const Chat = () => {
 
   useEffect(() => {
     fetchAllDirectMessages();
-    // Intervalo de respaldo ultrarrápido (cada 3.5 segundos) para asegurar actualización en vivo
     const pollInterval = setInterval(() => {
       fetchAllDirectMessages();
     }, 3500);
@@ -172,7 +171,7 @@ const Chat = () => {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel(`global_direct_chat_${currentUser.id}_v2`)
+      .channel(`global_direct_chat_${currentUser.id}_v3`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
@@ -208,17 +207,17 @@ const Chat = () => {
               ]
             }));
 
-            // Notificación sonora y Push de Navegador si me envían un mensaje
+            // Notificación sonora y Push de Navegador (SIN EMOJIS) si me envían un mensaje
             if (isReceiverMe) {
               playNotificationSound();
 
               if ('Notification' in window && Notification.permission === 'granted' && !isMuted) {
                 const senderObj = otherEmployees.find(e => e.id.toString() === contactId);
                 const senderName = senderObj ? senderObj.name : 'Colaborador IVAD';
-                const bodyText = newMsg.message || (newMsg.media_url ? '📷 Envió una imagen' : 'Envió un archivo');
+                const bodyText = newMsg.message || (newMsg.media_url ? 'Envió una imagen' : 'Envió un archivo');
                 
                 try {
-                  const notif = new Notification(`💬 Mensaje de ${senderName}`, {
+                  const notif = new Notification(`Mensaje de ${senderName}`, {
                     body: bodyText,
                     icon: senderObj?.avatar || '/logo.png',
                     badge: '/logo.png',
@@ -251,7 +250,7 @@ const Chat = () => {
                   ? { 
                       ...m, 
                       isRead: updatedMsg.is_read, 
-                      text: updatedMsg.is_deleted_for_everyone ? '🚫 Este mensaje fue eliminado' : updatedMsg.message,
+                      text: updatedMsg.is_deleted_for_everyone ? 'Este mensaje fue eliminado' : updatedMsg.message,
                       mediaUrl: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_url,
                       mediaType: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_type,
                       reactions: Array.isArray(updatedMsg.reactions) ? updatedMsg.reactions : [],
@@ -498,14 +497,14 @@ const Chat = () => {
 
     await supabase
       .from('direct_messages')
-      .update({ message: '🚫 Este mensaje fue eliminado', media_url: null, media_type: null, reactions: [], is_deleted_for_everyone: true })
+      .update({ message: 'Este mensaje fue eliminado', media_url: null, media_type: null, reactions: [], is_deleted_for_everyone: true })
       .eq('id', msg.id);
 
     setMessages(prev => ({
       ...prev,
       [selectedContact.id]: (prev[selectedContact.id] || []).map(m => 
         m.id.toString() === msg.id.toString() 
-          ? { ...m, text: '🚫 Este mensaje fue eliminado', mediaUrl: null, mediaType: null, reactions: [], isDeletedForEveryone: true }
+          ? { ...m, text: 'Este mensaje fue eliminado', mediaUrl: null, mediaType: null, reactions: [], isDeletedForEveryone: true }
           : m
       )
     }));
@@ -561,7 +560,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos con Conteo de No Leídos y Último Mensaje tipo WhatsApp */}
+        {/* Lista de Contactos con Conteo de No Leídos y Último Mensaje tipo WhatsApp (Sin Emojis en snippets) */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron canales.</p>
@@ -574,13 +573,13 @@ const Chat = () => {
               let lastMsgSnippet = emp.role || emp.department || 'Colaborador IVAD';
               if (lastMsg) {
                 if (lastMsg.isDeletedForEveryone) {
-                  lastMsgSnippet = '🚫 Mensaje eliminado';
+                  lastMsgSnippet = 'Mensaje eliminado';
                 } else if (lastMsg.text) {
                   lastMsgSnippet = (lastMsg.isMe ? 'Tú: ' : '') + lastMsg.text;
                 } else if (lastMsg.mediaType === 'image') {
-                  lastMsgSnippet = (lastMsg.isMe ? 'Tú: ' : '') + '📷 Imagen';
+                  lastMsgSnippet = (lastMsg.isMe ? 'Tú: ' : '') + 'Imagen';
                 } else if (lastMsg.mediaType === 'document') {
-                  lastMsgSnippet = (lastMsg.isMe ? 'Tú: ' : '') + '📄 Documento';
+                  lastMsgSnippet = (lastMsg.isMe ? 'Tú: ' : '') + 'Documento';
                 }
               }
 
