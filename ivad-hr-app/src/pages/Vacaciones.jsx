@@ -77,38 +77,44 @@ const Vacaciones = () => {
       {/* Contenedor Principal */}
       <div className="w-full max-w-xl px-4 -mt-10 relative z-20 space-y-4">
         
-        {/* Resumen de Días Disponibles */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 space-y-4">
+        {/* Resumen de Días Disponibles - 100% Responsivo */}
+        <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-xl border border-gray-100 space-y-4">
           <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-            <div>
-              <h2 className="font-bold text-[#1c2c4c] text-base">{empName}</h2>
-              <p className="text-xs text-gray-500">Balance de Vacaciones (Ley Laboral RD)</p>
+            <div className="min-w-0 pr-2">
+              <h2 className="font-bold text-[#1c2c4c] text-sm sm:text-base truncate">{empName}</h2>
+              <p className="text-[11px] sm:text-xs text-gray-500 truncate">Balance (Ley Laboral RD)</p>
             </div>
-            <span className="text-[11px] font-bold bg-[#1c2c4c] text-[#d4af37] px-3 py-1 rounded-full">
+            <span className="text-[10px] sm:text-[11px] font-bold bg-[#1c2c4c] text-[#d4af37] px-2.5 py-1 rounded-full shrink-0">
               Estatus Activo
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="bg-gray-50 p-3.5 rounded-2xl border border-gray-100">
-              <span className="text-[10px] font-bold text-gray-400 block uppercase mb-1">Correspondientes</span>
-              <span className="text-xl font-black text-[#1c2c4c]">{daysAvailable} Días</span>
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-3 text-center">
+            <div className="bg-gray-50 p-2 sm:p-3.5 rounded-2xl border border-gray-100 flex flex-col items-center justify-center">
+              <span className="text-[9px] sm:text-[10px] font-extrabold text-gray-400 uppercase tracking-tight truncate w-full mb-1">
+                Correspondientes
+              </span>
+              <span className="text-sm sm:text-xl font-black text-[#1c2c4c]">{daysAvailable} Días</span>
             </div>
 
-            <div className="bg-gray-50 p-3.5 rounded-2xl border border-gray-100">
-              <span className="text-[10px] font-bold text-gray-400 block uppercase mb-1">Disfrutados</span>
-              <span className="text-xl font-black text-gray-500">{daysTaken} Días</span>
+            <div className="bg-gray-50 p-2 sm:p-3.5 rounded-2xl border border-gray-100 flex flex-col items-center justify-center">
+              <span className="text-[9px] sm:text-[10px] font-extrabold text-gray-400 uppercase tracking-tight truncate w-full mb-1">
+                Disfrutados
+              </span>
+              <span className="text-sm sm:text-xl font-black text-gray-500">{daysTaken} Días</span>
             </div>
 
-            <div className="bg-blue-50 p-3.5 rounded-2xl border border-blue-100">
-              <span className="text-[10px] font-bold text-blue-700 block uppercase mb-1">Disponibles</span>
-              <span className="text-xl font-black text-[#1c2c4c]">{daysRemaining} Días</span>
+            <div className="bg-blue-50/70 p-2 sm:p-3.5 rounded-2xl border border-blue-100 flex flex-col items-center justify-center">
+              <span className="text-[9px] sm:text-[10px] font-extrabold text-blue-700 uppercase tracking-tight truncate w-full mb-1">
+                Disponibles
+              </span>
+              <span className="text-sm sm:text-xl font-black text-[#1c2c4c]">{daysRemaining} Días</span>
             </div>
           </div>
         </div>
 
         {/* Recomendación de Fecha Sugerida */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 space-y-3">
+        <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xl border border-gray-100 space-y-3">
           <div>
             <h3 className="text-sm font-bold text-[#1c2c4c]">Fecha Sugerida para Próximas Vacaciones</h3>
             <p className="text-xs text-gray-500 mt-0.5">
@@ -116,19 +122,19 @@ const Vacaciones = () => {
             </p>
           </div>
 
-          <div className="p-4 bg-[#1c2c4c] text-white rounded-2xl border border-[#d4af37]/40 flex items-center justify-between shadow-md">
+          <div className="p-3.5 sm:p-4 bg-[#1c2c4c] text-white rounded-2xl border border-[#d4af37]/40 flex items-center justify-between shadow-md">
             <div>
-              <span className="text-[10px] text-[#d4af37] font-bold uppercase tracking-wider block">Programación Estimada</span>
-              <span className="text-base font-bold">{formattedSuggestedDate}</span>
+              <span className="text-[9px] sm:text-[10px] text-[#d4af37] font-bold uppercase tracking-wider block">Programación Estimada</span>
+              <span className="text-xs sm:text-base font-bold">{formattedSuggestedDate}</span>
             </div>
-            <span className="bg-[#d4af37] text-[#1c2c4c] text-xs font-black px-3 py-1 rounded-full">
+            <span className="bg-[#d4af37] text-[#1c2c4c] text-[10px] sm:text-xs font-black px-2.5 py-1 rounded-full shrink-0">
               Sugerido
             </span>
           </div>
 
           <button
             onClick={() => navigate('/solicitar-vacaciones')}
-            className="w-full bg-[#1c2c4c] text-[#d4af37] font-bold py-3.5 rounded-2xl shadow-md flex items-center justify-center gap-2 hover:bg-opacity-95 transition-all border border-[#d4af37]/30 mt-2 text-sm"
+            className="w-full bg-[#1c2c4c] text-[#d4af37] font-bold py-3.5 rounded-2xl shadow-md flex items-center justify-center gap-2 hover:bg-opacity-95 transition-all border border-[#d4af37]/30 mt-2 text-xs sm:text-sm"
           >
             <span>Solicitar Vacaciones</span>
             <ArrowRight size={16} />
@@ -136,7 +142,7 @@ const Vacaciones = () => {
         </div>
 
         {/* Historial de Períodos Real desde Supabase */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 space-y-3">
+        <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xl border border-gray-100 space-y-3">
           <h3 className="text-sm font-bold text-[#1c2c4c]">Historial de Solicitudes</h3>
 
           {vacationHistory.length === 0 ? (
@@ -146,12 +152,12 @@ const Vacaciones = () => {
           ) : (
             <div className="space-y-2.5">
               {vacationHistory.map((item) => (
-                <div key={item.id} className="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between text-xs">
+                <div key={item.id} className="p-3 sm:p-3.5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between text-xs">
                   <div>
-                    <span className="font-bold text-[#1c2c4c] text-sm block">Vacaciones ({item.total_days} Días)</span>
-                    <span className="text-gray-500">Del {item.start_date} al {item.end_date}</span>
+                    <span className="font-bold text-[#1c2c4c] text-xs sm:text-sm block">Vacaciones ({item.total_days} Días)</span>
+                    <span className="text-gray-500 text-[11px]">Del {item.start_date} al {item.end_date}</span>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0 ml-2">
                     <span className={`font-bold px-2.5 py-0.5 rounded-full text-[10px] ${
                       item.status === 'Aprobada' ? 'bg-green-100 text-green-800' :
                       item.status === 'Rechazada' ? 'bg-red-100 text-red-800' :

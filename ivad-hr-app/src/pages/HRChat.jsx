@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, ChevronLeft, Bot, Sparkles } from 'lucide-react';
+import { Send, ChevronLeft, UserCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
-import { getMimiResponse } from '../utils/mimiAI';
 
 const HRChat = () => {
   const navigate = useNavigate();
@@ -13,14 +12,13 @@ const HRChat = () => {
     {
       id: 1,
       sender: 'hr',
-      text: '¡Hola! 👋 Soy Mimi, tu Asistente de Soporte IA e Inteligencia Corporativa de IVAD SRL.\n\n¿En qué puedo ayudarte hoy? Puedes preguntarme sobre vacaciones, permisos, nómina, el uso de la Radio IVAD o cualquier inquietud.',
+      text: '¡Saludos! 👋 Bienvenido al canal directo con el Departamento de Recursos Humanos de IVAD SRL.\n\nUn oficial de Gestión Humana te responderá a la brevedad. ¿En qué podemos ayudarte hoy?',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       date: new Date().toLocaleDateString('es-ES')
     }
   ]);
   
   const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -28,11 +26,11 @@ const HRChat = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages]);
 
-  const handleSend = async (e) => {
+  const handleSend = (e) => {
     e.preventDefault();
-    if (!inputValue.trim() || isTyping) return;
+    if (!inputValue.trim()) return;
     
     const userText = inputValue.trim();
     const newMsgObj = {
@@ -43,45 +41,15 @@ const HRChat = () => {
       status: 'sent'
     };
 
-    const updatedMessages = [...messages, newMsgObj];
-    setMessages(updatedMessages);
+    setMessages(prev => [...prev, newMsgObj]);
     setInputValue('');
-    setIsTyping(true);
-
-    try {
-      // Obtener respuesta inteligente de Mimi usando OpenRouter AI
-      const mimiReplyText = await getMimiResponse(updatedMessages, userText, currentUser);
-
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          sender: 'hr',
-          text: mimiReplyText,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
-    } catch (err) {
-      console.error("Error obteniendo respuesta de Mimi:", err);
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          sender: 'hr',
-          text: '¡Hola! Tuve un pequeño contratiempo de conexión, pero dime en qué puedo orientarte sobre IVAD Connect.',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
-    } finally {
-      setIsTyping(false);
-    }
   };
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center font-sans">
       <div className="w-full max-w-3xl flex flex-col h-screen pb-20">
         
-        {/* Header Oficial Mimi Soporte IA */}
+        {/* Header Oficial RR.HH. Humano */}
         <div className="bg-[#1c2c4c] text-white p-4 sticky top-[72px] z-30 shadow-md">
           <div className="flex items-center">
             <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white hover:bg-white/10 rounded-full transition">
@@ -89,15 +57,12 @@ const HRChat = () => {
             </button>
             
             <div className="flex items-center gap-3 ml-2 flex-1">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#d4af37] to-amber-200 border-2 border-white flex items-center justify-center shadow-xs relative">
-                <img src="/logo.png" alt="Mimi" className="w-full h-full object-cover rounded-full" />
-                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></span>
+              <div className="w-10 h-10 rounded-full bg-[#1c2c4c] border-2 border-[#d4af37] flex items-center justify-center shadow-xs">
+                <UserCheck size={20} className="text-[#d4af37]" />
               </div>
               <div>
-                <h2 className="font-bold text-sm flex items-center gap-1.5">
-                  Mimi <Sparkles size={14} className="text-[#d4af37]" />
-                </h2>
-                <p className="text-[11px] text-amber-200 font-medium">Asistente IA de Soporte & RR.HH. IVAD SRL</p>
+                <h2 className="font-bold text-sm">Atención Recursos Humanos</h2>
+                <p className="text-[11px] text-amber-200 font-medium">Oficina Central de Gestión Humana IVAD SRL</p>
               </div>
             </div>
           </div>
@@ -105,7 +70,7 @@ const HRChat = () => {
 
         {/* Área de Mensajes */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((msg, index) => {
+          {messages.map((msg) => {
             const isMe = msg.sender === 'user';
             
             return (
@@ -116,8 +81,8 @@ const HRChat = () => {
                     : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
                 }`}>
                   {!isMe && (
-                    <div className="font-bold text-[10px] text-[#1c2c4c] mb-1 flex items-center gap-1">
-                      <Bot size={12} className="text-[#d4af37]" /> Mimi (Soporte IA)
+                    <div className="font-bold text-[10px] text-[#1c2c4c] mb-1">
+                      Recursos Humanos IVAD
                     </div>
                   )}
                   {msg.text}
@@ -126,13 +91,6 @@ const HRChat = () => {
               </div>
             );
           })}
-
-          {isTyping && (
-            <div className="flex items-center gap-2 text-xs text-gray-400 italic bg-white p-3 rounded-2xl w-max border border-gray-100">
-              <Sparkles size={14} className="animate-spin text-[#d4af37]" />
-              <span>Mimi está escribiendo una respuesta...</span>
-            </div>
-          )}
 
           <div ref={messagesEndRef} />
         </div>
@@ -143,12 +101,12 @@ const HRChat = () => {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Escribe tu consulta a Mimi..."
+            placeholder="Escribe tu mensaje para Recursos Humanos..."
             className="flex-1 p-3 text-xs bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1c2c4c]"
           />
           <button
             type="submit"
-            disabled={!inputValue.trim() || isTyping}
+            disabled={!inputValue.trim()}
             className="p-3 bg-[#1c2c4c] text-white rounded-2xl hover:bg-blue-950 transition disabled:opacity-40"
           >
             <Send size={18} />

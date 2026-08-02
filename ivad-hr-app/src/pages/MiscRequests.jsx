@@ -1,4 +1,4 @@
-import { FileText, UserCircle, HelpCircle, ChevronRight } from 'lucide-react';
+import { FileText, UserCircle, MessageSquare, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const MiscRequests = () => {
@@ -17,19 +17,20 @@ const MiscRequests = () => {
     },
     {
       id: 'otros',
-      icon: <HelpCircle size={32} className="text-[#d4af37]" strokeWidth={1.5} />,
-      label: 'Otros / Chat con RR.HH.',
-      path: '/chat-rrhh'
+      icon: <MessageSquare size={32} className="text-[#d4af37]" strokeWidth={1.5} />,
+      label: 'Ir al Chat Corporativo / Soporte',
+      path: '/chat'
     }
   ];
 
   return (
-    <div className="bg-white min-h-screen flex justify-center">
+    <div className="bg-white min-h-screen flex justify-center font-sans">
       <div className="w-full max-w-3xl">
         
-        {/* Header Azul */}
+        {/* Header Azul IVAD */}
         <div className="bg-[#1c2c4c] text-white p-6 flex flex-col items-center justify-center relative">
           <h1 className="text-xl font-bold mt-2">Solicitudes Varias</h1>
+          <p className="text-xs text-[#d4af37] mt-1 font-medium">Gestiones Administrativas & Documentos</p>
         </div>
 
         {/* Opciones */}
@@ -38,13 +39,13 @@ const MiscRequests = () => {
             <Link 
               key={opt.id}
               to={opt.path}
-              className="bg-[#1c2c4c] rounded-xl p-6 flex items-center justify-between border-2 border-[#d4af37]/80 shadow-md hover:bg-[#152240] transition-colors"
+              className="bg-[#1c2c4c] rounded-2xl p-5 flex items-center justify-between border border-[#d4af37]/60 shadow-md hover:bg-[#152240] transition-colors"
             >
               <div className="flex items-center gap-4">
                 {opt.icon}
-                <span className="text-white text-lg font-medium">{opt.label}</span>
+                <span className="text-white text-base font-semibold">{opt.label}</span>
               </div>
-              <ChevronRight className="text-white" size={24} />
+              <ChevronRight className="text-[#d4af37]" size={22} />
             </Link>
           ))}
         </div>
