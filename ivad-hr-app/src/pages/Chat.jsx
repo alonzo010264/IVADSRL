@@ -40,8 +40,8 @@ const Chat = () => {
   // Canal Oficial de Soporte IA Mimi (IVAD SRL)
   const SOPORTE_CONTACT = {
     id: 'soporte-ivad-official',
-    name: 'Mimi - Soporte IA IVAD SRL',
-    role: 'Asistente de Soporte IA & Atención Corporativa',
+    name: 'Mimi',
+    role: 'Soporte Oficial IVAD SRL',
     department: 'Inteligencia Artificial & RRHH',
     avatar: '/logo.png',
     verification_status: 'verificado',
@@ -637,7 +637,7 @@ const Chat = () => {
   const sharedMediaList = rawActiveMessages.filter(m => m.mediaUrl && !m.isDeletedForEveryone);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-16 md:pb-0">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-14 md:pb-0 overflow-hidden">
       
       {/* COLUMNA IZQUIERDA: SELECCIÓN DE CHAT Y CANALES */}
       <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col h-full ${selectedContact ? 'hidden md:flex' : 'flex'}`}>
@@ -1087,7 +1087,7 @@ const Chat = () => {
             </div>
 
             {/* Input de Mensaje y Adjuntos */}
-            <div className="bg-white border-t border-gray-200 p-3 shrink-0 z-30">
+            <div className="bg-white border-t border-gray-200 p-2.5 sm:p-3 shrink-0 z-30 shadow-xs">
               <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto">
                 
                 <input 
