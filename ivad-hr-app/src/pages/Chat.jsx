@@ -96,10 +96,53 @@ const Chat = () => {
     }
   };
 
+  // Función Híbrida de Notificaciones Push (Compatible con Chrome Android Mobile + PWA + Desktop)
+  const triggerMobileAndDesktopNotification = async (title, body, icon, tag, senderObj) => {
+    if (!('Notification' in window) || Notification.permission !== 'granted' || isMuted) return;
+
+    const notificationOptions = {
+      body,
+      icon: icon || '/logo.png',
+      badge: '/logo.png',
+      tag,
+      renotify: true,
+      vibrate: [200, 100, 200], // Vibración en teléfonos celulares Android
+      data: { url: '/chat', contactId: senderObj?.id }
+    };
+
+    // 1. Intentar ServiceWorker (Obligatorio para Chrome Android y Apps PWA instaladas)
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        if (registration && registration.showNotification) {
+          await registration.showNotification(title, notificationOptions);
+          return;
+        }
+      } catch (err) {
+        console.log("SW notification failed, falling back to window.Notification:", err);
+      }
+    }
+
+    // 2. Fallback para navegador Desktop tradicional
+    try {
+      const notif = new Notification(title, notificationOptions);
+      notif.onclick = () => {
+        window.focus();
+        if (senderObj) setSelectedContact(senderObj);
+      };
+    } catch (err) {
+      console.log("Desktop notification error:", err);
+    }
+  };
+
   // Solicitar permiso de notificaciones del navegador al montar
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          console.log("Permiso de notificaciones concedido.");
+        }
+      });
     }
   }, []);
 
@@ -193,7 +236,7 @@ const Chat = () => {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel(`global_direct_chat_${currentUser.id}_v4`)
+      .channel(`global_direct_chat_${currentUser.id}_v5`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
@@ -229,32 +272,21 @@ const Chat = () => {
               ]
             }));
 
-            // Notificación sonora y Push de Navegador si me envían un mensaje
+            // Notificación sonora y Push Híbrida de Navegador (Mobile + Desktop) si me envían un mensaje
             if (isReceiverMe) {
               playNotificationSound();
 
-              if ('Notification' in window && Notification.permission === 'granted' && !isMuted) {
-                const senderObj = otherEmployees.find(e => e.id.toString() === contactId);
-                const senderName = senderObj ? senderObj.name : 'Colaborador IVAD';
-                const bodyText = newMsg.message || (newMsg.media_url ? 'Envió una imagen' : 'Envió un archivo');
-                
-                try {
-                  const notif = new Notification(`Mensaje de ${senderName}`, {
-                    body: bodyText,
-                    icon: senderObj?.avatar || '/logo.png',
-                    badge: '/logo.png',
-                    tag: `chat-msg-${contactId}`,
-                    renotify: true
-                  });
-
-                  notif.onclick = () => {
-                    window.focus();
-                    if (senderObj) setSelectedContact(senderObj);
-                  };
-                } catch (err) {
-                  console.log("Notification error:", err);
-                }
-              }
+              const senderObj = otherEmployees.find(e => e.id.toString() === contactId);
+              const senderName = senderObj ? senderObj.name : 'Colaborador IVAD';
+              const bodyText = newMsg.message || (newMsg.media_url ? 'Envió una imagen' : 'Envió un archivo');
+              
+              triggerMobileAndDesktopNotification(
+                `Mensaje de ${senderName}`,
+                bodyText,
+                senderObj?.avatar || '/logo.png',
+                `chat-msg-${contactId}`,
+                senderObj
+              );
             }
           }
         } else if (payload.eventType === 'UPDATE') {
