@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon, Sparkles, Bot } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon, Sparkles, Bot, ChevronDown } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -35,7 +35,9 @@ const Chat = () => {
   const [searchParams] = useSearchParams();
   const { currentUser, employees } = useEmployees();
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const fileInputRef = useRef(null);
+  const [showScrollDownBtn, setShowScrollDownBtn] = useState(false);
 
   // Canal Oficial de Soporte IA Mimi (IVAD SRL)
   const SOPORTE_CONTACT = {
@@ -154,14 +156,27 @@ const Chat = () => {
     }
   }, []);
 
-  // Autoscroll al final del chat
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // Scroll suave al final del chat
+  const scrollToBottom = (behavior = 'smooth') => {
+    messagesEndRef.current?.scrollIntoView({ behavior });
+    setShowScrollDownBtn(false);
   };
 
+  // Detector de scroll manual del usuario
+  const handleChatScroll = () => {
+    if (!messagesContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+    // Si el usuario sube más de 120px, habilitamos la flecha flotante en la esquina
+    const isScrolledUp = scrollHeight - scrollTop - clientHeight > 120;
+    setShowScrollDownBtn(isScrolledUp);
+  };
+
+  // Al cambiar de contacto, bajar suavemente
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, selectedContact]);
+    if (selectedContact) {
+      setTimeout(() => scrollToBottom('auto'), 100);
+    }
+  }, [selectedContact?.id]);
 
   // Cargar TODOS los mensajes directos para todos los contactos
   const fetchAllDirectMessages = async () => {
@@ -419,6 +434,8 @@ const Chat = () => {
           }
         ]
       }));
+
+      setTimeout(() => scrollToBottom('smooth'), 50);
 
       // Si el mensaje fue enviado a Mimi (Soporte IA)
       if (selectedContact.id.toString() === 'soporte-ivad-official') {
@@ -882,7 +899,7 @@ const Chat = () => {
             </div>
 
             {/* Lista de Mensajes con Separador de Fechas Relativo Estilo WhatsApp (Hoy, Ayer, Viernes...) */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar relative z-20">
+            <div ref={messagesContainerRef} onScroll={handleChatScroll} className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar relative z-20">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
                   {inChatSearchTerm 
@@ -1085,6 +1102,17 @@ const Chat = () => {
               )}
               <div ref={messagesEndRef} />
             </div>
+
+            {/* Botón Flotante con Flecha Abajo en la esquina para bajar manualmente */}
+            {showScrollDownBtn && (
+              <button
+                onClick={() => scrollToBottom('smooth')}
+                className="absolute bottom-20 right-4 sm:right-6 z-40 bg-[#1c2c4c] text-[#d4af37] p-2.5 rounded-full shadow-2xl border-2 border-[#d4af37] hover:scale-110 active:scale-95 transition-all flex items-center justify-center animate-bounce"
+                title="Bajar al último mensaje"
+              >
+                <ChevronDown size={22} />
+              </button>
+            )}
 
             {/* Input de Mensaje y Adjuntos */}
             <div className="bg-white border-t border-gray-200 p-2.5 sm:p-3 shrink-0 z-30 shadow-xs">
