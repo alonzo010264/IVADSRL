@@ -74,7 +74,7 @@ const Chat = () => {
     }
   };
 
-  // Solicitar permiso de notificaciones del navegador
+  // Solicitar permiso de notificaciones del navegador al montar
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -131,6 +131,12 @@ const Chat = () => {
 
   useEffect(() => {
     fetchAllDirectMessages();
+    // Intervalo de respaldo ultrarrápido (cada 3.5 segundos) para asegurar actualización en vivo
+    const pollInterval = setInterval(() => {
+      fetchAllDirectMessages();
+    }, 3500);
+
+    return () => clearInterval(pollInterval);
   }, [currentUser]);
 
   // Marcar mensajes recibidos como leídos automáticamente cuando el chat está activo
@@ -166,7 +172,7 @@ const Chat = () => {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel(`global_direct_chat_${currentUser.id}`)
+      .channel(`global_direct_chat_${currentUser.id}_v2`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
