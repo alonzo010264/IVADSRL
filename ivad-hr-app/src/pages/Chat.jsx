@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, BellOff, Bell, Image as ImageIcon, ShieldAlert } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -38,6 +38,13 @@ const Chat = () => {
   const [newMessageText, setNewMessageText] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
+  // Menú de Opciones del Header (Los 3 puntitos)
+  const [showHeaderMenu, setShowHeaderMenu] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [showMediaGallery, setShowMediaGallery] = useState(false);
+  const [inChatSearchTerm, setInChatSearchTerm] = useState('');
+  const [showInChatSearch, setShowInChatSearch] = useState(false);
+
   // Reacciones & Modales
   const [hoveredMsgId, setHoveredMsgId] = useState(null);
   const [activeReactionPickerMsgId, setActiveReactionPickerMsgId] = useState(null);
@@ -68,7 +75,6 @@ const Chat = () => {
         .order('created_at', { ascending: true });
 
       if (data) {
-        // Marcar automáticamente como leídos los mensajes que recibo
         const unreadIds = data
           .filter(m => m.receiver_id.toString() === currentUser.id.toString() && !m.is_read)
           .map(m => m.id);
@@ -325,7 +331,7 @@ const Chat = () => {
     }
   };
 
-  // Alternar Reacción Emoji (Estilo WhatsApp / Instagram)
+  // Alternar Reacción Emoji
   const handleToggleReaction = async (msg, emoji) => {
     if (!currentUser || msg.isDeletedForEveryone) return;
 
@@ -360,6 +366,20 @@ const Chat = () => {
       .from('direct_messages')
       .update({ reactions: currentReactions })
       .eq('id', msg.id);
+  };
+
+  // Vaciar todos los mensajes de la conversación
+  const handleClearChatHistory = () => {
+    if (!selectedContact) return;
+    if (window.confirm(`¿Estás seguro de vaciar todos los mensajes del chat con ${selectedContact.name}?`)) {
+      const currentMsgIds = (messages[selectedContact.id] || []).map(m => m.id.toString());
+      setDeletedForMeIds(prev => {
+        const next = new Set(prev);
+        currentMsgIds.forEach(id => next.add(id));
+        return next;
+      });
+      setShowHeaderMenu(false);
+    }
   };
 
   // Eliminar solo para mí
@@ -398,8 +418,15 @@ const Chat = () => {
     (emp.role && emp.role.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const activeMessages = (selectedContact ? (messages[selectedContact.id] || []) : [])
-    .filter(m => !deletedForMeIds.has(m.id.toString()));
+  const rawActiveMessages = selectedContact ? (messages[selectedContact.id] || []) : [];
+  
+  // Filtrar por mensajes eliminados para mí y por término de búsqueda en chat
+  const activeMessages = rawActiveMessages
+    .filter(m => !deletedForMeIds.has(m.id.toString()))
+    .filter(m => !inChatSearchTerm.trim() || (m.text && m.text.toLowerCase().includes(inChatSearchTerm.toLowerCase())));
+
+  // Galería de Archivos y Fotos Compartidas en esta conversación
+  const sharedMediaList = rawActiveMessages.filter(m => m.mediaUrl && !m.isDeletedForEveryone);
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-16 md:pb-0">
@@ -442,7 +469,7 @@ const Chat = () => {
             filteredContacts.map(emp => (
               <button
                 key={emp.id}
-                onClick={() => setSelectedContact(emp)}
+                onClick={() => { setSelectedContact(emp); setShowHeaderMenu(false); setShowInChatSearch(false); }}
                 className={`w-full p-3.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${
                   selectedContact?.id === emp.id ? 'bg-blue-50/60 border-l-4 border-[#1c2c4c]' : ''
                 } ${emp.isSupportChannel ? 'bg-blue-50/30' : ''}`}
@@ -489,13 +516,16 @@ const Chat = () => {
         ) : (
           <>
             {/* Header del Chat Activo */}
-            <div className="bg-[#1c2c4c] text-white px-4 py-3 flex items-center justify-between shadow-sm shrink-0 pt-8 md:pt-3 z-30">
+            <div className="bg-[#1c2c4c] text-white px-4 py-3 flex items-center justify-between shadow-sm shrink-0 pt-8 md:pt-3 z-30 relative">
               <div className="flex items-center gap-3">
-                <button onClick={() => setSelectedContact(null)} className="p-1.5 text-white hover:bg-white/10 rounded-full md:hidden">
+                <button onClick={() => { setSelectedContact(null); setShowHeaderMenu(false); }} className="p-1.5 text-white hover:bg-white/10 rounded-full md:hidden">
                   <ArrowLeft size={20} />
                 </button>
 
-                <div className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shrink-0 flex items-center justify-center">
+                <div 
+                  onClick={() => !selectedContact.isSupportChannel && navigate(`/empleado/${selectedContact.id}`)}
+                  className="w-10 h-10 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shrink-0 flex items-center justify-center cursor-pointer hover:opacity-90 transition"
+                >
                   {selectedContact.avatar ? (
                     <img src={selectedContact.avatar} alt={selectedContact.name} className="w-full h-full object-cover scale-[1.25]" />
                   ) : (
@@ -504,7 +534,10 @@ const Chat = () => {
                 </div>
 
                 <div>
-                  <h2 className="font-bold text-sm leading-tight text-white flex items-center gap-1.5">
+                  <h2 
+                    onClick={() => !selectedContact.isSupportChannel && navigate(`/empleado/${selectedContact.id}`)}
+                    className="font-bold text-sm leading-tight text-white flex items-center gap-1.5 cursor-pointer hover:underline"
+                  >
                     <span>{selectedContact.name}</span>
                     <VerificationBadge emp={selectedContact} size={16} position="bottom" />
                   </h2>
@@ -512,12 +545,82 @@ const Chat = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1">
-                <button className="p-2 text-white/80 hover:text-white rounded-full hover:bg-white/10 transition-colors">
+              {/* Botón de Los 3 Puntitos con Menú Desplegable */}
+              <div className="relative">
+                <button 
+                  onClick={() => setShowHeaderMenu(!showHeaderMenu)}
+                  className="p-2 text-white/80 hover:text-white rounded-full hover:bg-white/10 transition-colors"
+                  title="Opciones de chat"
+                >
                   <MoreVertical size={20} />
                 </button>
+
+                {/* MENÚ DESPLEGABLE DE LOS 3 PUNTITOS */}
+                {showHeaderMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-50 text-gray-700 animate-in fade-in duration-150">
+                    
+                    {!selectedContact.isSupportChannel && (
+                      <button 
+                        onClick={() => { setShowHeaderMenu(false); navigate(`/empleado/${selectedContact.id}`); }}
+                        className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 font-bold text-xs flex items-center gap-2 text-[#1c2c4c]"
+                      >
+                        <User size={16} className="text-[#d4af37]" /> Ver Perfil Completo
+                      </button>
+                    )}
+
+                    <button 
+                      onClick={() => { setShowHeaderMenu(false); setShowMediaGallery(true); }}
+                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 font-bold text-xs flex items-center gap-2 text-gray-700"
+                    >
+                      <ImageIcon size={16} className="text-blue-500" /> Archivos y Fotos ({sharedMediaList.length})
+                    </button>
+
+                    <button 
+                      onClick={() => { setShowHeaderMenu(false); setShowInChatSearch(!showInChatSearch); }}
+                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 font-bold text-xs flex items-center gap-2 text-gray-700"
+                    >
+                      <Search size={16} className="text-gray-500" /> Buscar en la Conversación
+                    </button>
+
+                    <button 
+                      onClick={() => { setIsMuted(!isMuted); setShowHeaderMenu(false); }}
+                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-gray-50 font-bold text-xs flex items-center gap-2 text-gray-700"
+                    >
+                      {isMuted ? <Bell size={16} className="text-green-600" /> : <BellOff size={16} className="text-amber-600" />} 
+                      {isMuted ? 'Activar Notificaciones' : 'Silenciar Notificaciones'}
+                    </button>
+
+                    <div className="border-t border-gray-100 my-1"></div>
+
+                    <button 
+                      onClick={handleClearChatHistory}
+                      className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-red-50 font-bold text-xs flex items-center gap-2 text-red-600"
+                    >
+                      <Trash2 size={16} /> Vaciar Conversación
+                    </button>
+
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Buscador dentro del chat activo */}
+            {showInChatSearch && (
+              <div className="bg-white border-b border-gray-200 p-2.5 flex items-center gap-2 z-20">
+                <Search size={16} className="text-gray-400 ml-2" />
+                <input 
+                  type="text" 
+                  placeholder="Buscar texto en este chat..." 
+                  value={inChatSearchTerm}
+                  onChange={(e) => setInChatSearchTerm(e.target.value)}
+                  className="flex-1 text-xs bg-gray-50 p-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#1c2c4c]"
+                  autoFocus
+                />
+                <button onClick={() => { setShowInChatSearch(false); setInChatSearchTerm(''); }} className="text-gray-400 hover:text-gray-600 p-1">
+                  <X size={16} />
+                </button>
+              </div>
+            )}
 
             {/* Banner de Privacidad y Cifrado */}
             <div className="bg-amber-50/90 border-b border-amber-200/80 px-4 py-2 text-center flex items-center justify-center gap-2 text-[11px] text-amber-900 shrink-0 z-10">
@@ -527,20 +630,21 @@ const Chat = () => {
               </span>
             </div>
 
-            {/* Lista de Mensajes con Reacciones Visibles (Sin solapamientos ni recortes) */}
+            {/* Lista de Mensajes */}
             <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar relative z-20">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
-                  {selectedContact.isSupportChannel 
-                    ? "Bienvenido a Soporte IVAD SRL. Escribe tu consulta a continuación."
-                    : "No hay mensajes guardados en este chat. Escribe el primer mensaje a continuación."}
+                  {inChatSearchTerm 
+                    ? `No se encontraron mensajes con "${inChatSearchTerm}".`
+                    : (selectedContact.isSupportChannel 
+                        ? "Bienvenido a Soporte IVAD SRL. Escribe tu consulta a continuación."
+                        : "No hay mensajes guardados en este chat. Escribe el primer mensaje a continuación.")}
                 </div>
               ) : (
                 activeMessages.map((msg, index) => {
                   const hasReactions = Array.isArray(msg.reactions) && msg.reactions.length > 0;
-                  const isTopMessage = index === 0; // Si es el primer mensaje, colocar reacción debajo
+                  const isTopMessage = index === 0;
                   
-                  // Agrupar reacciones por emoji
                   const groupedReactions = (msg.reactions || []).reduce((acc, r) => {
                     acc[r.emoji] = (acc[r.emoji] || 0) + 1;
                     return acc;
@@ -558,7 +662,7 @@ const Chat = () => {
                       className={`flex group relative ${msg.isMe ? 'justify-end' : 'justify-start'}`}
                     >
                       
-                      {/* BARRA FLOTANTE DE REACCIONES RÁPIDAS (Visible con z-[60] por encima del banner) */}
+                      {/* BARRA FLOTANTE DE REACCIONES RÁPIDAS */}
                       {!msg.isDeletedForEveryone && (hoveredMsgId === msg.id || activeReactionPickerMsgId === msg.id) && (
                         <div 
                           className={`absolute z-[60] bg-white rounded-full shadow-2xl border border-gray-200 px-2 py-1 flex items-center gap-1.5 animate-in fade-in duration-150 ${
@@ -651,7 +755,7 @@ const Chat = () => {
                           )}
                         </div>
 
-                        {/* BADGES DE REACCIONES EN EL CORNER DEL MENSAJE */}
+                        {/* BADGES DE REACCIONES */}
                         {hasReactions && !msg.isDeletedForEveryone && (
                           <div className={`absolute -bottom-3.5 ${msg.isMe ? 'left-2' : 'right-2'} flex gap-1 z-20`}>
                             {Object.entries(groupedReactions).map(([emoji, count]) => {
@@ -732,6 +836,58 @@ const Chat = () => {
 
       </div>
 
+      {/* MODAL DE GALERÍA DE ARCHIVOS Y MULTIMEDIA COMPARTIDOS */}
+      {showMediaGallery && selectedContact && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg max-h-[80vh] flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
+              <h3 className="font-bold text-base text-[#1c2c4c]">Archivos y Fotos Compartidas</h3>
+              <button onClick={() => setShowMediaGallery(false)} className="text-gray-400 hover:text-gray-600">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar">
+              {sharedMediaList.length === 0 ? (
+                <div className="text-center py-10 text-gray-400 text-xs">
+                  No hay fotos ni documentos compartidos en esta conversación.
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {sharedMediaList.map(item => (
+                    <div key={item.id} className="relative group border border-gray-200 rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center p-1">
+                      {item.mediaType === 'image' ? (
+                        <img 
+                          src={item.mediaUrl} 
+                          alt="Media compartida" 
+                          onClick={() => { setActivePreviewImage(item.mediaUrl); setShowMediaGallery(false); }}
+                          className="w-full h-28 object-cover rounded-xl cursor-pointer hover:scale-105 transition" 
+                        />
+                      ) : (
+                        <div className="p-3 text-center flex flex-col items-center justify-center">
+                          <FileText size={28} className="text-[#1c2c4c] mb-1" />
+                          <p className="text-[10px] font-bold truncate w-full text-gray-700">{item.fileName}</p>
+                          <a href={item.mediaUrl} download={item.fileName} className="mt-2 text-[10px] text-blue-600 font-bold hover:underline">
+                            Descargar
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button 
+              onClick={() => setShowMediaGallery(false)}
+              className="mt-4 w-full py-2.5 bg-gray-100 font-bold text-xs text-gray-600 rounded-2xl hover:bg-gray-200"
+            >
+              Cerrar Galería
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* MODAL / POPUP DE ELIMINAR MENSAJE */}
       {selectedMsgToDelete && (
         <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
@@ -744,7 +900,6 @@ const Chat = () => {
               </button>
             </div>
 
-            {/* Aviso si la otra persona ya vio el mensaje */}
             {selectedMsgToDelete.isMe && selectedMsgToDelete.isRead && (
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-start gap-2 text-[11px] text-amber-800">
                 <AlertCircle size={16} className="shrink-0 text-amber-600 mt-0.5" />
@@ -755,8 +910,6 @@ const Chat = () => {
             )}
 
             <div className="space-y-2 pt-1">
-              
-              {/* Botón Eliminar para todos (Solo si es mi mensaje y NO ha sido leído) */}
               {selectedMsgToDelete.isMe && !selectedMsgToDelete.isRead && (
                 <button
                   onClick={() => handleDeleteForEveryone(selectedMsgToDelete)}
@@ -766,7 +919,6 @@ const Chat = () => {
                 </button>
               )}
 
-              {/* Botón Eliminar para mí (Siempre disponible) */}
               <button
                 onClick={() => handleDeleteForMe(selectedMsgToDelete.id)}
                 className="w-full py-3 bg-gray-100 text-[#1c2c4c] font-bold text-xs rounded-2xl hover:bg-gray-200 transition"
@@ -780,7 +932,6 @@ const Chat = () => {
               >
                 Cancelar
               </button>
-
             </div>
 
           </div>
