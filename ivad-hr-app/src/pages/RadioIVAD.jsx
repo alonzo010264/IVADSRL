@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Radio, Mic, Volume2, VolumeX, ArrowLeft, Users, User, Clock, Play, Pause, AlertCircle, CheckCircle2, ShieldCheck, Smartphone, Laptop } from 'lucide-react';
+import { Radio, Mic, Volume2, VolumeX, ArrowLeft, Users, User, Clock, Play, Pause, AlertCircle, CheckCircle2, Smartphone, Laptop } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
-import { VerificationBadge } from '../components/VerificationBadge';
 
 const RadioIVAD = () => {
   const navigate = useNavigate();
   const { currentUser, employees } = useEmployees();
 
   const [isPowerOn, setIsPowerOn] = useState(true);
-  const [testModeOverride, setTestModeOverride] = useState(true); // Activo para pruebas
-  const [targetType, setTargetType] = useState('general'); // 'general' o 'direct'
+  const [testModeOverride, setTestModeOverride] = useState(true);
+  const [targetType, setTargetType] = useState('general');
   const [selectedReceiver, setSelectedReceiver] = useState(null);
 
   const [isRecording, setIsRecording] = useState(false);
@@ -28,12 +27,10 @@ const RadioIVAD = () => {
   const audioPlayerRef = useRef(null);
   const isRecordingStateRef = useRef(false);
 
-  // Mantener referencia actualizada del estado de grabación para event listeners de teclas
   useEffect(() => {
     isRecordingStateRef.current = isRecording;
   }, [isRecording]);
 
-  // Comprobar si estamos dentro del Horario Laboral IVAD (Lunes a Sábado, 8:00 AM - 6:00 PM)
   const isWithinBusinessHours = () => {
     const now = new Date();
     const day = now.getDay();
@@ -50,7 +47,6 @@ const RadioIVAD = () => {
     ...employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString())
   ];
 
-  // Solicitar permiso de micrófono al montar
   useEffect(() => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ audio: true })
@@ -59,7 +55,6 @@ const RadioIVAD = () => {
     }
   }, []);
 
-  // Cargar transmisiones recientes de la radio
   const fetchRecentTransmissions = async () => {
     const { data } = await supabase
       .from('radio_transmissions')
@@ -76,12 +71,11 @@ const RadioIVAD = () => {
     fetchRecentTransmissions();
   }, []);
 
-  // Suscripción Real-Time Supabase a transmisiones de radio en vivo
   useEffect(() => {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel(`radio_page_live_${currentUser.id}`)
+      .channel(`radio_page_live_${currentUser.id}_v3`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -106,7 +100,6 @@ const RadioIVAD = () => {
     };
   }, [currentUser, isPowerOn]);
 
-  // Reproducir audio recibido automáticamente en altavoz
   const playAudioTransmission = (audioUrl, speakerName, transId) => {
     if (!isPowerOn) return;
 
@@ -140,7 +133,6 @@ const RadioIVAD = () => {
     }
   };
 
-  // Iniciar Grabación (Push-to-Talk)
   const startRecording = async () => {
     if (isRecordingStateRef.current) return;
     if (!isPowerOn) {
@@ -177,11 +169,10 @@ const RadioIVAD = () => {
 
     } catch (err) {
       console.error("Error al acceder al micrófono:", err);
-      alert("No se pudo acceder al micrófono. Por favor otorga los permisos en tu navegador/dispositivo.");
+      alert("No se pudo acceder al micrófono. Por favor otorga los permisos en tu navegador.");
     }
   };
 
-  // Detener Grabación y Transmitir
   const stopRecording = () => {
     if (!isRecordingStateRef.current || !mediaRecorderRef.current) return;
 
@@ -225,14 +216,10 @@ const RadioIVAD = () => {
     }
   };
 
-  // SOPORTE PARA BOTONES FÍSICOS DE VOLUMEN EN TELÉFONOS CELULARES Y TECLADO EN LAPTOPS
+  // Teclado de computadora (Barra espaciadora o tecla R)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Interceptar teclas de volumen o espacio si la pantalla de radio está activa
-      const isVolumeKey = ['AudioVolumeUp', 'AudioVolumeDown', 'VolumeUp', 'VolumeDown', 'Space', 'KeyR'].includes(e.code) || ['VolumeUp', 'VolumeDown'].includes(e.key);
-
-      if (isVolumeKey) {
-        // Evitar que el sistema cambie el volumen multimedia de Android/iOS/Windows mientras habla por radio
+      if (['Space', 'KeyR'].includes(e.code)) {
         e.preventDefault();
         if (!isRecordingStateRef.current) {
           startRecording();
@@ -241,9 +228,7 @@ const RadioIVAD = () => {
     };
 
     const handleKeyUp = (e) => {
-      const isVolumeKey = ['AudioVolumeUp', 'AudioVolumeDown', 'VolumeUp', 'VolumeDown', 'Space', 'KeyR'].includes(e.code) || ['VolumeUp', 'VolumeDown'].includes(e.key);
-
-      if (isVolumeKey) {
+      if (['Space', 'KeyR'].includes(e.code)) {
         e.preventDefault();
         if (isRecordingStateRef.current) {
           stopRecording();
@@ -260,7 +245,6 @@ const RadioIVAD = () => {
     };
   }, [targetType, selectedReceiver, isPowerOn, isOperational]);
 
-  // Alternar Grabación al Clic (Ideal para trackpads de laptop y ratón)
   const handleButtonClick = () => {
     if (isRecording) {
       stopRecording();
@@ -272,7 +256,7 @@ const RadioIVAD = () => {
   return (
     <div className="min-h-screen bg-[#f8fafc] text-gray-800 pb-24 font-sans">
       
-      {/* Header Limpio Corporativo IVAD (Azul Marino #1c2c4c y Blanco) */}
+      {/* Única Cabecera Oficial IVAD */}
       <div className="bg-[#1c2c4c] text-white pt-10 pb-8 px-6 rounded-b-[2.5rem] shadow-md relative z-10">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -291,7 +275,6 @@ const RadioIVAD = () => {
             </div>
           </div>
 
-          {/* Interruptor de Encendido de Radio */}
           <button 
             onClick={() => setIsPowerOn(!isPowerOn)}
             className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-sm transition-all ${
@@ -308,22 +291,22 @@ const RadioIVAD = () => {
 
       <div className="max-w-4xl mx-auto px-5 -mt-4 relative z-20 space-y-6">
 
-        {/* Tarjeta de Indicaciones y Teclas de Volumen Físicas */}
+        {/* Tarjeta de Indicaciones con Texto Limpio */}
         <div className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-blue-50 text-[#1c2c4c]">
               <Smartphone size={20} />
             </div>
             <div>
-              <h3 className="font-bold text-xs text-[#1c2c4c]">Botones Físicos de Volumen Habilitados</h3>
+              <h3 className="font-bold text-xs text-[#1c2c4c]">Instrucciones de Uso de la Radio</h3>
               <p className="text-[11px] text-gray-500">
-                Presiona las teclas de **Subir/Bajar Volumen** en tu móvil (o la Barra Espaciadora en Laptop) para hablar como una radio física.
+                En celulares mantén presionado el botón circular para hablar. En computadoras puedes usar la Barra Espaciadora o hacer clic.
               </p>
             </div>
           </div>
 
           <span className="text-[10px] bg-green-100 text-green-700 font-extrabold px-3 py-1 rounded-full shrink-0">
-            ● Activo
+            En Línea
           </span>
         </div>
 
@@ -359,7 +342,6 @@ const RadioIVAD = () => {
             </button>
           </div>
 
-          {/* Menú Desplegable de Destinatario Privado */}
           {targetType === 'direct' && (
             <div className="space-y-1.5 pt-1">
               <label className="text-xs font-bold text-[#1c2c4c] block">Selecciona la persona para hablar en privado:</label>
@@ -389,7 +371,7 @@ const RadioIVAD = () => {
           )}
         </div>
 
-        {/* BOTÓN PRINCIPAL PUSH-TO-TALK (BLANCO Y AZUL MARINO IVAD) */}
+        {/* BOTÓN PRINCIPAL PUSH-TO-TALK (AZUL MARINO Y DORADO IVAD) */}
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
           
           {isPlayingAudio && (
@@ -400,7 +382,6 @@ const RadioIVAD = () => {
           )}
 
           <div className="relative flex items-center justify-center my-4">
-            {/* Anillos de Animación durante la grabación */}
             {isRecording && (
               <>
                 <div className="absolute w-48 h-48 rounded-full bg-red-500/20 animate-ping"></div>
@@ -438,7 +419,7 @@ const RadioIVAD = () => {
                     PRESIONAR PARA HABLAR
                   </span>
                   <span className="text-[9px] text-[#d4af37] font-semibold mt-1">
-                    (Usa Botones de Volumen)
+                    (Mantén o haz Clic)
                   </span>
                 </>
               )}
@@ -448,7 +429,7 @@ const RadioIVAD = () => {
           <p className="text-xs text-gray-500 mt-2 font-medium max-w-sm">
             {isRecording 
               ? "Soltar o presionar de nuevo para enviar tu mensaje de voz al canal." 
-              : "Mantén presionado el botón o usa los botones físicos de volumen de tu móvil para hablar."}
+              : "Mantén presionado el botón central para transmitir tu voz al instante."}
           </p>
 
         </div>

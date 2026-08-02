@@ -74,7 +74,7 @@ const Header = () => {
         {isDashboard && (
           <button className="relative" onClick={() => navigate('/notificaciones')}>
             <Bell size={24} />
-            <span className="absolute -top-1.5 -right-1.5 bg-[#d4af37] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1.5 -right-1.5 bg-[#d4af37] text-[#1c2c4c] text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
               0
             </span>
           </button>
@@ -86,7 +86,7 @@ const Header = () => {
 
 const Layout = () => {
   const location = useLocation();
-  const noHeaderRoutes = ['/inicio', '/', '/chat', '/incidencias', '/iniciativas', '/faq', '/configuracion'];
+  const noHeaderRoutes = ['/inicio', '/', '/chat', '/radio', '/incidencias', '/iniciativas', '/faq', '/configuracion'];
   const showHeader = !noHeaderRoutes.includes(location.pathname);
 
   return (
