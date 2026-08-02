@@ -54,6 +54,33 @@ const Chat = () => {
   // Lightbox / Vista Previa Modal de Imagen
   const [activePreviewImage, setActivePreviewImage] = useState(null);
 
+  // Sintetizador de Sonido de Notificación Web Audio
+  const playNotificationSound = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.3);
+    } catch (e) {
+      console.log("Audio notify error:", e);
+    }
+  };
+
+  // Solicitar permiso de notificaciones del navegador
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
   // Autoscroll al final del chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,58 +90,83 @@ const Chat = () => {
     scrollToBottom();
   }, [messages, selectedContact]);
 
-  // Cargar mensajes directos reales y reacciones desde Supabase Cloud y suscribirse en TIEMPO REAL
+  // Cargar TODOS los mensajes directos para todos los contactos (para badges y previews en la izquierda)
+  const fetchAllDirectMessages = async () => {
+    if (!currentUser) return;
+
+    const { data } = await supabase
+      .from('direct_messages')
+      .select('*')
+      .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+      .order('created_at', { ascending: true });
+
+    if (data) {
+      const grouped = {};
+      
+      data.forEach(m => {
+        const contactId = m.sender_id.toString() === currentUser.id.toString() 
+          ? m.receiver_id.toString() 
+          : m.sender_id.toString();
+
+        if (!grouped[contactId]) grouped[contactId] = [];
+
+        grouped[contactId].push({
+          id: m.id,
+          text: m.message,
+          mediaUrl: m.media_url || null,
+          mediaType: m.media_type || (m.media_url ? (m.media_url.startsWith('data:image') ? 'image' : 'document') : null),
+          fileName: m.file_name || 'Archivo adjunto',
+          reactions: Array.isArray(m.reactions) ? m.reactions : [],
+          isRead: m.is_read || false,
+          createdAt: m.created_at,
+          isDeletedForEveryone: m.is_deleted_for_everyone || false,
+          time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isMe: m.sender_id.toString() === currentUser.id.toString()
+        });
+      });
+
+      setMessages(grouped);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllDirectMessages();
+  }, [currentUser]);
+
+  // Marcar mensajes recibidos como leídos automáticamente cuando el chat está activo
   useEffect(() => {
     if (!currentUser || !selectedContact) return;
 
-    const fetchDirectMessages = async () => {
-      const { data } = await supabase
-        .from('direct_messages')
-        .select('*')
-        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${selectedContact.id}),and(sender_id.eq.${selectedContact.id},receiver_id.eq.${currentUser.id})`)
-        .order('created_at', { ascending: true });
+    const markAsRead = async () => {
+      const contactMsgs = messages[selectedContact.id] || [];
+      const unreadIds = contactMsgs
+        .filter(m => !m.isMe && !m.isRead)
+        .map(m => m.id);
 
-      if (data) {
-        const unreadIds = data
-          .filter(m => m.receiver_id.toString() === currentUser.id.toString() && !m.is_read)
-          .map(m => m.id);
-
-        if (unreadIds.length > 0) {
-          await supabase
-            .from('direct_messages')
-            .update({ is_read: true })
-            .in('id', unreadIds);
-        }
+      if (unreadIds.length > 0) {
+        await supabase
+          .from('direct_messages')
+          .update({ is_read: true })
+          .in('id', unreadIds);
 
         setMessages(prev => ({
           ...prev,
-          [selectedContact.id]: data.map(m => ({
-            id: m.id,
-            text: m.message,
-            mediaUrl: m.media_url || null,
-            mediaType: m.media_type || (m.media_url ? (m.media_url.startsWith('data:image') ? 'image' : 'document') : null),
-            fileName: m.file_name || 'Archivo adjunto',
-            reactions: Array.isArray(m.reactions) ? m.reactions : [],
-            isRead: m.is_read || false,
-            createdAt: m.created_at,
-            isDeletedForEveryone: m.is_deleted_for_everyone || false,
-            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            isMe: m.sender_id.toString() === currentUser.id.toString()
-          }))
-        }));
-      } else {
-        setMessages(prev => ({
-          ...prev,
-          [selectedContact.id]: []
+          [selectedContact.id]: (prev[selectedContact.id] || []).map(m => 
+            unreadIds.includes(m.id) ? { ...m, isRead: true } : m
+          )
         }));
       }
     };
 
-    fetchDirectMessages();
+    markAsRead();
+  }, [selectedContact, messages, currentUser]);
 
-    // Suscripción en Tiempo Real Supabase
+  // Suscripción Global Real-Time Supabase WebSocket
+  useEffect(() => {
+    if (!currentUser) return;
+
     const channel = supabase
-      .channel(`direct_chat_${currentUser.id}_${selectedContact.id}`)
+      .channel(`global_direct_chat_${currentUser.id}`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
@@ -122,54 +174,96 @@ const Chat = () => {
       }, (payload) => {
         if (payload.eventType === 'INSERT') {
           const newMsg = payload.new;
-          if (
-            (newMsg.sender_id.toString() === selectedContact.id.toString() && newMsg.receiver_id.toString() === currentUser.id.toString()) ||
-            (newMsg.sender_id.toString() === currentUser.id.toString() && newMsg.receiver_id.toString() === selectedContact.id.toString())
-          ) {
+          const isSenderMe = newMsg.sender_id.toString() === currentUser.id.toString();
+          const isReceiverMe = newMsg.receiver_id.toString() === currentUser.id.toString();
+
+          if (isSenderMe || isReceiverMe) {
+            const contactId = isSenderMe ? newMsg.receiver_id.toString() : newMsg.sender_id.toString();
+            
+            const msgObj = {
+              id: newMsg.id,
+              text: newMsg.message,
+              mediaUrl: newMsg.media_url || null,
+              mediaType: newMsg.media_type || (newMsg.media_url ? (newMsg.media_url.startsWith('data:image') ? 'image' : 'document') : null),
+              fileName: newMsg.file_name || 'Archivo adjunto',
+              reactions: Array.isArray(newMsg.reactions) ? newMsg.reactions : [],
+              isRead: newMsg.is_read || false,
+              createdAt: newMsg.created_at,
+              isDeletedForEveryone: newMsg.is_deleted_for_everyone || false,
+              time: new Date(newMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isMe: isSenderMe
+            };
+
             setMessages(prev => ({
               ...prev,
-              [selectedContact.id]: [
-                ...(prev[selectedContact.id] || []).filter(m => m.id !== newMsg.id.toString()),
-                {
-                  id: newMsg.id,
-                  text: newMsg.message,
-                  mediaUrl: newMsg.media_url || null,
-                  mediaType: newMsg.media_type || (newMsg.media_url ? (newMsg.media_url.startsWith('data:image') ? 'image' : 'document') : null),
-                  fileName: newMsg.file_name || 'Archivo adjunto',
-                  reactions: Array.isArray(newMsg.reactions) ? newMsg.reactions : [],
-                  isRead: newMsg.is_read || false,
-                  createdAt: newMsg.created_at,
-                  isDeletedForEveryone: newMsg.is_deleted_for_everyone || false,
-                  time: new Date(newMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                  isMe: newMsg.sender_id.toString() === currentUser.id.toString()
-                }
+              [contactId]: [
+                ...(prev[contactId] || []).filter(m => m.id !== newMsg.id.toString()),
+                msgObj
               ]
             }));
+
+            // Notificación sonora y Push de Navegador si me envían un mensaje
+            if (isReceiverMe) {
+              playNotificationSound();
+
+              if ('Notification' in window && Notification.permission === 'granted' && !isMuted) {
+                const senderObj = otherEmployees.find(e => e.id.toString() === contactId);
+                const senderName = senderObj ? senderObj.name : 'Colaborador IVAD';
+                const bodyText = newMsg.message || (newMsg.media_url ? '📷 Envió una imagen' : 'Envió un archivo');
+                
+                try {
+                  const notif = new Notification(`💬 Mensaje de ${senderName}`, {
+                    body: bodyText,
+                    icon: senderObj?.avatar || '/logo.png',
+                    badge: '/logo.png',
+                    tag: `chat-msg-${contactId}`,
+                    renotify: true
+                  });
+
+                  notif.onclick = () => {
+                    window.focus();
+                    if (senderObj) setSelectedContact(senderObj);
+                  };
+                } catch (err) {
+                  console.log("Notification error:", err);
+                }
+              }
+            }
           }
         } else if (payload.eventType === 'UPDATE') {
           const updatedMsg = payload.new;
-          setMessages(prev => ({
-            ...prev,
-            [selectedContact.id]: (prev[selectedContact.id] || []).map(m => 
-              m.id.toString() === updatedMsg.id.toString() 
-                ? { 
-                    ...m, 
-                    isRead: updatedMsg.is_read, 
-                    text: updatedMsg.is_deleted_for_everyone ? '🚫 Este mensaje fue eliminado' : updatedMsg.message,
-                    mediaUrl: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_url,
-                    mediaType: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_type,
-                    reactions: Array.isArray(updatedMsg.reactions) ? updatedMsg.reactions : [],
-                    isDeletedForEveryone: updatedMsg.is_deleted_for_everyone
-                  }
-                : m
-            )
-          }));
+          const isSenderMe = updatedMsg.sender_id.toString() === currentUser.id.toString();
+          const isReceiverMe = updatedMsg.receiver_id.toString() === currentUser.id.toString();
+
+          if (isSenderMe || isReceiverMe) {
+            const contactId = isSenderMe ? updatedMsg.receiver_id.toString() : updatedMsg.sender_id.toString();
+            
+            setMessages(prev => ({
+              ...prev,
+              [contactId]: (prev[contactId] || []).map(m => 
+                m.id.toString() === updatedMsg.id.toString() 
+                  ? { 
+                      ...m, 
+                      isRead: updatedMsg.is_read, 
+                      text: updatedMsg.is_deleted_for_everyone ? '🚫 Este mensaje fue eliminado' : updatedMsg.message,
+                      mediaUrl: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_url,
+                      mediaType: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_type,
+                      reactions: Array.isArray(updatedMsg.reactions) ? updatedMsg.reactions : [],
+                      isDeletedForEveryone: updatedMsg.is_deleted_for_everyone
+                    }
+                  : m
+              )
+            }));
+          }
         } else if (payload.eventType === 'DELETE') {
           const deletedId = payload.old.id;
-          setMessages(prev => ({
-            ...prev,
-            [selectedContact.id]: (prev[selectedContact.id] || []).filter(m => m.id.toString() !== deletedId.toString())
-          }));
+          setMessages(prev => {
+            const next = { ...prev };
+            Object.keys(next).forEach(k => {
+              next[k] = next[k].filter(m => m.id.toString() !== deletedId.toString());
+            });
+            return next;
+          });
         }
       })
       .subscribe();
@@ -177,7 +271,7 @@ const Chat = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [selectedContact, currentUser]);
+  }, [currentUser, otherEmployees, isMuted]);
 
   // Helper para optimizar imágenes
   const compressImage = (file) => {
@@ -431,7 +525,7 @@ const Chat = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-16 md:pb-0">
       
-      {/* COLUMNA IZQUIERDA: SELECCIÓN DE CHAT */}
+      {/* COLUMNA IZQUIERDA: SELECCIÓN DE CHAT Y CANALES */}
       <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col h-full ${selectedContact ? 'hidden md:flex' : 'flex'}`}>
         
         {/* Header Lista de Empleados */}
@@ -461,42 +555,76 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Lista de Contactos */}
+        {/* Lista de Contactos con Conteo de No Leídos y Último Mensaje tipo WhatsApp */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {filteredContacts.length === 0 ? (
             <p className="text-center text-xs text-gray-400 py-8">No se encontraron canales.</p>
           ) : (
-            filteredContacts.map(emp => (
-              <button
-                key={emp.id}
-                onClick={() => { setSelectedContact(emp); setShowHeaderMenu(false); setShowInChatSearch(false); }}
-                className={`w-full p-3.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${
-                  selectedContact?.id === emp.id ? 'bg-blue-50/60 border-l-4 border-[#1c2c4c]' : ''
-                } ${emp.isSupportChannel ? 'bg-blue-50/30' : ''}`}
-              >
-                <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shadow-sm flex items-center justify-center">
-                    {emp.avatar ? (
-                      <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover scale-[1.25]" />
-                    ) : (
-                      <User size={22} className="text-white" />
-                    )}
-                  </div>
-                  <span className="w-3 h-3 bg-green-500 rounded-full border-2 border-white absolute bottom-0 right-0"></span>
-                </div>
+            filteredContacts.map(emp => {
+              const contactMsgs = messages[emp.id] || [];
+              const unreadCount = contactMsgs.filter(m => !m.isMe && !m.isRead).length;
+              const lastMsg = contactMsgs[contactMsgs.length - 1];
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <h3 className="font-bold text-[#1c2c4c] text-xs truncate flex items-center gap-1.5">
-                      <span>{emp.name}</span>
-                      <VerificationBadge emp={emp} size={16} position="bottom" />
-                    </h3>
-                    <span className="text-[9px] text-gray-400 font-medium">En línea</span>
+              let lastMsgSnippet = emp.role || emp.department || 'Colaborador IVAD';
+              if (lastMsg) {
+                if (lastMsg.isDeletedForEveryone) {
+                  lastMsgSnippet = '🚫 Mensaje eliminado';
+                } else if (lastMsg.text) {
+                  lastMsgSnippet = (lastMsg.isMe ? 'Tú: ' : '') + lastMsg.text;
+                } else if (lastMsg.mediaType === 'image') {
+                  lastMsgSnippet = (lastMsg.isMe ? 'Tú: ' : '') + '📷 Imagen';
+                } else if (lastMsg.mediaType === 'document') {
+                  lastMsgSnippet = (lastMsg.isMe ? 'Tú: ' : '') + '📄 Documento';
+                }
+              }
+
+              return (
+                <button
+                  key={emp.id}
+                  onClick={() => { setSelectedContact(emp); setShowHeaderMenu(false); setShowInChatSearch(false); }}
+                  className={`w-full p-3.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left relative ${
+                    selectedContact?.id === emp.id ? 'bg-blue-50/60 border-l-4 border-[#1c2c4c]' : ''
+                  } ${emp.isSupportChannel ? 'bg-blue-50/30' : ''}`}
+                >
+                  <div className="relative shrink-0">
+                    <div className="w-12 h-12 rounded-full border-2 border-[#d4af37] bg-[#1c2c4c] overflow-hidden shadow-sm flex items-center justify-center">
+                      {emp.avatar ? (
+                        <img src={emp.avatar} alt={emp.name} className="w-full h-full object-cover scale-[1.25]" />
+                      ) : (
+                        <User size={22} className="text-white" />
+                      )}
+                    </div>
+                    <span className="w-3 h-3 bg-green-500 rounded-full border-2 border-white absolute bottom-0 right-0"></span>
                   </div>
-                  <p className="text-[11px] text-gray-500 truncate">{emp.role || emp.department || 'Colaborador IVAD'}</p>
-                </div>
-              </button>
-            ))
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <h3 className="font-bold text-[#1c2c4c] text-xs truncate flex items-center gap-1.5">
+                        <span>{emp.name}</span>
+                        <VerificationBadge emp={emp} size={16} position="bottom" />
+                      </h3>
+                      {lastMsg && (
+                        <span className="text-[9px] text-gray-400 font-medium shrink-0 ml-1">
+                          {lastMsg.time}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between gap-1">
+                      <p className={`text-[11px] truncate flex-1 ${unreadCount > 0 ? 'font-bold text-[#1c2c4c]' : 'text-gray-500'}`}>
+                        {lastMsgSnippet}
+                      </p>
+                      
+                      {unreadCount > 0 && (
+                        <span className="bg-[#d4af37] text-[#1c2c4c] text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-xs shrink-0 animate-bounce">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              );
+            })
           )}
         </div>
 
@@ -630,7 +758,7 @@ const Chat = () => {
               </span>
             </div>
 
-            {/* Lista de Mensajes con Dos Colores Distintos & Foto de Perfil al Visto */}
+            {/* Lista de Mensajes con Visto en Texto Pequeño */}
             <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar relative z-20">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
@@ -752,24 +880,19 @@ const Chat = () => {
                           <p className="text-xs leading-relaxed break-words px-1 pt-1 font-normal">{msg.text}</p>
                         )}
 
-                        {/* HORA Y FOTO DE PERFIL DEL DESTINATARIO CUANDO LO VE (EN LUGAR DEL VISTO WHATSAPP) */}
+                        {/* HORA Y VISTO EN TEXTO PEQUEÑO */}
                         <div className="flex items-center justify-end gap-1.5 mt-1 px-1">
                           <span className={`text-[9px] font-medium ${msg.isMe ? 'text-[#041e49]/70' : 'text-gray-500'}`}>
                             {msg.time}
                           </span>
                           
-                          {/* SI ES MI MENSAJE Y FUE VISTO (isRead === true), MOSTRAR LA FOTO DE PERFIL DEL RECEPTOR */}
-                          {msg.isMe && !msg.isDeletedForEveryone && msg.isRead && (
-                            <div 
-                              className="w-4 h-4 rounded-full border border-white overflow-hidden shrink-0 bg-[#1c2c4c] flex items-center justify-center shadow-xs"
-                              title={`Visto por ${selectedContact.name}`}
-                            >
-                              {selectedContact.avatar ? (
-                                <img src={selectedContact.avatar} alt="Visto" className="w-full h-full object-cover scale-[1.25]" />
-                              ) : (
-                                <User size={10} className="text-white" />
-                              )}
-                            </div>
+                          {/* SI ES MI MENSAJE, MOSTRAR ESTADO EN TEXTO PEQUEÑO */}
+                          {msg.isMe && !msg.isDeletedForEveryone && (
+                            msg.isRead ? (
+                              <span className="text-[9px] font-bold text-blue-600 tracking-tight">Visto</span>
+                            ) : (
+                              <span className="text-[9px] font-medium text-gray-400/80">Entregado</span>
+                            )
                           )}
                         </div>
 
