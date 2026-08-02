@@ -201,11 +201,10 @@ const Configuracion = () => {
               </div>
             )}
 
-            {/* Botón de Agregar Otra Cuenta */}
+            {/* Botón de Agregar Otra Cuenta (Preserva sesión actual) */}
             <button 
               onClick={() => {
-                localStorage.removeItem('ivad_current_user');
-                navigate('/login');
+                navigate('/login?addAccount=true');
               }}
               className="w-full py-3 bg-gradient-to-r from-[#1c2c4c] to-blue-900 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-2 hover:opacity-95 transition shadow-sm"
             >
@@ -372,7 +371,7 @@ const Configuracion = () => {
                   </div>
                   <h4 className="font-bold text-xs text-gray-800 dark:text-gray-200">Verificación por Correo Electrónico</h4>
                   <p className="text-xs text-gray-500 mt-1">
-                    Por tu seguridad, enviaremos un **código de 6 dígitos** al correo de tu cuenta:
+                    Por tu seguridad, enviaremos un código de 6 dígitos al correo de tu cuenta:
                   </p>
                   <p className="font-bold text-xs text-[#1c2c4c] dark:text-amber-400 mt-1 bg-gray-100 dark:bg-slate-900 py-1 px-3 rounded-full inline-block">
                     {currentUser?.email}

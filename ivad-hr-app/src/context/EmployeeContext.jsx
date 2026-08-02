@@ -21,36 +21,64 @@ export const EmployeeProvider = ({ children }) => {
   });
 
   const [currentUser, setCurrentUser] = useState(() => {
-    const savedUser = localStorage.getItem('ivad_current_user');
-    const trustExpiration = localStorage.getItem('ivad_trust_expires_at');
+    try {
+      const savedUser = localStorage.getItem('ivad_current_user');
+      const trustExpiration = localStorage.getItem('ivad_trust_expires_at');
 
-    if (savedUser) {
-      if (trustExpiration) {
-        if (Date.now() > parseInt(trustExpiration, 10)) {
-          localStorage.removeItem('ivad_current_user');
-          localStorage.removeItem('ivad_trust_expires_at');
-          return null;
+      // Si existe usuario guardado
+      if (savedUser) {
+        // Validar expiración de confianza (90 días con auto-renovación)
+        if (trustExpiration) {
+          if (Date.now() > parseInt(trustExpiration, 10)) {
+            // Expirado verdaderamente tras 90 días sin usar la app
+            localStorage.removeItem('ivad_current_user');
+            localStorage.removeItem('ivad_trust_expires_at');
+            return null;
+          }
+        }
+        
+        // Auto-renovar la fecha de confianza por 90 días más al abrir la app
+        const nextExpiration = Date.now() + 90 * 24 * 60 * 60 * 1000;
+        localStorage.setItem('ivad_trust_expires_at', nextExpiration.toString());
+
+        const parsedUser = JSON.parse(savedUser);
+        if (parsedUser.id === '000-admin' || parsedUser.email === 'admin@ivad.com') {
+          return { 
+            ...parsedUser, 
+            name: 'IVAD HOME & GOODS', 
+            role: 'Administración Central', 
+            verification_status: 'gold',
+            is_admin: true 
+          };
+        }
+        return parsedUser;
+      }
+
+      // Recuperación de respaldo: si savedUser falló pero hay cuentas en multicuenta
+      const savedAccountsStr = localStorage.getItem('ivad_stored_accounts');
+      if (savedAccountsStr) {
+        const parsedAccounts = JSON.parse(savedAccountsStr);
+        if (parsedAccounts && parsedAccounts.length > 0) {
+          return parsedAccounts[0];
         }
       }
-      const parsedUser = JSON.parse(savedUser);
-      if (parsedUser.id === '000-admin' || parsedUser.email === 'admin@ivad.com') {
-        return { 
-          ...parsedUser, 
-          name: 'IVAD HOME & GOODS', 
-          role: 'Administración Central', 
-          verification_status: 'gold',
-          is_admin: true 
-        };
-      }
-      return parsedUser;
+
+      return null;
+    } catch (e) {
+      console.error("Error recuperando sesión inicial:", e);
+      return null;
     }
-    return null;
   });
 
-  // Guardar cuenta actual en la lista de Multicuentas guardadas
+  // Guardar cuenta actual en la lista de Multicuentas guardadas y sincronizar localStorage
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem('ivad_current_user', JSON.stringify(currentUser));
+      
+      // Auto-renovar expiración a 90 días
+      const nextExpiration = Date.now() + 90 * 24 * 60 * 60 * 1000;
+      localStorage.setItem('ivad_trust_expires_at', nextExpiration.toString());
+
       setStoredAccounts(prev => {
         const exists = prev.some(acc => acc.id.toString() === currentUser.id.toString());
         let updated;
@@ -62,8 +90,6 @@ export const EmployeeProvider = ({ children }) => {
         localStorage.setItem('ivad_stored_accounts', JSON.stringify(updated));
         return updated;
       });
-    } else {
-      localStorage.removeItem('ivad_current_user');
     }
   }, [currentUser]);
 
@@ -87,6 +113,7 @@ export const EmployeeProvider = ({ children }) => {
       if (updated.length > 0) {
         setCurrentUser(updated[0]);
       } else {
+        localStorage.removeItem('ivad_current_user');
         setCurrentUser(null);
       }
     }
@@ -103,7 +130,7 @@ export const EmployeeProvider = ({ children }) => {
       setEmployees(data);
       setCurrentUser(prevUser => {
         if (!prevUser) return prevUser;
-        const updatedUser = data.find(emp => emp.id === prevUser.id);
+        const updatedUser = data.find(emp => emp.id.toString() === prevUser.id.toString() || emp.email === prevUser.email);
         return updatedUser || prevUser;
       });
     }
@@ -205,15 +232,15 @@ export const EmployeeProvider = ({ children }) => {
   };
   
   const login = async (email, password, trustThisDevice = true) => {
+    const expirationTimestamp = Date.now() + 90 * 24 * 60 * 60 * 1000; // 90 días permanentemente
+
     if (email === 'admin@ivad.com' && password === 'admin') {
       const { data } = await supabase.from('employees').select('*').eq('email', email).single();
       const userObj = data || { id: '000-admin', name: 'IVAD HOME & GOODS', role: 'Administración Central', email, is_admin: true, avatar: null, verification_status: 'gold' };
 
-      if (trustThisDevice) {
-        const expirationTimestamp = Date.now() + 30 * 24 * 60 * 60 * 1000;
-        localStorage.setItem('ivad_trust_expires_at', expirationTimestamp.toString());
-        localStorage.setItem('ivad_remembered_email', email);
-      }
+      localStorage.setItem('ivad_trust_expires_at', expirationTimestamp.toString());
+      localStorage.setItem('ivad_remembered_email', email);
+      localStorage.setItem('ivad_current_user', JSON.stringify(userObj));
       
       setCurrentUser(userObj);
       return userObj;
@@ -233,11 +260,9 @@ export const EmployeeProvider = ({ children }) => {
       return null;
     }
     
-    if (trustThisDevice) {
-      const expirationTimestamp = Date.now() + 30 * 24 * 60 * 60 * 1000;
-      localStorage.setItem('ivad_trust_expires_at', expirationTimestamp.toString());
-      localStorage.setItem('ivad_remembered_email', email);
-    }
+    localStorage.setItem('ivad_trust_expires_at', expirationTimestamp.toString());
+    localStorage.setItem('ivad_remembered_email', email);
+    localStorage.setItem('ivad_current_user', JSON.stringify(data));
 
     setCurrentUser(data);
     return data;
@@ -247,12 +272,15 @@ export const EmployeeProvider = ({ children }) => {
     if (currentUser) {
       removeStoredAccount(currentUser.id);
     }
+    localStorage.removeItem('ivad_current_user');
     setCurrentUser(null);
   };
 
   const logoutAll = () => {
     setStoredAccounts([]);
     localStorage.removeItem('ivad_stored_accounts');
+    localStorage.removeItem('ivad_current_user');
+    localStorage.removeItem('ivad_trust_expires_at');
     setCurrentUser(null);
   };
 
