@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical, Paperclip, Search, User, CheckCheck, Lock, Headphones, FileText, Download, X, Eye, Trash2, AlertCircle, Smile } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
 import { VerificationBadge } from '../components/VerificationBadge';
+
+const EMOJI_REACTIONS = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -36,7 +38,9 @@ const Chat = () => {
   const [newMessageText, setNewMessageText] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
-  // Modal de Eliminación de Mensajes
+  // Reacciones & Modales
+  const [hoveredMsgId, setHoveredMsgId] = useState(null);
+  const [activeReactionPickerMsgId, setActiveReactionPickerMsgId] = useState(null);
   const [selectedMsgToDelete, setSelectedMsgToDelete] = useState(null);
   const [deletedForMeIds, setDeletedForMeIds] = useState(new Set());
 
@@ -52,7 +56,7 @@ const Chat = () => {
     scrollToBottom();
   }, [messages, selectedContact]);
 
-  // Cargar mensajes directos reales e imágenes desde Supabase Cloud y suscribirse en TIEMPO REAL
+  // Cargar mensajes directos reales y reacciones desde Supabase Cloud y suscribirse en TIEMPO REAL
   useEffect(() => {
     if (!currentUser || !selectedContact) return;
 
@@ -84,6 +88,7 @@ const Chat = () => {
             mediaUrl: m.media_url || null,
             mediaType: m.media_type || (m.media_url ? (m.media_url.startsWith('data:image') ? 'image' : 'document') : null),
             fileName: m.file_name || 'Archivo adjunto',
+            reactions: Array.isArray(m.reactions) ? m.reactions : [],
             isRead: m.is_read || false,
             createdAt: m.created_at,
             isDeletedForEveryone: m.is_deleted_for_everyone || false,
@@ -101,7 +106,7 @@ const Chat = () => {
 
     fetchDirectMessages();
 
-    // Suscripción en Tiempo Real Supabase para nuevos mensajes e imágenes
+    // Suscripción en Tiempo Real Supabase para nuevos mensajes, imágenes y reacciones
     const channel = supabase
       .channel(`direct_chat_${currentUser.id}_${selectedContact.id}`)
       .on('postgres_changes', {
@@ -125,6 +130,7 @@ const Chat = () => {
                   mediaUrl: newMsg.media_url || null,
                   mediaType: newMsg.media_type || (newMsg.media_url ? (newMsg.media_url.startsWith('data:image') ? 'image' : 'document') : null),
                   fileName: newMsg.file_name || 'Archivo adjunto',
+                  reactions: Array.isArray(newMsg.reactions) ? newMsg.reactions : [],
                   isRead: newMsg.is_read || false,
                   createdAt: newMsg.created_at,
                   isDeletedForEveryone: newMsg.is_deleted_for_everyone || false,
@@ -146,6 +152,7 @@ const Chat = () => {
                     text: updatedMsg.is_deleted_for_everyone ? '🚫 Este mensaje fue eliminado' : updatedMsg.message,
                     mediaUrl: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_url,
                     mediaType: updatedMsg.is_deleted_for_everyone ? null : updatedMsg.media_type,
+                    reactions: Array.isArray(updatedMsg.reactions) ? updatedMsg.reactions : [],
                     isDeletedForEveryone: updatedMsg.is_deleted_for_everyone
                   }
                 : m
@@ -166,7 +173,7 @@ const Chat = () => {
     };
   }, [selectedContact, currentUser]);
 
-  // Helper para optimizar y comprimir imágenes antes de guardarlas en Supabase
+  // Helper para optimizar imágenes
   const compressImage = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -214,12 +221,12 @@ const Chat = () => {
     setNewMessageText('');
     const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // Guardar en Supabase Cloud de forma permanente
     const { data } = await supabase.from('direct_messages').insert([{
       sender_id: currentUser?.id,
       receiver_id: selectedContact.id,
       message: textToSend,
       is_read: false,
+      reactions: [],
       created_at: new Date().toISOString()
     }]).select();
 
@@ -234,6 +241,7 @@ const Chat = () => {
             text: inserted.message,
             mediaUrl: null,
             mediaType: null,
+            reactions: [],
             isRead: false,
             createdAt: inserted.created_at,
             time: timeNow,
@@ -244,7 +252,7 @@ const Chat = () => {
     }
   };
 
-  // Adjuntar y Guardar Imagen o Documento de Forma PERMANENTE en Supabase Cloud
+  // Adjuntar e guardar archivo
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file || !selectedContact) return;
@@ -256,10 +264,8 @@ const Chat = () => {
       let fileDataUrl = '';
 
       if (isImage) {
-        // Comprimir imagen para almacenamiento ultra rápido y permanente en Supabase
         fileDataUrl = await compressImage(file);
       } else {
-        // Para documentos (PDF, DOCX, TXT), leer como data URL
         fileDataUrl = await new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.readAsDataURL(file);
@@ -273,7 +279,6 @@ const Chat = () => {
       const textComment = newMessageText.trim();
       setNewMessageText('');
 
-      // Guardar PERMANENTEMENTE en la base de datos de Supabase Cloud
       const { data, error } = await supabase.from('direct_messages').insert([{
         sender_id: currentUser?.id,
         receiver_id: selectedContact.id,
@@ -282,12 +287,13 @@ const Chat = () => {
         media_type: mediaType,
         file_name: file.name,
         is_read: false,
+        reactions: [],
         created_at: new Date().toISOString()
       }]).select();
 
       if (error) {
-        console.error("Error guardando imagen en Supabase:", error);
-        alert("Error al guardar la imagen en la base de datos.");
+        console.error("Error guardando adjunto en Supabase:", error);
+        alert("Error al guardar el archivo.");
       } else if (data && data[0]) {
         const inserted = data[0];
         setMessages(prev => ({
@@ -300,6 +306,7 @@ const Chat = () => {
               mediaUrl: inserted.media_url,
               mediaType: inserted.media_type,
               fileName: inserted.file_name,
+              reactions: [],
               isRead: false,
               createdAt: inserted.created_at,
               time: timeNow,
@@ -311,11 +318,53 @@ const Chat = () => {
 
     } catch (err) {
       console.error("Error procesando archivo:", err);
-      alert("Hubo un problema al procesar y guardar la imagen.");
+      alert("Hubo un problema al procesar el archivo.");
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  // Alternar Reacción Emoji (Estilo WhatsApp / Instagram)
+  const handleToggleReaction = async (msg, emoji) => {
+    if (!currentUser || msg.isDeletedForEveryone) return;
+
+    let currentReactions = Array.isArray(msg.reactions) ? [...msg.reactions] : [];
+    const userIdStr = currentUser.id.toString();
+
+    // Comprobar si el usuario ya reaccionó con este emoji
+    const existingIndex = currentReactions.findIndex(r => r.user_id?.toString() === userIdStr && r.emoji === emoji);
+
+    if (existingIndex > -1) {
+      // Eliminar reacción si ya existía
+      currentReactions.splice(existingIndex, 1);
+    } else {
+      // Reemplazar reacción previa del mismo usuario o agregar nueva
+      currentReactions = currentReactions.filter(r => r.user_id?.toString() !== userIdStr);
+      currentReactions.push({
+        emoji,
+        user_id: currentUser.id,
+        user_name: currentUser.name
+      });
+    }
+
+    // Actualizar de inmediato en estado local UI
+    setMessages(prev => ({
+      ...prev,
+      [selectedContact.id]: (prev[selectedContact.id] || []).map(m => 
+        m.id.toString() === msg.id.toString() 
+          ? { ...m, reactions: currentReactions } 
+          : m
+      )
+    }));
+
+    setActiveReactionPickerMsgId(null);
+
+    // Guardar permanentemente en Supabase Cloud
+    await supabase
+      .from('direct_messages')
+      .update({ reactions: currentReactions })
+      .eq('id', msg.id);
   };
 
   // Eliminar solo para mí
@@ -324,7 +373,7 @@ const Chat = () => {
     setSelectedMsgToDelete(null);
   };
 
-  // Eliminar para todos (Solo si es mi mensaje y el destinatario NO lo ha visto aún)
+  // Eliminar para todos
   const handleDeleteForEveryone = async (msg) => {
     if (!msg.isMe) return;
     if (msg.isRead) {
@@ -332,18 +381,16 @@ const Chat = () => {
       return;
     }
 
-    // Actualizar en Supabase para que a la otra persona le aparezca "Este mensaje fue eliminado"
     await supabase
       .from('direct_messages')
-      .update({ message: '🚫 Este mensaje fue eliminado', media_url: null, media_type: null, is_deleted_for_everyone: true })
+      .update({ message: '🚫 Este mensaje fue eliminado', media_url: null, media_type: null, reactions: [], is_deleted_for_everyone: true })
       .eq('id', msg.id);
 
-    // Actualizar estado local
     setMessages(prev => ({
       ...prev,
       [selectedContact.id]: (prev[selectedContact.id] || []).map(m => 
         m.id.toString() === msg.id.toString() 
-          ? { ...m, text: '🚫 Este mensaje fue eliminado', mediaUrl: null, mediaType: null, isDeletedForEveryone: true }
+          ? { ...m, text: '🚫 Este mensaje fue eliminado', mediaUrl: null, mediaType: null, reactions: [], isDeletedForEveryone: true }
           : m
       )
     }));
@@ -362,7 +409,7 @@ const Chat = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-16 md:pb-0">
       
-      {/* COLUMNA IZQUIERDA: SELECCIÓN DE CHAT EN MÓVIL/DESKTOP */}
+      {/* COLUMNA IZQUIERDA: SELECCIÓN DE CHAT */}
       <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col h-full ${selectedContact ? 'hidden md:flex' : 'flex'}`}>
         
         {/* Header Lista de Empleados */}
@@ -433,7 +480,7 @@ const Chat = () => {
 
       </div>
 
-      {/* COLUMNA DERECHA: VENTANA DE CHAT ACTIVO (Estilo WhatsApp) */}
+      {/* COLUMNA DERECHA: VENTANA DE CHAT ACTIVO */}
       <div className={`flex-1 flex flex-col h-full bg-[#f4f6f9] ${!selectedContact ? 'hidden md:flex items-center justify-center' : 'flex'}`}>
         
         {!selectedContact ? (
@@ -485,8 +532,8 @@ const Chat = () => {
               </span>
             </div>
 
-            {/* Lista de Mensajes con Almacenamiento Permanente de Imágenes */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+            {/* Lista de Mensajes con Reacciones Estilo WhatsApp / Instagram */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
               {activeMessages.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 text-xs">
                   {selectedContact.isSupportChannel 
@@ -494,89 +541,148 @@ const Chat = () => {
                     : "No hay mensajes guardados en este chat. Escribe el primer mensaje a continuación."}
                 </div>
               ) : (
-                activeMessages.map((msg) => (
-                  <div key={msg.id} className={`flex group relative ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
-                    
-                    {/* Botón de opciones/eliminar mensaje */}
-                    {!msg.isDeletedForEveryone && (
-                      <button 
-                        onClick={() => setSelectedMsgToDelete(msg)}
-                        className={`absolute top-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-black/40 text-white hover:bg-black/60 ${
-                          msg.isMe ? '-left-7' : '-right-7'
-                        }`}
-                        title="Opciones de mensaje"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    )}
+                activeMessages.map((msg) => {
+                  const hasReactions = Array.isArray(msg.reactions) && msg.reactions.length > 0;
+                  
+                  // Agrupar reacciones por emoji
+                  const groupedReactions = (msg.reactions || []).reduce((acc, r) => {
+                    acc[r.emoji] = (acc[r.emoji] || 0) + 1;
+                    return acc;
+                  }, {});
 
+                  const myReactedEmojis = (msg.reactions || [])
+                    .filter(r => r.user_id?.toString() === currentUser?.id?.toString())
+                    .map(r => r.emoji);
+
+                  return (
                     <div 
-                      className={`max-w-[85%] sm:max-w-[70%] rounded-2xl p-2.5 shadow-sm relative ${
-                        msg.isMe 
-                          ? 'bg-[#1c2c4c] text-white rounded-tr-sm' 
-                          : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
-                      } ${msg.isDeletedForEveryone ? 'italic text-gray-400 opacity-75' : ''}`}
+                      key={msg.id} 
+                      onMouseEnter={() => setHoveredMsgId(msg.id)}
+                      onMouseLeave={() => setHoveredMsgId(null)}
+                      className={`flex group relative ${msg.isMe ? 'justify-end' : 'justify-start'}`}
                     >
-                      {/* VISTA PREVIA DE IMAGEN DE ALMACENAMIENTO PERMANENTE */}
-                      {msg.mediaType === 'image' && msg.mediaUrl && !msg.isDeletedForEveryone && (
+                      
+                      {/* BARRA FLOTANTE DE REACCIONES RÁPIDAS (WhatsApp / Instagram Style) */}
+                      {!msg.isDeletedForEveryone && (hoveredMsgId === msg.id || activeReactionPickerMsgId === msg.id) && (
                         <div 
-                          onClick={() => setActivePreviewImage(msg.mediaUrl)}
-                          className="relative rounded-xl overflow-hidden cursor-pointer group/img border border-white/20 bg-black/10 flex items-center justify-center min-h-[140px]"
+                          className={`absolute -top-10 z-30 bg-white rounded-full shadow-lg border border-gray-200 px-2 py-1 flex items-center gap-1.5 animate-in fade-in duration-150 ${
+                            msg.isMe ? 'right-0' : 'left-0'
+                          }`}
                         >
-                          <img 
-                            src={msg.mediaUrl} 
-                            alt="Imagen adjunta guardada" 
-                            className="w-full h-auto max-h-64 object-cover group-hover/img:scale-105 transition-transform duration-200" 
-                          />
-                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold">
-                            <Eye size={18} /> Ver Completa
-                          </div>
-                        </div>
-                      )}
-
-                      {/* TARJETA DE DOCUMENTO ADJUNTO */}
-                      {msg.mediaType === 'document' && msg.mediaUrl && !msg.isDeletedForEveryone && (
-                        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/10 border border-white/20 my-1">
-                          <FileText size={24} className={msg.isMe ? 'text-[#d4af37]' : 'text-[#1c2c4c]'} />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold truncate">{msg.fileName}</p>
-                            <p className="text-[9px] opacity-75">Documento adjunto</p>
-                          </div>
-                          <a 
-                            href={msg.mediaUrl} 
-                            download={msg.fileName}
-                            className="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition shrink-0"
-                            title="Descargar archivo"
+                          {EMOJI_REACTIONS.map(emoji => (
+                            <button
+                              key={emoji}
+                              onClick={() => handleToggleReaction(msg, emoji)}
+                              className={`text-base hover:scale-125 transition-transform px-1 py-0.5 rounded-full ${
+                                myReactedEmojis.includes(emoji) ? 'bg-blue-100' : 'hover:bg-gray-100'
+                              }`}
+                              title={`Reaccionar con ${emoji}`}
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                          
+                          <button
+                            onClick={() => setSelectedMsgToDelete(msg)}
+                            className="text-gray-400 hover:text-red-500 p-1 border-l border-gray-200 ml-1 transition"
+                            title="Eliminar mensaje"
                           >
-                            <Download size={16} />
-                          </a>
+                            <Trash2 size={13} />
+                          </button>
                         </div>
                       )}
 
-                      {/* COMENTARIO / TEXTO DEL MENSAJE */}
-                      {msg.text && (
-                        <p className="text-xs leading-relaxed break-words px-1 pt-1">{msg.text}</p>
-                      )}
-
-                      {/* HORA Y PALOMITAS DEL VISTO (WhatsApp Double Check) */}
-                      <div className="flex items-center justify-end gap-1 mt-1 px-1">
-                        <span className={`text-[9px] ${msg.isMe ? 'text-[#d4af37]' : 'text-gray-400'}`}>
-                          {msg.time}
-                        </span>
-                        
-                        {/* Indicadores de Estado de Lectura / Visto */}
-                        {msg.isMe && !msg.isDeletedForEveryone && (
-                          msg.isRead ? (
-                            <CheckCheck size={14} className="text-[#1d9bf0] font-bold" title="Visto" />
-                          ) : (
-                            <CheckCheck size={14} className="text-gray-400/80" title="Entregado" />
-                          )
+                      <div 
+                        className={`max-w-[85%] sm:max-w-[70%] rounded-2xl p-2.5 shadow-sm relative ${
+                          msg.isMe 
+                            ? 'bg-[#1c2c4c] text-white rounded-tr-sm' 
+                            : 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm'
+                        } ${msg.isDeletedForEveryone ? 'italic text-gray-400 opacity-75' : ''}`}
+                      >
+                        {/* VISTA PREVIA DE IMAGEN */}
+                        {msg.mediaType === 'image' && msg.mediaUrl && !msg.isDeletedForEveryone && (
+                          <div 
+                            onClick={() => setActivePreviewImage(msg.mediaUrl)}
+                            className="relative rounded-xl overflow-hidden cursor-pointer group/img border border-white/20 bg-black/10 flex items-center justify-center min-h-[140px]"
+                          >
+                            <img 
+                              src={msg.mediaUrl} 
+                              alt="Imagen adjunta guardada" 
+                              className="w-full h-auto max-h-64 object-cover group-hover/img:scale-105 transition-transform duration-200" 
+                            />
+                            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold">
+                              <Eye size={18} /> Ver Completa
+                            </div>
+                          </div>
                         )}
-                      </div>
 
+                        {/* TARJETA DE DOCUMENTO ADJUNTO */}
+                        {msg.mediaType === 'document' && msg.mediaUrl && !msg.isDeletedForEveryone && (
+                          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/10 border border-white/20 my-1">
+                            <FileText size={24} className={msg.isMe ? 'text-[#d4af37]' : 'text-[#1c2c4c]'} />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold truncate">{msg.fileName}</p>
+                              <p className="text-[9px] opacity-75">Documento adjunto</p>
+                            </div>
+                            <a 
+                              href={msg.mediaUrl} 
+                              download={msg.fileName}
+                              className="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition shrink-0"
+                              title="Descargar archivo"
+                            >
+                              <Download size={16} />
+                            </a>
+                          </div>
+                        )}
+
+                        {/* TEXTO DEL MENSAJE */}
+                        {msg.text && (
+                          <p className="text-xs leading-relaxed break-words px-1 pt-1">{msg.text}</p>
+                        )}
+
+                        {/* HORA Y PALOMITAS DEL VISTO */}
+                        <div className="flex items-center justify-end gap-1 mt-1 px-1">
+                          <span className={`text-[9px] ${msg.isMe ? 'text-[#d4af37]' : 'text-gray-400'}`}>
+                            {msg.time}
+                          </span>
+                          
+                          {msg.isMe && !msg.isDeletedForEveryone && (
+                            msg.isRead ? (
+                              <CheckCheck size={14} className="text-[#1d9bf0] font-bold" title="Visto" />
+                            ) : (
+                              <CheckCheck size={14} className="text-gray-400/80" title="Entregado" />
+                            )
+                          )}
+                        </div>
+
+                        {/* BADGES DE REACCIONES EN EL CORNER DEL MENSAJE (Estilo WhatsApp) */}
+                        {hasReactions && !msg.isDeletedForEveryone && (
+                          <div className={`absolute -bottom-3.5 ${msg.isMe ? 'left-2' : 'right-2'} flex gap-1 z-20`}>
+                            {Object.entries(groupedReactions).map(([emoji, count]) => {
+                              const isMyReaction = myReactedEmojis.includes(emoji);
+                              return (
+                                <button
+                                  key={emoji}
+                                  onClick={() => handleToggleReaction(msg, emoji)}
+                                  className={`px-1.5 py-0.5 rounded-full text-[11px] font-bold flex items-center gap-0.5 shadow-sm border border-gray-200 transition-all ${
+                                    isMyReaction 
+                                      ? 'bg-blue-50 text-[#1c2c4c] border-blue-300 scale-105' 
+                                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                                  }`}
+                                  title={`Reaccionado por ${count} persona(s)`}
+                                >
+                                  <span>{emoji}</span>
+                                  {count > 1 && <span className="text-[9px] text-gray-500 font-semibold">{count}</span>}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
               <div ref={messagesEndRef} />
             </div>
