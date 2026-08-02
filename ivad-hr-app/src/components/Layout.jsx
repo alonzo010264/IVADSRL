@@ -15,7 +15,7 @@ const BottomNav = () => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2 flex justify-center md:justify-around items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2 flex justify-center md:justify-around items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] h-16">
       <div className="flex justify-between items-center w-full max-w-5xl">
       {navItems.map((item) => (
         <button
@@ -88,13 +88,16 @@ const Layout = () => {
   const location = useLocation();
   const noHeaderRoutes = ['/inicio', '/', '/chat', '/radio', '/incidencias', '/iniciativas', '/faq', '/configuracion'];
   const showHeader = !noHeaderRoutes.includes(location.pathname);
+  const isFullHeightPage = location.pathname === '/chat' || location.pathname === '/radio';
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+    <div className={`min-h-screen bg-gray-50 flex flex-col font-sans ${isFullHeightPage ? 'h-screen overflow-hidden' : ''}`}>
       {showHeader && <Header />}
       
-      {/* Contenido principal con padding bottom para no tapar el menú */}
-      <main className="flex-1 overflow-y-auto pb-24 bg-gray-50 w-full max-w-7xl mx-auto">
+      {/* Contenido principal: en Chat y Radio se ajusta exactamente arriba de la barra de navegación (pb-16 / h-16) sin hueco blanco */}
+      <main className={`flex-1 bg-gray-50 w-full max-w-7xl mx-auto flex flex-col ${
+        isFullHeightPage ? 'overflow-hidden pb-16 h-[calc(100vh-64px)]' : 'overflow-y-auto pb-24'
+      }`}>
         <Outlet />
       </main>
 

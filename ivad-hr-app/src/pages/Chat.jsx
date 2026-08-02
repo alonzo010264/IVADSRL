@@ -637,7 +637,7 @@ const Chat = () => {
   const sharedMediaList = rawActiveMessages.filter(m => m.mediaUrl && !m.isDeletedForEveryone);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-sans text-gray-800 pb-14 md:pb-0 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full bg-gray-50 font-sans text-gray-800 overflow-hidden">
       
       {/* COLUMNA IZQUIERDA: SELECCIÓN DE CHAT Y CANALES */}
       <div className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col h-full ${selectedContact ? 'hidden md:flex' : 'flex'}`}>
