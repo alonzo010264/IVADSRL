@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Radio, Mic, MicOff, Volume2, VolumeX, ArrowLeft, Users, User, Clock, ShieldCheck, Play, Pause, AlertCircle } from 'lucide-react';
+import { Radio, Mic, Volume2, VolumeX, ArrowLeft, Users, User, Clock, ShieldCheck, Play, Pause, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
 import { supabase } from '../utils/supabaseClient';
@@ -10,6 +10,7 @@ const RadioIVAD = () => {
   const { currentUser, employees } = useEmployees();
 
   const [isPowerOn, setIsPowerOn] = useState(true);
+  const [testModeOverride, setTestModeOverride] = useState(true); // Habilitado para probar ahora mismo a cualquier hora
   const [targetType, setTargetType] = useState('general'); // 'general' o 'direct'
   const [selectedReceiver, setSelectedReceiver] = useState(null);
 
@@ -32,17 +33,19 @@ const RadioIVAD = () => {
     const day = now.getDay(); // 0 = Domingo
     const hours = now.getHours();
 
-    // Domingo cerrado
     if (day === 0) return false;
-    // Lunes a Sábado de 8 AM a 6 PM (18:00)
     return hours >= 8 && hours < 18;
   };
 
-  const isOperational = isWithinBusinessHours();
+  // Botón activo si estamos en horario o si Modo Prueba está encendido
+  const isOperational = isWithinBusinessHours() || testModeOverride;
 
-  const otherEmployees = employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString());
+  const otherEmployees = [
+    { id: 'soporte-ivad-official', name: 'Soporte IVAD SRL', role: 'Atención Corporativa', avatar: '/logo.png', verification_status: 'gold' },
+    ...employees.filter(emp => emp.id?.toString() !== currentUser?.id?.toString())
+  ];
 
-  // Solicitar permiso de micrófono al cargar la página
+  // Solicitar permiso de micrófono al cargar
   useEffect(() => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ audio: true })
@@ -73,7 +76,7 @@ const RadioIVAD = () => {
     if (!currentUser) return;
 
     const channel = supabase
-      .channel(`radio_channel_live_${currentUser.id}`)
+      .channel(`radio_channel_live_${currentUser.id}_v2`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -134,18 +137,19 @@ const RadioIVAD = () => {
     }
   };
 
-  // Iniciar Grabación (Push-to-Talk)
+  // Iniciar Grabación (Funciona en PC / Mouse, Laptops y Móviles)
   const startRecording = async () => {
+    if (isRecording) return;
     if (!isPowerOn) {
       alert("Enciende la radio para transmitir.");
       return;
     }
     if (!isOperational) {
-      alert("La radio IVAD está fuera de horario operativo (8:00 AM - 6:00 PM).");
+      alert("La radio IVAD está fuera de horario operativo.");
       return;
     }
     if (targetType === 'direct' && !selectedReceiver) {
-      alert("Por favor selecciona un colaborador para transmisión privada.");
+      alert("Por favor selecciona un colaborador para la transmisión privada.");
       return;
     }
 
@@ -170,7 +174,7 @@ const RadioIVAD = () => {
 
     } catch (err) {
       console.error("Error al acceder al micrófono:", err);
-      alert("No se pudo acceder al micrófono. Por favor otorga los permisos en tu navegador.");
+      alert("No se pudo acceder al micrófono. Por favor otorga los permisos en tu navegador/computadora.");
     }
   };
 
@@ -181,43 +185,56 @@ const RadioIVAD = () => {
     clearInterval(recordingTimerRef.current);
     setIsRecording(false);
 
-    mediaRecorderRef.current.stop();
-    mediaRecorderRef.current.onstop = async () => {
-      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-      
-      // Convertir Blob a DataURL Base64
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-      reader.onloadend = async () => {
-        const base64Audio = reader.result;
+    try {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = async () => {
+          const base64Audio = reader.result;
 
-        const { data, error } = await supabase.from('radio_transmissions').insert([{
-          sender_id: currentUser?.id,
-          sender_name: currentUser?.name || 'Colaborador IVAD',
-          target_type: targetType,
-          receiver_id: targetType === 'direct' ? selectedReceiver?.id : null,
-          audio_url: base64Audio,
-          duration_seconds: recordingSeconds || 1,
-          created_at: new Date().toISOString()
-        }]).select();
+          const { data, error } = await supabase.from('radio_transmissions').insert([{
+            sender_id: currentUser?.id,
+            sender_name: currentUser?.name || 'Colaborador IVAD',
+            target_type: targetType,
+            receiver_id: targetType === 'direct' ? selectedReceiver?.id : null,
+            audio_url: base64Audio,
+            duration_seconds: recordingSeconds || 1,
+            created_at: new Date().toISOString()
+          }]).select();
 
-        if (error) {
-          console.error("Error enviando voz por Radio:", error);
-          alert("Error al enviar la transmisión.");
-        } else if (data && data[0]) {
-          setTransmissions(prev => [data[0], ...prev]);
+          if (error) {
+            console.error("Error enviando voz por Radio:", error);
+            alert("Error al enviar la transmisión.");
+          } else if (data && data[0]) {
+            setTransmissions(prev => [data[0], ...prev]);
+          }
+        };
+
+        if (mediaRecorderRef.current.stream) {
+          mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
         }
       };
+    } catch (e) {
+      console.log("Error stopping recording:", e);
+    }
+  };
 
-      // Apagar pistas del micrófono
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-    };
+  // Alternar Grabación al hacer Clic (Ideal para computadoras y laptops)
+  const handleButtonClick = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
   };
 
   return (
     <div className={`min-h-screen pb-24 font-sans transition-colors duration-200 ${isPowerOn ? 'bg-slate-950 text-white' : 'bg-gray-100 text-gray-800'}`}>
       
-      {/* Header Estilo Walkie-Talkie Militar / Corporativo */}
+      {/* Header Estilo Walkie-Talkie Militar / Computadora */}
       <div className="bg-[#1c2c4c] text-white pt-10 pb-6 px-6 rounded-b-[2.5rem] shadow-xl relative z-10">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
@@ -231,7 +248,7 @@ const RadioIVAD = () => {
               </div>
               <div>
                 <h1 className="text-lg font-extrabold tracking-wide">Radio IVAD Walkie-Talkie</h1>
-                <p className="text-[10px] text-[#d4af37] font-semibold">Comunicación Instantánea por Voz</p>
+                <p className="text-[10px] text-[#d4af37] font-semibold">Comunicación Instantánea en Tiempo Real</p>
               </div>
             </div>
           </div>
@@ -250,24 +267,25 @@ const RadioIVAD = () => {
           </button>
         </div>
 
-        {/* Banner de Estado de Horario Laboral */}
-        <div className={`mt-2 p-2.5 rounded-2xl flex items-center gap-2.5 text-[11px] font-semibold ${
-          isOperational 
-            ? 'bg-emerald-950/80 border border-emerald-500/30 text-emerald-300' 
-            : 'bg-amber-950/90 border border-amber-500/40 text-amber-300'
-        }`}>
-          <Clock size={15} className="shrink-0" />
-          <span>
-            {isOperational 
-              ? 'Horario Operativo Activo (8:00 AM - 6:00 PM). Radio lista para transmitir.' 
-              : 'Radio fuera de horario operativo (8:00 AM - 6:00 PM). La transmisión está deshabilitada.'}
-          </span>
+        {/* Banner de Modo Prueba / Horario Operativo */}
+        <div className="mt-2 bg-emerald-950/80 border border-emerald-500/30 text-emerald-300 p-2.5 rounded-2xl flex items-center justify-between gap-2 text-[11px] font-semibold">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+            <span>Radio Habilitada y Lista para Probar en Celular y Computadora</span>
+          </div>
+
+          <button 
+            onClick={() => setTestModeOverride(!testModeOverride)}
+            className="text-[9px] bg-emerald-800 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0"
+          >
+            {testModeOverride ? 'Modo Prueba Activo' : 'Horario Normal'}
+          </button>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-5 mt-6 space-y-6">
         
-        {/* SELECCIÓN DE CANAL DE TRANSMISIÓN */}
+        {/* SELECCIÓN DE CANAL DE TRANSMISIÓN (GENERAL O PRIVADO) */}
         <div className={`p-4 rounded-3xl border shadow-sm ${isPowerOn ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}`}>
           <label className="text-xs font-extrabold text-gray-400 uppercase tracking-wider block mb-3">
             Canal de Transmisión
@@ -275,7 +293,7 @@ const RadioIVAD = () => {
 
           <div className="grid grid-cols-2 gap-2 mb-3">
             <button
-              onClick={() => setTargetType('general')}
+              onClick={() => { setTargetType('general'); setSelectedReceiver(null); }}
               className={`py-2.5 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border transition ${
                 targetType === 'general'
                   ? 'bg-[#1c2c4c] text-white border-[#d4af37] shadow-sm'
@@ -293,36 +311,43 @@ const RadioIVAD = () => {
                   : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-transparent'
               }`}
             >
-              <User size={16} /> Canal Privado
+              <User size={16} /> Hablar en Privado
             </button>
           </div>
 
-          {/* Desplegable de Colaborador Privado */}
+          {/* Desplegable de Colaborador para Transmisión Privada */}
           {targetType === 'direct' && (
-            <div className="mt-2">
+            <div className="mt-2 space-y-1">
+              <label className="text-[11px] font-bold text-[#d4af37] block">Selecciona a quién hablar en privado:</label>
               <select
                 value={selectedReceiver ? selectedReceiver.id : ''}
                 onChange={(e) => {
                   const target = otherEmployees.find(emp => emp.id.toString() === e.target.value);
                   setSelectedReceiver(target || null);
                 }}
-                className={`w-full p-3 text-xs font-semibold rounded-2xl border focus:outline-none ${
+                className={`w-full p-3 text-xs font-bold rounded-2xl border focus:outline-none ${
                   isPowerOn ? 'bg-slate-950 text-white border-slate-700' : 'bg-gray-50 text-gray-800 border-gray-200'
                 }`}
               >
-                <option value="">-- Selecciona un colaborador --</option>
+                <option value="">-- Elige un destinatario privado --</option>
                 {otherEmployees.map(emp => (
                   <option key={emp.id} value={emp.id}>
                     {emp.name} ({emp.role || 'Colaborador'})
                   </option>
                 ))}
               </select>
+
+              {selectedReceiver && (
+                <p className="text-[10px] text-emerald-400 font-semibold px-1 mt-1">
+                  🔒 Transmisión privada configurada exclusivamente para: <strong>{selectedReceiver.name}</strong>
+                </p>
+              )}
             </div>
           )}
         </div>
 
-        {/* BOTÓN GIGANTE PUSH-TO-TALK (MANTENER PARA HABLAR) */}
-        <div className="flex flex-col items-center justify-center py-6">
+        {/* BOTÓN GIGANTE PUSH-TO-TALK (FUNCIONAL EN PC Y MÓVILES) */}
+        <div className="flex flex-col items-center justify-center py-4">
           
           {isPlayingAudio && (
             <div className="mb-4 bg-amber-500/20 text-amber-400 border border-amber-500/40 px-4 py-2 rounded-full text-xs font-extrabold flex items-center gap-2 animate-pulse">
@@ -345,8 +370,9 @@ const RadioIVAD = () => {
               onMouseUp={stopRecording}
               onTouchStart={startRecording}
               onTouchEnd={stopRecording}
+              onClick={handleButtonClick}
               disabled={!isPowerOn || !isOperational}
-              className={`w-36 h-36 rounded-full flex flex-col items-center justify-center shadow-2xl transition-all border-4 relative z-10 cursor-pointer select-none active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed ${
+              className={`w-40 h-40 rounded-full flex flex-col items-center justify-center shadow-2xl transition-all border-4 relative z-10 cursor-pointer select-none active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed ${
                 isRecording
                   ? 'bg-red-600 text-white border-red-400 shadow-red-600/50 scale-105'
                   : isPowerOn && isOperational
@@ -356,31 +382,30 @@ const RadioIVAD = () => {
             >
               {isRecording ? (
                 <>
-                  <Mic size={40} className="animate-bounce mb-1" />
-                  <span className="text-[11px] font-black tracking-wider">HABLANDO</span>
-                  <span className="text-[10px] font-mono font-bold bg-black/40 px-2 py-0.5 rounded-full mt-1">
-                    {recordingSeconds}s
+                  <Mic size={44} className="animate-bounce mb-1" />
+                  <span className="text-xs font-black tracking-wider">HABLANDO...</span>
+                  <span className="text-[10px] font-mono font-bold bg-black/40 px-2.5 py-0.5 rounded-full mt-1">
+                    {recordingSeconds}s • Clic para Enviar
                   </span>
                 </>
               ) : (
                 <>
-                  <Radio size={38} className="mb-1 text-[#d4af37]" />
-                  <span className="text-[11px] font-extrabold tracking-wider text-center px-2">
-                    PRESIONA PARA HABLAR
+                  <Radio size={42} className="mb-1 text-[#d4af37]" />
+                  <span className="text-xs font-extrabold tracking-wider text-center px-2">
+                    PRESIONAR PARA HABLAR
+                  </span>
+                  <span className="text-[9px] opacity-80 text-gray-300 mt-0.5 font-medium">
+                    (Mantén o haz Clic)
                   </span>
                 </>
               )}
             </button>
           </div>
 
-          <p className="text-xs text-gray-400 mt-4 text-center font-medium">
+          <p className="text-xs text-gray-400 mt-4 text-center font-semibold">
             {isRecording 
-              ? "Suelta el botón para transmitir tu voz al instante." 
-              : "Mantén presionado el botón central para enviar un mensaje de voz directo."}
-          </p>
-
-          <p className="text-[10px] text-emerald-400/80 mt-1 text-center font-bold">
-            ⚡ Transmisión ultra-eficiente (sin consumo continuo de batería).
+              ? "Transmitiendo en vivo. Suelta o haz clic de nuevo para enviar." 
+              : "Mantén presionado el botón central (o haz un clic) para enviar un mensaje de voz directo."}
           </p>
         </div>
 
