@@ -26,21 +26,19 @@ export const GlobalChatNotificationListener = () => {
   };
 
   // Notificación Push Híbrida (Service Worker para Chrome Android + PWA + Desktop)
-  const triggerPushNotification = async (title, body, icon, tag, senderId) => {
+  const triggerPushNotification = async (title, body, icon, tag, targetUrl = '/chat') => {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
-    const targetUrl = `/chat?contact=${senderId}`;
     const notificationOptions = {
       body,
       icon: icon || '/logo.png',
       badge: '/logo.png',
       tag,
       renotify: true,
-      vibrate: [200, 100, 200], // Vibración física en teléfono móvil
-      data: { url: targetUrl, senderId }
+      vibrate: [200, 100, 200],
+      data: { url: targetUrl }
     };
 
-    // 1. ServiceWorker Registration (Requisito obligatorio en Chrome Android y PWAs)
     if ('serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.ready;
@@ -53,7 +51,6 @@ export const GlobalChatNotificationListener = () => {
       }
     }
 
-    // 2. Fallback para navegador Desktop
     try {
       const notif = new Notification(title, notificationOptions);
       notif.onclick = () => {
@@ -68,13 +65,12 @@ export const GlobalChatNotificationListener = () => {
   useEffect(() => {
     if (!currentUser) return;
 
-    // Solicitar permiso de notificaciones al montar
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
 
-    // Canal Global Real-Time que escucha SIEMPRE en cualquier parte de la App y en segundo plano
-    const globalChannel = supabase
+    // 1. Canal Global Real-Time para Mensajes Directos del Chat
+    const chatChannel = supabase
       .channel(`app_wide_chat_listener_${currentUser.id}`)
       .on('postgres_changes', {
         event: 'INSERT',
@@ -105,15 +101,55 @@ export const GlobalChatNotificationListener = () => {
               bodyText,
               senderObj?.avatar || '/logo.png',
               `global-msg-${newMsg.sender_id}`,
-              newMsg.sender_id
+              `/chat?contact=${newMsg.sender_id}`
             );
           }
         }
       })
       .subscribe();
 
+    // 2. Canal Global Real-Time para Transmisiones de Radio IVAD Walkie-Talkie
+    // (Reproduce el audio de voz en altavoz automáticamente aunque estés en otra sección de la app)
+    const radioChannel = supabase
+      .channel(`app_wide_radio_listener_${currentUser.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'radio_transmissions'
+      }, (payload) => {
+        const newTrans = payload.new;
+
+        if (newTrans && newTrans.sender_id.toString() !== currentUser.id.toString()) {
+          const isForMe = newTrans.target_type === 'general' || newTrans.receiver_id?.toString() === currentUser.id.toString();
+          
+          if (isForMe && newTrans.audio_url) {
+            const isCurrentRouteRadio = window.location.pathname === '/radio';
+
+            // Si NO estamos dentro de la pantalla de radio, reproducir el audio de voz por el altavoz automáticamente
+            if (!isCurrentRouteRadio) {
+              try {
+                const radioAudio = new Audio(newTrans.audio_url);
+                radioAudio.play().catch(err => console.log("Background radio play error:", err));
+              } catch (e) {
+                console.log("Radio audio play error:", e);
+              }
+
+              triggerPushNotification(
+                `Transmisión de Voz - Radio IVAD`,
+                `${newTrans.sender_name} ha transmitido un mensaje de voz por radio`,
+                '/logo.png',
+                `radio-trans-${newTrans.id}`,
+                '/radio'
+              );
+            }
+          }
+        }
+      })
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(globalChannel);
+      supabase.removeChannel(chatChannel);
+      supabase.removeChannel(radioChannel);
     };
   }, [currentUser, employees]);
 
