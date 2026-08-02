@@ -1103,17 +1103,6 @@ const Chat = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Botón Flotante Pequeño con Flecha Abajo en la esquina arriba del botón de enviar */}
-            {showScrollDownBtn && (
-              <button
-                onClick={() => scrollToBottom('smooth')}
-                className="absolute bottom-24 sm:bottom-28 right-4 sm:right-6 z-40 bg-[#1c2c4c] text-[#d4af37] w-8 h-8 rounded-full shadow-2xl border border-[#d4af37] hover:scale-110 active:scale-95 transition-all flex items-center justify-center"
-                title="Bajar al último mensaje"
-              >
-                <ChevronDown size={16} />
-              </button>
-            )}
-
             {/* Input de Mensaje y Adjuntos */}
             <div className="bg-white border-t border-gray-200 p-2.5 sm:p-3 shrink-0 z-30 shadow-xs">
               <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto">
