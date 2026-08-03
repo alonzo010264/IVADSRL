@@ -10,22 +10,33 @@ const Dashboard = () => {
   const { currentUser, employees } = useEmployees();
   const [announcements, setAnnouncements] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   
   useEffect(() => {
     const fetchAnnouncements = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('announcements')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(5);
-      
-      if (data) {
-        setAnnouncements(data);
-      }
+      if (data) setAnnouncements(data);
     };
-    
     fetchAnnouncements();
   }, []);
+
+  // Conteo real de notificaciones no leídas
+  useEffect(() => {
+    const fetchUnread = async () => {
+      if (!currentUser) { setUnreadCount(0); return; }
+      const { data } = await supabase
+        .from('notifications')
+        .select('id')
+        .or(`user_id.eq.${currentUser.id},user_id.eq.all`)
+        .eq('read', false);
+      setUnreadCount(data ? data.length : 0);
+    };
+    fetchUnread();
+  }, [currentUser]);
   
   const quickActions = [
     { id: 'perfil', icon: User, label: 'Mi Perfil', path: '/datos-personales' },
@@ -69,9 +80,11 @@ const Dashboard = () => {
             onClick={() => navigate('/notificaciones')}
           >
             <Bell size={28} strokeWidth={2} />
-            <span className="absolute -top-1.5 -right-1.5 bg-[#d4af37] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
-              3
-            </span>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-[#d4af37] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
           </button>
         </div>
 
@@ -145,7 +158,7 @@ const Dashboard = () => {
               <div className="bg-[#c8985c] rounded-full w-12 h-12 flex items-center justify-center text-white shadow-sm mb-3">
                 <Calendar size={24} strokeWidth={2} />
               </div>
-              <h3 className="text-2xl font-bold text-[#0b1c3c] leading-none">18</h3>
+              <h3 className="text-2xl font-bold text-[#0b1c3c] leading-none">0</h3>
               <p className="text-gray-500 text-xs leading-tight mt-1">Asistencias<br/>registradas</p>
             </div>
             <div 

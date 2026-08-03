@@ -727,7 +727,9 @@ const Chat = () => {
                         <User size={22} className="text-white" />
                       )}
                     </div>
-                    <span className="w-3 h-3 bg-green-500 rounded-full border-2 border-white absolute bottom-0 right-0"></span>
+                    {emp.isOnline && (
+                      <span className="w-3 h-3 bg-green-500 rounded-full border-2 border-white absolute bottom-0 right-0"></span>
+                    )}
                   </div>
 
                   <div className="flex-1 min-w-0">
