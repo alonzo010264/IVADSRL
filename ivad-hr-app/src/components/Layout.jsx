@@ -88,13 +88,13 @@ const Layout = () => {
   const location = useLocation();
   const noHeaderRoutes = ['/inicio', '/', '/chat', '/radio', '/incidencias', '/iniciativas', '/faq', '/configuracion'];
   const showHeader = !noHeaderRoutes.includes(location.pathname);
-  const isFullHeightPage = location.pathname === '/chat' || location.pathname === '/radio';
+  const isFullHeightPage = location.pathname === '/chat';
 
   return (
     <div className={`min-h-screen bg-gray-50 flex flex-col font-sans ${isFullHeightPage ? 'h-screen overflow-hidden' : ''}`}>
       {showHeader && <Header />}
       
-      {/* Contenido principal: en Chat y Radio se ajusta exactamente arriba de la barra de navegación (pb-16 / h-16) sin hueco blanco */}
+      {/* Contenido principal: en Chat se ajusta exactamente arriba de la barra de navegación sin hueco blanco */}
       <main className={`flex-1 bg-gray-50 w-full max-w-7xl mx-auto flex flex-col ${
         isFullHeightPage ? 'overflow-hidden pb-16 h-[calc(100vh-64px)]' : 'overflow-y-auto pb-24'
       }`}>
