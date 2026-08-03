@@ -351,12 +351,16 @@ const RadioIVAD = () => {
     };
   }, [targetType, selectedReceiver, isPowerOn, isOperational, connectionMode, isOnline]);
 
-  const handleButtonClick = () => {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
+  // Push-to-talk: solo graba MIENTRAS el dedo/cursor está presionado
+  const handlePTTStart = (e) => {
+    e.preventDefault(); // evita el ghost click en móvil después del touch
+    if (!isPowerOn || !isOperational) return;
+    if (!isRecording) startRecording();
+  };
+
+  const handlePTTEnd = (e) => {
+    e.preventDefault();
+    if (isRecording) stopRecording();
   };
 
   return (
@@ -563,13 +567,14 @@ const RadioIVAD = () => {
             )}
 
             <button
-              onMouseDown={startRecording}
-              onMouseUp={stopRecording}
-              onTouchStart={startRecording}
-              onTouchEnd={stopRecording}
-              onClick={handleButtonClick}
+              onMouseDown={handlePTTStart}
+              onMouseUp={handlePTTEnd}
+              onMouseLeave={(e) => { if (isRecording) { e.preventDefault(); stopRecording(); } }}
+              onTouchStart={handlePTTStart}
+              onTouchEnd={handlePTTEnd}
+              onTouchCancel={handlePTTEnd}
               disabled={!isPowerOn || !isOperational}
-              className={`w-44 h-44 rounded-full flex flex-col items-center justify-center shadow-xl transition-all border-4 relative z-10 cursor-pointer select-none active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed ${
+              className={`w-44 h-44 rounded-full flex flex-col items-center justify-center shadow-xl transition-all border-4 relative z-10 cursor-pointer select-none active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed touch-none ${
                 isRecording
                   ? 'bg-red-600 text-white border-red-300 shadow-red-500/40 scale-105'
                   : isPowerOn && isOperational
